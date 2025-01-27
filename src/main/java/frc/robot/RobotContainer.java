@@ -12,9 +12,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
@@ -33,6 +35,7 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private final SwerveRequest.FieldCentricFacingAngle fieldCentricFacingAngle = new SwerveRequest.FieldCentricFacingAngle();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -48,35 +51,53 @@ public class RobotContainer {
     public RobotContainer() {
         autoFactory = drivetrain.createAutoFactory();
         autoRoutines = new AutoRoutines(autoFactory);
-
+        fieldCentricFacingAngle.HeadingController.setP(5.9918340044856690519902612191937);
         autoChooser.addRoutine("SimplePath", autoRoutines::simplePathAuto);
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         configureBindings();
+        SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            )
+                // Drivetrain will execute this command periodically
+                drivetrain.applyRequest(() ->
+                        drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                                .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                                .withRotationalRate(MaxAngularRate * (joystick.getLeftTriggerAxis() - joystick.getRightTriggerAxis()))
+                                .withRotationalDeadband(0.2 * MaxAngularRate)// Drive counterclockwise with negative X (left)
+                ).withName("Default Swerve")
         );
+
+        joystick.rightBumper().whileTrue(drivetrain.applyRequest(() -> {
+            double x = MathUtil.applyDeadband(-joystick.getRightY(), 0.1);
+            double y = MathUtil.applyDeadband(-joystick.getRightX(),0.1);
+            Rotation2d angle = new Rotation2d(x, y);
+            if (x == 0 && y == 0) {
+                angle = Rotation2d.kZero;
+            }
+            SmartDashboard.putNumber("Request Angle (DEG)", angle.getDegrees());
+
+            return fieldCentricFacingAngle.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+                    .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                    .withTargetDirection(angle)
+                    .withDeadband(MaxSpeed * 0.1);
+        }).withName("Clock Drive"));
+
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+                point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
 
         joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(0.5).withVelocityY(0))
+                forwardStraight.withVelocityX(0.5).withVelocityY(0))
         );
         joystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(-0.5).withVelocityY(0))
+                forwardStraight.withVelocityX(-0.5).withVelocityY(0))
         );
 
         // Run SysId routines when holding back/start and X/Y.
