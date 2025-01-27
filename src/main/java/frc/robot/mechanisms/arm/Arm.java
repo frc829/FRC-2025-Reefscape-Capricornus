@@ -5,6 +5,13 @@ import edu.wpi.first.units.measure.AngularVelocity;
 
 public abstract class Arm {
 
+    public enum ControlState {
+        POSITION,
+        VELOCITY,
+        HOLD,
+        FREE_FALL
+    }
+
     protected final ArmControlParameters armControlParameters;
     protected final ArmState lastArmState = new ArmState();
     protected final ArmState armState = new ArmState();
@@ -45,13 +52,13 @@ public abstract class Arm {
 
     public abstract boolean setNeutralModeToCoast();
 
-    public abstract boolean setVelocity(AngularVelocity velocity);
+    public abstract void setVelocity(AngularVelocity velocity);
 
-    public abstract boolean setPosition(Angle position);
+    public abstract void setPosition(Angle position);
 
-    public abstract boolean setHold();
+    public abstract void setHold();
 
-    public abstract boolean allowFall();
+    public abstract void setFreeFall();
 
     public abstract void resetPosition();
 
