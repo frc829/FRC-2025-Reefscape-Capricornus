@@ -5,6 +5,13 @@ import edu.wpi.first.units.measure.LinearVelocity;
 
 public abstract class Elevator {
 
+    public enum ControlState {
+        POSITION,
+        VELOCITY,
+        HOLD,
+        FREE_FALL
+    }
+
     protected final ElevatorControlParameters elevatorControlParameters;
     protected final ElevatorState lastElevatorState = new ElevatorState();
     protected final ElevatorState elevatorState = new ElevatorState();
@@ -15,23 +22,23 @@ public abstract class Elevator {
         this.elevatorControlParameters = elevatorControlParameters;
     }
 
-    public void updateSimState(double dtSeconds, double supplyVoltage){
+    public void updateSimState(double dtSeconds, double supplyVoltage) {
         simElevator.update(dtSeconds, supplyVoltage);
     }
 
-    public void setControl(ElevatorRequest request){
-        if(elevatorRequest != request){
+    public void setControl(ElevatorRequest request) {
+        if (elevatorRequest != request) {
             elevatorRequest = request;
         }
         elevatorControlParameters.withElevatorState(elevatorState);
         request.apply(elevatorControlParameters, this);
     }
 
-    public final ElevatorState getState(){
+    public final ElevatorState getState() {
         return elevatorState;
     }
 
-    public final ElevatorState getStateCopy(){
+    public final ElevatorState getStateCopy() {
         return elevatorState.clone();
     }
 
@@ -45,20 +52,19 @@ public abstract class Elevator {
 
     public abstract boolean setNeutralModeToCoast();
 
-    public abstract boolean setVelocity(LinearVelocity velocity);
+    public abstract void setVelocity(LinearVelocity velocity);
 
-    public abstract boolean setPosition(Distance position);
+    public abstract void setPosition(Distance position);
 
-    public abstract boolean setHold();
+    public abstract void setHold();
 
-    public abstract boolean allowFall();
+    public abstract void setFreeFall();
 
     public abstract void resetPosition();
 
-    public void update(){
+    public void update() {
         updateTelemetry();
     }
-
 
 
 }
