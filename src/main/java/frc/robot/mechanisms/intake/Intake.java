@@ -4,6 +4,11 @@ import edu.wpi.first.units.measure.LinearVelocity;
 
 public abstract class Intake {
 
+    public enum ControlState{
+        VELOCITY,
+        IDLE
+    }
+
     protected final IntakeControlParameters intakeControlParameters;
     protected final IntakeState lastIntakeState = new IntakeState();
     protected final IntakeState intakeState = new IntakeState();
@@ -44,11 +49,9 @@ public abstract class Intake {
 
     public abstract boolean setNeutralModeToCoast();
 
-    public abstract boolean setVelocity(LinearVelocity velocity);
+    public abstract void setVelocity(LinearVelocity velocity);
 
-    public abstract boolean setIdle();
-
-    public abstract void resetPosition();
+    public abstract void setIdle();
 
     public void update(){
         updateTelemetry();

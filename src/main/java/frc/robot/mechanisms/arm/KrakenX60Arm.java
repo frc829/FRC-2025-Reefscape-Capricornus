@@ -26,23 +26,19 @@ public class KrakenX60Arm extends Arm {
     }
 
     @Override
-    public boolean setVelocity(AngularVelocity velocity) {
-        return false;
+    public void setVelocity(AngularVelocity velocity) {
     }
 
     @Override
-    public boolean setPosition(Angle position) {
-        return false;
+    public void setPosition(Angle position) {
     }
 
     @Override
-    public boolean setHold() {
-        return false;
+    public void setHold() {
     }
 
     @Override
-    public boolean allowFall() {
-        return false;
+    public void setFreeFall() {
     }
 
     @Override
@@ -58,5 +54,16 @@ public class KrakenX60Arm extends Arm {
     @Override
     public void updateTelemetry() {
 
+    }
+
+    private void applyVelocity(){
+
+    }
+
+    private void applyPosition(){
+
+    }
+
+    private void applyFreeFall(){
     }
 }

@@ -35,18 +35,11 @@ public class Dual550Intake extends Intake {
     }
 
     @Override
-    public boolean setVelocity(LinearVelocity velocity) {
-        return false;
+    public void setVelocity(LinearVelocity velocity) {
     }
 
     @Override
-    public boolean setIdle() {
-        return false;
-    }
-
-    @Override
-    public void resetPosition() {
-
+    public void setIdle() {
     }
 
     @Override
@@ -57,5 +50,12 @@ public class Dual550Intake extends Intake {
     @Override
     public void updateTelemetry() {
 
+    }
+
+    private void applyVelocity(){
+
+    }
+
+    private void applyIdle(){
     }
 }
