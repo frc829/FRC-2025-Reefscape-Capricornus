@@ -6,30 +6,30 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.mechanisms.elevator.Elevator;
-import frc.robot.mechanisms.elevator.ElevatorRequest;
+import frc.robot.mechanisms.wrist.Wrist;
+import frc.robot.mechanisms.wrist.WristRequest;
 
 import java.util.function.Supplier;
 
-public class CommandElevator implements Subsystem {
+public class CommandWrist implements Subsystem {
     private static final double simLoopPeriod = 0.005;
-    private final Elevator elevator;
+    private final Wrist wrist;
     private double lastSimTime;
 
-    public CommandElevator(Elevator elevator) {
-        this.elevator = elevator;
+    public CommandWrist(Wrist wrist) {
+        this.wrist = wrist;
         if (RobotBase.isSimulation()) {
             startSimThread();
         }
     }
 
-    public Command applyRequest(Supplier<ElevatorRequest> requestSupplier) {
-        return run(() -> elevator.setControl(requestSupplier.get()));
+    public Command applyRequest(Supplier<WristRequest> requestSupplier) {
+        return run(() -> wrist.setControl(requestSupplier.get()));
     }
 
     @Override
     public void periodic() {
-        elevator.update();
+        wrist.update();
     }
 
     private void startSimThread() {
@@ -38,7 +38,7 @@ public class CommandElevator implements Subsystem {
             final double currentTime = Timer.getFPGATimestamp();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
-            elevator.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            wrist.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         })) {
             simNotifier.startPeriodic(simLoopPeriod);
         }
