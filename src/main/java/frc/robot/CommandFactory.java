@@ -7,10 +7,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
-import static frc.robot.RobotContainer.driverController;
-import static frc.robot.RobotContainer.drivetrain;
-import static frc.robot.constants.SwerveDriveConstants.MaxAngularRate;
-import static frc.robot.constants.SwerveDriveConstants.MaxSpeed;
+import static frc.robot.RobotContainer.*;
+import static frc.robot.constants.SwerveDriveConstants.*;
 
 public class CommandFactory {
 
@@ -24,7 +22,7 @@ public class CommandFactory {
             SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
                     .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-            return drivetrain.applyRequest(() ->
+            return commandSwerveDrive.applyRequest(() ->
                     drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                             .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                             .withRotationalRate(MaxAngularRate * (driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis()))
@@ -34,7 +32,8 @@ public class CommandFactory {
 
         static Command clockDrive(){
             final SwerveRequest.FieldCentricFacingAngle clockDrive = new SwerveRequest.FieldCentricFacingAngle();
-            return drivetrain.applyRequest(() -> {
+            clockDrive.HeadingController = m_pathThetaController;
+            return commandSwerveDrive.applyRequest(() -> {
                 double x = MathUtil.applyDeadband(-driverController.getRightY(), 0.1);
                 double y = MathUtil.applyDeadband(-driverController.getRightX(),0.1);
                 Rotation2d angle = new Rotation2d(x, y);
@@ -53,22 +52,32 @@ public class CommandFactory {
 
         static Command brake(){
             SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-            return drivetrain.applyRequest(() -> brake).withName("Brake");
+            return commandSwerveDrive.applyRequest(() -> brake).withName("Brake");
         }
 
         static Command pointModuleWheels(){
             SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-            return drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))).withName("point wheels");
+            return commandSwerveDrive.applyRequest(() -> point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))).withName("point wheels");
         }
 
         static Command robotCentricForward(){
             SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric();
-            return drivetrain.applyRequest(()-> forwardStraight.withVelocityX(.5).withVelocityY(0));
+            return commandSwerveDrive.applyRequest(()-> forwardStraight.withVelocityX(.5).withVelocityY(0));
         }
 
-        static  Command robotCentricReverse(){
+        static Command robotCentricReverse(){
             SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric();
-            return drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-.5).withVelocityY(0));
+            return commandSwerveDrive.applyRequest(() -> forwardStraight.withVelocityX(-.5).withVelocityY(0));
+        }
+
+        static Command zeroWheels(){
+            // TODO: Create a PointWheelsAt request
+            // TODO: return the appropriate command
+            return null; // TODO: remove this when done.
+        }
+
+        static Command seedFieldCentric(){
+            return commandSwerveDrive.seedFieldCentric();
         }
 
     }

@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.mechanisms.swerve;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
-public class Telemetry {
+public class SwerveDriveTelemetry {
     private final double MaxSpeed;
 
     /**
@@ -28,9 +28,8 @@ public class Telemetry {
      * 
      * @param maxSpeed Maximum speed in meters per second
      */
-    public Telemetry(double maxSpeed) {
+    public SwerveDriveTelemetry(double maxSpeed) {
         MaxSpeed = maxSpeed;
-        SignalLogger.start();
     }
 
     /* What to publish over networktables for telemetry */
@@ -52,28 +51,28 @@ public class Telemetry {
     private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
 
     /* Mechanisms to represent the swerve module states */
-    private final Mechanism2d[] m_moduleMechanisms = new Mechanism2d[] {
+    private final Mechanism2d[] moduleMechanisms = new Mechanism2d[] {
         new Mechanism2d(1, 1),
         new Mechanism2d(1, 1),
         new Mechanism2d(1, 1),
         new Mechanism2d(1, 1),
     };
     /* A direction and length changing ligament for speed representation */
-    private final MechanismLigament2d[] m_moduleSpeeds = new MechanismLigament2d[] {
-        m_moduleMechanisms[0].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
-        m_moduleMechanisms[1].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
-        m_moduleMechanisms[2].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
-        m_moduleMechanisms[3].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
+    private final MechanismLigament2d[] moduleSpeeds = new MechanismLigament2d[] {
+        moduleMechanisms[0].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
+        moduleMechanisms[1].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
+        moduleMechanisms[2].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
+        moduleMechanisms[3].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
     };
     /* A direction changing and length constant ligament for module direction */
-    private final MechanismLigament2d[] m_moduleDirections = new MechanismLigament2d[] {
-        m_moduleMechanisms[0].getRoot("RootDirection", 0.5, 0.5)
+    private final MechanismLigament2d[] moduleDirections = new MechanismLigament2d[] {
+        moduleMechanisms[0].getRoot("RootDirection", 0.5, 0.5)
             .append(new MechanismLigament2d("Direction", 0.1, 0, 0, new Color8Bit(Color.kWhite))),
-        m_moduleMechanisms[1].getRoot("RootDirection", 0.5, 0.5)
+        moduleMechanisms[1].getRoot("RootDirection", 0.5, 0.5)
             .append(new MechanismLigament2d("Direction", 0.1, 0, 0, new Color8Bit(Color.kWhite))),
-        m_moduleMechanisms[2].getRoot("RootDirection", 0.5, 0.5)
+        moduleMechanisms[2].getRoot("RootDirection", 0.5, 0.5)
             .append(new MechanismLigament2d("Direction", 0.1, 0, 0, new Color8Bit(Color.kWhite))),
-        m_moduleMechanisms[3].getRoot("RootDirection", 0.5, 0.5)
+        moduleMechanisms[3].getRoot("RootDirection", 0.5, 0.5)
             .append(new MechanismLigament2d("Direction", 0.1, 0, 0, new Color8Bit(Color.kWhite))),
     };
 
@@ -114,11 +113,11 @@ public class Telemetry {
 
         /* Telemeterize the module states to a Mechanism2d */
         for (int i = 0; i < 4; ++i) {
-            m_moduleSpeeds[i].setAngle(state.ModuleStates[i].angle);
-            m_moduleDirections[i].setAngle(state.ModuleStates[i].angle);
-            m_moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
+            moduleSpeeds[i].setAngle(state.ModuleStates[i].angle);
+            moduleDirections[i].setAngle(state.ModuleStates[i].angle);
+            moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
 
-            SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
+            SmartDashboard.putData("Module " + i, moduleMechanisms[i]);
         }
     }
 }

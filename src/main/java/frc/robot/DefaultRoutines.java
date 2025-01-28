@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static frc.robot.RobotContainer.commandSwerveDrive;
+
 public class DefaultRoutines {
 
     public DefaultRoutines(){
@@ -8,10 +10,10 @@ public class DefaultRoutines {
     }
 
     static void bind(){
-
+        drive();
     }
 
     private static void drive(){
-
+        commandSwerveDrive.setDefaultCommand(CommandFactory.DriveCommands.clockDrive());
     }
 }
