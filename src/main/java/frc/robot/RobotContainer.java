@@ -30,9 +30,6 @@ public class RobotContainer {
     static final CommandSwerveDrivetrain drivetrain = SwerveDriveConstants.createDrivetrain();
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.FieldCentricFacingAngle clockDrive = new SwerveRequest.FieldCentricFacingAngle();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
@@ -64,33 +61,16 @@ public class RobotContainer {
                 CommandFactory.DriveCommands.fieldCentricDrive()
         );
 
-        joystick.rightBumper().whileTrue(drivetrain.applyRequest(() -> {
-            double x = MathUtil.applyDeadband(-joystick.getRightY(), 0.1);
-            double y = MathUtil.applyDeadband(-joystick.getRightX(),0.1);
-            Rotation2d angle = new Rotation2d(x, y);
-            if (x == 0 && y == 0) {
-                angle = Rotation2d.kZero;
-            }
-            SmartDashboard.putNumber("Request Angle (DEG)", angle.getDegrees());
-
-            return clockDrive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed)
-                    .withTargetDirection(angle)
-                    .withDeadband(MaxSpeed * 0.1);
-        }).withName("Clock Drive"));
+        joystick.rightBumper().whileTrue(CommandFactory.DriveCommands.clockDrive());
 
 
         joystick.a().whileTrue(CommandFactory.DriveCommands.brake());
-        joystick.b().whileTrue(drivetrain.applyRequest(() ->
-                point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-        ));
+        joystick.b().whileTrue(CommandFactory.DriveCommands.pointModuleWheels());
 
-        joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
-                forwardStraight.withVelocityX(0.5).withVelocityY(0))
-        );
-        joystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
-                forwardStraight.withVelocityX(-0.5).withVelocityY(0))
-        );
+
+
+        joystick.pov(0).whileTrue(CommandFactory.DriveCommands.robotCentricForward());
+        joystick.pov(180).whileTrue(CommandFactory.DriveCommands.robotCentricReverse());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
