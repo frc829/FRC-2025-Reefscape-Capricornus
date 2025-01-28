@@ -42,10 +42,6 @@ public class KrakenX60Arm extends Arm {
     }
 
     @Override
-    public void setFreeFall() {
-    }
-
-    @Override
     public void resetPosition() {
 
     }
