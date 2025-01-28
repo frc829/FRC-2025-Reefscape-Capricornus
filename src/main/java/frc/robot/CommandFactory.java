@@ -60,6 +60,17 @@ public class CommandFactory {
             SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
             return drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))).withName("point wheels");
         }
+
+        static Command robotCentricForward(){
+            SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric();
+            return drivetrain.applyRequest(()-> forwardStraight.withVelocityX(.5).withVelocityY(0));
+        }
+
+        static  Command robotCentricReverse(){
+            SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric();
+            return drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-.5).withVelocityY(0));
+        }
+
     }
 
 }
