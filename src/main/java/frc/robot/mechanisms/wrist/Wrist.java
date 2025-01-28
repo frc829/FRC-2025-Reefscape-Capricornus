@@ -45,13 +45,11 @@ public abstract class Wrist {
 
     public abstract boolean setNeutralModeToCoast();
 
-    public abstract boolean setVelocity(AngularVelocity velocity);
+    public abstract void setVelocity(AngularVelocity velocity);
 
-    public abstract boolean setPosition(Angle position);
+    public abstract void setPosition(Angle position);
 
-    public abstract boolean setHold();
-
-    public abstract boolean allowFall();
+    public abstract void setHold();
 
     public abstract void resetPosition();
 

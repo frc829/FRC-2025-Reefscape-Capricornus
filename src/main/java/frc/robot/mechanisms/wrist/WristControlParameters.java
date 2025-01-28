@@ -1,38 +1,32 @@
 package frc.robot.mechanisms.wrist;
 
 import edu.wpi.first.units.*;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.*;
 
 public class WristControlParameters {
 
     private final Angle maxAngle;
     private final Angle minAngle;
-    private final AngularVelocity maxVelocity;
-    private final AngularAcceleration maxAcceleration;
     private final Voltage ks;
     private final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv;
     private final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka;
     private final WristState currentState = new WristState();
+    private final Time updatePeriod;
 
 
     public WristControlParameters(
             Angle maxAngle,
             Angle minAngle,
-            AngularVelocity maxVelocity,
-            AngularAcceleration maxAcceleration,
             Voltage ks,
             Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv,
-            Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka) {
+            Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka,
+            Time updatePeriod) {
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
-        this.maxVelocity = maxVelocity;
-        this.maxAcceleration = maxAcceleration;
         this.ks = ks;
         this.kv = kv;
         this.ka = ka;
+        this.updatePeriod = updatePeriod;
     }
 
     public Angle getMaxAngle() {
@@ -41,14 +35,6 @@ public class WristControlParameters {
 
     public Angle getMinAngle() {
         return minAngle;
-    }
-
-    public AngularVelocity getMaxVelocity() {
-        return maxVelocity;
-    }
-
-    public AngularAcceleration getMaxAcceleration() {
-        return maxAcceleration;
     }
 
     public WristState getCurrentState() {
@@ -73,4 +59,7 @@ public class WristControlParameters {
     }
 
 
+    public Time getUpdatePeriod() {
+        return updatePeriod;
+    }
 }
