@@ -2,6 +2,9 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import static frc.robot.RobotContainer.driverController;
@@ -29,9 +32,33 @@ public class CommandFactory {
             ).withName("Field Centric Drive");
         }
 
+        static Command clockDrive(){
+            final SwerveRequest.FieldCentricFacingAngle clockDrive = new SwerveRequest.FieldCentricFacingAngle();
+            return drivetrain.applyRequest(() -> {
+                double x = MathUtil.applyDeadband(-driverController.getRightY(), 0.1);
+                double y = MathUtil.applyDeadband(-driverController.getRightX(),0.1);
+                Rotation2d angle = new Rotation2d(x, y);
+                if (x == 0 && y == 0) {
+                    angle = Rotation2d.kZero;
+                }
+                SmartDashboard.putNumber("Request Angle (DEG)", angle.getDegrees());
+
+                return clockDrive.withVelocityX(-driverController.getLeftY() * MaxSpeed)
+                        .withVelocityY(-driverController.getLeftX() * MaxSpeed)
+                        .withTargetDirection(angle)
+                        .withDeadband(MaxSpeed * 0.1);
+            }).withName("Clock Drive");
+        }
+
+
         static Command brake(){
             SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
             return drivetrain.applyRequest(() -> brake).withName("Brake");
+        }
+
+        static Command pointModuleWheels(){
+            SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+            return drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))).withName("point wheels");
         }
     }
 
