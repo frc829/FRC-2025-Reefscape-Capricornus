@@ -57,8 +57,6 @@ public abstract class Elevator {
 
     public abstract void setHold();
 
-    public abstract void setFreeFall();
-
     public abstract void resetPosition();
 
     public void update() {

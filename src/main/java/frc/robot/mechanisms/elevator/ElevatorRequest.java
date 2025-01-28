@@ -24,8 +24,6 @@ public interface ElevatorRequest {
 
         @Override
         public void apply(ElevatorControlParameters parameters, Elevator elevator) {
-            double maxHeightMeters = parameters.getMaxHeight().baseUnitMagnitude();
-            double minHeightMeters = parameters.getMinHeight().baseUnitMagnitude();
             if(position.lte(parameters.getMaxHeight()) && position.gte(parameters.getMinHeight())) {
                 elevator.setPosition(position);
             }else{
