@@ -9,7 +9,6 @@ public abstract class Arm {
         POSITION,
         VELOCITY,
         HOLD,
-        FREE_FALL
     }
 
     protected final ArmControlParameters armControlParameters;
@@ -58,14 +57,9 @@ public abstract class Arm {
 
     public abstract void setHold();
 
-    public abstract void setFreeFall();
-
     public abstract void resetPosition();
 
     public void update(){
         updateTelemetry();
     }
-
-
-
 }

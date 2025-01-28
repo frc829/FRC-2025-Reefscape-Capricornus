@@ -7,32 +7,29 @@ public class ArmControlParameters {
 
     private final Angle maxAngle;
     private final Angle minAngle;
-    private final AngularVelocity maxVelocity;
-    private final AngularAcceleration maxAcceleration;
     private final Voltage ks;
     private final Voltage kg;
     private final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv;
     private final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka;
+    private final Time updatePeriod;
     private final ArmState currentState = new ArmState();
 
 
     public ArmControlParameters(
             Angle maxAngle,
             Angle minAngle,
-            AngularVelocity maxVelocity,
-            AngularAcceleration maxAcceleration,
             Voltage ks,
             Voltage kg,
             Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv,
-            Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka) {
+            Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka,
+            Time updatePeriod) {
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
-        this.maxVelocity = maxVelocity;
-        this.maxAcceleration = maxAcceleration;
         this.ks = ks;
         this.kg = kg;
         this.kv = kv;
         this.ka = ka;
+        this.updatePeriod = updatePeriod;
     }
 
     public Angle getMaxAngle() {
@@ -43,18 +40,9 @@ public class ArmControlParameters {
         return minAngle;
     }
 
-    public AngularVelocity getMaxVelocity() {
-        return maxVelocity;
-    }
-
-    public AngularAcceleration getMaxAcceleration() {
-        return maxAcceleration;
-    }
-
     public ArmState getCurrentState() {
         return currentState;
     }
-
 
     public Voltage getKs() {
         return ks;
@@ -78,4 +66,7 @@ public class ArmControlParameters {
     }
 
 
+    public Time getUpdatePeriod() {
+        return updatePeriod;
+    }
 }

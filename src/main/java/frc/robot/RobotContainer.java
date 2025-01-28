@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static frc.robot.constants.SwerveDriveConstants.MaxSpeed;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -24,24 +24,21 @@ import frc.robot.constants.SwerveDriveConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class RobotContainer {
-    private double MaxSpeed = SwerveDriveConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+
+    static final CommandXboxController driverController = new CommandXboxController(0);
+    static final CommandXboxController operatorController = new CommandXboxController(1);
+    static final CommandSwerveDrivetrain drivetrain = SwerveDriveConstants.createDrivetrain();
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    private final SwerveRequest.FieldCentricFacingAngle fieldCentricFacingAngle = new SwerveRequest.FieldCentricFacingAngle();
+    private final SwerveRequest.FieldCentricFacingAngle clockDrive = new SwerveRequest.FieldCentricFacingAngle();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
-    public final CommandSwerveDrivetrain drivetrain = SwerveDriveConstants.createDrivetrain();
 
     /* Path follower */
     private final AutoFactory autoFactory;
@@ -51,7 +48,7 @@ public class RobotContainer {
     public RobotContainer() {
         autoFactory = drivetrain.createAutoFactory();
         autoRoutines = new AutoRoutines(autoFactory);
-        fieldCentricFacingAngle.HeadingController.setP(5.9918340044856690519902612191937);
+        clockDrive.HeadingController.setP(5.9918340044856690519902612191937);
         autoChooser.addRoutine("SimplePath", autoRoutines::simplePathAuto);
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -64,12 +61,7 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() ->
-                        drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                                .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                                .withRotationalRate(MaxAngularRate * (joystick.getLeftTriggerAxis() - joystick.getRightTriggerAxis()))
-                                .withRotationalDeadband(0.2 * MaxAngularRate)// Drive counterclockwise with negative X (left)
-                ).withName("Default Swerve")
+                CommandFactory.DriveCommands.fieldCentricDrive()
         );
 
         joystick.rightBumper().whileTrue(drivetrain.applyRequest(() -> {
@@ -81,14 +73,14 @@ public class RobotContainer {
             }
             SmartDashboard.putNumber("Request Angle (DEG)", angle.getDegrees());
 
-            return fieldCentricFacingAngle.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+            return clockDrive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
                     .withVelocityY(-joystick.getLeftX() * MaxSpeed)
                     .withTargetDirection(angle)
                     .withDeadband(MaxSpeed * 0.1);
         }).withName("Clock Drive"));
 
 
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        joystick.a().whileTrue(CommandFactory.DriveCommands.brake());
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
                 point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
