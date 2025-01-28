@@ -10,19 +10,12 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 public interface ElevatorRequest {
 
-    public boolean apply(ElevatorControlParameters parameters, Elevator elevator);
+    public void apply(ElevatorControlParameters parameters, Elevator elevator);
 
     public class Hold implements ElevatorRequest {
         @Override
-        public boolean apply(ElevatorControlParameters parameters, Elevator elevator) {
-            return false;
-        }
-    }
-
-    public class FreeFall implements ElevatorRequest {
-        @Override
-        public boolean apply(ElevatorControlParameters parameters, Elevator elevator) {
-            return false;
+        public void apply(ElevatorControlParameters parameters, Elevator elevator) {
+            elevator.setHold();
         }
     }
 
@@ -30,8 +23,14 @@ public interface ElevatorRequest {
         private final MutDistance position = Meters.mutable(0.0);
 
         @Override
-        public boolean apply(ElevatorControlParameters parameters, Elevator elevator) {
-            return false;
+        public void apply(ElevatorControlParameters parameters, Elevator elevator) {
+            double maxHeightMeters = parameters.getMaxHeight().baseUnitMagnitude();
+            double minHeightMeters = parameters.getMinHeight().baseUnitMagnitude();
+            if(position.lte(parameters.getMaxHeight()) && position.gte(parameters.getMinHeight())) {
+                elevator.setPosition(position);
+            }else{
+                elevator.setPosition(parameters.getCurrentState().getPosition());
+            }
         }
 
         public Position withPosition(Distance position){
@@ -44,8 +43,12 @@ public interface ElevatorRequest {
         private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
 
         @Override
-        public boolean apply(ElevatorControlParameters parameters, Elevator elevator) {
-            return false;
+        public void apply(ElevatorControlParameters parameters, Elevator elevator) {
+            if(parameters.getCurrentState().getPosition().lte(parameters.getMaxHeight()) && parameters.getCurrentState().getPosition().gte(parameters.getMinHeight())){
+                elevator.setVelocity(velocity);
+            }else{
+                elevator.setVelocity(MetersPerSecond.of(0.0));
+            }
         }
 
         public Velocity withVelocity(LinearVelocity velocity){

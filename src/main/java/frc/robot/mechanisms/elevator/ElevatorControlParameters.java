@@ -13,6 +13,7 @@ public class ElevatorControlParameters {
     private final Voltage kg;
     private final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv;
     private final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka;
+    private final Time updatePeriod;
     private final ElevatorState currentState = new ElevatorState();
 
 
@@ -24,7 +25,9 @@ public class ElevatorControlParameters {
             Voltage ks,
             Voltage kg,
             Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv,
-            Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka) {
+            Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka,
+            Time updatePeriod
+    ) {
         this.maxHeight = maxHeight;
         this.minHeight = minHeight;
         this.maxVelocity = maxVelocity;
@@ -33,6 +36,7 @@ public class ElevatorControlParameters {
         this.kg = kg;
         this.kv = kv;
         this.ka = ka;
+        this.updatePeriod = updatePeriod;
     }
 
     public Distance getMaxHeight() {

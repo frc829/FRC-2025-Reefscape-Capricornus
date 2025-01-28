@@ -9,7 +9,6 @@ public abstract class Elevator {
         POSITION,
         VELOCITY,
         HOLD,
-        FREE_FALL
     }
 
     protected final ElevatorControlParameters elevatorControlParameters;

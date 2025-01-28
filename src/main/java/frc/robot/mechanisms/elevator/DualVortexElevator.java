@@ -17,15 +17,13 @@ public class DualVortexElevator extends Elevator {
     private final SparkFlex followerMotor;
     private final SparkBaseConfig primaryMotorConfig;
     private final SparkBaseConfig followerMotorConfig;
-    private final ElevatorFeedforward feedforward;
     private final ExponentialProfile positionProfile;
     private final SlewRateLimiter velocityProfile;
     private final ClosedLoopSlot positionClosedLoopSlot;
     private final ClosedLoopSlot velocityClosedLoopSlot;
-    private final Time profilePeriod;
     private final ExponentialProfile.State goalState = new ExponentialProfile.State();
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private ControlState controlState = ControlState.FREE_FALL;
+    private ControlState controlState = ControlState.VELOCITY;
 
     public DualVortexElevator(
             ElevatorControlParameters elevatorControlParameters,
@@ -33,8 +31,6 @@ public class DualVortexElevator extends Elevator {
             SparkFlex followerMotor,
             SparkBaseConfig primaryMotorConfig,
             SparkBaseConfig followerMotorConfig,
-            ElevatorFeedforward feedforward,
-            Time profilePeriod,
             ExponentialProfile positionProfile,
             SlewRateLimiter velocityProfile,
             ClosedLoopSlot positionClosedLoopSlot,
@@ -44,12 +40,11 @@ public class DualVortexElevator extends Elevator {
         this.followerMotor = followerMotor;
         this.primaryMotorConfig = primaryMotorConfig;
         this.followerMotorConfig = followerMotorConfig;
-        this.feedforward = feedforward;
-        this.profilePeriod = profilePeriod;
         this.positionProfile = positionProfile;
         this.velocityProfile = velocityProfile;
         this.positionClosedLoopSlot = positionClosedLoopSlot;
         this.velocityClosedLoopSlot = velocityClosedLoopSlot;
+
     }
 
     @Override
