@@ -9,7 +9,6 @@ public abstract class Elevator {
         POSITION,
         VELOCITY,
         HOLD,
-        FREE_FALL
     }
 
     protected final ElevatorControlParameters elevatorControlParameters;
@@ -57,8 +56,6 @@ public abstract class Elevator {
     public abstract void setPosition(Distance position);
 
     public abstract void setHold();
-
-    public abstract void setFreeFall();
 
     public abstract void resetPosition();
 
