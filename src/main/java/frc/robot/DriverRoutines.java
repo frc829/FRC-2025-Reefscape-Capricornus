@@ -2,7 +2,7 @@ package frc.robot;
 
 public class DriverRoutines {
 
-    public DriverRoutines(){
+    private DriverRoutines(){
         // prevents instantiation
         // utility class
     }
