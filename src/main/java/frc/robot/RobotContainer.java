@@ -27,6 +27,7 @@ public class RobotContainer {
 
     static final CommandXboxController driverController = new CommandXboxController(0);
     static final CommandXboxController operatorController = new CommandXboxController(1);
+    static final CommandSwerveDrivetrain drivetrain = SwerveDriveConstants.createDrivetrain();
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -38,7 +39,6 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
-    public static final CommandSwerveDrivetrain drivetrain = SwerveDriveConstants.createDrivetrain();
 
     /* Path follower */
     private final AutoFactory autoFactory;
