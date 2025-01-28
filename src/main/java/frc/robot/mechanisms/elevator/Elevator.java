@@ -15,7 +15,7 @@ public abstract class Elevator {
     protected final ElevatorState lastElevatorState = new ElevatorState();
     protected final ElevatorState elevatorState = new ElevatorState();
     protected final SimElevator simElevator = new SimElevator();
-    private ElevatorRequest elevatorRequest = new ElevatorRequest.Hold();
+    private ElevatorRequest elevatorRequest = new ElevatorRequest.Velocity();
 
     public Elevator(ElevatorControlParameters elevatorControlParameters) {
         this.elevatorControlParameters = elevatorControlParameters;
@@ -62,6 +62,4 @@ public abstract class Elevator {
     public void update() {
         updateTelemetry();
     }
-
-
 }
