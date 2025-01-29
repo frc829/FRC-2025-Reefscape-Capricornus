@@ -1,6 +1,6 @@
 package frc.robot.mechanisms.intake;
 
-public class SimIntake {
+public class DualSimIntake {
     public void update(double dtSeconds, double supplyVoltage) {
 
     }

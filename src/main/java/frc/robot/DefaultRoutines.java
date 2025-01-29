@@ -14,6 +14,6 @@ public class DefaultRoutines {
     }
 
     private static void drive(){
-        commandSwerveDrive.setDefaultCommand(CommandFactory.DriveCommands.clockDrive());
+        commandSwerveDrive.setDefaultCommand(CommandFactory.DriveCommands.defaultDrive());
     }
 }

@@ -84,7 +84,6 @@ public class CommandFactory {
             }).withName("Clock Drive");
         }
 
-
         static Command brake() {
             SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
             return commandSwerveDrive.applyRequest(() -> brake).withName("Brake");

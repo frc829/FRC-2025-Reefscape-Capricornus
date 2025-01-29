@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 
@@ -34,14 +32,8 @@ public class RobotContainer {
         autoChooser.addRoutine("SimplePath", autoRoutines::simplePathAuto);
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        configureBindings();
-        SmartDashboard.putData(CommandScheduler.getInstance());
-    }
-
-    private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
         DefaultRoutines.bind();
+        SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
     public Command getAutonomousCommand() {
