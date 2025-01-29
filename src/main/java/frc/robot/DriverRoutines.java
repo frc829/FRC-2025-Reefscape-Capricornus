@@ -10,21 +10,15 @@ public class DriverRoutines {
     }
 
     static void bind() {
-        fieldCentric();
-        robotCentric();
+        toggleDriveState();
         zeroWheels();
         brake();
         pointModules();
         seedFieldCentric();
     }
 
-    private static void fieldCentric() {
-        driverController.rightBumper().whileTrue(CommandFactory.DriveCommands.fieldCentricDrive());
-    }
-
-    private static void robotCentric() {
-        driverController.pov(0).whileTrue(CommandFactory.DriveCommands.robotCentricForward());
-        driverController.pov(180).whileTrue(CommandFactory.DriveCommands.robotCentricReverse());
+    private static void toggleDriveState() {
+        // TODO: bind to driverController button either while or on True
     }
 
     private static void zeroWheels() {
