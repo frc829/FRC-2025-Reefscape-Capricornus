@@ -18,7 +18,8 @@ public class DriverRoutines {
     }
 
     private static void toggleDriveState() {
-        // TODO: bind to driverController button either while or on True
+        // TODO: bind to driverController button either while or on True.
+        // The command is toggleDriveState in the CommandFactory
     }
 
     private static void zeroWheels() {

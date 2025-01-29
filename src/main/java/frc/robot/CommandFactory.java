@@ -30,7 +30,7 @@ public class CommandFactory {
             return isClock;
         }
 
-        static Command switchDriveState = Commands.runOnce(DriveCommands::toggleIsClock);
+        static Command toggleDriveState = Commands.runOnce(DriveCommands::toggleIsClock);
 
 
         static Command defaultDrive() {
