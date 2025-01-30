@@ -1,22 +1,45 @@
 package frc.robot;
 
+import static frc.robot.RobotContainer.driverController;
+
 public class DriverRoutines {
 
-    public DriverRoutines(){
+    private DriverRoutines() {
         // prevents instantiation
         // utility class
     }
 
-    static void bind(){
-        fieldCentric();
-        robotCentric();
+    static void bind() {
+        toggleDriveState();
+        zeroWheels();
+        brake();
+        pointModules();
+        seedFieldCentric();
     }
 
-    private static void fieldCentric(){
-
+    private static void toggleDriveState() {
+        // TODO: bind to driverController button either while or on True.
+        // The command is toggleDriveState in the CommandFactory
     }
 
-    private static void robotCentric(){
-
+    private static void zeroWheels() {
+        // TODO: bind to driverController button either while or on True
     }
+
+    private static void brake() {
+        // TODO: bind to driverController button either while or on True
+    }
+
+    private static void pointModules() {
+        // TODO: bind to driverController button either while or on True
+    }
+
+    private static void seedFieldCentric() {
+        // reset the field-centric heading on left bumper press
+        // TODO: bind to driverController button either while or on True
+    }
+
+
+
+
 }
