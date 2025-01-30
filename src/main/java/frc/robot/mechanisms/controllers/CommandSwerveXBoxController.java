@@ -1,30 +1,45 @@
 package frc.robot.mechanisms.controllers;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class CommandSwerveXBoxController extends CommandXboxController {
 
-    private final double deadband;
+    double deadband;
 
     public CommandSwerveXBoxController(int port, double deadband) {
         super(port);
         this.deadband = deadband;
     }
 
+    double x = MathUtil.applyDeadband(-getLeftX(), deadband);
+    double y = MathUtil.applyDeadband(-getLeftY(), deadband);
+
+    double steerX = MathUtil.applyDeadband(-getRightX(), deadband);
+    double steerY = MathUtil.applyDeadband(-getRightY(), deadband);
+
+
     public double forward() {
-        return 0.0; // TODO: remove this when done
+        x = x / Math.hypot(x, y);
+        return x;
     }
 
     public double strafe() {
-        return 0.0; // TODO: remove this when done.
+        y = y / Math.hypot(x, y);
+        return y;
     }
 
     public double turn() {
-        return 0.0; // TODO: remove this when done.
+        steerX = steerX / Math.hypot(steerX, steerY);
+        return steerX;
     }
 
-    public double clockAngle() {
-        return 0.0; // TODO: remove this when done.
+    public Rotation2d clockAngle() {
+        steerX = steerX / Math.hypot(steerX, steerY);
+        steerY = steerY / Math.hypot(steerX, steerY);
+        Rotation2d angle = new Rotation2d(steerX, steerY);
+        return angle;
     }
 
 }
