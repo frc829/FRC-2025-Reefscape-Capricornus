@@ -30,37 +30,34 @@ public class KrakenX60Arm extends Arm {
 
     @Override
     public boolean setNeutralModeToBrake() {
-        // TODO: call talonFX.setNeutralMode() passing in NeutralModeValue.Brake and assign to a StatusCode variable called code.
-        // TODO: return code == StatusCode.OK
-        return false; // TODO: remove this when done.
+        StatusCode code = talonFX.setNeutralMode(NeutralModeValue.Brake);
+        return code == StatusCode.OK;
     }
 
     @Override
     public boolean setNeutralModeToCoast() {
-        // TODO: call talonFX.setNeutralMode() passing in NeutralModeValue.Coast and assign to a StatusCode variable called code.
-        // TODO: return code == StatusCode.OK
-        return false; // TODO: remove this when done.
+        StatusCode code = talonFX.setNeutralMode(NeutralModeValue.Coast);
+        return code == StatusCode.OK;
     }
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        // TODO: assign ControlState.VELOCITY to controlState
-        // TODO: call velocityControl's withVelocity method and pass in velocity
+        controlState = ControlState.VELOCITY;
+        velocityControl.withVelocity(velocity);
     }
 
     @Override
     public void setPosition(Angle position) {
-        // TODO: assign ControlState.VELOCITY to controlState
-        // TODO: call positionControl's withPosition method and pass in position
+        controlState = ControlState.VELOCITY;
+        positionControl.withPosition(position);
     }
 
     @Override
     public void setHold() {
-        // TODO: if the controlState is not equal to HOLD
-        // TODO: then do the following
-        // TODO: call positionControl's withPosition method and pass in talonFX.getPosition().getValue()
-        // TODO: assign ControlState.HOLD to controlState
-
+        if(controlState != ControlState.HOLD) {
+            positionControl.withPosition(talonFX.getPosition().getValue());
+            controlState = ControlState.HOLD;
+        }
     }
 
     @Override
@@ -83,10 +80,10 @@ public class KrakenX60Arm extends Arm {
     }
 
     private void applyVelocity() {
-        // TODO: call talonFX's setControl method and pass in velocityControl
+        talonFX.setControl(velocityControl);
     }
 
     private void applyPosition() {
-        // TODO: call talonFX's setControl method and pass in positionControl
+        talonFX.setControl(positionControl);
     }
 }
