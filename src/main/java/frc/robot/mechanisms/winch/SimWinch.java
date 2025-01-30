@@ -1,6 +1,6 @@
-package frc.robot.mechanisms.intake;
+package frc.robot.mechanisms.winch;
 
-public class SimIntake {
+public class SimWinch {
     public void update(double dtSeconds, double supplyVoltage) {
 
     }

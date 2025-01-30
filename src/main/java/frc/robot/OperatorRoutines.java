@@ -2,7 +2,7 @@ package frc.robot;
 
 public class OperatorRoutines {
 
-    public OperatorRoutines(){
+    private OperatorRoutines(){
         // prevents instantiation
         // utility class
     }
