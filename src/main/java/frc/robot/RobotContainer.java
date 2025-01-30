@@ -27,12 +27,14 @@ public class RobotContainer {
     private final AutoChooser autoChooser = new AutoChooser();
 
     public RobotContainer() {
+        commandSwerveDrive.configureAutoBuilder();
         autoFactory = commandSwerveDrive.createAutoFactory();
         autoRoutines = new AutoRoutines(autoFactory);
         autoChooser.addRoutine("SimplePath", autoRoutines::simplePathAuto);
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         DefaultRoutines.bind();
+        DriverRoutines.bind();
         SmartDashboard.putData(CommandScheduler.getInstance());
     }
 

@@ -329,5 +329,9 @@ public class SwerveDriveConstants {
         return new CommandSwerveDrive(swerveDrive, BLUE_ALLIANCE_PERSPECTIVE_ROTATION, RED_ALLIANCE_PERSPECTIVE_ROTATION);
     }
 
+    static{
+        m_pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
+    }
+
 
 }
