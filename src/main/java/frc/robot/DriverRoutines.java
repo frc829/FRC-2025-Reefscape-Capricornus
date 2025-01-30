@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static frc.robot.RobotContainer.commandSwerveDrive;
 import static frc.robot.RobotContainer.driverController;
 
 public class DriverRoutines {
@@ -10,16 +11,12 @@ public class DriverRoutines {
     }
 
     static void bind() {
-        toggleDriveState();
         zeroWheels();
         brake();
         pointModules();
         seedFieldCentric();
-    }
-
-    private static void toggleDriveState() {
-        // TODO: bind to driverController button either while or on True.
-        // The command is toggleDriveState in the CommandFactory
+        goToReef0();
+        toggleClock();
     }
 
     private static void zeroWheels() {
@@ -38,6 +35,17 @@ public class DriverRoutines {
         // reset the field-centric heading on left bumper press
         // TODO: bind to driverController button either while or on True
     }
+
+    private static void goToReef0(){
+        driverController.a().whileTrue(CommandFactory.DriveCommands.goToReef0());
+    }
+
+
+    private static void toggleClock() {
+        driverController.x().onTrue(commandSwerveDrive.toggleClock());
+    }
+
+
 
 
 

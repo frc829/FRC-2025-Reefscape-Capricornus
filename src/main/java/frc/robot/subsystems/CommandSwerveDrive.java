@@ -11,13 +11,20 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.mechanisms.swerve.SwerveDrive;
@@ -33,6 +40,10 @@ public class CommandSwerveDrive implements Subsystem {
     private final Rotation2d redAlliancePerspectiveRotation;
     private double lastSimTime;
     private boolean hasAppliedOperatorPerspective = false;
+    public final MutAngle angle = Radians.mutable(0.0);
+    private boolean isClock = true;
+    public final Trigger defaultDriveState;
+
 
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation driveCharacterization = new SwerveRequest.SysIdSwerveTranslation();
@@ -58,6 +69,7 @@ public class CommandSwerveDrive implements Subsystem {
             SwerveDrive swerveDrive,
             Rotation2d blueAlliancePerspectiveRotation,
             Rotation2d redAlliancePerspectiveRotation) {
+        this.defaultDriveState = new Trigger(() -> isClock);
         this.swerveDrive = swerveDrive;
         this.blueAlliancePerspectiveRotation = blueAlliancePerspectiveRotation;
         this.redAlliancePerspectiveRotation = redAlliancePerspectiveRotation;
@@ -138,6 +150,9 @@ public class CommandSwerveDrive implements Subsystem {
         }
     }
 
+    public Command toggleClock(){
+        return runOnce(() -> isClock = !isClock);
+    }
 
     /**
      * Returns a command that applies the specified control request to this swerve drivetrain.
@@ -149,8 +164,12 @@ public class CommandSwerveDrive implements Subsystem {
         return run(() -> swerveDrive.setControl(requestSupplier.get()));
     }
 
-    public Command seedFieldCentric(){
+    public Command seedFieldCentric() {
         return runOnce(swerveDrive::seedFieldCentric);
+    }
+
+    public Command setClockDriveAngleFromPose() {
+        return runOnce(() -> angle.mut_setMagnitude(swerveDrive.getPose().getRotation().getRadians())).withName("Clock Drive Angle Set");
     }
 
     public Command sysIdQuasistaticSteer(SysIdRoutine.Direction direction) {
@@ -224,7 +243,8 @@ public class CommandSwerveDrive implements Subsystem {
     }
 
     public AutoFactory createAutoFactory() {
-        return createAutoFactory((swerveSample, staring) -> {});
+        return createAutoFactory((swerveSample, staring) -> {
+        });
     }
 
     public AutoFactory createAutoFactory(Choreo.TrajectoryLogger<SwerveSample> trajLogger) {
@@ -236,5 +256,35 @@ public class CommandSwerveDrive implements Subsystem {
                 this,
                 trajLogger
         );
+    }
+
+    public void configureAutoBuilder() {
+        try {
+            SwerveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+            RobotConfig config = RobotConfig.fromGUISettings();
+            AutoBuilder.configure(
+                    swerveDrive::getPose,   // Supplier of current robot pose
+                    swerveDrive::resetPose,         // Consumer for seeding pose against auto
+                    swerveDrive::getRobotRelativeSpeeds, // Supplier of current robot speeds
+                    // Consumer of ChassisSpeeds and feedforwards to drive the robot
+                    (speeds, feedforwards) -> swerveDrive.setControl(
+                            pathApplyRobotSpeeds.withSpeeds(speeds)
+                                    .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                                    .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
+                    ),
+                    new PPHolonomicDriveController(
+                            // PID constants for translation
+                            new PIDConstants(10, 0, 0),
+                            // PID constants for rotation
+                            new PIDConstants(5.9918340044856690519902612191937, 0, 0)
+                    ),
+                    config,
+                    // Assume the path needs to be flipped for Red vs Blue, this is normally the case
+                    () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                    this // Subsystem for requirements
+            );
+        } catch (Exception ex) {
+            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+        }
     }
 }

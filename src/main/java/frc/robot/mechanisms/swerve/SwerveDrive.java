@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
@@ -105,6 +106,10 @@ public class SwerveDrive {
 
     public Pose2d getPose() {
         return swerveDriveTrain.getState().Pose;
+    }
+
+    public ChassisSpeeds getRobotRelativeSpeeds(){
+        return swerveDriveTrain.getState().Speeds;
     }
 
     public void setOperatorPerspectiveForward(Rotation2d rotation2d) {
