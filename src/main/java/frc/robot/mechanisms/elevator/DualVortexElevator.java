@@ -70,46 +70,50 @@ public class DualVortexElevator extends Elevator {
 
     @Override
     public boolean setNeutralModeToBrake() {
-        // TODO: call primaryMotorConfig's idleMode method and pass in kBrake
-        // TODO: call followerMotorConfig's idleMode method and pass in kBrake
-        // TODO: create a REVLibError variable called primaryMotorConfigStatus assign primaryMotor.configureAsync passing in primaryMotorConfig, kNoResetSafeParameters, and  kPersistParameters
-        // TODO: create a REVLibError variable called followerMotorConfigStatus assign followerMotor.configureAsync passing in primaryMotorConfig, kNoResetSafeParameters, and  kPersistParameters
-        // TODO: return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
-        return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+        primaryMotorConfig.idleMode(kBrake);
+        followerMotorConfig.idleMode(kBrake);
+        REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        REVLibError followerMotorConfigStatus = followerMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
     }
 
     @Override
     public boolean setNeutralModeToCoast() {
-        // TODO: identical to setNeutralModeToBrake but with kCoast instead of kBrake
-        return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+        primaryMotorConfig.idleMode(kCoast);
+        followerMotorConfig.idleMode(kCoast);
+        REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        REVLibError followerMotorConfigStatus = followerMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
     }
 
     @Override
     public void setVelocity(LinearVelocity velocity) {
-        // TODO: assign velocity.baseUnitMagnitude() to goalState.velocity
-        // TODO: assign ControlState.VELOCITY to controlState
+        goalState.velocity  = velocity.baseUnitMagnitude();
+        controlState = ControlState.VELOCITY;
     }
 
     @Override
     public void setPosition(Distance position) {
-        // TODO: assign position.baseUnitMagnitude() to goalState.position
-        // TODO: assign 0.0 to goalState.velocity
-        // TODO: assign ControlState.POSITION to controlState
+        goalState.position = position.baseUnitMagnitude();
+        goalState.velocity = 0.0;
+        controlState = ControlState.POSITION;
     }
 
     @Override
     public void setHold() {
-        // TODO: if the controlState is not equal to HOLD
-        // TODO: then do the following
-        // TODO: assign primaryMotor.getEncoder().getPosition() to goalState.position, assign 0.0 to goalState.velocity, assign ControlState.HOLD to controlState
+        if(controlState != ControlState.HOLD){
+            goalState.position = primaryMotor.getEncoder().getPosition();
+            goalState.velocity = 0.0;
+            controlState = ControlState.HOLD;
+        }
     }
 
     @Override
     public void update() {
         super.update();
-        // TODO: call elevatorState.withPosition passing in position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()
-        // TODO: call elevatorState.withVelocity passing in velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()
-        // TODO: call elevatorState.withTimeStamp passing in timestamp.mut_setMagnitude(Timer.getFPGATimestamp())
+        elevatorState.withPosition(position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()));
+        elevatorState.withVelocity(velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()));
+        elevatorState.withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()));
         switch (controlState) {
             case VELOCITY -> applyVelocity();
             case POSITION, HOLD -> applyPosition();
@@ -123,17 +127,17 @@ public class DualVortexElevator extends Elevator {
 
     @Override
     public void resetPosition() {
-        // TODO: call primaryMotor.getEncoder()'s setPosition method passing in 0.0
-        // TODO: do the same for followerMotor
+        primaryMotor.getEncoder().setPosition(0.0);
+        followerMotor.getEncoder().setPosition(0.0);
     }
 
     private void applyVelocity() {
-        // TODO: assign velocityProfile.calculate(goalState.velocity) to a variable called nextVelocitySetpoint
-        // TODO: assign lastState.velocity to a variable called lastVelocitySetpoint
-        // TODO: call feedforward's calculateWithVelocities method passing in lastVelocitySetpoint and nextVelocitySetpoint and assign to arbFeedforward
-        // TODO: call primaryMotor.getClosedLoopController's setReference method passing in nextVelocitySetpoint, SparkBase.ControlType.kVelocity, velocityClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        // TODO: call primaryMotor.getEncoder()'s getPosition() method and assign to lastState.position
-        // TODO: assign nextVelocitySetpoint to lastState.velocity
+         double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
+         double lastVelocitySetPoint = lastState.velocity;
+         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
+         primaryMotor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, velocityClosedLoopSlot, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+         lastState.position = primaryMotor.getEncoder().getPosition();
+         lastState.velocity = nextVelocitySetpoint;
     }
 
     private void applyPosition() {
@@ -144,5 +148,6 @@ public class DualVortexElevator extends Elevator {
         // TODO: call feedforward's calculateWithVelocities method passing in lastVelocitySetpoint and nextVelocitySetpoint and assign to arbFeedforward
         // TODO: call primaryMotor.getClosedLoopController's setReference method passing in nextPositionSetpoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
         // TODO: call velocityProfile's reset method passing in nextVelocitySetpoint
+
     }
 }
