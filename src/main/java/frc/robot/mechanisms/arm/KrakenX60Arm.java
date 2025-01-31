@@ -162,8 +162,8 @@ public class KrakenX60Arm implements Arm {
     }
 
     @Override
-    public void updateSimState(double dtSeconds) {
-        simArm.update(dtSeconds, talonFX.getMotorVoltage().getValue());
+    public void updateSimState(Time dt, Voltage supplyVoltage) {
+        simArm.update(dt, talonFX.getMotorVoltage().getValue());
         talonFXSimState.setRawRotorPosition(simArm.getRotorAngle());
         talonFXSimState.setRotorVelocity(simArm.getRotorVelocity());
         talonFXSimState.setRotorAcceleration(simArm.getRotorAcceleration());
