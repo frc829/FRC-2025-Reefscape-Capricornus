@@ -2,6 +2,8 @@ package frc.robot.mechanisms.arm;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 
 public interface Arm {
 
@@ -11,7 +13,7 @@ public interface Arm {
         HOLD,
     }
 
-    public void updateSimState(double dtSeconds);
+    public void updateSimState(Time dt, Voltage supplyVoltage);
 
     public void setControl(ArmRequest request);
 

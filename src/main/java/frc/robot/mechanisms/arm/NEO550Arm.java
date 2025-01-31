@@ -133,7 +133,7 @@ public class NEO550Arm implements Arm {
     }
 
     @Override
-    public void updateSimState(double dtSeconds) {
+    public void updateSimState(Time dt, Voltage supplyVoltage) {
         // TODO: will do later
     }
 

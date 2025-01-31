@@ -8,12 +8,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
-import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.RobotContainer.*;
 import static frc.robot.constants.SwerveDriveConstants.*;
 
@@ -43,7 +41,8 @@ public class CommandFactory {
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
             return commandSwerveDrive.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(MaxAngularRate * (driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis())).withRotationalDeadband(0.2 * MaxAngularRate)// Drive counterclockwise with negative X (left)
+                    .withRotationalRate(MaxAngularRate * (driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis())).withRotationalDeadband(0.2 * MaxAngularRate)
+                    .withForwardPerspective(SwerveRequest.ForwardPerspectiveValue.OperatorPerspective)// Drive counterclockwise with negative X (left)
             ).withName("Field Centric Drive");
         }
 
@@ -76,7 +75,8 @@ public class CommandFactory {
                                 .withVelocityX(-driverController.getLeftY() * MaxSpeed)
                                 .withVelocityY(-driverController.getLeftX() * MaxSpeed)
                                 .withDeadband(0.1 * MaxSpeed)
-                                .withTargetDirection(rotation);
+                                .withTargetDirection(rotation)
+                                .withForwardPerspective(SwerveRequest.ForwardPerspectiveValue.OperatorPerspective);
                     })).withName("Clock Drive");
         }
 

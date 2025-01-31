@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.units.measure.MutTime;
+import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -11,10 +13,12 @@ import frc.robot.mechanisms.arm.ArmRequest;
 
 import java.util.function.Supplier;
 
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 public class CommandArm implements Subsystem {
     private static final double simLoopPeriod = 0.005;
     private final Arm arm;
-    private double lastSimTime;
 
     public CommandArm(Arm arm) {
         this.arm = arm;
@@ -33,12 +37,16 @@ public class CommandArm implements Subsystem {
     }
 
     private void startSimThread() {
-        lastSimTime = Timer.getFPGATimestamp();
+        final MutTime currentTime = Seconds.mutable(Timer.getFPGATimestamp());
+        final MutTime lastSimTime = currentTime.mutableCopy();
+        final MutVoltage supplyVoltage = Volts.mutable(0.0);
+        MutTime deltaTime = Seconds.mutable(0.0);
         try (Notifier simNotifier = new Notifier(() -> {
-            final double currentTime = Timer.getFPGATimestamp();
-            double deltaTime = currentTime - lastSimTime;
-            lastSimTime = currentTime;
-            arm.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            currentTime.mut_setMagnitude(Timer.getFPGATimestamp());
+            deltaTime.mut_setMagnitude(currentTime.baseUnitMagnitude() - lastSimTime.baseUnitMagnitude());
+            lastSimTime.mut_replace(currentTime);
+            supplyVoltage.mut_setMagnitude(RobotController.getBatteryVoltage());
+            arm.updateSimState(deltaTime, supplyVoltage);
         })) {
             simNotifier.startPeriodic(simLoopPeriod);
         }

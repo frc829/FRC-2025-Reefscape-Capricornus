@@ -105,11 +105,11 @@ public class SimArm {
         return angle.gte(maxPosition);
     }
 
-    public void update(double dtSeconds, Voltage inputVoltage) {
+    public void update(Time dt, Voltage inputVoltage) {
         u.set(0, 0, inputVoltage.baseUnitMagnitude());
         motorVoltage.mut_setMagnitude(u.get(0, 0));
         addFriction();
-        updateX(dtSeconds);
+        updateX(dt);
         y.assignBlock(0, 0, linearSystem.calculateY(x, u));
         y.assignBlock(0, 0, y.plus(StateSpaceUtil.makeWhiteNoiseVector(measurementStdDevs)));
         angle.mut_setMagnitude(y.get(0, 0));
@@ -135,7 +135,7 @@ public class SimArm {
     }
 
 
-    private void updateX(double dtSeconds) {
+    private void updateX(Time dt) {
         // The torque on the arm is given by τ = F⋅r, where F is the force applied by
         // gravity and r the distance from pivot to center of mass. Recall from
         // dynamics that the sum of torques for a rigid body is τ = J⋅α, were τ is
@@ -174,7 +174,7 @@ public class SimArm {
                         },
                         x,
                         u,
-                        dtSeconds);
+                        dt.baseUnitMagnitude());
 
         // We check for collision after updating xhat
         if (wouldHitLowerLimit()) {
