@@ -1,19 +1,27 @@
 package frc.robot.mechanisms.cameras;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonPipelineMetadata;
+import org.photonvision.targeting.PhotonPipelineResult;
+
+import java.util.List;
+import java.util.Optional;
 
 public class PhotonVisionCamera implements Camera{
 
     private final PhotonCamera photonCamera;
-    private final PhotonPoseEstimator photonPoseEstimator;  // TODO: this will be read until you do the item in the constructor
+    private final PhotonPoseEstimator photonPoseEstimator;
     private final CameraRobotPoseState cameraRobotPoseState = new CameraRobotPoseState();
 
     public PhotonVisionCamera(CameraConstants cameraConstants, PhotonCamera photonCamera) {
         this.photonCamera = photonCamera;
-        // TODO: assign a new PhotonPoseEstimator to the photonPoseEstimator field declared above.
-        // TODO: you will need to pass in cameraConstants.getAprilTagFieldLayout(), cameraConstants.getPoseStrategy(), Constants.getCameraTransform()
-        // TODO: call photonPoseEstimator's setMultiTagFallbackStrategy and pass in cameraConstants.getFallBackPoseStrategy()
+        photonPoseEstimator = new PhotonPoseEstimator(cameraConstants.getAprilTagFieldLayout(), cameraConstants.getPoseStrategy(), cameraConstants.getCameraTransform());
+        photonPoseEstimator.setMultiTagFallbackStrategy(cameraConstants.getFallBackPoseStrategy());
     }
 
     @Override
@@ -28,16 +36,14 @@ public class PhotonVisionCamera implements Camera{
     }
 
     public void updateState(){
-        // TODO: create a List<PhotonPipelineResult> called results and assign from
-        // photonCamera.getAllUnreadResults()
-        // TODO: create an Optional<EstimatedRobotPose> named estimatedRobotPose and assign to Optional.empty()
-        // TODO: create an Optional<Matrix<N3, N1>> named estimatedRobotPoseStdDev and assign to Optional.empty();
-        // TODO: for each var result in results
-        // TODO: for loop block start
-        // TODO: set estimatedRobotPose to photonEstimator.update(result)
-        // TODO: for loop block end.
-        // TODO: call cameraRobotPoseState's withEstimatedRobotPose method passing in estimatedRobotPose
-        // TODO: call cameraRobotPoseState's withEstimatedRobotPoseStdDev method passing in estimatedRobotPoseStdDev
+        List <PhotonPipelineResult> results = photonCamera.getAllUnreadResults();
+        Optional<EstimatedRobotPose> estimatedRobotPose = Optional.empty();
+        Optional<Matrix<N3, N1>> estimatedRobotPoseStdDev = Optional.empty();
+        for(var result : results){
+            estimatedRobotPose = photonPoseEstimator.update(result);
+        }
+        cameraRobotPoseState.withEstimatedRobotPose(estimatedRobotPose);
+        cameraRobotPoseState.withEstimatedRobotPoseStdDevs(estimatedRobotPoseStdDev);
     }
 
     @Override
