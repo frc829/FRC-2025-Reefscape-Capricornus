@@ -10,8 +10,13 @@ import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.*;
 
-public class NEO550Arm extends Arm {
+public class NEO550Arm implements Arm {
 
+    private final ArmState lastArmState = new ArmState();
+    private final ArmState armState = new ArmState();
+    private final Angle minAngle;
+    private final Angle maxAngle;
+    private ArmRequest armRequest;
     private final SparkMax motor;
     private final SparkBaseConfig motorConfig;
     private final ExponentialProfile positionProfile;
@@ -28,30 +33,32 @@ public class NEO550Arm extends Arm {
     private ControlState controlState = ControlState.VELOCITY;
 
     public NEO550Arm(
-            ArmControlParameters armControlParameters,
+            ArmConstants armConstants,
             SparkMax motor,
             SparkBaseConfig motorConfig,
             ClosedLoopSlot positionClosedLoopSlot,
-            ClosedLoopSlot velocityClosedLoopSlot) {
-        super(armControlParameters);
+            ClosedLoopSlot velocityClosedLoopSlot,
+            Time updatePeriod) {
+        this.minAngle = armConstants.getMinAngle();
+        this.maxAngle = armConstants.getMaxAngle();
         this.motor = motor;
         this.motorConfig = motorConfig;
         this.positionClosedLoopSlot = positionClosedLoopSlot;
         this.velocityClosedLoopSlot = velocityClosedLoopSlot;
         this.feedforward = new ArmFeedforward(
-                armControlParameters.getKs().baseUnitMagnitude(),
-                armControlParameters.getKg().baseUnitMagnitude(),
-                armControlParameters.getKv().baseUnitMagnitude(),
-                armControlParameters.getKa().baseUnitMagnitude(),
-                armControlParameters.getUpdatePeriod().baseUnitMagnitude());
+                armConstants.getKs().baseUnitMagnitude(),
+                armConstants.getKg().baseUnitMagnitude(),
+                armConstants.getKv().baseUnitMagnitude(),
+                armConstants.getKa().baseUnitMagnitude(),
+                updatePeriod.baseUnitMagnitude());
         this.positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
                         12.0,
-                        armControlParameters.getKv().baseUnitMagnitude(),
-                        armControlParameters.getKa().baseUnitMagnitude()));
+                        armConstants.getKv().baseUnitMagnitude(),
+                        armConstants.getKa().baseUnitMagnitude()));
         double maxAcceleration = feedforward.maxAchievableAcceleration(12.0, Math.PI / 2, 0.0);
         this.velocityProfile = new SlewRateLimiter(maxAcceleration);
-        this.profilePeriod = armControlParameters.getUpdatePeriod();
+        this.profilePeriod = updatePeriod;
 
     }
 
@@ -91,14 +98,33 @@ public class NEO550Arm extends Arm {
 
     @Override
     public void update() {
-        super.update();
-        // TODO: call armState.withPosition passing in position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()
-        // TODO: call armState.withVelocity passing in velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()
-        // TODO: call armState.withTimeStamp passing in timestamp.mut_setMagnitude(Timer.getFPGATimestamp())
+        lastArmState.withArmState(armState);
+        updateState();
         switch (controlState) {
             case VELOCITY -> applyVelocity();
             case POSITION, HOLD -> applyPosition();
         }
+    }
+
+    @Override
+    public ArmRequest createHoldRequest() {
+        return new ArmRequest.Hold();
+    }
+
+    @Override
+    public ArmRequest createPositionRequest() {
+        return new ArmRequest.Position(minAngle, maxAngle);
+    }
+
+    @Override
+    public ArmRequest createVelocityRequest() {
+        return new ArmRequest.Velocity(minAngle, maxAngle);
+    }
+
+    private void updateState() {
+        // TODO: call armState.withPosition passing in position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()
+        // TODO: call armState.withVelocity passing in velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()
+        // TODO: call armState.withTimeStamp passing in timestamp.mut_setMagnitude(Timer.getFPGATimestamp())
     }
 
     @Override
@@ -108,7 +134,30 @@ public class NEO550Arm extends Arm {
 
     @Override
     public void updateSimState(double dtSeconds) {
+        // TODO: will do later
+    }
 
+    @Override
+    public void setControl(ArmRequest request) {
+        if(armRequest != request){
+            armRequest = request;
+        }
+        request.apply(this);
+    }
+
+    @Override
+    public ArmState getState() {
+        return armState;
+    }
+
+    @Override
+    public ArmState getStateCopy() {
+        return armState.clone();
+    }
+
+    @Override
+    public ArmState getLastArmState() {
+        return lastArmState;
     }
 
     @Override
