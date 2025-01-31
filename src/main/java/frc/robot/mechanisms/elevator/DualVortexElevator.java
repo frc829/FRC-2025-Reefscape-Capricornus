@@ -141,13 +141,12 @@ public class DualVortexElevator extends Elevator {
     }
 
     private void applyPosition() {
-        // TODO: assign lastState.velocity to a variable called lastVelocitySetpoint
-        // TODO: call positionProfile's calculate method and passin profilePeriod.baseUnitMagnitude(), lastState, goalState) and assign to lastState
-        // TODO: assign lastState.velocity to a variable called nextVelocitySetpoint
-        // TODO: assign lastState.position to a variable called nextPositionSetpoint
-        // TODO: call feedforward's calculateWithVelocities method passing in lastVelocitySetpoint and nextVelocitySetpoint and assign to arbFeedforward
-        // TODO: call primaryMotor.getClosedLoopController's setReference method passing in nextPositionSetpoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        // TODO: call velocityProfile's reset method passing in nextVelocitySetpoint
-
+        double lastVelocitySetpoint = lastState.velocity;
+        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
+        double nextVelocitySetpoint = lastState.velocity;
+        double nextPositionSetpoint = lastState.position;
+        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+        primaryMotor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        velocityProfile.reset(nextVelocitySetpoint);
     }
 }
