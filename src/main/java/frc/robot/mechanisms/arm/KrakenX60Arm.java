@@ -6,6 +6,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
 
 public class KrakenX60Arm extends Arm {
@@ -14,6 +15,7 @@ public class KrakenX60Arm extends Arm {
     private final CANcoder canCoder;
     private final MotionMagicExpoVoltage positionControl;
     private final MotionMagicVelocityVoltage velocityControl;
+    private final SimArm simArm;
     private ControlState controlState;
 
     public KrakenX60Arm(
@@ -26,6 +28,19 @@ public class KrakenX60Arm extends Arm {
         this.controlState = ControlState.VELOCITY;
         this.positionControl = new MotionMagicExpoVoltage(0.0);
         this.velocityControl = new MotionMagicVelocityVoltage(0.0);
+        this.simArm = new SimArm(
+                DCMotor.getKrakenX60Foc(1),
+                armControlParameters.getReduction(),
+                armControlParameters.getKs(),
+                armControlParameters.getKg(),
+                armControlParameters.getKv(),
+                armControlParameters.getKa(),
+                armControlParameters.getArmLength(),
+                armControlParameters.getMinAngle(),
+                armControlParameters.getMaxAngle(),
+                armControlParameters.getStartingAngle(),
+                armControlParameters.getPositionStdDev(),
+                armControlParameters.getVelocityStdDev());
     }
 
     @Override
@@ -54,7 +69,7 @@ public class KrakenX60Arm extends Arm {
 
     @Override
     public void setHold() {
-        if(controlState != ControlState.HOLD) {
+        if (controlState != ControlState.HOLD) {
             positionControl.withPosition(talonFX.getPosition().getValue());
             controlState = ControlState.HOLD;
         }
@@ -77,6 +92,11 @@ public class KrakenX60Arm extends Arm {
     @Override
     public void updateTelemetry() {
         // TODO: will do later
+    }
+
+    @Override
+    public void updateSimState(double dtSeconds) {
+
     }
 
     private void applyVelocity() {

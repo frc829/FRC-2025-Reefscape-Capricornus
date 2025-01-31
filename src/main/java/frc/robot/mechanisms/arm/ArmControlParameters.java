@@ -12,6 +12,11 @@ public class ArmControlParameters {
     private final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv;
     private final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka;
     private final Time updatePeriod;
+    private final Distance armLength;
+    private final double reduction;
+    private final Angle startingAngle;
+    private final Angle positionStdDev;
+    private final AngularVelocity velocityStdDev;
     private final ArmState currentState = new ArmState();
 
 
@@ -22,7 +27,12 @@ public class ArmControlParameters {
             Voltage kg,
             Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv,
             Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka,
-            Time updatePeriod) {
+            Time updatePeriod,
+            Distance armLength,
+            double reduction,
+            Angle startingAngle,
+            Angle positionStdDev,
+            AngularVelocity velocityStdDev) {
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
         this.ks = ks;
@@ -30,6 +40,11 @@ public class ArmControlParameters {
         this.kv = kv;
         this.ka = ka;
         this.updatePeriod = updatePeriod;
+        this.armLength = armLength;
+        this.reduction = reduction;
+        this.startingAngle = startingAngle;
+        this.positionStdDev = positionStdDev;
+        this.velocityStdDev = velocityStdDev;
     }
 
     public Angle getMaxAngle() {
@@ -68,5 +83,25 @@ public class ArmControlParameters {
 
     public Time getUpdatePeriod() {
         return updatePeriod;
+    }
+
+    public Distance getArmLength() {
+        return armLength;
+    }
+
+    public double getReduction() {
+        return reduction;
+    }
+
+    public Angle getStartingAngle() {
+        return startingAngle;
+    }
+
+    public Angle getPositionStdDev() {
+        return positionStdDev;
+    }
+
+    public AngularVelocity getVelocityStdDev() {
+        return velocityStdDev;
     }
 }

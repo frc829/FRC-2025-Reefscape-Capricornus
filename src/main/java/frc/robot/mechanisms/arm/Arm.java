@@ -2,6 +2,7 @@ package frc.robot.mechanisms.arm;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public abstract class Arm {
 
@@ -14,16 +15,13 @@ public abstract class Arm {
     protected final ArmControlParameters armControlParameters;
     protected final ArmState lastArmState = new ArmState();
     protected final ArmState armState = new ArmState();
-    protected final SimArm simArm = new SimArm();
     private ArmRequest armRequest = new ArmRequest.Hold();
 
     public Arm(ArmControlParameters armControlParameters) {
         this.armControlParameters = armControlParameters;
     }
 
-    public void updateSimState(double dtSeconds, double supplyVoltage){
-        simArm.update(dtSeconds, supplyVoltage);
-    }
+    public abstract void updateSimState(double dtSeconds);
 
     public void setControl(ArmRequest request){
         if(armRequest != request){

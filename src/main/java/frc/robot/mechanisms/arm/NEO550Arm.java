@@ -107,6 +107,11 @@ public class NEO550Arm extends Arm {
     }
 
     @Override
+    public void updateSimState(double dtSeconds) {
+
+    }
+
+    @Override
     public void resetPosition() {
         // TODO: call motor.getEncoder()'s setPosition method passing in 0.0
         // TODO: do the same for followerMotor
