@@ -3,63 +3,43 @@ package frc.robot.mechanisms.arm;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
-public abstract class Arm {
+public interface Arm {
 
-    public enum ControlState {
+    enum ControlState {
         POSITION,
         VELOCITY,
         HOLD,
     }
 
-    protected final ArmControlParameters armControlParameters;
-    protected final ArmState lastArmState = new ArmState();
-    protected final ArmState armState = new ArmState();
-    protected final SimArm simArm = new SimArm();
-    private ArmRequest armRequest = new ArmRequest.Hold();
+    public void updateSimState(double dtSeconds);
 
-    public Arm(ArmControlParameters armControlParameters) {
-        this.armControlParameters = armControlParameters;
-    }
+    public void setControl(ArmRequest request);
 
-    public void updateSimState(double dtSeconds, double supplyVoltage){
-        simArm.update(dtSeconds, supplyVoltage);
-    }
+    public ArmState getState();
 
-    public void setControl(ArmRequest request){
-        if(armRequest != request){
-            armRequest = request;
-        }
-        armControlParameters.withArmState(armState);
-        request.apply(armControlParameters, this);
-    }
+    public ArmState getStateCopy();
 
-    public final ArmState getState(){
-        return armState;
-    }
+    public ArmState getLastArmState();
 
-    public final ArmState getStateCopy(){
-        return armState.clone();
-    }
+    public void updateTelemetry();
 
-    public ArmState getLastArmState() {
-        return lastArmState;
-    }
+    public boolean setNeutralModeToBrake();
 
-    public abstract void updateTelemetry();
+    public boolean setNeutralModeToCoast();
 
-    public abstract boolean setNeutralModeToBrake();
+    public void setVelocity(AngularVelocity velocity);
 
-    public abstract boolean setNeutralModeToCoast();
+    public void setPosition(Angle position);
 
-    public abstract void setVelocity(AngularVelocity velocity);
+    public void setHold();
 
-    public abstract void setPosition(Angle position);
+    public void resetPosition();
 
-    public abstract void setHold();
+    public void update();
 
-    public abstract void resetPosition();
+    public ArmRequest createHoldRequest();
 
-    public void update(){
-        updateTelemetry();
-    }
+    public ArmRequest createPositionRequest();
+
+    public ArmRequest createVelocityRequest();
 }

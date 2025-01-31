@@ -6,24 +6,31 @@ import static edu.wpi.first.units.Units.*;
 
 public interface ArmRequest {
 
-    public void apply(ArmControlParameters parameters, Arm arm);
+    public void apply(Arm arm);
 
     public class Hold implements ArmRequest {
         @Override
-        public void apply(ArmControlParameters parameters, Arm arm) {
-
+        public void apply(Arm arm) {
+            arm.setHold();
         }
     }
 
     public class Position implements ArmRequest {
         private final MutAngle position = Radians.mutable(0.0);
+        private final Angle minAngle;
+        private final Angle maxAngle;
+
+        public Position(Angle minAngle, Angle maxAngle) {
+            this.minAngle = minAngle;
+            this.maxAngle = maxAngle;
+        }
 
         @Override
-        public void apply(ArmControlParameters parameters, Arm arm) {
-            if(position.lte(parameters.getMaxAngle()) && position.gte(parameters.getMinAngle())) {
+        public void apply(Arm arm) {
+            if(position.lte(maxAngle) && position.gte(minAngle)) {
                 arm.setPosition(position);
             }else{
-                arm.setPosition(parameters.getCurrentState().getPosition());
+                arm.setPosition(position);
             }
         }
 
@@ -35,10 +42,17 @@ public interface ArmRequest {
 
     public class Velocity implements ArmRequest {
         private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
+        private final Angle minAngle;
+        private final Angle maxAngle;
 
+        public Velocity(Angle minAngle, Angle maxAngle) {
+            this.minAngle = minAngle;
+            this.maxAngle = maxAngle;
+        }
         @Override
-        public void apply(ArmControlParameters parameters, Arm arm) {
-            if(parameters.getCurrentState().getPosition().lte(parameters.getMaxAngle()) && parameters.getCurrentState().getPosition().gte(parameters.getMinAngle())){
+        public void apply(Arm arm) {
+            ArmState armState = arm.getState();
+            if(armState.getPosition().lte(maxAngle) && armState.getPosition().gte(minAngle)){
                 arm.setVelocity(velocity);
             }else{
                 arm.setVelocity(RadiansPerSecond.of(0.0));
