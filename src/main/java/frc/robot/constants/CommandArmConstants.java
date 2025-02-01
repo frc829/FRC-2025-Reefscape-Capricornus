@@ -2,83 +2,94 @@ package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.units.AngularAccelerationUnit;
 import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.PerUnit;
 import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
+import frc.robot.mechanisms.arm.Arm;
+import frc.robot.mechanisms.arm.ArmConstants;
+import frc.robot.mechanisms.arm.KrakenX60Arm;
 import frc.robot.subsystems.CommandArm;
 
 public class CommandArmConstants {
-    // TODO: All of these fields are private static and final
-    // TODO: Create an Angle named minAngle and assign Degrees.of(-20) to it
-    // TODO: Repeat for maxAngle and set to 20 degrees
-    // TODO: Create a Distance named armLength and assign Meters.of(1.0) to it
-
-    // TODO: create an int named deviceNumber and assign 14 to it.
-    // TODO: create a NeutralModeValue named neutralModeValue and assign NeutralModeValue.Brake to it.
-    // TODO: create an InvertedValue named invertedValue and assign InvertedValue.CounterClockwise_Positive to it.
-    // TODO: create a double called reduction and assign 1.0 to it.
-
-    // TODO: create a Voltage named ks and assign Volts.of(0.0) to it.
-    // TODO: create a Voltage named kg and assign Volts.of(0.0) to it.
+    private static final Angle minAngle = Degrees.of(-20);
+    private static final Angle maxAngle = Degrees.of(20);
+    private static final Distance armLength = Meters.of(1.0);
+    private static final int deviceNumber = 14;
+    private static final NeutralModeValue neutralModeValue = NeutralModeValue.Brake;
+    private static final InvertedValue invertedValue = InvertedValue.CounterClockwise_Positive;
+    private static final double reduction = 1.0;
+    private static final Voltage ks = Volts.of(0.0);
+    private static final Voltage kg = Volts.of(0.0);
 
     private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(1.0);
     private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(1.0);
 
-    // TODO: create a double called positionKp and assign 0.0 to it
-    // TODO: create a double called positionKd and assign 0.0 to it.
-    // TODO: create a double called velocityKp and assign 0.0 to it.
+    private static final double positionKp = 0.0;
+    private static final double positionKd = 0.0;
+    private static final double velocityKp = 0.0;
 
-    // TODO: create an int named canCoderDeviceNumber and assign 34 to it.
-    // TODO: create a double magnetDirection and assign 0.0 to it.
-    // TODO: create a Time called simLoopPeriod and set to Seconds.of(0.001);
+    private static final int cancoderDeviceNumber = 34;
+    private static final double magnetDirection = 0.0;
+    private static final Time simLoopPeriod = Seconds.of(0.001);
 
 
 
     public static CommandArm createCommandArm() {
-        // TODO: create a CANcoderConfiguration called cancoderConfig and initialize using the default constructor
-        // TODO: set cancoderConfig.MagnetSensor.SensorDirection and intiailize to SensorDirectionValue.CounterClockwise_Positive
-        // TODO: set cancoderConfig.MagnetSensor.MagnetOffset to magnetDirection;
-        // TODO: create a new CANcoder called cancoder and initialize with cancoderDeviceNumber and UniversalRobotConstants.rio
-        // TODO: call cancoder's getConfigurator().apply method and pass cancoderConfig
+        CANcoderConfiguration cancoderConfig = new CANcoderConfiguration();
+        cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        cancoderConfig.MagnetSensor.MagnetOffset = magnetDirection;
+        CANcoder cancoder =  new CANcoder(cancoderDeviceNumber, UniversalRobotConstants.rio);
+        cancoder.getConfigurator().apply(cancoderConfig);
 
-        // TODO: set talonFXConfiguration.Voltage.PeakForwardVoltage to 12.0
-        // TODO: set talonFXConfiguration.Voltage.PeakReverseVoltage to -12.0
-        // TODO: set talonFXConfiguration.ClosedLoopGeneral.ContinuousWrap to true
-        // TODO: set talonFXConfiguration.Feedback.FeedbackRemoteSensorId to cancoderDeviceNumber
-        // TODO: set talonFXConfiguration.Feedback.FeedbackSensorSource to FeedbackSensorSourceValue.SyncCANcoder
-        // TODO: set talonFXConfiguration.Feedback.RotorToSensorRatio reduction
-        // TODO: set talonFXConfiguration.Feedback.SensorToMechanismRatio to 1.0
-        // TODO: set talonFXConfiguration.MotionMagic.MotionMagicExpo_kV to kv.baseUnitMagnitude()
-        // TODO: set talonFXConfiguration.MotionMagic.MotionMagicExpo_kA to ka.baseUnitMagnitude()
-        // TODO: set talonFXConfiguration.MotorOutput.Inverted to invertedValue
-        // TODO: set talonFXConfiguration.MotorOutput.NeutralMode to neutralModeValue
-        // TODO: set talonFXConfiguration.Slot0.GravityType to GravityTypeValue.Arm_Cosine
-        // TODO: set talonFXConfiguration.Slot0.kP to positionKp
-        // TODO: set talonFXConfiguration.Slot0.kD to positionKd
-        // TODO: set talonFXConfiguration.Slot0.kS to ks.baseUnitMagnitude()
-        // TODO: set talonFXConfiguration.Slot0.kV to kv.baseUnitMagnitude()
-        // TODO: set talonFXConfiguration.Slot0.kA to ka.baseUnitMagnitude()
-        // TODO: set talonFXConfiguration.Slot0.kG to kg.baseUnitMagnitude()
-        // TODO: set talonFXConfiguration.Slot0.StaticFeedforwardSign to StaticFeedforwardSignValue.UseClosedLoopSign;
-        // TODO: set talonFXConfiguration.Slot1.kP to velocityKp;
-        // TODO: set talonFXConfiguration.Slot1.GravityType to GravityTypeValue.Arm_Cosine
-        // TODO: set talonFXConfiguration.Slot1.kS to ks.baseUnitMagnitude()
-        // TODO: set talonFXConfiguration.Slot1.kV to kv.baseUnitMagnitude()
-        // TODO: set talonFXConfiguration.Slot1.kA to ka.baseUnitMagnitude()
-        // TODO: set talonFXConfiguration.Slot1.kG to kg.baseUnitMagnitude()
-        // TODO: set talonFXConfiguration.Slot1.StaticFeedforwardSign to StaticFeedforwardSignValue.UseVelocitySign;
-        // TODO: create a TalonFX called talonFX and use the constructor accepting talonFXDeviceNumber and UniversalConstants.rio
-        // TODO: call talonFX.getConfigurator()'s apply method and pass in talonFXConfiguration
+        TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
+        talonFXConfiguration.Voltage.PeakForwardVoltage = 12.0;
+        talonFXConfiguration.Voltage.PeakReverseVoltage = -12.0;
+        talonFXConfiguration.ClosedLoopGeneral.ContinuousWrap = true;
+        talonFXConfiguration.Feedback.FeedbackRemoteSensorID = cancoderDeviceNumber;
+        talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+        talonFXConfiguration.Feedback.RotorToSensorRatio = reduction;
+        talonFXConfiguration.Feedback.SensorToMechanismRatio = 1.0;
+        talonFXConfiguration.MotionMagic.MotionMagicExpo_kV = kv.baseUnitMagnitude();
+        talonFXConfiguration.MotionMagic.MotionMagicExpo_kA = ka.baseUnitMagnitude();
+        talonFXConfiguration.MotorOutput.Inverted = invertedValue;
+        talonFXConfiguration.MotorOutput.NeutralMode = neutralModeValue;
+        talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+        talonFXConfiguration.Slot0.kP = positionKp;
+        talonFXConfiguration.Slot0.kD = positionKd;
+        talonFXConfiguration.Slot0.kS= ks.baseUnitMagnitude();
+        talonFXConfiguration.Slot0.kV = kv.baseUnitMagnitude();
+        talonFXConfiguration.Slot0.kA = ka.baseUnitMagnitude();
+        talonFXConfiguration.Slot0.kG = kg.baseUnitMagnitude();
+        talonFXConfiguration.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+        talonFXConfiguration.Slot1.kP = velocityKp;
+        talonFXConfiguration.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
+        talonFXConfiguration.Slot1.kS = ks.baseUnitMagnitude();
+        talonFXConfiguration.Slot1.kV = kv.baseUnitMagnitude();
+        talonFXConfiguration.Slot1.kA = ka.baseUnitMagnitude();
+        talonFXConfiguration.Slot1.kG = kg.baseUnitMagnitude();
+        talonFXConfiguration.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+        TalonFX talonFX = new TalonFX(deviceNumber, UniversalRobotConstants.rio);
+        talonFX.getConfigurator().apply(talonFXConfiguration);
 
-        // TODO: create an ArmConstants called armConstants and use
-        // maxAngle, minAngle, ks, kg, kv, ka, armLength, reduction, Radians.of(0.0), Radians.of(0.0), RadiansPerSecond.of(0.0) as its arguments
 
-        // TODO: create an Arm called arm and assign a new KrakenX60Arm to its passing in armConstants, talonFX, and cancoder
-        // TODO: return new CommandArm(arm, simLoopPeriod)
+        ArmConstants armConstants = new ArmConstants(maxAngle, minAngle, ks, kg, kv, ka, armLength, reduction, Radians.of(0.0), Radians.of(0.0), RadiansPerSecond.of(0.0) );
 
-        return null; // TODO: remove this when done.
+
+        Arm arm = new KrakenX60Arm(armConstants, talonFX, cancoder);
+        return new CommandArm(arm, simLoopPeriod);
+
+
     }
 
 
