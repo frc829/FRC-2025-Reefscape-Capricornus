@@ -33,7 +33,7 @@ public class SimArm {
     private final MutCurrent motorCurrent = Amps.mutable(0.0);
     private final MutTorque motorTorque = NewtonMeters.mutable(0.0);
     protected final Matrix<N2, N1> x = MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);
-    protected final Matrix<N1, N1> u = MatBuilder.fill(Nat.N1(), Nat.N1(), 0, 0);
+    protected final Matrix<N1, N1> u = MatBuilder.fill(Nat.N1(), Nat.N1(), 0);
     protected final Matrix<N2, N1> y = MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);
     private final Matrix<N2, N1> measurementStdDevs;
     private final Matrix<N2, N1> xdot = MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);

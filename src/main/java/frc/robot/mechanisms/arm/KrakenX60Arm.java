@@ -3,6 +3,7 @@ package frc.robot.mechanisms.arm;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -25,7 +27,7 @@ public class KrakenX60Arm implements Arm {
     private ArmRequest armRequest;
     private final TalonFX talonFX;
     private final CANcoder canCoder;
-    private final MotionMagicExpoVoltage positionControl;
+    private final PositionVoltage positionControl;
     private final MotionMagicVelocityVoltage velocityControl;
     private final SimArm simArm;
     private final TalonFXSimState talonFXSimState;
@@ -43,8 +45,7 @@ public class KrakenX60Arm implements Arm {
         this.talonFXSimState = new TalonFXSimState(talonFX);
         this.canCoder = canCoder;
         this.canCoderSimState = new CANcoderSimState(canCoder);
-        controlState = ControlState.VELOCITY;
-        this.positionControl = new MotionMagicExpoVoltage(0.0).withSlot(0);
+        this.positionControl = new PositionVoltage(0.0).withSlot(0);
         this.velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(1);
         this.simArm = new SimArm(
                 DCMotor.getKrakenX60Foc(1),
@@ -163,11 +164,13 @@ public class KrakenX60Arm implements Arm {
 
     @Override
     public void updateSimState(Time dt, Voltage supplyVoltage) {
-        simArm.update(dt, talonFX.getMotorVoltage().getValue());
+        var inputVoltage = talonFX.getMotorVoltage().getValue();
+        SmartDashboard.putNumber("Input Voltage", inputVoltage.baseUnitMagnitude());
+        simArm.update(dt, inputVoltage);
         talonFXSimState.setRawRotorPosition(simArm.getRotorAngle());
         talonFXSimState.setRotorVelocity(simArm.getRotorVelocity());
         talonFXSimState.setRotorAcceleration(simArm.getRotorAcceleration());
-        talonFXSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+        talonFXSimState.setSupplyVoltage(12.0);
         canCoderSimState.setSupplyVoltage(12.0);
         canCoderSimState.setMagnetHealth(MagnetHealthValue.Magnet_Green);
         canCoderSimState.setVelocity(simArm.getAngularVelocity());
@@ -179,6 +182,7 @@ public class KrakenX60Arm implements Arm {
     }
 
     private void applyPosition() {
+        SmartDashboard.putNumber("Applied Position", positionControl.Position);
         talonFX.setControl(positionControl);
     }
 }

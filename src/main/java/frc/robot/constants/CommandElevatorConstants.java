@@ -47,9 +47,9 @@ public class CommandElevatorConstants {
 
         // TODO: create a SparkBaseConfig
 
-        SparkBaseConfig primaryMotorConfig = new SparkFlexConfig()
-                .idleMode(idleMode)
-                .inverted(inverted);
+        SparkBaseConfig primaryMotorConfig = new SparkFlexConfig();
+                // .idleMode(idleMode)
+                // .inverted(inverted);
         primaryMotorConfig.encoder.positionConversionFactor(1.0);
         primaryMotorConfig.encoder.velocityConversionFactor(1.0);
         primaryMotorConfig.encoder.quadratureAverageDepth(2);
@@ -58,9 +58,9 @@ public class CommandElevatorConstants {
         primaryMotorConfig.closedLoop.pid(0, 0, 0, ClosedLoopSlot.kSlot1).feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
 
         // TODO: make a followerMotorConfig,  don't set inverted, don't set pid
-
-        primaryMotor.configure(primaryMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-        followerMotor.configure(followerMotorconfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        //
+        // primaryMotor.configure(primaryMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        // followerMotor.configure(followerMotorconfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
         // TODO: create an ElevatorConstants named elevatorConstants and pass in
         // maxHeight, minHeight, ks, kg, kv, ka, drumRadius, reduction, startingHeight, positionStdDevs, velocityStdDevs
