@@ -32,6 +32,8 @@ public class CommandArmConstants {
 
     // TODO: create an int named canCoderDeviceNumber and assign 34 to it.
     // TODO: create a double magnetDirection and assign 0.0 to it.
+    // TODO: create a Time called simLoopPeriod and set to Seconds.of(0.001);
+
 
 
     public static CommandArm createCommandArm() {
@@ -74,7 +76,7 @@ public class CommandArmConstants {
         // maxAngle, minAngle, ks, kg, kv, ka, armLength, reduction, Radians.of(0.0), Radians.of(0.0), RadiansPerSecond.of(0.0) as its arguments
 
         // TODO: create an Arm called arm and assign a new KrakenX60Arm to its passing in armConstants, talonFX, and cancoder
-        // TODO: return new CommandArm(arm)
+        // TODO: return new CommandArm(arm, simLoopPeriod)
 
         return null; // TODO: remove this when done.
     }
