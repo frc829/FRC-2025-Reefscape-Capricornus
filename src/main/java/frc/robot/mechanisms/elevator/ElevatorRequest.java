@@ -1,33 +1,36 @@
 package frc.robot.mechanisms.elevator;
 
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.MutDistance;
-import edu.wpi.first.units.measure.MutLinearVelocity;
+import edu.wpi.first.units.measure.*;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.*;
 
 public interface ElevatorRequest {
 
-    public void apply(ElevatorControlParameters parameters, Elevator elevator);
+    public void apply(Elevator elevator);
 
     public class Hold implements ElevatorRequest {
         @Override
-        public void apply(ElevatorControlParameters parameters, Elevator elevator) {
+        public void apply(Elevator elevator) {
             elevator.setHold();
         }
     }
 
     public class Position implements ElevatorRequest {
         private final MutDistance position = Meters.mutable(0.0);
+        private final Distance minHeight;
+        private final Distance maxHeight;
+
+        public Position(Distance minHeight, Distance maxHeight) {
+            this.minHeight = minHeight;
+            this.maxHeight = maxHeight;
+        }
 
         @Override
-        public void apply(ElevatorControlParameters parameters, Elevator elevator) {
-            if(position.lte(parameters.getMaxHeight()) && position.gte(parameters.getMinHeight())) {
+        public void apply(Elevator elevator) {
+            if(position.lte(maxHeight) && position.gte(minHeight)) {
                 elevator.setPosition(position);
             }else{
-                elevator.setPosition(parameters.getCurrentState().getPosition());
+                elevator.setVelocity(MetersPerSecond.of(0.0));
             }
         }
 
@@ -39,10 +42,17 @@ public interface ElevatorRequest {
 
     public class Velocity implements ElevatorRequest {
         private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
+        private final Distance minHeight;
+        private final Distance maxHeight;
 
+        public Velocity(Distance minHeight, Distance maxHeight) {
+            this.minHeight = minHeight;
+            this.maxHeight = maxHeight;
+        }
         @Override
-        public void apply(ElevatorControlParameters parameters, Elevator elevator) {
-            if(parameters.getCurrentState().getPosition().lte(parameters.getMaxHeight()) && parameters.getCurrentState().getPosition().gte(parameters.getMinHeight())){
+        public void apply(Elevator elevator) {
+            ElevatorState elevatorState = elevator.getState();
+            if(elevatorState.getPosition().lte(maxHeight) && elevatorState.getPosition().gte(minHeight)){
                 elevator.setVelocity(velocity);
             }else{
                 elevator.setVelocity(MetersPerSecond.of(0.0));

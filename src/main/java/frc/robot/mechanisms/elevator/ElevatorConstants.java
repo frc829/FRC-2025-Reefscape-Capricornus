@@ -3,7 +3,7 @@ package frc.robot.mechanisms.elevator;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 
-public class ElevatorControlParameters {
+public class ElevatorConstants {
 
     private final Distance maxHeight;
     private final Distance minHeight;
@@ -11,26 +11,36 @@ public class ElevatorControlParameters {
     private final Voltage kg;
     private final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv;
     private final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka;
-    private final Time updatePeriod;
-    private final ElevatorState currentState = new ElevatorState();
+    private final Distance drumRadius;
+    private final double reduction;
+    private final Distance startingHeight;
+    private final Distance positionStdDev;
+    private final LinearVelocity velocityStdDev;
 
 
-    public ElevatorControlParameters(
+    public ElevatorConstants(
             Distance maxHeight,
             Distance minHeight,
             Voltage ks,
             Voltage kg,
             Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv,
             Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka,
-            Time updatePeriod
-    ) {
+            Distance drumRadius,
+            double reduction,
+            Distance startingHeight,
+            Distance positionStdDev,
+            LinearVelocity velocityStdDev) {
         this.maxHeight = maxHeight;
         this.minHeight = minHeight;
         this.ks = ks;
         this.kg = kg;
         this.kv = kv;
         this.ka = ka;
-        this.updatePeriod = updatePeriod;
+        this.drumRadius = drumRadius;
+        this.reduction = reduction;
+        this.startingHeight = startingHeight;
+        this.positionStdDev = positionStdDev;
+        this.velocityStdDev = velocityStdDev;
     }
 
     public Distance getMaxHeight() {
@@ -40,11 +50,6 @@ public class ElevatorControlParameters {
     public Distance getMinHeight() {
         return minHeight;
     }
-
-    public ElevatorState getCurrentState() {
-        return currentState;
-    }
-
 
     public Voltage getKs() {
         return ks;
@@ -62,13 +67,23 @@ public class ElevatorControlParameters {
         return kg;
     }
 
-    public ElevatorControlParameters withElevatorState(ElevatorState state) {
-        currentState.withElevatorState(state);
-        return this;
+    public Distance getDrumRadius() {
+        return drumRadius;
     }
 
+    public double getReduction() {
+        return reduction;
+    }
 
-    public Time getUpdatePeriod() {
-        return updatePeriod;
+    public Distance getStartingHeight() {
+        return startingHeight;
+    }
+
+    public Distance getPositionStdDev() {
+        return positionStdDev;
+    }
+
+    public LinearVelocity getVelocityStdDev() {
+        return velocityStdDev;
     }
 }

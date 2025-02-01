@@ -30,7 +30,7 @@ public interface ArmRequest {
             if(position.lte(maxAngle) && position.gte(minAngle)) {
                 arm.setPosition(position);
             }else{
-                arm.setPosition(position);
+                arm.setVelocity(RadiansPerSecond.of(0.0));
             }
         }
 

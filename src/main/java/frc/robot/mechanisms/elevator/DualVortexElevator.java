@@ -17,8 +17,14 @@ import static com.revrobotics.spark.SparkBase.ResetMode.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
 import static edu.wpi.first.units.Units.*;
 
-public class DualVortexElevator extends Elevator {
+public class DualVortexElevator implements Elevator {
 
+
+    private final ElevatorState lastElevatorState = new ElevatorState();
+    private final ElevatorState elevatorState = new ElevatorState();
+    private final Distance minHeight;
+    private final Distance maxHeight;
+    private ElevatorRequest elevatorRequest;
     private final SparkFlex primaryMotor;
     private final SparkFlex followerMotor;
     private final SparkBaseConfig primaryMotorConfig;
@@ -37,14 +43,16 @@ public class DualVortexElevator extends Elevator {
     private ControlState controlState = ControlState.VELOCITY;
 
     public DualVortexElevator(
-            ElevatorControlParameters elevatorControlParameters,
+            ElevatorConstants elevatorConstants,
             SparkFlex primaryMotor,
             SparkFlex followerMotor,
             SparkBaseConfig primaryMotorConfig,
             SparkBaseConfig followerMotorConfig,
             ClosedLoopSlot positionClosedLoopSlot,
-            ClosedLoopSlot velocityClosedLoopSlot) {
-        super(elevatorControlParameters);
+            ClosedLoopSlot velocityClosedLoopSlot,
+            Time updatePeriod) {
+        minHeight = elevatorConstants.getMinHeight();
+        maxHeight = elevatorConstants.getMaxHeight();
         this.primaryMotor = primaryMotor;
         this.followerMotor = followerMotor;
         this.primaryMotorConfig = primaryMotorConfig;
@@ -52,19 +60,19 @@ public class DualVortexElevator extends Elevator {
         this.positionClosedLoopSlot = positionClosedLoopSlot;
         this.velocityClosedLoopSlot = velocityClosedLoopSlot;
         this.feedforward = new ElevatorFeedforward(
-                elevatorControlParameters.getKs().baseUnitMagnitude(),
-                elevatorControlParameters.getKg().baseUnitMagnitude(),
-                elevatorControlParameters.getKv().baseUnitMagnitude(),
-                elevatorControlParameters.getKa().baseUnitMagnitude(),
-                elevatorControlParameters.getUpdatePeriod().baseUnitMagnitude());
+                elevatorConstants.getKs().baseUnitMagnitude(),
+                elevatorConstants.getKg().baseUnitMagnitude(),
+                elevatorConstants.getKv().baseUnitMagnitude(),
+                elevatorConstants.getKa().baseUnitMagnitude(),
+                updatePeriod.baseUnitMagnitude());
         this.positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
                         12.0,
-                        elevatorControlParameters.getKv().baseUnitMagnitude(),
-                        elevatorControlParameters.getKa().baseUnitMagnitude()));
+                        elevatorConstants.getKv().baseUnitMagnitude(),
+                        elevatorConstants.getKa().baseUnitMagnitude()));
         double maxAcceleration = feedforward.maxAchievableAcceleration(12.0, 0.0);
         this.velocityProfile = new SlewRateLimiter(maxAcceleration);
-        this.profilePeriod = elevatorControlParameters.getUpdatePeriod();
+        this.profilePeriod = updatePeriod;
 
     }
 
@@ -73,7 +81,7 @@ public class DualVortexElevator extends Elevator {
         primaryMotorConfig.idleMode(kBrake);
         followerMotorConfig.idleMode(kBrake);
         REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
-        REVLibError followerMotorConfigStatus = followerMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        REVLibError followerMotorConfigStatus = followerMotor.configureAsync(followerMotorConfig, kNoResetSafeParameters, kPersistParameters);
         return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
     }
 
@@ -82,21 +90,59 @@ public class DualVortexElevator extends Elevator {
         primaryMotorConfig.idleMode(kCoast);
         followerMotorConfig.idleMode(kCoast);
         REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
-        REVLibError followerMotorConfigStatus = followerMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        REVLibError followerMotorConfigStatus = followerMotor.configureAsync(followerMotorConfig, kNoResetSafeParameters, kPersistParameters);
         return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
     }
 
     @Override
-    public void setVelocity(LinearVelocity velocity) {
-        goalState.velocity  = velocity.baseUnitMagnitude();
-        controlState = ControlState.VELOCITY;
+    public ElevatorState getState() {
+        return elevatorState;
+    }
+
+    @Override
+    public ElevatorState getStateCopy() {
+        return elevatorState.clone();
+    }
+
+    @Override
+    public ElevatorState getLastArmState() {
+        return lastElevatorState;
+    }
+
+    @Override
+    public ElevatorRequest createHoldRequest() {
+        return new ElevatorRequest.Hold();
+    }
+
+    @Override
+    public ElevatorRequest createPositionRequest() {
+        return new ElevatorRequest.Position(minHeight, maxHeight);
+    }
+
+    @Override
+    public ElevatorRequest createVelocityRequest() {
+        return new ElevatorRequest.Velocity(minHeight, maxHeight);
+    }
+
+    @Override
+    public void setControl(ElevatorRequest request) {
+        if(elevatorRequest != request){
+            elevatorRequest = request;
+        }
+        request.apply(this);
     }
 
     @Override
     public void setPosition(Distance position) {
+        controlState = ControlState.POSITION;
         goalState.position = position.baseUnitMagnitude();
         goalState.velocity = 0.0;
-        controlState = ControlState.POSITION;
+    }
+
+    @Override
+    public void setVelocity(LinearVelocity velocity) {
+        controlState = ControlState.VELOCITY;
+        goalState.velocity  = velocity.baseUnitMagnitude();
     }
 
     @Override
@@ -109,15 +155,27 @@ public class DualVortexElevator extends Elevator {
     }
 
     @Override
+    public void resetPosition() {
+        primaryMotor.getEncoder().setPosition(0.0);
+        followerMotor.getEncoder().setPosition(0.0);
+        updateState();
+    }
+
+    @Override
     public void update() {
-        super.update();
-        elevatorState.withPosition(position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()));
-        elevatorState.withVelocity(velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()));
-        elevatorState.withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()));
+        lastElevatorState.withElevatorState(elevatorState);
+        updateState();
+        updateTelemetry();
         switch (controlState) {
             case VELOCITY -> applyVelocity();
             case POSITION, HOLD -> applyPosition();
         }
+    }
+
+    private void updateState() {
+        elevatorState.withPosition(position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()));
+        elevatorState.withVelocity(velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()));
+        elevatorState.withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()));
     }
 
     @Override
@@ -126,10 +184,10 @@ public class DualVortexElevator extends Elevator {
     }
 
     @Override
-    public void resetPosition() {
-        primaryMotor.getEncoder().setPosition(0.0);
-        followerMotor.getEncoder().setPosition(0.0);
+    public void updateSimState(Time dt, Voltage supplyVoltage) {
+        // TODO: will do later
     }
+
 
     private void applyVelocity() {
          double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
