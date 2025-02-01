@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.units.measure.MutTime;
+import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -11,13 +14,16 @@ import frc.robot.mechanisms.elevator.ElevatorRequest;
 
 import java.util.function.Supplier;
 
-public class CommandElevator implements Subsystem {
-    private static final double simLoopPeriod = 0.005;
-    private final Elevator elevator;
-    private double lastSimTime;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
-    public CommandElevator(Elevator elevator) {
+public class CommandElevator implements Subsystem {
+    private final Elevator elevator;
+    private final Time simLoopPeriod;
+
+    public CommandElevator(Elevator elevator, Time simLoopPeriod) {
         this.elevator = elevator;
+        this.simLoopPeriod = simLoopPeriod;
         if (RobotBase.isSimulation()) {
             startSimThread();
         }
@@ -33,14 +39,18 @@ public class CommandElevator implements Subsystem {
     }
 
     private void startSimThread() {
-        lastSimTime = Timer.getFPGATimestamp();
+        final MutTime currentTime = Seconds.mutable(Timer.getFPGATimestamp());
+        final MutTime lastSimTime = currentTime.mutableCopy();
+        final MutVoltage supplyVoltage = Volts.mutable(0.0);
+        MutTime deltaTime = Seconds.mutable(0.0);
         try (Notifier simNotifier = new Notifier(() -> {
-            final double currentTime = Timer.getFPGATimestamp();
-            double deltaTime = currentTime - lastSimTime;
-            lastSimTime = currentTime;
-            elevator.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            currentTime.mut_setMagnitude(Timer.getFPGATimestamp());
+            deltaTime.mut_setMagnitude(currentTime.baseUnitMagnitude() - lastSimTime.baseUnitMagnitude());
+            lastSimTime.mut_replace(currentTime);
+            supplyVoltage.mut_setMagnitude(RobotController.getBatteryVoltage());
+            elevator.updateSimState(deltaTime, supplyVoltage);
         })) {
-            simNotifier.startPeriodic(simLoopPeriod);
+            simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
         }
     }
 

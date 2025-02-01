@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.Timer;
 
+import static com.revrobotics.spark.ClosedLoopSlot.*;
 import static com.revrobotics.spark.SparkBase.PersistMode.*;
 import static com.revrobotics.spark.SparkBase.ResetMode.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
@@ -31,8 +32,6 @@ public class DualVortexElevator implements Elevator {
     private final SparkBaseConfig followerMotorConfig;
     private final ExponentialProfile positionProfile;
     private final SlewRateLimiter velocityProfile;
-    private final ClosedLoopSlot positionClosedLoopSlot;
-    private final ClosedLoopSlot velocityClosedLoopSlot;
     private final ExponentialProfile.State goalState = new ExponentialProfile.State();
     private final ElevatorFeedforward feedforward;
     private final Time profilePeriod;
@@ -48,8 +47,6 @@ public class DualVortexElevator implements Elevator {
             SparkFlex followerMotor,
             SparkBaseConfig primaryMotorConfig,
             SparkBaseConfig followerMotorConfig,
-            ClosedLoopSlot positionClosedLoopSlot,
-            ClosedLoopSlot velocityClosedLoopSlot,
             Time updatePeriod) {
         minHeight = elevatorConstants.getMinHeight();
         maxHeight = elevatorConstants.getMaxHeight();
@@ -57,8 +54,6 @@ public class DualVortexElevator implements Elevator {
         this.followerMotor = followerMotor;
         this.primaryMotorConfig = primaryMotorConfig;
         this.followerMotorConfig = followerMotorConfig;
-        this.positionClosedLoopSlot = positionClosedLoopSlot;
-        this.velocityClosedLoopSlot = velocityClosedLoopSlot;
         this.feedforward = new ElevatorFeedforward(
                 elevatorConstants.getKs().baseUnitMagnitude(),
                 elevatorConstants.getKg().baseUnitMagnitude(),
@@ -193,7 +188,7 @@ public class DualVortexElevator implements Elevator {
          double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
          double lastVelocitySetPoint = lastState.velocity;
          double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
-         primaryMotor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, velocityClosedLoopSlot, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+         primaryMotor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, kSlot1, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
          lastState.position = primaryMotor.getEncoder().getPosition();
          lastState.velocity = nextVelocitySetpoint;
     }
@@ -204,7 +199,7 @@ public class DualVortexElevator implements Elevator {
         double nextVelocitySetpoint = lastState.velocity;
         double nextPositionSetpoint = lastState.position;
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
-        primaryMotor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        primaryMotor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
         velocityProfile.reset(nextVelocitySetpoint);
     }
 }
