@@ -44,8 +44,8 @@ public class KrakenX60Arm implements Arm {
         this.canCoder = canCoder;
         this.canCoderSimState = new CANcoderSimState(canCoder);
         controlState = ControlState.VELOCITY;
-        this.positionControl = new MotionMagicExpoVoltage(0.0);
-        this.velocityControl = new MotionMagicVelocityVoltage(0.0);
+        this.positionControl = new MotionMagicExpoVoltage(0.0).withSlot(0);
+        this.velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(1);
         this.simArm = new SimArm(
                 DCMotor.getKrakenX60Foc(1),
                 armConstants.getReduction(),
@@ -85,7 +85,7 @@ public class KrakenX60Arm implements Arm {
 
     @Override
     public ArmState getLastArmState() {
-        return getLastArmState();
+        return lastArmState;
     }
 
     @Override
