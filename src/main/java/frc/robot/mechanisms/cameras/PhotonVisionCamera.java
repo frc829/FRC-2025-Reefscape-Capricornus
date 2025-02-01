@@ -6,7 +6,7 @@ import org.photonvision.PhotonPoseEstimator;
 public class PhotonVisionCamera implements Camera{
 
     private final PhotonCamera photonCamera;
-    private final PhotonPoseEstimator photonPoseEstimator;  // TODO: this will be read until you do the item in the constructor
+    // private final PhotonPoseEstimator photonPoseEstimator;  // TODO: this will be read until you do the item in the constructor
     private final CameraRobotPoseState cameraRobotPoseState = new CameraRobotPoseState();
 
     public PhotonVisionCamera(CameraConstants cameraConstants, PhotonCamera photonCamera) {
