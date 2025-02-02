@@ -14,14 +14,16 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.PerUnit;
 import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.mechanisms.arm.Arm;
 import frc.robot.mechanisms.arm.ArmConstants;
 import frc.robot.mechanisms.arm.KrakenX60Arm;
 import frc.robot.subsystems.CommandArm;
 
 public class CommandArmConstants {
-    public static final Angle minAngle = Degrees.of(-20);
-    public static final Angle maxAngle = Degrees.of(20);
+    public static final Angle minAngle = Degrees.of(-45);
+    public static final Angle maxAngle = Degrees.of(225);
     private static final Distance armLength = Inches.of(31.0);
     private static final int deviceNumber = 14;
     private static final NeutralModeValue neutralModeValue = NeutralModeValue.Brake;
@@ -29,15 +31,15 @@ public class CommandArmConstants {
     private static final double reduction = 5.0 * 5.0 * 4.0 * 72.0 / 22.0;
     private static final Voltage ks = Volts.of(0.0);
 
-    private static final Mass armMass = Pounds.of(11.5);
+    private static final Mass armMass = Pounds.of(10.0);
     private static final MomentOfInertia momentOfInertia = KilogramSquareMeters.of(
             armMass.baseUnitMagnitude()
-            * Math.pow(armLength.baseUnitMagnitude(), 2)
-            / 3.0);
+                    * Math.pow(armLength.baseUnitMagnitude(), 2)
+                    / 3.0);
 
     private static final DCMotor dcMotor = DCMotor.getKrakenX60Foc(1);
 
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(reduction /dcMotor.KvRadPerSecPerVolt);
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(reduction / dcMotor.KvRadPerSecPerVolt);
     private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(
             dcMotor.rOhms * momentOfInertia.baseUnitMagnitude() / dcMotor.KtNMPerAmp / reduction
     );
@@ -47,7 +49,7 @@ public class CommandArmConstants {
     );
 
 
-    private static final double positionKp = 100.0;
+    private static final double positionKp = 20.0;
     private static final double positionKd = 0.0;
     private static final double velocityKp = 0.0;
 
@@ -56,24 +58,33 @@ public class CommandArmConstants {
     private static final Time simLoopPeriod = Seconds.of(0.001);
 
 
-
     public static CommandArm createCommandArm() {
+        SmartDashboard.putNumberArray("FF Constants[ks, kg, kv, ka]",
+                new double[]{
+                        ks.baseUnitMagnitude(),
+                        kg.baseUnitMagnitude(),
+                        kv.baseUnitMagnitude(),
+                        ka.baseUnitMagnitude()
+                });
         CANcoderConfiguration cancoderConfig = new CANcoderConfiguration();
         cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         cancoderConfig.MagnetSensor.MagnetOffset = magnetDirection;
-        CANcoder cancoder =  new CANcoder(cancoderDeviceNumber, UniversalRobotConstants.rio);
+        CANcoder cancoder = new CANcoder(cancoderDeviceNumber, UniversalRobotConstants.rio);
         cancoder.getConfigurator().apply(cancoderConfig);
 
         TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
         talonFXConfiguration.Voltage.PeakForwardVoltage = 12.0;
         talonFXConfiguration.Voltage.PeakReverseVoltage = -12.0;
         talonFXConfiguration.ClosedLoopGeneral.ContinuousWrap = true;
-        talonFXConfiguration.Feedback.FeedbackRemoteSensorID = cancoderDeviceNumber;
-        talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+        if(RobotBase.isReal()){
+            talonFXConfiguration.Feedback.FeedbackRemoteSensorID = cancoderDeviceNumber;
+            talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        }
         talonFXConfiguration.Feedback.RotorToSensorRatio = 1.0;
         talonFXConfiguration.Feedback.SensorToMechanismRatio = reduction;
         talonFXConfiguration.MotionMagic.MotionMagicExpo_kV = kv.baseUnitMagnitude();
         talonFXConfiguration.MotionMagic.MotionMagicExpo_kA = ka.baseUnitMagnitude();
+        talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = 0.0;
         talonFXConfiguration.MotorOutput.Inverted = invertedValue;
         talonFXConfiguration.MotorOutput.NeutralMode = neutralModeValue;
         talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
@@ -95,7 +106,7 @@ public class CommandArmConstants {
         talonFX.getConfigurator().apply(talonFXConfiguration);
 
 
-        ArmConstants armConstants = new ArmConstants(maxAngle, minAngle, ks, kg, kv, ka, armLength, reduction, Radians.of(0.0), Radians.of(0.0), RadiansPerSecond.of(0.0) );
+        ArmConstants armConstants = new ArmConstants(maxAngle, minAngle, ks, kg, kv, ka, armLength, reduction, Radians.of(0.0), Radians.of(0.0), RadiansPerSecond.of(0.0));
 
 
         Arm arm = new KrakenX60Arm(armConstants, talonFX, cancoder);

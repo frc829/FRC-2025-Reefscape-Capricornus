@@ -12,7 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.CommandArmConstants;
+import frc.robot.mechanisms.arm.Arm;
 import frc.robot.mechanisms.arm.ArmRequest;
+import frc.robot.subsystems.CommandArm;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static frc.robot.RobotContainer.*;
@@ -119,20 +121,14 @@ public class CommandFactory {
 
     static class ArmCommands {
         static Command defaultArm() {
-            ArmRequest request = new ArmRequest.Hold();
-            return commandArm
-                    .applyRequest(() -> request)
-                    .withName("HOLD");
+            ArmRequest.Hold holdRequest = new ArmRequest.Hold();
+            return commandArm.applyRequest(() -> holdRequest).withName("HOLD");
         }
 
         static Command position5Degrees() {
-            ArmRequest request = new ArmRequest.Position(
-                    CommandArmConstants.minAngle,
-                    CommandArmConstants.maxAngle
-            ).withPosition(Degrees.of(5));
-            return commandArm
-                    .applyRequest(() -> request)
-                    .withName("5 Degrees");
+            ArmRequest.Position position = new ArmRequest.Position(CommandArmConstants.minAngle, CommandArmConstants.maxAngle)
+                    .withPosition(Degrees.of(10.0));
+            return commandArm.applyRequest(() -> position).withName("POSITION");
         }
     }
 

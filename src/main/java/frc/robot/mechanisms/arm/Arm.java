@@ -7,12 +7,6 @@ import edu.wpi.first.units.measure.Voltage;
 
 public interface Arm {
 
-    enum ControlState {
-        POSITION,
-        VELOCITY,
-        HOLD,
-    }
-
     public void updateSimState(Time dt, Voltage supplyVoltage);
 
     public void setControl(ArmRequest request);
@@ -22,6 +16,12 @@ public interface Arm {
     public ArmState getStateCopy();
 
     public ArmState getLastArmState();
+
+    public void enableHold();
+
+    public void disableHold();
+
+    public boolean isHoldEnabled();
 
     public void updateTelemetry();
 
@@ -33,15 +33,7 @@ public interface Arm {
 
     public void setPosition(Angle position);
 
-    public void setHold();
-
     public void resetPosition();
 
     public void update();
-
-    public ArmRequest createHoldRequest();
-
-    public ArmRequest createPositionRequest();
-
-    public ArmRequest createVelocityRequest();
 }
