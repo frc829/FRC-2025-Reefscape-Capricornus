@@ -12,14 +12,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-import frc.robot.constants.SwerveDriveConstants;
+import frc.robot.constants.CommandArmConstants;
+import frc.robot.constants.CommandSwerveDriveConstants;
+import frc.robot.subsystems.CommandArm;
 import frc.robot.subsystems.CommandSwerveDrive;
 
 public class RobotContainer {
 
     static final CommandXboxController driverController = new CommandXboxController(0);
     static final CommandXboxController operatorController = new CommandXboxController(1);
-    static final CommandSwerveDrive commandSwerveDrive = SwerveDriveConstants.createCommandSwerve();
+    static final CommandSwerveDrive commandSwerveDrive = CommandSwerveDriveConstants.createCommandSwerve();
+    static final CommandArm commandArm = CommandArmConstants.createCommandArm();
 
     /* Path follower */
     private final AutoFactory autoFactory;
@@ -35,6 +38,7 @@ public class RobotContainer {
 
         DefaultRoutines.bind();
         DriverRoutines.bind();
+        OperatorRoutines.bind();
         SmartDashboard.putData(CommandScheduler.getInstance());
     }
 

@@ -1,16 +1,11 @@
 package frc.robot.mechanisms.elevator;
 
-import edu.wpi.first.units.measure.*;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 
 public interface Elevator {
 
-    public enum ControlState {
-        POSITION,
-        VELOCITY,
-        HOLD,
-    }
-
-    public void updateSimState(Time dt, Voltage supplyVoltage);
+    public void updateSimState(double dt, double supplyVoltage);
 
     public void setControl(ElevatorRequest request);
 
@@ -19,6 +14,12 @@ public interface Elevator {
     public ElevatorState getStateCopy();
 
     public ElevatorState getLastArmState();
+
+    public void enableHold();
+
+    public void disableHold();
+
+    public boolean isHoldEnabled();
 
     public void updateTelemetry();
 
@@ -30,15 +31,11 @@ public interface Elevator {
 
     public void setPosition(Distance position);
 
-    public void setHold();
-
     public void resetPosition();
 
     public void update();
 
-    public ElevatorRequest createHoldRequest();
+    public Distance getMaxPosition();
 
-    public ElevatorRequest createPositionRequest();
-
-    public ElevatorRequest createVelocityRequest();
+    public Distance getMinPosition();
 }

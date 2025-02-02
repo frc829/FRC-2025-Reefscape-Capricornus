@@ -17,7 +17,6 @@ public class ArmConstants {
     private final Angle positionStdDev;
     private final AngularVelocity velocityStdDev;
 
-
     public ArmConstants(
             Angle maxAngle,
             Angle minAngle,

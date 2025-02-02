@@ -11,9 +11,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.mechanisms.arm.ArmRequest;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static frc.robot.RobotContainer.*;
-import static frc.robot.constants.SwerveDriveConstants.*;
+import static frc.robot.constants.CommandSwerveDriveConstants.*;
 
 public class CommandFactory {
 
@@ -24,7 +26,6 @@ public class CommandFactory {
 
     static class DriveCommands {
 
-
         static Command defaultDrive() {
             return
                     Commands.either(
@@ -32,7 +33,7 @@ public class CommandFactory {
                             robotCentricDrive(),
                             commandSwerveDrive.defaultDriveState
 
-            );
+                    );
             // return clockDrive().withName("Default Drive");
         }
 
@@ -113,6 +114,19 @@ public class CommandFactory {
 
         }
 
+    }
+
+    static class ArmCommands {
+        static Command defaultArm() {
+            ArmRequest.Hold holdRequest = new ArmRequest.Hold();
+            return commandArm.applyRequest(() -> holdRequest).withName("HOLD");
+        }
+
+        static Command position5Degrees() {
+            ArmRequest.Position position = new ArmRequest.Position()
+                    .withPosition(Degrees.of(10.0));
+            return commandArm.applyRequest(() -> position).withName("POSITION");
+        }
     }
 
     static class SysIdCommands {

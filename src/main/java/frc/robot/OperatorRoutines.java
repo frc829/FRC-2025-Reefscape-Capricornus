@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static frc.robot.RobotContainer.operatorController;
+
 public class OperatorRoutines {
 
     private OperatorRoutines(){
@@ -19,7 +21,7 @@ public class OperatorRoutines {
     }
 
     private static void arm(){
-
+        operatorController.a().whileTrue(CommandFactory.ArmCommands.position5Degrees());
     }
 
     private static void wrist(){

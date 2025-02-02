@@ -2,18 +2,10 @@ package frc.robot.mechanisms.arm;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.Voltage;
 
 public interface Arm {
 
-    enum ControlState {
-        POSITION,
-        VELOCITY,
-        HOLD,
-    }
-
-    public void updateSimState(Time dt, Voltage supplyVoltage);
+    public void updateSimState(double dt, double supplyVoltage);
 
     public void setControl(ArmRequest request);
 
@@ -22,6 +14,12 @@ public interface Arm {
     public ArmState getStateCopy();
 
     public ArmState getLastArmState();
+
+    public void enableHold();
+
+    public void disableHold();
+
+    public boolean isHoldEnabled();
 
     public void updateTelemetry();
 
@@ -33,15 +31,11 @@ public interface Arm {
 
     public void setPosition(Angle position);
 
-    public void setHold();
-
     public void resetPosition();
 
     public void update();
 
-    public ArmRequest createHoldRequest();
+    public Angle getMaxAngle();
 
-    public ArmRequest createPositionRequest();
-
-    public ArmRequest createVelocityRequest();
+    public Angle getMinAngle();
 }

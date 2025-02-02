@@ -41,8 +41,6 @@ public class CommandElevatorConstants {
         SparkFlex primaryMotor = new SparkFlex (primaryMototrDeviceId, SparkLowLevel.MotorType.kBrushless);
         SparkFlex followerMotor = new SparkFlex(followerMotorDeviceId, SparkLowLevel.MotorType.kBrushless);
 
-
-
         SparkBaseConfig primaryMotorConfig = new SparkFlexConfig()
                 .idleMode(idleMode)
                 .inverted(primaryInverted);
@@ -52,7 +50,8 @@ public class CommandElevatorConstants {
         primaryMotorConfig.encoder.quadratureMeasurementPeriod(16);
         primaryMotorConfig.closedLoop.pid(0, 0, 0).feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
         primaryMotorConfig.closedLoop.pid(0, 0, 0, ClosedLoopSlot.kSlot1).feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
-        SparkBaseConfig followerMotorconfig = new SparkFlexConfig()
+        
+      SparkBaseConfig followerMotorconfig = new SparkFlexConfig()
                 .idleMode(idleMode);
         followerMotorconfig.encoder.positionConversionFactor(1.0);
         followerMotorconfig.encoder.velocityConversionFactor(1.0);
@@ -61,7 +60,6 @@ public class CommandElevatorConstants {
 
         primaryMotor.configure(primaryMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
         followerMotor.configure(followerMotorconfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-
         ElevatorConstants elevatorConstants = new ElevatorConstants(maxHeight, minHeight, ks, kg, kv, ka, drumRadius, reduction, Meters.of(0.0), Meters.of(0.0), MetersPerSecond.of(0.0));
         Elevator elevator = new DualVortexElevator(elevatorConstants, primaryMotor, followerMotor, primaryMotorConfig, followerMotorconfig, updatePeriod);
         return new CommandElevator(elevator, simLoopPeriod);

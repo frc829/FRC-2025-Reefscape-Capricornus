@@ -30,7 +30,7 @@ public class NEO550Arm implements Arm {
     private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private ControlState controlState = ControlState.VELOCITY;
+    private boolean hold = false;
 
     public NEO550Arm(
             ArmConstants armConstants,
@@ -90,35 +90,9 @@ public class NEO550Arm implements Arm {
     }
 
     @Override
-    public void setHold() {
-        // TODO: if the controlState is not equal to HOLD
-        // TODO: then do the following
-        // TODO: assign primaryMotor.getEncoder().getPosition() to goalState.position, assign 0.0 to goalState.velocity, assign ControlState.HOLD to controlState
-    }
-
-    @Override
     public void update() {
         lastArmState.withArmState(armState);
         updateState();
-        switch (controlState) {
-            case VELOCITY -> applyVelocity();
-            case POSITION, HOLD -> applyPosition();
-        }
-    }
-
-    @Override
-    public ArmRequest createHoldRequest() {
-        return new ArmRequest.Hold();
-    }
-
-    @Override
-    public ArmRequest createPositionRequest() {
-        return new ArmRequest.Position(minAngle, maxAngle);
-    }
-
-    @Override
-    public ArmRequest createVelocityRequest() {
-        return new ArmRequest.Velocity(minAngle, maxAngle);
     }
 
     private void updateState() {
@@ -133,7 +107,7 @@ public class NEO550Arm implements Arm {
     }
 
     @Override
-    public void updateSimState(Time dt, Voltage supplyVoltage) {
+    public void updateSimState(double dt, double supplyVoltage) {
         // TODO: will do later
     }
 
@@ -183,5 +157,30 @@ public class NEO550Arm implements Arm {
         // TODO: call feedforward's calculateWithVelocities method passing in lastVelocitySetpoint and nextVelocitySetpoint and assign to arbFeedforward
         // TODO: call motor.getClosedLoopController's setReference method passing in nextPositionSetpoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
         // TODO: call velocityProfile's reset method passing in nextVelocitySetpoint
+    }
+
+    @Override
+    public void enableHold() {
+        hold = true;
+    }
+
+    @Override
+    public void disableHold() {
+        hold = false;
+    }
+
+    @Override
+    public boolean isHoldEnabled() {
+        return hold;
+    }
+
+    @Override
+    public Angle getMaxAngle() {
+        return maxAngle;
+    }
+
+    @Override
+    public Angle getMinAngle() {
+        return minAngle;
     }
 }
