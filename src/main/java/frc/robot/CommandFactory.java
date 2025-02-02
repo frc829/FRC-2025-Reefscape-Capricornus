@@ -12,9 +12,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.mechanisms.arm.ArmRequest;
+import frc.robot.mechanisms.elevator.ElevatorRequest;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static frc.robot.RobotContainer.*;
+import static frc.robot.constants.CommandElevatorConstants.Corbins;
 import static frc.robot.constants.CommandSwerveDriveConstants.*;
 
 public class CommandFactory {
@@ -126,6 +128,19 @@ public class CommandFactory {
             ArmRequest.Position position = new ArmRequest.Position()
                     .withPosition(Degrees.of(10.0));
             return commandArm.applyRequest(() -> position).withName("POSITION");
+        }
+    }
+
+    static class ElevatorCommands {
+        static Command defaultElevator() {
+            ElevatorRequest.Hold holdRequest = new ElevatorRequest.Hold();
+            return commandElevator.applyRequest(() -> holdRequest).withName("HOLD");
+        }
+
+        static Command positionHalfCorbins() {
+            ElevatorRequest.Position position = new ElevatorRequest.Position()
+                    .withPosition(Corbins.of(0.5));
+            return commandElevator.applyRequest(() -> position).withName("Half Corbin");
         }
     }
 
