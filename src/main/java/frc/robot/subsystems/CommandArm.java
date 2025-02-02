@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -17,11 +18,12 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 public class CommandArm implements Subsystem {
-    private static final double simLoopPeriod = 0.005;
     private final Arm arm;
+    private final Time simLoopPeriod;
 
-    public CommandArm(Arm arm) {
+    public CommandArm(Arm arm, Time simLoopPeriod) {
         this.arm = arm;
+        this.simLoopPeriod = simLoopPeriod;
         if (RobotBase.isSimulation()) {
             startSimThread();
         }
@@ -48,7 +50,7 @@ public class CommandArm implements Subsystem {
             supplyVoltage.mut_setMagnitude(RobotController.getBatteryVoltage());
             arm.updateSimState(deltaTime, supplyVoltage);
         })) {
-            simNotifier.startPeriodic(simLoopPeriod);
+            simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
         }
     }
 

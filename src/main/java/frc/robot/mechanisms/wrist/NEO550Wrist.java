@@ -13,6 +13,8 @@ import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.Timer;
 
+import javax.naming.ldap.Control;
+
 import static com.revrobotics.spark.SparkBase.PersistMode.*;
 import static com.revrobotics.spark.SparkBase.ResetMode.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
@@ -35,8 +37,8 @@ public class NEO550Wrist extends Wrist {
     private final ExponentialProfile.State goalState = new ExponentialProfile.State();
     private final SimpleMotorFeedforward feedforward;
     private final Time profilePeriod;
-    private final MutDistance position = Meters.mutable(0.0);
-    private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
+    private final MutAngle position = Radians.mutable(0.0);
+    private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
     private ControlState controlState = ControlState.VELOCITY;
@@ -70,44 +72,45 @@ public class NEO550Wrist extends Wrist {
 
     @Override
     public boolean setNeutralModeToBrake() {
-        // TODO: call primaryMotorConfig's idleMode method and pass in kBrake
-        // TODO: create a REVLibError variable called primaryMotorConfigStatus assign primaryMotor.configureAsync passing in primaryMotorConfig, kNoResetSafeParameters, and  kPersistParameters
-        // TODO: return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
-        return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+        primaryMotorConfig.idleMode(kBrake);
+        REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        return primaryMotorConfigStatus == REVLibError.kOk;
     }
 
     @Override
     public boolean setNeutralModeToCoast() {
-        // TODO: identical to setNeutralModeToBrake but with kCoast instead of kBrake
-        return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+        primaryMotorConfig.idleMode(kCoast);
+        REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        return primaryMotorConfigStatus == REVLibError.kOk;
     }
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        // TODO: assign velocity.baseUnitMagnitude() to goalState.velocity
-        // TODO: assign ControlState.VELOCITY to controlState
+        goalState.velocity = velocity.baseUnitMagnitude();
+        controlState = ControlState.VELOCITY;
     }
 
     @Override
     public void setPosition(Angle position) {
-        // TODO: assign position.baseUnitMagnitude() to goalState.position
-        // TODO: assign 0.0 to goalState.velocity
-        // TODO: assign ControlState.POSITION to controlState
+    goalState.position = position.baseUnitMagnitude();
+    goalState.velocity = 0.0;
+    controlState = ControlState.POSITION;
     }
 
     @Override
     public void setHold() {
-        // TODO: if the controlState is not equal to HOLD
-        // TODO: then do the following
-        // TODO: assign primaryMotor.getEncoder().getPosition() to goalState.position, assign 0.0 to goalState.velocity, assign ControlState.HOLD to controlState
+        if(controlState != ControlState.HOLD) {
+            goalState.position = primaryMotor.getEncoder().getPosition();
+            controlState = ControlState.HOLD;
+        }
     }
 
     @Override
     public void update() {
         super.update();
-        // TODO: call wristState.withPosition passing in position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()
-        // TODO: call wristState.withVelocity passing in velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()
-        // TODO: call wristState.withTimeStamp passing in timestamp.mut_setMagnitude(Timer.getFPGATimestamp())
+        wristState.withPosition(position.mut_setBaseUnitMagnitude(primaryMotor.getEncoder().getPosition()));
+        wristState.withVelocity(velocity.mut_setBaseUnitMagnitude(primaryMotor.getEncoder().getVelocity()));
+        wristState.withTimestamp(timestamp.mut_setBaseUnitMagnitude(Timer.getFPGATimestamp()));
         switch (controlState) {
             case VELOCITY -> applyVelocity();
             case POSITION, HOLD -> applyPosition();
@@ -121,26 +124,25 @@ public class NEO550Wrist extends Wrist {
 
     @Override
     public void resetPosition() {
-        // TODO: call primaryMotor.getEncoder()'s setPosition method passing in 0.0
-        // TODO: do the same for followerMotor
+        primaryMotor.getEncoder().setPosition(0.0);
     }
 
     private void applyVelocity() {
-        // TODO: assign velocityProfile.calculate(goalState.velocity) to a variable called nextVelocitySetpoint
-        // TODO: assign lastState.velocity to a variable called lastVelocitySetpoint
-        // TODO: call feedforward's calculateWithVelocities method passing in lastVelocitySetpoint and nextVelocitySetpoint and assign to arbFeedforward
-        // TODO: call primaryMotor.getClosedLoopController's setReference method passing in nextVelocitySetpoint, SparkBase.ControlType.kVelocity, velocityClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        // TODO: call primaryMotor.getEncoder()'s getPosition() method and assign to lastState.position
-        // TODO: assign nextVelocitySetpoint to lastState.velocity
+        var nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
+        var lastVelocitySetpoint = lastState.velocity;
+        var arbFeedforward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+        primaryMotor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, velocityClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        primaryMotor.getEncoder().setPosition(lastState.position);
+        lastState.position = nextVelocitySetpoint;
     }
 
     private void applyPosition() {
-        // TODO: assign lastState.velocity to a variable called lastVelocitySetpoint
-        // TODO: call positionProfile's calculate method and passin profilePeriod.baseUnitMagnitude(), lastState, goalState) and assign to lastState
-        // TODO: assign lastState.velocity to a variable called nextVelocitySetpoint
-        // TODO: assign lastState.position to a variable called nextPositionSetpoint
-        // TODO: call feedforward's calculateWithVelocities method passing in lastVelocitySetpoint and nextVelocitySetpoint and assign to arbFeedforward
-        // TODO: call primaryMotor.getClosedLoopController's setReference method passing in nextPositionSetpoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        // TODO: call velocityProfile's reset method passing in nextVelocitySetpoint
+        var lastVelocitySetpoint = lastState.velocity;
+        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
+        var nextVelocitySetPoint = lastState.velocity;
+        var nextPositionsetPoint = lastState.position;
+        var arbFeedForward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetPoint);
+        primaryMotor.getClosedLoopController().setReference(nextPositionsetPoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedForward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        velocityProfile.reset(nextVelocitySetPoint);
     }
 }
