@@ -38,6 +38,7 @@ public class RobotContainer {
 
         DefaultRoutines.bind();
         DriverRoutines.bind();
+        OperatorRoutines.bind();
         SmartDashboard.putData(CommandScheduler.getInstance());
     }
 

@@ -20,8 +20,8 @@ import frc.robot.mechanisms.arm.KrakenX60Arm;
 import frc.robot.subsystems.CommandArm;
 
 public class CommandArmConstants {
-    private static final Angle minAngle = Degrees.of(-20);
-    private static final Angle maxAngle = Degrees.of(20);
+    public static final Angle minAngle = Degrees.of(-20);
+    public static final Angle maxAngle = Degrees.of(20);
     private static final Distance armLength = Inches.of(31.0);
     private static final int deviceNumber = 14;
     private static final NeutralModeValue neutralModeValue = NeutralModeValue.Brake;
@@ -35,7 +35,7 @@ public class CommandArmConstants {
             * Math.pow(armLength.baseUnitMagnitude(), 2)
             / 3.0);
 
-    private static final DCMotor dcMotor = DCMotor.getFalcon500(1);
+    private static final DCMotor dcMotor = DCMotor.getKrakenX60Foc(1);
 
     private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(reduction /dcMotor.KvRadPerSecPerVolt);
     private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(
@@ -43,11 +43,11 @@ public class CommandArmConstants {
     );
 
     private static final Voltage kg = Volts.of(
-            9.8 * ka.baseUnitMagnitude()
+            3 * 9.8 * ka.baseUnitMagnitude() / 2 / armLength.baseUnitMagnitude()
     );
 
 
-    private static final double positionKp = 1.0;
+    private static final double positionKp = 100.0;
     private static final double positionKd = 0.0;
     private static final double velocityKp = 0.0;
 

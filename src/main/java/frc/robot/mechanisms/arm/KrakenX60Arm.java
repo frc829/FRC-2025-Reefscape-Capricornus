@@ -3,7 +3,6 @@ package frc.robot.mechanisms.arm;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
@@ -12,7 +11,6 @@ import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -27,7 +25,7 @@ public class KrakenX60Arm implements Arm {
     private ArmRequest armRequest;
     private final TalonFX talonFX;
     private final CANcoder canCoder;
-    private final PositionVoltage positionControl;
+    private final MotionMagicExpoVoltage positionControl;
     private final MotionMagicVelocityVoltage velocityControl;
     private final SimArm simArm;
     private final TalonFXSimState talonFXSimState;
@@ -45,8 +43,8 @@ public class KrakenX60Arm implements Arm {
         this.talonFXSimState = new TalonFXSimState(talonFX);
         this.canCoder = canCoder;
         this.canCoderSimState = new CANcoderSimState(canCoder);
-        this.positionControl = new PositionVoltage(0.0).withSlot(0);
-        this.velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(1);
+        this.positionControl = new MotionMagicExpoVoltage(0.0).withSlot(0).withEnableFOC(true);
+        this.velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(1).withEnableFOC(true);
         this.simArm = new SimArm(
                 DCMotor.getKrakenX60Foc(1),
                 armConstants.getReduction(),
@@ -134,10 +132,10 @@ public class KrakenX60Arm implements Arm {
 
     @Override
     public void resetPosition() {
-        if(canCoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Invalid && canCoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Red){
-            talonFX.setPosition(canCoder.getPosition().getValue());
-        }
-        updateState();
+        // if(canCoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Invalid && canCoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Red){
+        //     talonFX.setPosition(canCoder.getPosition().getValue());
+        // }
+        // updateState();
     }
 
     @Override
