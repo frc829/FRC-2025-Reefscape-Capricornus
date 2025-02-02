@@ -15,7 +15,7 @@ import frc.robot.mechanisms.arm.ArmRequest;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static frc.robot.RobotContainer.*;
-import static frc.robot.constants.SwerveDriveConstants.*;
+import static frc.robot.constants.CommandSwerveDriveConstants.*;
 
 public class CommandFactory {
 

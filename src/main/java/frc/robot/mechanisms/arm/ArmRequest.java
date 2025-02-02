@@ -27,10 +27,9 @@ public interface ArmRequest {
     public class Position implements ArmRequest {
         private final MutAngle position = Radians.mutable(0.0);
 
-
         @Override
         public void apply(Arm arm) {
-            if(arm.isHoldEnabled()){
+            if (arm.isHoldEnabled()) {
                 arm.disableHold();
             }
             if (position.lte(arm.getMaxAngle()) && position.gte(arm.getMinAngle())) {
@@ -39,7 +38,6 @@ public interface ArmRequest {
                 arm.setVelocity(RadiansPerSecond.of(0.0));
             }
             SmartDashboard.putNumber("Position Setpoint [deg]", position.in(Degrees));
-
         }
 
         public Position withPosition(Angle position) {
@@ -53,7 +51,7 @@ public interface ArmRequest {
 
         @Override
         public void apply(Arm arm) {
-            if(arm.isHoldEnabled()){
+            if (arm.isHoldEnabled()) {
                 arm.disableHold();
             }
             ArmState armState = arm.getState();
@@ -69,6 +67,4 @@ public interface ArmRequest {
             return this;
         }
     }
-
-
 }

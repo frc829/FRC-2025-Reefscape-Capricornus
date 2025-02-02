@@ -1,16 +1,23 @@
 package frc.robot.mechanisms.elevator;
 
 import com.revrobotics.REVLibError;
-import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.*;
 import static com.revrobotics.spark.SparkBase.PersistMode.*;
@@ -19,8 +26,6 @@ import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
 import static edu.wpi.first.units.Units.*;
 
 public class DualVortexElevator implements Elevator {
-
-
     private final ElevatorState lastElevatorState = new ElevatorState();
     private final ElevatorState elevatorState = new ElevatorState();
     private final Distance minHeight;
@@ -39,7 +44,10 @@ public class DualVortexElevator implements Elevator {
     private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private ControlState controlState = ControlState.VELOCITY;
+    private final ElevatorSim simElevator;
+    private final SparkFlexSim primarySparkFlexSim;
+    private final SparkFlexSim followerSparkFlexSim;
+    private boolean hold = false;
 
     public DualVortexElevator(
             ElevatorConstants elevatorConstants,
@@ -68,6 +76,19 @@ public class DualVortexElevator implements Elevator {
         double maxAcceleration = feedforward.maxAchievableAcceleration(12.0, 0.0);
         this.velocityProfile = new SlewRateLimiter(maxAcceleration);
         this.profilePeriod = updatePeriod;
+        DCMotor dcMotor = DCMotor.getNeoVortex(2);
+        LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
+                elevatorConstants.getKv().baseUnitMagnitude(),
+                elevatorConstants.getKa().baseUnitMagnitude());
+        this.primarySparkFlexSim = new SparkFlexSim(primaryMotor, dcMotor);
+        this.followerSparkFlexSim = new SparkFlexSim(followerMotor, dcMotor);
+        this.simElevator = new ElevatorSim(
+                plant,
+                dcMotor,
+                minHeight.baseUnitMagnitude(),
+                maxHeight.baseUnitMagnitude(),
+                true,
+                Meters.of(0.0).baseUnitMagnitude());
 
     }
 
@@ -105,23 +126,8 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
-    public ElevatorRequest createHoldRequest() {
-        return new ElevatorRequest.Hold();
-    }
-
-    @Override
-    public ElevatorRequest createPositionRequest() {
-        return new ElevatorRequest.Position(minHeight, maxHeight);
-    }
-
-    @Override
-    public ElevatorRequest createVelocityRequest() {
-        return new ElevatorRequest.Velocity(minHeight, maxHeight);
-    }
-
-    @Override
     public void setControl(ElevatorRequest request) {
-        if(elevatorRequest != request){
+        if (elevatorRequest != request) {
             elevatorRequest = request;
         }
         request.apply(this);
@@ -129,24 +135,26 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void setPosition(Distance position) {
-        controlState = ControlState.POSITION;
         goalState.position = position.baseUnitMagnitude();
         goalState.velocity = 0.0;
+        double lastVelocitySetpoint = lastState.velocity;
+        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
+        double nextVelocitySetpoint = lastState.velocity;
+        double nextPositionSetpoint = lastState.position;
+        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+        primaryMotor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        velocityProfile.reset(nextVelocitySetpoint);
     }
 
     @Override
     public void setVelocity(LinearVelocity velocity) {
-        controlState = ControlState.VELOCITY;
-        goalState.velocity  = velocity.baseUnitMagnitude();
-    }
-
-    @Override
-    public void setHold() {
-        if(controlState != ControlState.HOLD){
-            goalState.position = primaryMotor.getEncoder().getPosition();
-            goalState.velocity = 0.0;
-            controlState = ControlState.HOLD;
-        }
+        goalState.velocity = velocity.baseUnitMagnitude();
+        double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
+        double lastVelocitySetPoint = lastState.velocity;
+        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
+        primaryMotor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, kSlot1, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        lastState.position = primaryMotor.getEncoder().getPosition();
+        lastState.velocity = nextVelocitySetpoint;
     }
 
     @Override
@@ -161,10 +169,6 @@ public class DualVortexElevator implements Elevator {
         lastElevatorState.withElevatorState(elevatorState);
         updateState();
         updateTelemetry();
-        switch (controlState) {
-            case VELOCITY -> applyVelocity();
-            case POSITION, HOLD -> applyPosition();
-        }
     }
 
     private void updateState() {
@@ -175,31 +179,44 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void updateTelemetry() {
+        SmartDashboard.putNumberArray("State [meters, mps]", new double[]{
+                elevatorState.getPosition().in(Meters),
+                elevatorState.getVelocity().in(MetersPerSecond)});
+        SmartDashboard.putBoolean("Hold", isHoldEnabled());
         // TODO: will do later
     }
 
     @Override
-    public void updateSimState(Time dt, Voltage supplyVoltage) {
-        // TODO: will do later
+    public void updateSimState(double dt, double supplyVoltage) {
+        var inputVoltage = primaryMotor.getAppliedOutput() * 12.0;
+        simElevator.setInputVoltage(inputVoltage);
+        simElevator.update(dt);
+        primarySparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);
+        followerSparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);
     }
 
-
-    private void applyVelocity() {
-         double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
-         double lastVelocitySetPoint = lastState.velocity;
-         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
-         primaryMotor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, kSlot1, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-         lastState.position = primaryMotor.getEncoder().getPosition();
-         lastState.velocity = nextVelocitySetpoint;
+    @Override
+    public Distance getMaxPosition() {
+        return maxHeight;
     }
 
-    private void applyPosition() {
-        double lastVelocitySetpoint = lastState.velocity;
-        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
-        double nextVelocitySetpoint = lastState.velocity;
-        double nextPositionSetpoint = lastState.position;
-        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
-        primaryMotor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        velocityProfile.reset(nextVelocitySetpoint);
+    @Override
+    public Distance getMinPosition() {
+        return minHeight;
+    }
+
+    @Override
+    public void disableHold() {
+        hold = false;
+    }
+
+    @Override
+    public void enableHold() {
+        hold = true;
+    }
+
+    @Override
+    public boolean isHoldEnabled() {
+        return hold;
     }
 }

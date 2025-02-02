@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static edu.wpi.first.units.Units.*;
 
 public class KrakenX60Arm implements Arm {
-
     private final ArmState lastArmState = new ArmState();
     private final ArmState armState = new ArmState();
     private final Angle minAngle;
@@ -122,10 +121,6 @@ public class KrakenX60Arm implements Arm {
         lastArmState.withArmState(armState);
         updateState();
         updateTelemetry();
-        SmartDashboard.putNumberArray("State [deg, dps]", new double[]{
-                armState.getPosition().in(Degrees),
-                armState.getVelocity().in(DegreesPerSecond)});
-        SmartDashboard.putBoolean("Hold", isHoldEnabled());
     }
 
     private void updateState() {
@@ -136,6 +131,10 @@ public class KrakenX60Arm implements Arm {
 
     @Override
     public void updateTelemetry() {
+        SmartDashboard.putNumberArray("State [deg, dps]", new double[]{
+                armState.getPosition().in(Degrees),
+                armState.getVelocity().in(DegreesPerSecond)});
+        SmartDashboard.putBoolean("Hold", isHoldEnabled());
         // TODO: will do later
     }
 

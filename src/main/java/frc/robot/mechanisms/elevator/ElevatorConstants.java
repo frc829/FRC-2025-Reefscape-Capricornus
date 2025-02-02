@@ -17,7 +17,6 @@ public class ElevatorConstants {
     private final Distance positionStdDev;
     private final LinearVelocity velocityStdDev;
 
-
     public ElevatorConstants(
             Distance maxHeight,
             Distance minHeight,

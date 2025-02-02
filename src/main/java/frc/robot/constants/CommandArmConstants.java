@@ -31,7 +31,7 @@ public class CommandArmConstants {
     private static final double reduction = 5.0 * 5.0 * 4.0 * 72.0 / 22.0;
     private static final Voltage ks = Volts.of(0.0);
 
-    private static final Mass armMass = Pounds.of(10.0);
+    private static final Mass armMass = Pounds.of(11.5);
     private static final MomentOfInertia momentOfInertia = KilogramSquareMeters.of(
             armMass.baseUnitMagnitude()
                     * Math.pow(armLength.baseUnitMagnitude(), 2)

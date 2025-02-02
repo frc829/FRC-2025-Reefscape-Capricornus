@@ -19,7 +19,7 @@ public class CommandElevatorConstants {
     // TODO: All of these fields are private static and final
     // TODO: Create a Distance named minHeight and assign Meters.of(0.0) to it
     // TODO: Repeat for maxAngle and set to 1 meter
-    // TODO: Create a Distance named drumRadius and assign Inches.of(1.756) to it
+    // TODO: Create a Distance named drumRadius and assign Inches.of(1.757) to it
 
     // TODO: create an int named primaryMotorDeviceId and assign 15 to it.
     // TODO: create an int named followerMotorDeviceId and assign 25 to it.
