@@ -140,14 +140,14 @@ public class KrakenX60Arm implements Arm {
     }
 
     @Override
-    public void updateSimState(Time dt, Voltage supplyVoltage) {
+    public void updateSimState(double dt, double supplyVoltage) {
         var inputVoltage = talonFX.getMotorVoltage().getValue();
         simArm.setInputVoltage(inputVoltage.baseUnitMagnitude());
-        simArm.update(dt.baseUnitMagnitude());
+        simArm.update(dt);
         talonFXSimState.setRawRotorPosition(simArm.getAngleRads() * armConstants.getReduction() / 2 / Math.PI);
         talonFXSimState.setRotorVelocity(simArm.getVelocityRadPerSec() * armConstants.getReduction() / 2 / Math.PI);
-        talonFXSimState.setSupplyVoltage(12.0);
-        canCoderSimState.setSupplyVoltage(12.0);
+        talonFXSimState.setSupplyVoltage(supplyVoltage);
+        canCoderSimState.setSupplyVoltage(supplyVoltage);
         canCoderSimState.setMagnetHealth(MagnetHealthValue.Magnet_Green);
         canCoderSimState.setVelocity(simArm.getVelocityRadPerSec() / 2 / Math.PI);
         canCoderSimState.setRawPosition(simArm.getAngleRads() / 2 / Math.PI);
@@ -166,5 +166,15 @@ public class KrakenX60Arm implements Arm {
     @Override
     public boolean isHoldEnabled() {
         return hold;
+    }
+
+    @Override
+    public Angle getMinAngle() {
+        return minAngle;
+    }
+
+    @Override
+    public Angle getMaxAngle() {
+        return maxAngle;
     }
 }

@@ -1,8 +1,11 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -16,8 +19,9 @@ import static edu.wpi.first.units.Units.*;
 
 public class CommandArm implements Subsystem {
     private final Arm arm;
+    private double lastSimTime;
+    private final Time simLoopPeriod;
     private final MutTime currentTime = Seconds.mutable(Timer.getFPGATimestamp());
-    private final MutTime lastSimTime = currentTime.mutableCopy();
     private final MutVoltage supplyVoltage = Volts.mutable(0.0);
     private final MutTime deltaTime = Seconds.mutable(0.0);
 
@@ -25,6 +29,10 @@ public class CommandArm implements Subsystem {
 
     public CommandArm(Arm arm, Time simLoopPeriod) {
         this.arm = arm;
+        this.simLoopPeriod = simLoopPeriod;
+        if (Utils.isSimulation()) {
+            startSimThread();
+        }
     }
 
     public Command applyRequest(Supplier<ArmRequest> requestSupplier) {
@@ -37,12 +45,20 @@ public class CommandArm implements Subsystem {
         ArmState armState = arm.getState();
     }
 
-    public void startSimThread() {
-        currentTime.mut_setMagnitude(Timer.getFPGATimestamp());
-        deltaTime.mut_setMagnitude(currentTime.baseUnitMagnitude() - lastSimTime.baseUnitMagnitude());
-        lastSimTime.mut_replace(currentTime);
-        supplyVoltage.mut_setMagnitude(12.0);
-        arm.updateSimState(deltaTime, supplyVoltage);
+    private void startSimThread() {
+        lastSimTime = Utils.getCurrentTimeSeconds();
+
+        /* Run simulation at a faster rate so PID gains behave more reasonably */
+        /* use the measured time delta, get battery voltage from WPILib */
+        Notifier m_simNotifier = new Notifier(() -> {
+            final double currentTime = Utils.getCurrentTimeSeconds();
+            double deltaTime = currentTime - lastSimTime;
+            lastSimTime = currentTime;
+
+            /* use the measured time delta, get battery voltage from WPILib */
+            arm.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+        });
+        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
 }
 

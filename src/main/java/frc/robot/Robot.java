@@ -17,7 +17,6 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     robotContainer = new RobotContainer();
-    addPeriodic(() -> commandArm.startSimThread(), 0.001);
   }
 
   @Override

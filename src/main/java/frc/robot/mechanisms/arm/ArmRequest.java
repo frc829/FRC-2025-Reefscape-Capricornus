@@ -26,21 +26,14 @@ public interface ArmRequest {
 
     public class Position implements ArmRequest {
         private final MutAngle position = Radians.mutable(0.0);
-        private final Angle minAngle;
-        private final Angle maxAngle;
 
-
-        public Position(Angle minAngle, Angle maxAngle) {
-            this.minAngle = minAngle;
-            this.maxAngle = maxAngle;
-        }
 
         @Override
         public void apply(Arm arm) {
             if(arm.isHoldEnabled()){
                 arm.disableHold();
             }
-            if (position.lte(maxAngle) && position.gte(minAngle)) {
+            if (position.lte(arm.getMaxAngle()) && position.gte(arm.getMinAngle())) {
                 arm.setPosition(position);
             } else {
                 arm.setVelocity(RadiansPerSecond.of(0.0));
@@ -57,13 +50,6 @@ public interface ArmRequest {
 
     public class Velocity implements ArmRequest {
         private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
-        private final Angle minAngle;
-        private final Angle maxAngle;
-
-        public Velocity(Angle minAngle, Angle maxAngle) {
-            this.minAngle = minAngle;
-            this.maxAngle = maxAngle;
-        }
 
         @Override
         public void apply(Arm arm) {
@@ -71,7 +57,7 @@ public interface ArmRequest {
                 arm.disableHold();
             }
             ArmState armState = arm.getState();
-            if (armState.getPosition().lte(maxAngle) && armState.getPosition().gte(minAngle)) {
+            if (armState.getPosition().lte(arm.getMaxAngle()) && armState.getPosition().gte(arm.getMinAngle())) {
                 arm.setVelocity(velocity);
             } else {
                 arm.setVelocity(RadiansPerSecond.of(0.0));

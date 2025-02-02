@@ -22,8 +22,8 @@ import frc.robot.mechanisms.arm.KrakenX60Arm;
 import frc.robot.subsystems.CommandArm;
 
 public class CommandArmConstants {
-    public static final Angle minAngle = Degrees.of(-45);
-    public static final Angle maxAngle = Degrees.of(225);
+    private static final Angle minAngle = Degrees.of(-45);
+    private static final Angle maxAngle = Degrees.of(225);
     private static final Distance armLength = Inches.of(31.0);
     private static final int deviceNumber = 14;
     private static final NeutralModeValue neutralModeValue = NeutralModeValue.Brake;

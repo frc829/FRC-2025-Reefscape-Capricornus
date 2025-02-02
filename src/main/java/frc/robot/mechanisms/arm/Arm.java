@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.Voltage;
 
 public interface Arm {
 
-    public void updateSimState(Time dt, Voltage supplyVoltage);
+    public void updateSimState(double dt, double supplyVoltage);
 
     public void setControl(ArmRequest request);
 
@@ -36,4 +36,8 @@ public interface Arm {
     public void resetPosition();
 
     public void update();
+
+    public Angle getMaxAngle();
+
+    public Angle getMinAngle();
 }

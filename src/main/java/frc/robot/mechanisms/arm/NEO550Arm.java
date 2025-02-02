@@ -107,7 +107,7 @@ public class NEO550Arm implements Arm {
     }
 
     @Override
-    public void updateSimState(Time dt, Voltage supplyVoltage) {
+    public void updateSimState(double dt, double supplyVoltage) {
         // TODO: will do later
     }
 
@@ -172,5 +172,15 @@ public class NEO550Arm implements Arm {
     @Override
     public boolean isHoldEnabled() {
         return hold;
+    }
+
+    @Override
+    public Angle getMaxAngle() {
+        return maxAngle;
+    }
+
+    @Override
+    public Angle getMinAngle() {
+        return minAngle;
     }
 }
