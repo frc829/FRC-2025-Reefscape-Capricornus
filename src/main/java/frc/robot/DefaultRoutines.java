@@ -1,7 +1,6 @@
 package frc.robot;
 
-import static frc.robot.RobotContainer.commandArm;
-import static frc.robot.RobotContainer.commandSwerveDrive;
+import static frc.robot.RobotContainer.*;
 
 public class DefaultRoutines {
 
@@ -13,6 +12,7 @@ public class DefaultRoutines {
     static void bind(){
         drive();
         arm();
+        elevator();
     }
 
     private static void drive(){
@@ -21,5 +21,9 @@ public class DefaultRoutines {
 
     private static void arm() {
         commandArm.setDefaultCommand(CommandFactory.ArmCommands.defaultArm());
+    }
+
+    private static void elevator() {
+        commandElevator.setDefaultCommand(CommandFactory.ElevatorCommands.defaultElevator());
     }
 }
