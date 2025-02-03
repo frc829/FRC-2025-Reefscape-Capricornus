@@ -56,27 +56,24 @@ public class CommandArmConstants {
     private static final int cancoderDeviceNumber = 34;
     private static final double magnetDirection = 0.0;
     private static final Time simLoopPeriod = Seconds.of(0.001);
+    private static final AngularVelocity maxAngularVelocity = RadiansPerSecond.of(
+            (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.baseUnitMagnitude());
+    private static final AngularAcceleration maxAngularAcceleration = RadiansPerSecondPerSecond.of(
+            (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / ka.baseUnitMagnitude());
 
 
     public static CommandArm createCommandArm() {
-        SmartDashboard.putNumberArray("FF Constants[ks, kg, kv, ka]",
-                new double[]{
-                        ks.baseUnitMagnitude(),
-                        kg.baseUnitMagnitude(),
-                        kv.baseUnitMagnitude(),
-                        ka.baseUnitMagnitude()
-                });
         CANcoderConfiguration cancoderConfig = new CANcoderConfiguration();
         cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         cancoderConfig.MagnetSensor.MagnetOffset = magnetDirection;
-        CANcoder cancoder = new CANcoder(cancoderDeviceNumber, UniversalRobotConstants.rio);
+        CANcoder cancoder = new CANcoder(cancoderDeviceNumber, RobotConstants.rio);
         cancoder.getConfigurator().apply(cancoderConfig);
 
         TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
         talonFXConfiguration.Voltage.PeakForwardVoltage = 12.0;
         talonFXConfiguration.Voltage.PeakReverseVoltage = -12.0;
         talonFXConfiguration.ClosedLoopGeneral.ContinuousWrap = true;
-        if(RobotBase.isReal()){
+        if (RobotBase.isReal()) {
             talonFXConfiguration.Feedback.FeedbackRemoteSensorID = cancoderDeviceNumber;
             talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         }
@@ -102,11 +99,11 @@ public class CommandArmConstants {
         talonFXConfiguration.Slot1.kA = ka.baseUnitMagnitude();
         talonFXConfiguration.Slot1.kG = kg.baseUnitMagnitude();
         talonFXConfiguration.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
-        TalonFX talonFX = new TalonFX(deviceNumber, UniversalRobotConstants.rio);
+        TalonFX talonFX = new TalonFX(deviceNumber, RobotConstants.rio);
         talonFX.getConfigurator().apply(talonFXConfiguration);
 
 
-        ArmConstants armConstants = new ArmConstants(maxAngle, minAngle, ks, kg, kv, ka, armLength, reduction, Radians.of(0.0), Radians.of(0.0), RadiansPerSecond.of(0.0));
+        ArmConstants armConstants = new ArmConstants(maxAngle, minAngle, maxAngularVelocity, maxAngularAcceleration, ks, kg, kv, ka, armLength, reduction, Radians.of(0.0), Radians.of(0.0), RadiansPerSecond.of(0.0));
 
 
         Arm arm = new KrakenX60Arm(armConstants, talonFX, cancoder);

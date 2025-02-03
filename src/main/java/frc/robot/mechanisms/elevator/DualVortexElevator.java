@@ -15,6 +15,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,9 +45,9 @@ public class DualVortexElevator implements Elevator {
     private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private final ElevatorSim simElevator;
-    private final SparkFlexSim primarySparkFlexSim;
-    private final SparkFlexSim followerSparkFlexSim;
+    private ElevatorSim simElevator;
+    private SparkFlexSim primarySparkFlexSim;
+    private SparkFlexSim followerSparkFlexSim;
     private boolean hold = false;
 
     public DualVortexElevator(
@@ -76,19 +77,23 @@ public class DualVortexElevator implements Elevator {
         double maxAcceleration = feedforward.maxAchievableAcceleration(12.0, 0.0);
         this.velocityProfile = new SlewRateLimiter(maxAcceleration);
         this.profilePeriod = updatePeriod;
-        DCMotor dcMotor = DCMotor.getNeoVortex(2);
-        LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
-                elevatorConstants.getKv().baseUnitMagnitude(),
-                elevatorConstants.getKa().baseUnitMagnitude());
-        this.primarySparkFlexSim = new SparkFlexSim(primaryMotor, dcMotor);
-        this.followerSparkFlexSim = new SparkFlexSim(followerMotor, dcMotor);
-        this.simElevator = new ElevatorSim(
-                plant,
-                dcMotor,
-                minHeight.baseUnitMagnitude(),
-                maxHeight.baseUnitMagnitude(),
-                true,
-                Meters.of(0.0).baseUnitMagnitude());
+        if(RobotBase.isSimulation()){
+            DCMotor dcMotor = DCMotor.getNeoVortex(2);
+            LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
+                    elevatorConstants.getKv().baseUnitMagnitude(),
+                    elevatorConstants.getKa().baseUnitMagnitude());
+            this.primarySparkFlexSim = new SparkFlexSim(primaryMotor, dcMotor);
+            this.followerSparkFlexSim = new SparkFlexSim(followerMotor, dcMotor);
+            this.simElevator = new ElevatorSim(
+                    plant,
+                    dcMotor,
+                    minHeight.baseUnitMagnitude(),
+                    maxHeight.baseUnitMagnitude(),
+                    true,
+                    elevatorConstants.getStartingHeight().baseUnitMagnitude());
+            primarySparkFlexSim.setPosition(elevatorConstants.getStartingHeight().baseUnitMagnitude());
+            followerSparkFlexSim.setPosition(elevatorConstants.getStartingHeight().baseUnitMagnitude());
+        }
 
     }
 
@@ -219,4 +224,6 @@ public class DualVortexElevator implements Elevator {
     public boolean isHoldEnabled() {
         return hold;
     }
+
+
 }

@@ -5,34 +5,33 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.mechanisms.wrist.Wrist;
-import frc.robot.mechanisms.wrist.WristRequest;
+import frc.robot.mechanisms.winch.Winch;
+import frc.robot.mechanisms.winch.WinchRequest;
 
 import java.util.function.Supplier;
 
-public class CommandWrist implements Subsystem {
+public class CommandWinch implements Subsystem {
     private final Time simLoopPeriod;
-    private final Wrist wrist;
+    private final Winch winch;
     private double lastSimTime;
 
-    public CommandWrist(Wrist wrist, Time simLoopPeriod) {
-        this.wrist = wrist;
+    public CommandWinch(Winch winch, Time simLoopPeriod) {
+        this.winch = winch;
         this.simLoopPeriod = simLoopPeriod;
         if (RobotBase.isSimulation()) {
             startSimThread();
         }
     }
 
-    public Command applyRequest(Supplier<WristRequest> requestSupplier) {
-        return run(() -> wrist.setControl(requestSupplier.get()));
+    public Command applyRequest(Supplier<WinchRequest> requestSupplier) {
+        return run(() -> winch.setControl(requestSupplier.get()));
     }
 
     @Override
     public void periodic() {
-        wrist.update();
+        winch.update();
     }
 
     private void startSimThread() {
@@ -46,7 +45,7 @@ public class CommandWrist implements Subsystem {
             lastSimTime = currentTime;
 
             /* use the measured time delta, get battery voltage from WPILib */
-            wrist.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            winch.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }

@@ -2,57 +2,31 @@ package frc.robot.mechanisms.winch;
 
 import edu.wpi.first.units.measure.Dimensionless;
 
-import static frc.robot.mechanisms.winch.WinchRequest.Idle;
+public interface Winch {
 
-public abstract class Winch {
+    public void updateSimState(double dt, double supplyVoltage);
 
-    public enum ControlState {
-        DUTY_CYCLE,
-        IDLE
-    }
+    public void setControl(WinchRequest request);
 
-    protected final WinchState lastWinchState = new WinchState();
-    protected final WinchState winchState = new WinchState();
-    protected final SimWinch simArm = new SimWinch();
-    private WinchRequest winchRequest = new Idle();
+    public WinchState getState();
 
-    public Winch() {
-    }
+    public WinchState getStateCopy();
 
-    public void updateSimState(double dtSeconds, double supplyVoltage){
-        simArm.update(dtSeconds, supplyVoltage);
-    }
+    public WinchState getLastArmState();
 
-    public void setControl(WinchRequest request){
-        if(winchRequest != request){
-            winchRequest = request;
-        }
-        request.apply(this);
-    }
+    public void enableHold();
 
-    public final WinchState getState(){
-        return winchState;
-    }
+    public void disableHold();
 
-    public final WinchState getStateCopy(){
-        return winchState.clone();
-    }
+    public boolean isHoldEnabled();
 
-    public WinchState getLastArmState() {
-        return lastWinchState;
-    }
+    public void updateTelemetry();
 
-    public abstract void updateTelemetry();
+    public boolean setNeutralModeToBrake();
 
-    public abstract boolean setNeutralModeToBrake();
+    public boolean setNeutralModeToCoast();
 
-    public abstract boolean setNeutralModeToCoast();
+    public void setDutyCycle(Dimensionless dutyCycle);
 
-    public abstract void setDutyCycle(Dimensionless dutyCycle);
-
-    public abstract void setIdle();
-
-    public void update(){
-        updateTelemetry();
-    }
+    public void update();
 }

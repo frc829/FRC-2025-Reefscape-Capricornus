@@ -2,60 +2,43 @@ package frc.robot.mechanisms.wrist;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import frc.robot.mechanisms.elevator.ElevatorRequest;
 
-public abstract class Wrist {
+public interface Wrist {
 
-    protected final WristControlParameters wristControlParameters;
-    protected final WristState lastWristState = new WristState();
-    protected final WristState wristState = new WristState();
-    protected final SimWrist simWrist = new SimWrist();
-    private WristRequest wristRequest = new WristRequest.Hold();
+    public void updateSimState(double dt, double supplyVoltage);
 
-    public Wrist(WristControlParameters wristControlParameters) {
-        this.wristControlParameters = wristControlParameters;
-    }
+    public void setControl(WristRequest request);
 
-    public void updateSimState(double dtSeconds, double supplyVoltage){
-        simWrist.update(dtSeconds, supplyVoltage);
-    }
+    public WristState getState();
 
-    public void setControl(WristRequest request){
-        if(wristRequest != request){
-            wristRequest = request;
-        }
-        wristControlParameters.withWristState(wristState);
-        request.apply(wristControlParameters, this);
-    }
+    public WristState getStateCopy();
 
-    public final WristState getState(){
-        return wristState;
-    }
+    public WristState getLastArmState();
 
-    public final WristState getStateCopy(){
-        return wristState.clone();
-    }
+    public void enableHold();
 
-    public WristState getLastWristState() {
-        return lastWristState;
-    }
+    public void disableHold();
 
-    public abstract void updateTelemetry();
+    public boolean isHoldEnabled();
 
-    public abstract boolean setNeutralModeToBrake();
+    public void updateTelemetry();
 
-    public abstract boolean setNeutralModeToCoast();
+    public boolean setNeutralModeToBrake();
 
-    public abstract void setVelocity(AngularVelocity velocity);
+    public boolean setNeutralModeToCoast();
 
-    public abstract void setPosition(Angle position);
+    public void setVelocity(AngularVelocity velocity);
 
-    public abstract void setHold();
+    public void setPosition(Angle position);
 
-    public abstract void resetPosition();
+    public void resetPosition();
 
-    public void update(){
-        updateTelemetry();
-    }
+    public void update();
+
+    public Angle getMaxAngle();
+
+    public Angle getMinAngle();
 
 
 

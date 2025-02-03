@@ -9,6 +9,8 @@ public class ArmState implements Cloneable {
     private final MutAngle position = Radians.mutable(0.0);
     private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
+    private final MutAngle absolutePosition = Radians.mutable(0.0);
+    private final MutAngularVelocity absoluteVelocity = RadiansPerSecond.mutable(0.0);
 
     public Angle getPosition() {
         return position;
@@ -16,6 +18,10 @@ public class ArmState implements Cloneable {
 
     public AngularVelocity getVelocity() {
         return velocity;
+    }
+
+    public Time getTimestamp() {
+        return timestamp;
     }
 
     public ArmState withPosition(Angle position){
@@ -30,6 +36,16 @@ public class ArmState implements Cloneable {
 
     public ArmState withTimestamp(Time timestamp){
         this.timestamp.mut_replace(timestamp);
+        return this;
+    }
+
+    public ArmState withAbsolutePosition(Angle absolutePosition){
+        this.absolutePosition.mut_replace(absolutePosition);
+        return this;
+    }
+
+    public ArmState withAbsoluteVelocity(AngularVelocity absoluteVelocity){
+        this.absoluteVelocity.mut_replace(absoluteVelocity);
         return this;
     }
 
@@ -51,5 +67,13 @@ public class ArmState implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    public Angle getAbsolutePosition() {
+        return absolutePosition;
+    }
+
+    public AngularVelocity getAbsoluteVelocity() {
+        return absoluteVelocity;
     }
 }

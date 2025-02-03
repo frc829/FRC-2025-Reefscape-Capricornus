@@ -1,148 +1,211 @@
 package frc.robot.mechanisms.wrist;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.REVLibError;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.SparkBaseConfig;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-
-import javax.naming.ldap.Control;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 import static com.revrobotics.spark.SparkBase.PersistMode.*;
 import static com.revrobotics.spark.SparkBase.ResetMode.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
 import static edu.wpi.first.units.Units.*;
 
-public class NEO550Wrist extends Wrist {
-
-    public enum ControlState {
-        POSITION,
-        VELOCITY,
-        HOLD,
-    }
-
-    private final SparkFlex primaryMotor;
-    private final SparkBaseConfig primaryMotorConfig;
+public class NEO550Wrist implements Wrist {
+    private final Angle minAngle;
+    private final Angle maxAngle;
+    private final WristState lastWristState = new WristState();
+    private final WristState wristState = new WristState();
+    private final WristTelemetry wristTelemetry;
+    private DCMotorSim simWrist;
+    private SparkMaxSim sparkMaxSim;
+    private WristRequest wristRequest;
+    private final SparkMax motor;
+    private final SparkBaseConfig config;
     private final ExponentialProfile positionProfile;
     private final SlewRateLimiter velocityProfile;
-    private final ClosedLoopSlot positionClosedLoopSlot;
-    private final ClosedLoopSlot velocityClosedLoopSlot;
     private final ExponentialProfile.State goalState = new ExponentialProfile.State();
     private final SimpleMotorFeedforward feedforward;
     private final Time profilePeriod;
     private final MutAngle position = Radians.mutable(0.0);
     private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
+    private final CANcoder cancoder;
+    private boolean hold = false;
+
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private ControlState controlState = ControlState.VELOCITY;
 
     public NEO550Wrist(
-            WristControlParameters wristControlParameters,
-            SparkFlex primaryMotor,
-            SparkBaseConfig primaryMotorConfig,
-            ClosedLoopSlot positionClosedLoopSlot,
-            ClosedLoopSlot velocityClosedLoopSlot) {
-        super(wristControlParameters);
-        this.primaryMotor = primaryMotor;
-        this.primaryMotorConfig = primaryMotorConfig;
-        this.positionClosedLoopSlot = positionClosedLoopSlot;
-        this.velocityClosedLoopSlot = velocityClosedLoopSlot;
+            WristConstants wristConstants,
+            SparkMax motor,
+            SparkBaseConfig config,
+            CANcoder cancoder,
+            Time updatePeriod) {
+        minAngle = wristConstants.getMinAngle();
+        maxAngle = wristConstants.getMaxAngle();
+        this.cancoder = cancoder;
+        this.motor = motor;
+        this.config = config;
         this.feedforward = new SimpleMotorFeedforward(
-                wristControlParameters.getKs().baseUnitMagnitude(),
-                wristControlParameters.getKv().baseUnitMagnitude(),
-                wristControlParameters.getKa().baseUnitMagnitude(),
-                wristControlParameters.getUpdatePeriod().baseUnitMagnitude());
+                wristConstants.getKs().baseUnitMagnitude(),
+                wristConstants.getKv().baseUnitMagnitude(),
+                wristConstants.getKa().baseUnitMagnitude(),
+                updatePeriod.baseUnitMagnitude());
         this.positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
                         12.0,
-                        wristControlParameters.getKv().baseUnitMagnitude(),
-                        wristControlParameters.getKa().baseUnitMagnitude()));
+                        wristConstants.getKv().baseUnitMagnitude(),
+                        wristConstants.getKa().baseUnitMagnitude()));
         double maxAcceleration = feedforward.maxAchievableAcceleration(12.0, 0.0);
         this.velocityProfile = new SlewRateLimiter(maxAcceleration);
-        this.profilePeriod = wristControlParameters.getUpdatePeriod();
-
+        this.profilePeriod = updatePeriod;
+        motor.getEncoder().setPosition(cancoder.getPosition().getValue().in(Radians));
+        if (RobotBase.isSimulation()) {
+            DCMotor dcMotor = DCMotor.getNeo550(1);
+            LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
+                    wristConstants.getKv().baseUnitMagnitude(),
+                    wristConstants.getKa().baseUnitMagnitude());
+            this.sparkMaxSim = new SparkMaxSim(motor, dcMotor);
+            this.simWrist = new DCMotorSim(
+                    plant,
+                    dcMotor,
+                    Radians.of(0.0).baseUnitMagnitude(),
+                    RadiansPerSecond.of(0.0).baseUnitMagnitude());
+            sparkMaxSim.setPosition(wristConstants.getStartingAngle().baseUnitMagnitude());
+        }
+        this.wristTelemetry = new WristTelemetry(
+                "Wrist",
+                wristConstants.getMinAngle(),
+                wristConstants.getMaxAngle(),
+                wristConstants.getMaxAngularVelocity(),
+                wristConstants.getMaxAngularAcceleration());
     }
 
     @Override
     public boolean setNeutralModeToBrake() {
-        primaryMotorConfig.idleMode(kBrake);
-        REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        config.idleMode(kBrake);
+        REVLibError primaryMotorConfigStatus = motor.configureAsync(config, kNoResetSafeParameters, kPersistParameters);
         return primaryMotorConfigStatus == REVLibError.kOk;
     }
 
     @Override
     public boolean setNeutralModeToCoast() {
-        primaryMotorConfig.idleMode(kCoast);
-        REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        config.idleMode(kCoast);
+        REVLibError primaryMotorConfigStatus = motor.configureAsync(config, kNoResetSafeParameters, kPersistParameters);
         return primaryMotorConfigStatus == REVLibError.kOk;
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity) {
-        goalState.velocity = velocity.baseUnitMagnitude();
-        controlState = ControlState.VELOCITY;
+    public WristState getState() {
+        return wristState;
     }
+
+    @Override
+    public WristState getStateCopy() {
+        return wristState.clone();
+    }
+
+    @Override
+    public WristState getLastArmState() {
+        return lastWristState;
+    }
+
+    @Override
+    public void setControl(WristRequest request) {
+        if (wristRequest != request) {
+            wristRequest = request;
+        }
+        request.apply(this);
+    }
+
 
     @Override
     public void setPosition(Angle position) {
-    goalState.position = position.baseUnitMagnitude();
-    goalState.velocity = 0.0;
-    controlState = ControlState.POSITION;
+        var lastVelocitySetpoint = lastState.velocity;
+        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
+        var nextVelocitySetPoint = lastState.velocity;
+        var nextPositionSetPoint = lastState.position;
+        var arbFeedForward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetPoint);
+        motor.getClosedLoopController().setReference(nextPositionSetPoint, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0, arbFeedForward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        velocityProfile.reset(nextVelocitySetPoint);
     }
 
     @Override
-    public void setHold() {
-        if(controlState != ControlState.HOLD) {
-            goalState.position = primaryMotor.getEncoder().getPosition();
-            controlState = ControlState.HOLD;
-        }
-    }
-
-    @Override
-    public void update() {
-        super.update();
-        wristState.withPosition(position.mut_setBaseUnitMagnitude(primaryMotor.getEncoder().getPosition()));
-        wristState.withVelocity(velocity.mut_setBaseUnitMagnitude(primaryMotor.getEncoder().getVelocity()));
-        wristState.withTimestamp(timestamp.mut_setBaseUnitMagnitude(Timer.getFPGATimestamp()));
-        switch (controlState) {
-            case VELOCITY -> applyVelocity();
-            case POSITION, HOLD -> applyPosition();
-        }
-    }
-
-    @Override
-    public void updateTelemetry() {
-        // TODO: will do later
+    public void setVelocity(AngularVelocity velocity) {
+        var nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
+        var lastVelocitySetpoint = lastState.velocity;
+        var arbFeedforward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+        motor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, ClosedLoopSlot.kSlot1, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        motor.getEncoder().setPosition(lastState.position);
+        lastState.position = nextVelocitySetpoint;
     }
 
     @Override
     public void resetPosition() {
-        primaryMotor.getEncoder().setPosition(0.0);
+        motor.getEncoder().setPosition(cancoder.getPosition().getValue().in(Radians));
+        update();
     }
 
-    private void applyVelocity() {
-        var nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
-        var lastVelocitySetpoint = lastState.velocity;
-        var arbFeedforward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
-        primaryMotor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, velocityClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        primaryMotor.getEncoder().setPosition(lastState.position);
-        lastState.position = nextVelocitySetpoint;
+    @Override
+    public void update() {
+        lastWristState.withWristState(wristState);
+        updateState();
+        updateTelemetry();
     }
 
-    private void applyPosition() {
-        var lastVelocitySetpoint = lastState.velocity;
-        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
-        var nextVelocitySetPoint = lastState.velocity;
-        var nextPositionsetPoint = lastState.position;
-        var arbFeedForward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetPoint);
-        primaryMotor.getClosedLoopController().setReference(nextPositionsetPoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedForward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        velocityProfile.reset(nextVelocitySetPoint);
+    private void updateState() {
+        wristState.withPosition(position.mut_setBaseUnitMagnitude(motor.getEncoder().getPosition()));
+        wristState.withVelocity(velocity.mut_setBaseUnitMagnitude(motor.getEncoder().getVelocity()));
+        wristState.withTimestamp(timestamp.mut_setBaseUnitMagnitude(Timer.getFPGATimestamp()));
+    }
+
+    @Override
+    public void updateTelemetry() {
+        wristTelemetry.telemeterize(wristState);
+    }
+
+    @Override
+    public void updateSimState(double dt, double supplyVoltage) {
+        var inputVoltage = motor.getAppliedOutput() * 12.0;
+        simWrist.setInputVoltage(inputVoltage);
+        simWrist.update(dt);
+        sparkMaxSim.iterate(simWrist.getAngularVelocityRadPerSec(), 12.0, dt);
+    }
+
+    @Override
+    public Angle getMaxAngle() {
+        return maxAngle;
+    }
+
+    @Override
+    public Angle getMinAngle() {
+        return minAngle;
+    }
+
+    @Override
+    public void enableHold() {
+        hold = true;
+    }
+
+    @Override
+    public void disableHold() {
+        hold = false;
+    }
+
+    @Override
+    public boolean isHoldEnabled() {
+        return hold;
     }
 }

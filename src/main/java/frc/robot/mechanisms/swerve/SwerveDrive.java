@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import frc.robot.mechanisms.cameras.Camera;
 
 /**
  * Swerve Drive class utilizing CTR Electronics' Phoenix 6 API with the selected device types.
@@ -25,18 +26,21 @@ public class SwerveDrive {
     private final PhoenixPIDController pathThetaController;
     private final SwerveDriveTelemetry swerveDriveTelemetry;
     private final SwerveRequest.ApplyFieldSpeeds pathApplyFieldSpeeds = new SwerveRequest.ApplyFieldSpeeds();
+    private final Camera[] cameras;
 
     public SwerveDrive(
             SwerveDrivetrain<TalonFX, TalonFX, CANcoder> swerveDriveTrain,
             PhoenixPIDController pathXController,
             PhoenixPIDController pathYController,
             PhoenixPIDController pathThetaController,
-            SwerveDriveTelemetry swerveDriveTelemetry) {
+            SwerveDriveTelemetry swerveDriveTelemetry,
+            Camera... cameras) {
         this.swerveDriveTrain = swerveDriveTrain;
         this.pathXController = pathXController;
         this.pathYController = pathYController;
         this.pathThetaController = pathThetaController;
         this.swerveDriveTelemetry = swerveDriveTelemetry;
+        this.cameras = cameras;
     }
 
     public void setControl(SwerveRequest request) {
@@ -108,7 +112,7 @@ public class SwerveDrive {
         return swerveDriveTrain.getState().Pose;
     }
 
-    public ChassisSpeeds getRobotRelativeSpeeds(){
+    public ChassisSpeeds getRobotRelativeSpeeds() {
         return swerveDriveTrain.getState().Speeds;
     }
 
@@ -120,7 +124,7 @@ public class SwerveDrive {
         swerveDriveTrain.seedFieldCentric();
     }
 
-    public void updateTelemetry(){
+    public void updateTelemetry() {
         swerveDriveTelemetry.telemeterize(swerveDriveTrain.getState());
     }
 }
