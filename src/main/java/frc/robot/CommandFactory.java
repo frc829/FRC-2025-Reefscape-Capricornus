@@ -15,8 +15,8 @@ import frc.robot.mechanisms.arm.ArmRequest;
 import frc.robot.mechanisms.elevator.ElevatorRequest;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.RobotContainer.*;
-import static frc.robot.constants.CommandElevatorConstants.Corbins;
 import static frc.robot.constants.CommandSwerveDriveConstants.*;
 
 public class CommandFactory {
@@ -139,7 +139,7 @@ public class CommandFactory {
 
         static Command positionHalfCorbins() {
             ElevatorRequest.Position position = new ElevatorRequest.Position()
-                    .withPosition(Corbins.of(0.5));
+                    .withPosition(Meters.of(1));
             return commandElevator.applyRequest(() -> position).withName("Half Corbin");
         }
     }

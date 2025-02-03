@@ -19,12 +19,10 @@ import frc.robot.subsystems.CommandElevator;
 import static edu.wpi.first.units.Units.*;
 
 public class CommandElevatorConstants {
-    public static final DistanceUnit Corbins = derive(Feet).aggregate(6).named("Corbin").symbol("cb").make();
-    private static final DistanceUnit Corbin = Corbins;
-    private static final DistanceUnit Adams = Corbins;
-    private static final DistanceUnit Adam = Adams;
-    private static final Distance minHeight = Corbins.of(1.0 / 6.0);
-    private static final Distance maxHeight = Adams.of(1.0);
+
+    private static final Distance startingHeight = Feet.of(1.0);
+    private static final Distance minHeight = Feet.of(1.0);
+    private static final Distance maxHeight = Meters.of(2);
     private static final Distance drumRadius = Inches.of(1.757).times(2); // because 2 stages
     private static final int primaryMotorDeviceId = 15;
     private static final int followerMotorDeviceId = 25;
@@ -48,8 +46,8 @@ public class CommandElevatorConstants {
         SparkBaseConfig primaryMotorConfig = new SparkFlexConfig()
                 .idleMode(idleMode)
                 .inverted(primaryInverted);
-        primaryMotorConfig.encoder.positionConversionFactor(1.0);
-        primaryMotorConfig.encoder.velocityConversionFactor(1.0);
+        primaryMotorConfig.encoder.positionConversionFactor(2 * Math.PI * drumRadius.in(Meters) / reduction);
+        primaryMotorConfig.encoder.velocityConversionFactor(2 * Math.PI * drumRadius.in(Meters) / reduction / 60.0);
         primaryMotorConfig.encoder.quadratureAverageDepth(2);
         primaryMotorConfig.encoder.quadratureMeasurementPeriod(16);
         primaryMotorConfig.closedLoop.pid(positionKp, 0, positionKd).feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
@@ -63,10 +61,25 @@ public class CommandElevatorConstants {
         followerMotorConfig.encoder.quadratureMeasurementPeriod(16);
         followerMotorConfig.follow(primaryMotor, true);
 
-        primaryMotor.configure(primaryMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-        followerMotor.configure(followerMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-        ElevatorConstants elevatorConstants = new ElevatorConstants(maxHeight, minHeight, ks, kg, kv, ka, drumRadius, reduction, Corbins.of(1.0 / 6.0), Meters.of(0.0), MetersPerSecond.of(0.0));
-        Elevator elevator = new DualVortexElevator(elevatorConstants, primaryMotor, followerMotor, primaryMotorConfig, followerMotorConfig, updatePeriod);
+        primaryMotor.configure(primaryMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        followerMotor.configure(followerMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        ElevatorConstants elevatorConstants = new ElevatorConstants(
+                maxHeight,
+                minHeight,
+                ks,
+                kg,
+                kv,
+                ka,
+                drumRadius,
+                reduction,
+                startingHeight, Meters.of(0.0), MetersPerSecond.of(0.0));
+        Elevator elevator = new DualVortexElevator(
+                elevatorConstants,
+                primaryMotor,
+                followerMotor,
+                primaryMotorConfig,
+                followerMotorConfig,
+                updatePeriod);
         return new CommandElevator(elevator, simLoopPeriod);
 
 

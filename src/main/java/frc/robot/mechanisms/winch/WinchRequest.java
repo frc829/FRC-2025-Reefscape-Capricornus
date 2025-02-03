@@ -8,10 +8,10 @@ public interface WinchRequest {
 
     public void apply(Winch winch);
 
-    public class Idle implements WinchRequest {
+    public class Hold implements WinchRequest {
         @Override
         public void apply(Winch winch) {
-            winch.setIdle();
+            winch.setDutyCycle(Percent.of(0.0));
         }
     }
 

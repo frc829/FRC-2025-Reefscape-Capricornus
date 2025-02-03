@@ -26,6 +26,7 @@ public class KrakenX60Arm implements Arm {
     private final ArmState armState = new ArmState();
     private final Angle minAngle;
     private final Angle maxAngle;
+    private final ArmTelemetry armTelemetry;
     private ArmRequest armRequest;
     private final ArmConstants armConstants;
     private final TalonFX talonFX;
@@ -61,6 +62,13 @@ public class KrakenX60Arm implements Arm {
                 armConstants.getMaxAngle().baseUnitMagnitude(),
                 true,
                 Radians.of(0.0).baseUnitMagnitude());
+        this.armTelemetry = new ArmTelemetry(
+                "Arm",
+                armConstants.getMinAngle(),
+                armConstants.getMaxAngle(),
+                armConstants.getMaxAngularVelocity(),
+                armConstants.getMaxAngularAcceleration()
+        );
     }
 
     @Override
@@ -110,10 +118,10 @@ public class KrakenX60Arm implements Arm {
 
     @Override
     public void resetPosition() {
-         if(canCoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Invalid && canCoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Red){
-             talonFX.setPosition(canCoder.getPosition().getValue());
-         }
-         updateState();
+        if (canCoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Invalid && canCoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Red) {
+            talonFX.setPosition(canCoder.getPosition().getValue());
+        }
+        updateState();
     }
 
     @Override
@@ -124,18 +132,16 @@ public class KrakenX60Arm implements Arm {
     }
 
     private void updateState() {
-        armState.withPosition(talonFX.getPosition().getValue());
-        armState.withVelocity(talonFX.getVelocity().getValue());
-        armState.withTimestamp(timeStamp.mut_setMagnitude(Timer.getFPGATimestamp()));
+        armState.withPosition(talonFX.getPosition().getValue())
+                .withVelocity(talonFX.getVelocity().getValue())
+                .withAbsolutePosition(canCoder.getAbsolutePosition().getValue())
+                .withAbsoluteVelocity(canCoder.getVelocity().getValue())
+                .withTimestamp(timeStamp.mut_setMagnitude(Timer.getFPGATimestamp()));
     }
 
     @Override
     public void updateTelemetry() {
-        SmartDashboard.putNumberArray("State [deg, dps]", new double[]{
-                armState.getPosition().in(Degrees),
-                armState.getVelocity().in(DegreesPerSecond)});
-        SmartDashboard.putBoolean("Hold", isHoldEnabled());
-        // TODO: will do later
+        armTelemetry.telemeterize(armState);
     }
 
     @Override

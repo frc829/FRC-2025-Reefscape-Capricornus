@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.constants.CommandArmConstants;
 import frc.robot.constants.CommandElevatorConstants;
+import frc.robot.constants.CommandHookConstants;
 import frc.robot.constants.CommandSwerveDriveConstants;
 import frc.robot.subsystems.CommandArm;
 import frc.robot.subsystems.CommandElevator;
