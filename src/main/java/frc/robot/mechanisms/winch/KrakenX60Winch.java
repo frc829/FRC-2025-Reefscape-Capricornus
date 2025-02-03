@@ -1,7 +1,9 @@
 package frc.robot.mechanisms.winch;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Dimensionless;
 
 public class KrakenX60Winch extends Winch {
@@ -19,29 +21,26 @@ public class KrakenX60Winch extends Winch {
 
     @Override
     public boolean setNeutralModeToBrake() {
-        // TODO: call talonFX.setNeutralMode() passing in NeutralModeValue.Brake and assign to a StatusCode variable called code.
-        // TODO: return code == StatusCode.OK
-        return false; // TODO: remove this when done.
+        StatusCode code = talonFX.setNeutralMode(NeutralModeValue.Brake);
+        return code == StatusCode.OK;
     }
 
     @Override
     public boolean setNeutralModeToCoast() {
-        // TODO: call talonFX.setNeutralMode() passing in NeutralModeValue.Coast and assign to a StatusCode variable called code.
-        // TODO: return code == StatusCode.OK
-        return false; // TODO: remove this when done.
+        StatusCode code = talonFX.setNeutralMode(NeutralModeValue.Coast);
+        return code == StatusCode.OK;
     }
 
     @Override
     public void setDutyCycle(Dimensionless dutyCycle) {
-        // TODO: assign ControlState.DUTY_CYCLE to controlState
-        // TODO: call dutyCycleOut's withOutput method and pass in dutyCycle.baseUnitMagnitude()
+        controlState = ControlState.DUTY_CYCLE;
+        dutyCycleOut.withOutput(dutyCycle.baseUnitMagnitude());
     }
 
     @Override
     public void setIdle() {
-        // TODO: assign ControlState.IDLE to controlState
-        // TODO: call dutyCycleOut's withOutput method and pass in 0.0
-
+        controlState = ControlState.IDLE;
+        dutyCycleOut.withOutput(0.0);
     }
 
     @Override
@@ -56,6 +55,6 @@ public class KrakenX60Winch extends Winch {
     }
 
     private void applyDutyCycle() {
-        // TODO: call talonFX's setControl method and pass in dutyCycleControl
+        talonFX.setControl(dutyCycleOut);
     }
 }
