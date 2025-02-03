@@ -3,7 +3,7 @@ package frc.robot.mechanisms.arm;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 
-public class ArmControlParameters {
+public class ArmConstants {
 
     private final Angle maxAngle;
     private final Angle minAngle;
@@ -11,25 +11,35 @@ public class ArmControlParameters {
     private final Voltage kg;
     private final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv;
     private final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka;
-    private final Time updatePeriod;
-    private final ArmState currentState = new ArmState();
+    private final Distance armLength;
+    private final double reduction;
+    private final Angle startingAngle;
+    private final Angle positionStdDev;
+    private final AngularVelocity velocityStdDev;
 
-
-    public ArmControlParameters(
+    public ArmConstants(
             Angle maxAngle,
             Angle minAngle,
             Voltage ks,
             Voltage kg,
             Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv,
             Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka,
-            Time updatePeriod) {
+            Distance armLength,
+            double reduction,
+            Angle startingAngle,
+            Angle positionStdDev,
+            AngularVelocity velocityStdDev) {
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
         this.ks = ks;
         this.kg = kg;
         this.kv = kv;
         this.ka = ka;
-        this.updatePeriod = updatePeriod;
+        this.armLength = armLength;
+        this.reduction = reduction;
+        this.startingAngle = startingAngle;
+        this.positionStdDev = positionStdDev;
+        this.velocityStdDev = velocityStdDev;
     }
 
     public Angle getMaxAngle() {
@@ -38,10 +48,6 @@ public class ArmControlParameters {
 
     public Angle getMinAngle() {
         return minAngle;
-    }
-
-    public ArmState getCurrentState() {
-        return currentState;
     }
 
     public Voltage getKs() {
@@ -60,13 +66,23 @@ public class ArmControlParameters {
         return kg;
     }
 
-    public ArmControlParameters withArmState(ArmState state) {
-        currentState.withArmState(state);
-        return this;
+    public Distance getArmLength() {
+        return armLength;
     }
 
+    public double getReduction() {
+        return reduction;
+    }
 
-    public Time getUpdatePeriod() {
-        return updatePeriod;
+    public Angle getStartingAngle() {
+        return startingAngle;
+    }
+
+    public Angle getPositionStdDev() {
+        return positionStdDev;
+    }
+
+    public AngularVelocity getVelocityStdDev() {
+        return velocityStdDev;
     }
 }

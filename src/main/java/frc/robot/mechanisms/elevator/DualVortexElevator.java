@@ -1,32 +1,42 @@
 package frc.robot.mechanisms.elevator;
 
 import com.revrobotics.REVLibError;
-import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import static com.revrobotics.spark.ClosedLoopSlot.*;
 import static com.revrobotics.spark.SparkBase.PersistMode.*;
 import static com.revrobotics.spark.SparkBase.ResetMode.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
 import static edu.wpi.first.units.Units.*;
 
-public class DualVortexElevator extends Elevator {
-
+public class DualVortexElevator implements Elevator {
+    private final ElevatorState lastElevatorState = new ElevatorState();
+    private final ElevatorState elevatorState = new ElevatorState();
+    private final Distance minHeight;
+    private final Distance maxHeight;
+    private ElevatorRequest elevatorRequest;
     private final SparkFlex primaryMotor;
     private final SparkFlex followerMotor;
     private final SparkBaseConfig primaryMotorConfig;
     private final SparkBaseConfig followerMotorConfig;
     private final ExponentialProfile positionProfile;
     private final SlewRateLimiter velocityProfile;
-    private final ClosedLoopSlot positionClosedLoopSlot;
-    private final ClosedLoopSlot velocityClosedLoopSlot;
     private final ExponentialProfile.State goalState = new ExponentialProfile.State();
     private final ElevatorFeedforward feedforward;
     private final Time profilePeriod;
@@ -34,115 +44,179 @@ public class DualVortexElevator extends Elevator {
     private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private ControlState controlState = ControlState.VELOCITY;
+    private final ElevatorSim simElevator;
+    private final SparkFlexSim primarySparkFlexSim;
+    private final SparkFlexSim followerSparkFlexSim;
+    private boolean hold = false;
 
     public DualVortexElevator(
-            ElevatorControlParameters elevatorControlParameters,
+            ElevatorConstants elevatorConstants,
             SparkFlex primaryMotor,
             SparkFlex followerMotor,
             SparkBaseConfig primaryMotorConfig,
             SparkBaseConfig followerMotorConfig,
-            ClosedLoopSlot positionClosedLoopSlot,
-            ClosedLoopSlot velocityClosedLoopSlot) {
-        super(elevatorControlParameters);
+            Time updatePeriod) {
+        minHeight = elevatorConstants.getMinHeight();
+        maxHeight = elevatorConstants.getMaxHeight();
         this.primaryMotor = primaryMotor;
         this.followerMotor = followerMotor;
         this.primaryMotorConfig = primaryMotorConfig;
         this.followerMotorConfig = followerMotorConfig;
-        this.positionClosedLoopSlot = positionClosedLoopSlot;
-        this.velocityClosedLoopSlot = velocityClosedLoopSlot;
         this.feedforward = new ElevatorFeedforward(
-                elevatorControlParameters.getKs().baseUnitMagnitude(),
-                elevatorControlParameters.getKg().baseUnitMagnitude(),
-                elevatorControlParameters.getKv().baseUnitMagnitude(),
-                elevatorControlParameters.getKa().baseUnitMagnitude(),
-                elevatorControlParameters.getUpdatePeriod().baseUnitMagnitude());
+                elevatorConstants.getKs().baseUnitMagnitude(),
+                elevatorConstants.getKg().baseUnitMagnitude(),
+                elevatorConstants.getKv().baseUnitMagnitude(),
+                elevatorConstants.getKa().baseUnitMagnitude(),
+                updatePeriod.baseUnitMagnitude());
         this.positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
                         12.0,
-                        elevatorControlParameters.getKv().baseUnitMagnitude(),
-                        elevatorControlParameters.getKa().baseUnitMagnitude()));
+                        elevatorConstants.getKv().baseUnitMagnitude(),
+                        elevatorConstants.getKa().baseUnitMagnitude()));
         double maxAcceleration = feedforward.maxAchievableAcceleration(12.0, 0.0);
         this.velocityProfile = new SlewRateLimiter(maxAcceleration);
-        this.profilePeriod = elevatorControlParameters.getUpdatePeriod();
+        this.profilePeriod = updatePeriod;
+        DCMotor dcMotor = DCMotor.getNeoVortex(2);
+        LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
+                elevatorConstants.getKv().baseUnitMagnitude(),
+                elevatorConstants.getKa().baseUnitMagnitude());
+        this.primarySparkFlexSim = new SparkFlexSim(primaryMotor, dcMotor);
+        this.followerSparkFlexSim = new SparkFlexSim(followerMotor, dcMotor);
+        this.simElevator = new ElevatorSim(
+                plant,
+                dcMotor,
+                minHeight.baseUnitMagnitude(),
+                maxHeight.baseUnitMagnitude(),
+                true,
+                Meters.of(0.0).baseUnitMagnitude());
 
     }
 
     @Override
     public boolean setNeutralModeToBrake() {
-        // TODO: call primaryMotorConfig's idleMode method and pass in kBrake
-        // TODO: call followerMotorConfig's idleMode method and pass in kBrake
-        // TODO: create a REVLibError variable called primaryMotorConfigStatus assign primaryMotor.configureAsync passing in primaryMotorConfig, kNoResetSafeParameters, and  kPersistParameters
-        // TODO: create a REVLibError variable called followerMotorConfigStatus assign followerMotor.configureAsync passing in primaryMotorConfig, kNoResetSafeParameters, and  kPersistParameters
-        // TODO: return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
-        return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+        primaryMotorConfig.idleMode(kBrake);
+        followerMotorConfig.idleMode(kBrake);
+        REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        REVLibError followerMotorConfigStatus = followerMotor.configureAsync(followerMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
     }
 
     @Override
     public boolean setNeutralModeToCoast() {
-        // TODO: identical to setNeutralModeToBrake but with kCoast instead of kBrake
-        return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+        primaryMotorConfig.idleMode(kCoast);
+        followerMotorConfig.idleMode(kCoast);
+        REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        REVLibError followerMotorConfigStatus = followerMotor.configureAsync(followerMotorConfig, kNoResetSafeParameters, kPersistParameters);
+        return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
     }
 
     @Override
-    public void setVelocity(LinearVelocity velocity) {
-        // TODO: assign velocity.baseUnitMagnitude() to goalState.velocity
-        // TODO: assign ControlState.VELOCITY to controlState
+    public ElevatorState getState() {
+        return elevatorState;
+    }
+
+    @Override
+    public ElevatorState getStateCopy() {
+        return elevatorState.clone();
+    }
+
+    @Override
+    public ElevatorState getLastArmState() {
+        return lastElevatorState;
+    }
+
+    @Override
+    public void setControl(ElevatorRequest request) {
+        if (elevatorRequest != request) {
+            elevatorRequest = request;
+        }
+        request.apply(this);
     }
 
     @Override
     public void setPosition(Distance position) {
-        // TODO: assign position.baseUnitMagnitude() to goalState.position
-        // TODO: assign 0.0 to goalState.velocity
-        // TODO: assign ControlState.POSITION to controlState
+        goalState.position = position.baseUnitMagnitude();
+        goalState.velocity = 0.0;
+        double lastVelocitySetpoint = lastState.velocity;
+        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
+        double nextVelocitySetpoint = lastState.velocity;
+        double nextPositionSetpoint = lastState.position;
+        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+        primaryMotor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        velocityProfile.reset(nextVelocitySetpoint);
     }
 
     @Override
-    public void setHold() {
-        // TODO: if the controlState is not equal to HOLD
-        // TODO: then do the following
-        // TODO: assign primaryMotor.getEncoder().getPosition() to goalState.position, assign 0.0 to goalState.velocity, assign ControlState.HOLD to controlState
-    }
-
-    @Override
-    public void update() {
-        super.update();
-        // TODO: call elevatorState.withPosition passing in position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()
-        // TODO: call elevatorState.withVelocity passing in velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()
-        // TODO: call elevatorState.withTimeStamp passing in timestamp.mut_setMagnitude(Timer.getFPGATimestamp())
-        switch (controlState) {
-            case VELOCITY -> applyVelocity();
-            case POSITION, HOLD -> applyPosition();
-        }
-    }
-
-    @Override
-    public void updateTelemetry() {
-        // TODO: will do later
+    public void setVelocity(LinearVelocity velocity) {
+        goalState.velocity = velocity.baseUnitMagnitude();
+        double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
+        double lastVelocitySetPoint = lastState.velocity;
+        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
+        primaryMotor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, kSlot1, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        lastState.position = primaryMotor.getEncoder().getPosition();
+        lastState.velocity = nextVelocitySetpoint;
     }
 
     @Override
     public void resetPosition() {
-        // TODO: call primaryMotor.getEncoder()'s setPosition method passing in 0.0
-        // TODO: do the same for followerMotor
+        primaryMotor.getEncoder().setPosition(0.0);
+        followerMotor.getEncoder().setPosition(0.0);
+        updateState();
     }
 
-    private void applyVelocity() {
-        // TODO: assign velocityProfile.calculate(goalState.velocity) to a variable called nextVelocitySetpoint
-        // TODO: assign lastState.velocity to a variable called lastVelocitySetpoint
-        // TODO: call feedforward's calculateWithVelocities method passing in lastVelocitySetpoint and nextVelocitySetpoint and assign to arbFeedforward
-        // TODO: call primaryMotor.getClosedLoopController's setReference method passing in nextVelocitySetpoint, SparkBase.ControlType.kVelocity, velocityClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        // TODO: call primaryMotor.getEncoder()'s getPosition() method and assign to lastState.position
-        // TODO: assign nextVelocitySetpoint to lastState.velocity
+    @Override
+    public void update() {
+        lastElevatorState.withElevatorState(elevatorState);
+        updateState();
+        updateTelemetry();
     }
 
-    private void applyPosition() {
-        // TODO: assign lastState.velocity to a variable called lastVelocitySetpoint
-        // TODO: call positionProfile's calculate method and passin profilePeriod.baseUnitMagnitude(), lastState, goalState) and assign to lastState
-        // TODO: assign lastState.velocity to a variable called nextVelocitySetpoint
-        // TODO: assign lastState.position to a variable called nextPositionSetpoint
-        // TODO: call feedforward's calculateWithVelocities method passing in lastVelocitySetpoint and nextVelocitySetpoint and assign to arbFeedforward
-        // TODO: call primaryMotor.getClosedLoopController's setReference method passing in nextPositionSetpoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        // TODO: call velocityProfile's reset method passing in nextVelocitySetpoint
+    private void updateState() {
+        elevatorState.withPosition(position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()));
+        elevatorState.withVelocity(velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()));
+        elevatorState.withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()));
+    }
+
+    @Override
+    public void updateTelemetry() {
+        SmartDashboard.putNumberArray("State [meters, mps]", new double[]{
+                elevatorState.getPosition().in(Meters),
+                elevatorState.getVelocity().in(MetersPerSecond)});
+        SmartDashboard.putBoolean("Hold", isHoldEnabled());
+        // TODO: will do later
+    }
+
+    @Override
+    public void updateSimState(double dt, double supplyVoltage) {
+        var inputVoltage = primaryMotor.getAppliedOutput() * 12.0;
+        simElevator.setInputVoltage(inputVoltage);
+        simElevator.update(dt);
+        primarySparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);
+        followerSparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);
+    }
+
+    @Override
+    public Distance getMaxPosition() {
+        return maxHeight;
+    }
+
+    @Override
+    public Distance getMinPosition() {
+        return minHeight;
+    }
+
+    @Override
+    public void disableHold() {
+        hold = false;
+    }
+
+    @Override
+    public void enableHold() {
+        hold = true;
+    }
+
+    @Override
+    public boolean isHoldEnabled() {
+        return hold;
     }
 }

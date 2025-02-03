@@ -1,9 +1,9 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Utils;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.mechanisms.elevator.Elevator;
@@ -12,13 +12,14 @@ import frc.robot.mechanisms.elevator.ElevatorRequest;
 import java.util.function.Supplier;
 
 public class CommandElevator implements Subsystem {
-    private static final double simLoopPeriod = 0.005;
     private final Elevator elevator;
     private double lastSimTime;
+    private final Time simLoopPeriod;
 
-    public CommandElevator(Elevator elevator) {
+    public CommandElevator(Elevator elevator, Time simLoopPeriod) {
         this.elevator = elevator;
-        if (RobotBase.isSimulation()) {
+        this.simLoopPeriod = simLoopPeriod;
+        if (Utils.isSimulation()) {
             startSimThread();
         }
     }
@@ -33,16 +34,18 @@ public class CommandElevator implements Subsystem {
     }
 
     private void startSimThread() {
-        lastSimTime = Timer.getFPGATimestamp();
-        try (Notifier simNotifier = new Notifier(() -> {
-            final double currentTime = Timer.getFPGATimestamp();
+        lastSimTime = Utils.getCurrentTimeSeconds();
+
+        /* Run simulation at a faster rate so PID gains behave more reasonably */
+        /* use the measured time delta, get battery voltage from WPILib */
+        Notifier m_simNotifier = new Notifier(() -> {
+            final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
+
+            /* use the measured time delta, get battery voltage from WPILib */
             elevator.updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        })) {
-            simNotifier.startPeriodic(simLoopPeriod);
-        }
+        });
+        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
-
-
 }

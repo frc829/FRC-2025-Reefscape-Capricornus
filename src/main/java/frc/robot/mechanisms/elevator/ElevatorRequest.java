@@ -1,21 +1,26 @@
 package frc.robot.mechanisms.elevator;
 
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.MutDistance;
-import edu.wpi.first.units.measure.MutLinearVelocity;
+import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.*;
 
 public interface ElevatorRequest {
 
-    public void apply(ElevatorControlParameters parameters, Elevator elevator);
+    public void apply(Elevator elevator);
 
     public class Hold implements ElevatorRequest {
+        private final MutDistance holdPosition = Meters.mutable(0.0);
+
         @Override
-        public void apply(ElevatorControlParameters parameters, Elevator elevator) {
-            elevator.setHold();
+        public void apply(Elevator elevator) {
+            boolean isHoldEnabled = elevator.isHoldEnabled();
+            if (!isHoldEnabled) {
+                elevator.enableHold();
+                holdPosition.mut_replace(elevator.getState().getPosition());
+            }
+            SmartDashboard.putNumber("Hold Position [meters]", holdPosition.in(Meters));
+            elevator.setPosition(holdPosition);
         }
     }
 
@@ -23,15 +28,19 @@ public interface ElevatorRequest {
         private final MutDistance position = Meters.mutable(0.0);
 
         @Override
-        public void apply(ElevatorControlParameters parameters, Elevator elevator) {
-            if(position.lte(parameters.getMaxHeight()) && position.gte(parameters.getMinHeight())) {
-                elevator.setPosition(position);
-            }else{
-                elevator.setPosition(parameters.getCurrentState().getPosition());
+        public void apply(Elevator elevator) {
+            if (elevator.isHoldEnabled()) {
+                elevator.disableHold();
             }
+            if (position.lte(elevator.getMaxPosition()) && position.gte(elevator.getMinPosition())) {
+                elevator.setPosition(position);
+            } else {
+                elevator.setVelocity(MetersPerSecond.of(0.0));
+            }
+            SmartDashboard.putNumber("Position Setpoint [meters]", position.in(Meters));
         }
 
-        public Position withPosition(Distance position){
+        public Position withPosition(Distance position) {
             this.position.mut_replace(position);
             return this;
         }
@@ -41,19 +50,21 @@ public interface ElevatorRequest {
         private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
 
         @Override
-        public void apply(ElevatorControlParameters parameters, Elevator elevator) {
-            if(parameters.getCurrentState().getPosition().lte(parameters.getMaxHeight()) && parameters.getCurrentState().getPosition().gte(parameters.getMinHeight())){
+        public void apply(Elevator elevator) {
+            if (elevator.isHoldEnabled()) {
+                elevator.disableHold();
+            }
+            ElevatorState elevatorState = elevator.getState();
+            if (elevatorState.getPosition().lte(elevator.getMaxPosition()) && elevatorState.getPosition().gte(elevator.getMinPosition())) {
                 elevator.setVelocity(velocity);
-            }else{
+            } else {
                 elevator.setVelocity(MetersPerSecond.of(0.0));
             }
         }
 
-        public Velocity withVelocity(LinearVelocity velocity){
+        public Velocity withVelocity(LinearVelocity velocity) {
             this.velocity.mut_replace(velocity);
             return this;
         }
     }
-
-
 }
