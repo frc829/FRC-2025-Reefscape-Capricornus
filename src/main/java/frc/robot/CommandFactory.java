@@ -124,7 +124,7 @@ public class CommandFactory {
             return commandArm.applyRequest(() -> holdRequest).withName("HOLD");
         }
 
-        static Command position5Degrees() {
+        static Command testCommand() {
             ArmRequest.Position position = new ArmRequest.Position()
                     .withPosition(Degrees.of(10.0));
             return commandArm.applyRequest(() -> position).withName("POSITION");
@@ -137,12 +137,29 @@ public class CommandFactory {
             return commandElevator.applyRequest(() -> holdRequest).withName("HOLD");
         }
 
-        static Command positionHalfCorbins() {
+        static Command testCommand() {
             ElevatorRequest.Position position = new ElevatorRequest.Position()
                     .withPosition(Meters.of(1));
             return commandElevator.applyRequest(() -> position).withName("Half Corbin");
         }
     }
+
+    static class WristCommands {
+
+    }
+
+    static class IntakeAndElementCommands {
+
+    }
+
+    static class WinchCommands {
+
+    }
+
+    static class HookCommands {
+
+    }
+
 
     static class SysIdCommands {
 

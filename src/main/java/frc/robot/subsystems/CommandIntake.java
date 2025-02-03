@@ -6,30 +6,30 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.mechanisms.intake.DualIntake;
-import frc.robot.mechanisms.intake.DualIntakeRequest;
+import frc.robot.mechanisms.intake.Intake;
+import frc.robot.mechanisms.intake.IntakeMotorRequest;
 
 import java.util.function.Supplier;
 
 public class CommandIntake implements Subsystem {
     private static final double simLoopPeriod = 0.005;
-    private final DualIntake dualIntake;
+    private final Intake intake;
     private double lastSimTime;
 
-    public CommandIntake(DualIntake dualIntake) {
-        this.dualIntake = dualIntake;
+    public CommandIntake(Intake intake) {
+        this.intake = intake;
         if (RobotBase.isSimulation()) {
             startSimThread();
         }
     }
 
-    public Command applyRequest(Supplier<DualIntakeRequest> requestSupplier) {
-        return run(() -> dualIntake.setControl(requestSupplier.get()));
+    public Command applyRequest(Supplier<IntakeMotorRequest> requestSupplier) {
+        return run(() -> intake.setControl(requestSupplier.get()));
     }
 
     @Override
     public void periodic() {
-        dualIntake.update();
+        intake.update();
     }
 
     private void startSimThread() {
@@ -38,7 +38,7 @@ public class CommandIntake implements Subsystem {
             final double currentTime = Timer.getFPGATimestamp();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
-            dualIntake.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            intake.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         })) {
             simNotifier.startPeriodic(simLoopPeriod);
         }

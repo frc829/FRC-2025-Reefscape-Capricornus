@@ -1,6 +1,5 @@
 package frc.robot.mechanisms.intake;
 
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -11,62 +10,54 @@ import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.List;
+
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
-public class NEO550DualIntake extends DualIntake {
+public class DualNEO550Intake implements Intake {
 
+    private final Time profilePeriod;
     private final SparkMax motor0;
     private final SparkMax motor1;
     private final SparkBaseConfig motor0Config;
     private final SparkBaseConfig motor1Config;
     private final SlewRateLimiter motor0Profile;
     private final SlewRateLimiter motor1Profile;
-    private final ClosedLoopSlot motor0ClosedLoopSlot;
-    private final ClosedLoopSlot motor1ClosedLoopSlot;
-    private final SimpleMotorFeedforward motor0Feedforward;
-    private final SimpleMotorFeedforward motor1Feedforward;
-    private final Time profilePeriod;
-    private final MutLinearVelocity intakeVelocity0 = MetersPerSecond.mutable(0.0);
-    private final MutLinearVelocity intakeVelocity1 = MetersPerSecond.mutable(0.0);
-    private final MutTime timestamp = Seconds.mutable(0.0);
+    private final SimpleMotorFeedforward feedforward0;
+    private final SimpleMotorFeedforward feedforward1;
+    private final MutLinearVelocity velocity0 = MetersPerSecond.mutable(0.0);
+    private final MutLinearVelocity velocity1 = MetersPerSecond.mutable(0.0);
+    private final MutTime timestamp0 = Seconds.mutable(0.0);
+    private final MutTime timestamp1 = Seconds.mutable(0.0);
     private final MutLinearVelocity goalVelocity0 = MetersPerSecond.mutable(0.0);
     private final MutLinearVelocity goalVelocity1 = MetersPerSecond.mutable(0.0);
-    private final MutLinearVelocity lastVelocity0 = MetersPerSecond.mutable(0.0);
-    private final MutLinearVelocity lastVelocity1 = MetersPerSecond.mutable(0.0);
-    private ControlState controlState = ControlState.IDLE;
 
-
-    public NEO550DualIntake(
-            DualIntakeControlParameters dualIntakeControlParameters,
+    public DualNEO550Intake(
+            IntakeMotorConstants intakeMotor0Constants,
+            IntakeMotorConstants intakeMotor1Constants,
             SparkMax motor0,
             SparkMax motor1,
             SparkBaseConfig motor0Config,
             SparkBaseConfig motor1Config,
-            ClosedLoopSlot motor0ClosedLoopSlot,
-            ClosedLoopSlot motor1ClosedLoopSlot) {
-        super(dualIntakeControlParameters);
+            Time updatePeriod) {
         this.motor0 = motor0;
         this.motor1 = motor1;
         this.motor0Config = motor0Config;
         this.motor1Config = motor1Config;
-        this.motor0ClosedLoopSlot = motor0ClosedLoopSlot;
-        this.motor1ClosedLoopSlot = motor1ClosedLoopSlot;
-        this.motor0Feedforward = new SimpleMotorFeedforward(
-                dualIntakeControlParameters.getIntake0ks().baseUnitMagnitude(),
-                dualIntakeControlParameters.getIntake0kv().baseUnitMagnitude(),
-                dualIntakeControlParameters.getIntake0ka().baseUnitMagnitude(),
-                dualIntakeControlParameters.getUpdatePeriod().baseUnitMagnitude());
-        this.motor1Feedforward = new SimpleMotorFeedforward(
-                dualIntakeControlParameters.getIntake1ks().baseUnitMagnitude(),
-                dualIntakeControlParameters.getIntake1kv().baseUnitMagnitude(),
-                dualIntakeControlParameters.getIntake1ka().baseUnitMagnitude(),
-                dualIntakeControlParameters.getUpdatePeriod().baseUnitMagnitude());
-        double motor0MaxAcceleration = motor0Feedforward.maxAchievableAcceleration(12.0, 0.0);
-        double motor1MaxAcceleration = motor1Feedforward.maxAchievableAcceleration(12.0, 0.0);
-        this.motor0Profile = new SlewRateLimiter(motor0MaxAcceleration);
-        this.motor1Profile = new SlewRateLimiter(motor1MaxAcceleration);
-        this.profilePeriod = dualIntakeControlParameters.getUpdatePeriod();
+        this.feedforward0 = new SimpleMotorFeedforward(
+                intakeMotor0Constants.getKs().baseUnitMagnitude(),
+                intakeMotor0Constants.getKv().baseUnitMagnitude(),
+                intakeMotor0Constants.getKa().baseUnitMagnitude(),
+                updatePeriod.baseUnitMagnitude());
+        this.feedforward1 = new SimpleMotorFeedforward(
+                intakeMotor1Constants.getKs().baseUnitMagnitude(),
+                intakeMotor1Constants.getKv().baseUnitMagnitude(),
+                intakeMotor1Constants.getKa().baseUnitMagnitude(),
+                updatePeriod.baseUnitMagnitude());
+        this.motor0Profile = new SlewRateLimiter(intakeMotor0Constants.getMaxAngularAcceleration().baseUnitMagnitude());
+        this.motor1Profile = new SlewRateLimiter(intakeMotor1Constants.getMaxAngularAcceleration().baseUnitMagnitude());
+        this.profilePeriod = updatePeriod;
 
 
     }

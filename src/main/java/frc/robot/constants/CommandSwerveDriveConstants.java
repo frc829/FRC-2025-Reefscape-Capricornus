@@ -30,6 +30,7 @@ public class CommandSwerveDriveConstants {
 
     public static final class CameraConstants {
         // TODO: all fields here are private static final
+        AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
         // TODO: create an AprilTagFieldLayout called layout and assign AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
         // TODO: create a PoseStrategy called primaryStrategy and assign PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
         // TODO: create a PoseStrategy called fallbackPoseStragy and assign PoseStrategy.LOWEST_AMBIGUITY;

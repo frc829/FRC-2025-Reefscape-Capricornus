@@ -171,12 +171,12 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void update() {
-        lastElevatorState.withElevatorState(elevatorState);
         updateState();
         updateTelemetry();
     }
 
     private void updateState() {
+        lastElevatorState.withElevatorState(elevatorState);
         elevatorState.withPosition(position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()));
         elevatorState.withVelocity(velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()));
         elevatorState.withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()));

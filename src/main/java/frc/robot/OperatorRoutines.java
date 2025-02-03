@@ -18,10 +18,10 @@ public class OperatorRoutines {
     }
 
     private static void elevator(){
-        operatorController.b().whileTrue(CommandFactory.ElevatorCommands.positionHalfCorbins());
+        operatorController.b().whileTrue(CommandFactory.ElevatorCommands.testCommand());
     }
     private static void arm(){
-        operatorController.a().whileTrue(CommandFactory.ArmCommands.position5Degrees());
+        operatorController.a().whileTrue(CommandFactory.ArmCommands.testCommand());
     }
 
 
