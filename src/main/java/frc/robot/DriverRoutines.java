@@ -20,20 +20,19 @@ public class DriverRoutines {
     }
 
     private static void zeroWheels() {
-        // TODO: bind to driverController button either while or on True
+        driverController.back().whileTrue(CommandFactory.DriveCommands.zeroWheels());
     }
 
     private static void brake() {
-        // TODO: bind to driverController button either while or on True
+        driverController.x().whileTrue(CommandFactory.DriveCommands.brake());
     }
 
     private static void pointModules() {
-        // TODO: bind to driverController button either while or on True
+        driverController.y().whileTrue(CommandFactory.DriveCommands.pointModuleWheels());
     }
 
     private static void seedFieldCentric() {
-        // reset the field-centric heading on left bumper press
-        // TODO: bind to driverController button either while or on True
+        driverController.start().whileTrue(CommandFactory.DriveCommands.seedFieldCentric());
     }
 
     private static void goToReef0(){
