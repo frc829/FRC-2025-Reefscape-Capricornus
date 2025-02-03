@@ -8,6 +8,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.units.measure.*;
 
+import static com.revrobotics.spark.SparkBase.ResetMode.kNoResetSafeParameters;
 import static edu.wpi.first.units.Units.*;
 
 public class NEO550Arm implements Arm {
@@ -64,29 +65,30 @@ public class NEO550Arm implements Arm {
 
     @Override
     public boolean setNeutralModeToBrake() {
-        // TODO: call motorConfig's idleMode method and pass in kBrake
-        // TODO: create a REVLibError variable called motorConfigStatus assign primaryMotor.configureAsync passing in motorConfig, kNoResetSafeParameters, and  kPersistParameters
-        // TODO: return motorConfig == REVLibError.kOk ;
-        return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+        motorConfig.idleMode(kBrake);
+        REVLibError motorConfigStatus = motor.configureAsync(motorConfig, kNoResetSafeParameters, kPersistParameters);
+        return motorConfig == REVLibError.kOk;
     }
 
     @Override
     public boolean setNeutralModeToCoast() {
-        // TODO: identical to setNeutralModeToBrake but with kCoast instead of kBrake
-        return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+            motorConfig.idleMode(kCoast);
+            REVLibError motorConfigStatus = primaryMotor.configureAsync(motorConfig, kNoResetSafeParameters, kPersistParameters);
+            return motorConfig == REVLibError.kOk;
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity) {
-        // TODO: assign velocity.baseUnitMagnitude() to goalState.velocity
-        // TODO: assign ControlState.VELOCITY to controlState
+    public void setVelocity(AngularVelocity velocity){
+        goalState.velocity = velocity.baseUnitMagnitude();
+        controlState = ControlState.VELOCITY;
+
     }
 
     @Override
     public void setPosition(Angle position) {
-        // TODO: assign position.baseUnitMagnitude() to goalState.position
-        // TODO: assign 0.0 to goalState.velocity
-        // TODO: assign ControlState.POSITION to controlState
+        goalState.position = position.baseUnitMagnitude();
+        goalState.velocity = 0.0;
+        controlState = .POSITION;
     }
 
     @Override
@@ -96,9 +98,9 @@ public class NEO550Arm implements Arm {
     }
 
     private void updateState() {
-        // TODO: call armState.withPosition passing in position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()
-        // TODO: call armState.withVelocity passing in velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()
-        // TODO: call armState.withTimeStamp passing in timestamp.mut_setMagnitude(Timer.getFPGATimestamp())
+        armState.withPosition(position.mut_setMagnitude(motor.getEncoder().getPosition()));
+        armState.withVelocity(velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()));
+        armState.withTimeStamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()));
     }
 
     @Override
@@ -136,27 +138,26 @@ public class NEO550Arm implements Arm {
 
     @Override
     public void resetPosition() {
-        // TODO: call motor.getEncoder()'s setPosition method passing in 0.0
-        // TODO: do the same for followerMotor
+        motor.getEncoder().setPosition(0.0);
     }
 
     private void applyVelocity() {
-        // TODO: assign velocityProfile.calculate(goalState.velocity) to a variable called nextVelocitySetpoint
-        // TODO: assign lastState.velocity to a variable called lastVelocitySetpoint
-        // TODO: call feedforward's calculateWithVelocities method passing in lastVelocitySetpoint and nextVelocitySetpoint and assign to arbFeedforward
-        // TODO: call motor.getClosedLoopController's setReference method passing in nextVelocitySetpoint, SparkBase.ControlType.kVelocity, velocityClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        // TODO: call motor.getEncoder()'s getPosition() method and assign to lastState.position
-        // TODO: assign nextVelocitySetpoint to lastState.velocity
+        nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
+        lastVelocitySetpoint = lastState.velocity;
+        arbFeedforward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+        motor.getClosedLoopController.setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, velocityClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        lastState.position = motor.getEncoder().getPosition();
+        lastState.velocity = nextVelocitySetpoint;
     }
 
     private void applyPosition() {
-        // TODO: assign lastState.velocity to a variable called lastVelocitySetpoint
-        // TODO: call positionProfile's calculate method and passing profilePeriod.baseUnitMagnitude(), lastState, goalState) and assign to lastState
-        // TODO: assign lastState.velocity to a variable called nextVelocitySetpoint
-        // TODO: assign lastState.position to a variable called nextPositionSetpoint
-        // TODO: call feedforward's calculateWithVelocities method passing in lastVelocitySetpoint and nextVelocitySetpoint and assign to arbFeedforward
-        // TODO: call motor.getClosedLoopController's setReference method passing in nextPositionSetpoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        // TODO: call velocityProfile's reset method passing in nextVelocitySetpoint
+        lastVelocitySetpoint = lastState.velocity;
+        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
+        nextVelocitySetpoint = lastState.velocity;
+        nextPositionSetpoint = lastState.position;
+        arbFeedforward = feedforward.calculateWithVelocities(lastVelocitySetpoint , nextVelocitySetpoint);
+        motor.getClosedLoopController.setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        velocityProfile.reset(nextVelocitySetpoint);
     }
 
     @Override
