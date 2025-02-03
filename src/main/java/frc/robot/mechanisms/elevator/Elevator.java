@@ -3,63 +3,39 @@ package frc.robot.mechanisms.elevator;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 
-public abstract class Elevator {
+public interface Elevator {
 
-    public enum ControlState {
-        POSITION,
-        VELOCITY,
-        HOLD,
-    }
+    public void updateSimState(double dt, double supplyVoltage);
 
-    protected final ElevatorControlParameters elevatorControlParameters;
-    protected final ElevatorState lastElevatorState = new ElevatorState();
-    protected final ElevatorState elevatorState = new ElevatorState();
-    protected final SimElevator simElevator = new SimElevator();
-    private ElevatorRequest elevatorRequest = new ElevatorRequest.Velocity();
+    public void setControl(ElevatorRequest request);
 
-    public Elevator(ElevatorControlParameters elevatorControlParameters) {
-        this.elevatorControlParameters = elevatorControlParameters;
-    }
+    public ElevatorState getState();
 
-    public void updateSimState(double dtSeconds, double supplyVoltage) {
-        simElevator.update(dtSeconds, supplyVoltage);
-    }
+    public ElevatorState getStateCopy();
 
-    public void setControl(ElevatorRequest request) {
-        if (elevatorRequest != request) {
-            elevatorRequest = request;
-        }
-        elevatorControlParameters.withElevatorState(elevatorState);
-        request.apply(elevatorControlParameters, this);
-    }
+    public ElevatorState getLastArmState();
 
-    public final ElevatorState getState() {
-        return elevatorState;
-    }
+    public void enableHold();
 
-    public final ElevatorState getStateCopy() {
-        return elevatorState.clone();
-    }
+    public void disableHold();
 
-    public ElevatorState getLastElevatorState() {
-        return lastElevatorState;
-    }
+    public boolean isHoldEnabled();
 
-    public abstract void updateTelemetry();
+    public void updateTelemetry();
 
-    public abstract boolean setNeutralModeToBrake();
+    public boolean setNeutralModeToBrake();
 
-    public abstract boolean setNeutralModeToCoast();
+    public boolean setNeutralModeToCoast();
 
-    public abstract void setVelocity(LinearVelocity velocity);
+    public void setVelocity(LinearVelocity velocity);
 
-    public abstract void setPosition(Distance position);
+    public void setPosition(Distance position);
 
-    public abstract void setHold();
+    public void resetPosition();
 
-    public abstract void resetPosition();
+    public void update();
 
-    public void update() {
-        updateTelemetry();
-    }
+    public Distance getMaxPosition();
+
+    public Distance getMinPosition();
 }

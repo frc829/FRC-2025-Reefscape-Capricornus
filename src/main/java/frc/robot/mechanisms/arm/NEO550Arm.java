@@ -31,7 +31,7 @@ public class NEO550Arm implements Arm {
     private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private ControlState controlState = ControlState.VELOCITY;
+    private boolean hold = false;
 
     public NEO550Arm(
             ArmConstants armConstants,
@@ -92,37 +92,9 @@ public class NEO550Arm implements Arm {
     }
 
     @Override
-    public void setHold() {
-        if(controlState != ControlState.HOLD) {
-            goalState.position = primaryMotor.getEncoder().getPosition();
-            goalState.velocity = 0.0;
-            controlState = ControlState.HOLD;
-        }
-    }
-
-    @Override
     public void update() {
         lastArmState.withArmState(armState);
         updateState();
-        switch (controlState) {
-            case VELOCITY -> applyVelocity();
-            case POSITION, HOLD -> applyPosition();
-        }
-    }
-
-    @Override
-    public ArmRequest createHoldRequest() {
-        return new ArmRequest.Hold();
-    }
-
-    @Override
-    public ArmRequest createPositionRequest() {
-        return new ArmRequest.Position(minAngle, maxAngle);
-    }
-
-    @Override
-    public ArmRequest createVelocityRequest() {
-        return new ArmRequest.Velocity(minAngle, maxAngle);
     }
 
     private void updateState() {
@@ -137,7 +109,7 @@ public class NEO550Arm implements Arm {
     }
 
     @Override
-    public void updateSimState(Time dt, Voltage supplyVoltage) {
+    public void updateSimState(double dt, double supplyVoltage) {
         // TODO: will do later
     }
 
@@ -186,5 +158,30 @@ public class NEO550Arm implements Arm {
         arbFeedforward = feedforward.calculateWithVelocities(lastVelocitySetpoint , nextVelocitySetpoint);
         motor.getClosedLoopController.setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, positionClosedLoopSlot, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
         velocityProfile.reset(nextVelocitySetpoint);
+    }
+
+    @Override
+    public void enableHold() {
+        hold = true;
+    }
+
+    @Override
+    public void disableHold() {
+        hold = false;
+    }
+
+    @Override
+    public boolean isHoldEnabled() {
+        return hold;
+    }
+
+    @Override
+    public Angle getMaxAngle() {
+        return maxAngle;
+    }
+
+    @Override
+    public Angle getMinAngle() {
+        return minAngle;
     }
 }

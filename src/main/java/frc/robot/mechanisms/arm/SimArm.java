@@ -9,6 +9,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -33,7 +34,7 @@ public class SimArm {
     private final MutCurrent motorCurrent = Amps.mutable(0.0);
     private final MutTorque motorTorque = NewtonMeters.mutable(0.0);
     protected final Matrix<N2, N1> x = MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);
-    protected final Matrix<N1, N1> u = MatBuilder.fill(Nat.N1(), Nat.N1(), 0, 0);
+    protected final Matrix<N1, N1> u = MatBuilder.fill(Nat.N1(), Nat.N1(), 0);
     protected final Matrix<N2, N1> y = MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);
     private final Matrix<N2, N1> measurementStdDevs;
     private final Matrix<N2, N1> xdot = MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);
@@ -97,16 +98,17 @@ public class SimArm {
     }
 
 
-    public boolean wouldHitLowerLimit() {
-        return angle.lte(minPosition);
+    public boolean wouldHitLowerLimit(Matrix<N2, N1> updatedXHat) {
+        return updatedXHat.get(0, 0) <= minPosition.baseUnitMagnitude();
     }
 
-    public boolean wouldHitUpperLimit() {
-        return angle.gte(maxPosition);
+    public boolean wouldHitUpperLimit(Matrix<N2, N1> updatedXHat) {
+        return updatedXHat.get(0, 0) >= maxPosition.baseUnitMagnitude();
     }
 
     public void update(Time dt, Voltage inputVoltage) {
         u.set(0, 0, inputVoltage.baseUnitMagnitude());
+        SmartDashboard.putNumber("u", u.get(0, 0));
         motorVoltage.mut_setMagnitude(u.get(0, 0));
         addFriction();
         updateX(dt);
@@ -177,11 +179,11 @@ public class SimArm {
                         dt.baseUnitMagnitude());
 
         // We check for collision after updating xhat
-        if (wouldHitLowerLimit()) {
+        if (wouldHitLowerLimit(updatedXhat)) {
             updatedXhat.set(0, 0, minPosition.baseUnitMagnitude());
             updatedXhat.set(1, 0, 0.0);
         }
-        if (wouldHitUpperLimit()) {
+        if (wouldHitUpperLimit(updatedXhat)) {
             updatedXhat.set(0, 0, maxPosition.baseUnitMagnitude());
             updatedXhat.set(1, 0, 0.0);
         }
