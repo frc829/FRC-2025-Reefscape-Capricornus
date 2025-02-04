@@ -61,8 +61,6 @@ public class ArmTelemetry {
         timestamp.set(state.getTimestamp().in(Seconds));
         angle.set(state.getPosition().in(Degrees));
         angularVelocity.set(state.getVelocity().in(DegreesPerSecond));
-
-
         armLigament.setAngle(state.getPosition().in(Degrees));
     }
 }
