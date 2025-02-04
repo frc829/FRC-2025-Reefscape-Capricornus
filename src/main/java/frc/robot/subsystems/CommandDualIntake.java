@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.mechanisms.intakeWheel.IntakeWheel;
 import frc.robot.mechanisms.intakeWheel.IntakeWheelRequest;
 
@@ -17,11 +18,13 @@ public class CommandDualIntake implements Subsystem {
     private final IntakeWheel wheel0;
     private final IntakeWheel wheel1;
     private double lastSimTime;
+    public final Trigger hasCoral;
     private final Time simLoopPeriod;
 
-    public CommandDualIntake(IntakeWheel wheel0, IntakeWheel wheel1, Time simLoopPeriod) {
+    public CommandDualIntake(IntakeWheel wheel0, IntakeWheel wheel1, Trigger hasCoral, Time simLoopPeriod) {
         this.wheel0 = wheel0;
         this.wheel1 = wheel1;
+        this.hasCoral = hasCoral;
         this.simLoopPeriod = simLoopPeriod;
         if (RobotBase.isSimulation()) {
             startSimThread();

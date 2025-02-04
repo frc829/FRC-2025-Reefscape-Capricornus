@@ -1,5 +1,8 @@
 package frc.robot.constants;
 
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.interfaces.LaserCanInterface;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel;
@@ -11,6 +14,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.mechanisms.intakeWheel.IntakeWheel;
 import frc.robot.mechanisms.intakeWheel.IntakeWheelConstants;
 import frc.robot.mechanisms.intakeWheel.NEO550IntakeWheel;
@@ -42,6 +46,10 @@ public class CommandDualIntakeConstants {
     private static final Time updatePeriod = Seconds.of(0.020);
     private static final Time simLoopPeriod = Seconds.of(0.001);
 
+    private static final int laserCanId = 36;
+    private static final LaserCanInterface.RangingMode rangingMode = LaserCanInterface.RangingMode.LONG;
+    private static final Distance maximumHasElementDistance = Millimeters.of(10.0);
+
     public static CommandDualIntake createCommandIntake() {
         SparkMax algaeMotor = new SparkMax(algaeDeviceNumber, SparkLowLevel.MotorType.kBrushless);
         SparkMax coralMotor = new SparkMax(coralDeviceNumber, SparkLowLevel.MotorType.kBrushless);
@@ -67,7 +75,36 @@ public class CommandDualIntakeConstants {
         algaeMotor.configure(algaeConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
         coralMotor.configure(coralConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
+        LaserCan laserCan = null;
+
+        try{
+            laserCan = new LaserCan(laserCanId);
+        }catch(Exception e){
+            System.out.println("Error creating laser can");
+        }
+
+        try {
+            laserCan.setRangingMode(rangingMode);
+        } catch (ConfigurationFailedException e) {
+            System.out.println("Error setting laser can ranging mode");
+        } catch (NullPointerException e) {
+            System.out.println("Laser Can does not exist");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        Trigger hasCoral = new Trigger(() -> {
+            try{
+                return laserCan.getMeasurement().distance_mm <= maximumHasElementDistance.in(Millimeters);
+            }catch(Exception e){
+                System.out.println("Error getting measurement");
+                return false;
+            }
+        });
+
+
         IntakeWheelConstants algaeWheelConstants = new IntakeWheelConstants(
+                "Algae",
                 algaeKs,
                 algaeKv,
                 algaeKa,
@@ -78,6 +115,7 @@ public class CommandDualIntakeConstants {
                 algaeMaxAcceleration);
 
         IntakeWheelConstants coralWheelConstants = new IntakeWheelConstants(
+                "Coral",
                 coralKs,
                 coralKv,
                 coralKa,
@@ -97,9 +135,7 @@ public class CommandDualIntakeConstants {
                 coralMotor,
                 coralConfig);
 
-        return new CommandDualIntake(algaeWheel, coralWheel, simLoopPeriod);
-
-
+        return new CommandDualIntake(algaeWheel, coralWheel, hasCoral, simLoopPeriod);
     }
 
 

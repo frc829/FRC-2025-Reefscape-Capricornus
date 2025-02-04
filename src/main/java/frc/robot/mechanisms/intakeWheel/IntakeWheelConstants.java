@@ -4,7 +4,7 @@ import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 
 public class IntakeWheelConstants {
-
+    private final String name;
     private final Voltage ks;
     private final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv;
     private final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka;
@@ -16,6 +16,7 @@ public class IntakeWheelConstants {
 
 
     public IntakeWheelConstants(
+            String name,
             Voltage ks,
             Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv,
             Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka,
@@ -24,6 +25,7 @@ public class IntakeWheelConstants {
             LinearVelocity velocityStdDev,
             Time updatePeriod,
             LinearAcceleration maxAcceleration) {
+        this.name = name;
         this.ks = ks;
         this.kv = kv;
         this.ka = ka;
@@ -65,5 +67,9 @@ public class IntakeWheelConstants {
 
     public LinearAcceleration getMaxAcceleration() {
         return maxAcceleration;
+    }
+
+    public String getName() {
+        return name;
     }
 }
