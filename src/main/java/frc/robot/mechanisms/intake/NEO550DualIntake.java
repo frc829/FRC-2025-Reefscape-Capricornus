@@ -1,6 +1,9 @@
 package frc.robot.mechanisms.intake;
 
+import com.revrobotics.REVLibError;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -11,6 +14,10 @@ import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
 
+import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
+import static com.revrobotics.spark.SparkBase.ResetMode.kNoResetSafeParameters;
+import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
+import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kCoast;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -73,18 +80,23 @@ public class NEO550DualIntake extends DualIntake {
 
     @Override
     public boolean setNeutralModeToBrake() {
-        // TODO: call motor0Configs's idleMode method and pass in kBrake
-        // TODO: call motor1Config's idleMode method and pass in kBrake
-        // TODO: create a REVLibError variable called motor0ConfigStatus assign motor0.configureAsync passing in motor0Config, kNoResetSafeParameters, and  kPersistParameters
-        // TODO: create a REVLibError variable called motor1ConfigStatus assign motor1.configureAsync passing in motor1ConfigStatus, kNoResetSafeParameters, and  kPersistParameters
-        // TODO: return motor0ConfigStatus == REVLibError.kOk && motor1ConfigStatus == REVLibError.kOk;
-        return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+        motor0Config.idleMode(kBrake);
+        motor1Config.idleMode(kBrake);
+        REVLibError motor0ConfigStatus = motor0.configureAsync(motor0Config, kNoResetSafeParameters, kPersistParameters);
+        REVLibError motor1ConfigStatus = motor1.configureAsync(motor1Config, kNoResetSafeParameters, kPersistParameters);
+        return motor0ConfigStatus == REVLibError.kOk && motor1ConfigStatus == REVLibError.kOk;
+    }
+
+    private void motor0Config() {
     }
 
     @Override
     public boolean setNeutralModeToCoast() {
-        // TODO: identical to setNeutralModeToBrake but with kCoast instead of kBrake
-        return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+        motor0Config.idleMode(kCoast);
+        motor1Config.idleMode(kCoast);
+        REVLibError motor0ConfigStatus = motor0.configureAsync(motor0Config, kNoResetSafeParameters, kPersistParameters);
+        REVLibError motor1ConfigStatus = motor1.configureAsync(motor1Config, kNoResetSafeParameters, kPersistParameters);
+        return motor0ConfigStatus == REVLibError.kOk && motor1ConfigStatus == REVLibError.kOk;
     }
 
     @Override
@@ -120,14 +132,24 @@ public class NEO550DualIntake extends DualIntake {
     }
 
     private void applyVelocity() {
+        var nextVelocity0Setpoint = motor0Profile.calculate((goalVelocity0.baseUnitMagnitude()));
+        var nextVelocity1Setpoint = motor1Profile.calculate((goalVelocity1.baseUnitMagnitude()));
         // TODO: assign motor0Profile.calculate(goalVelocity0.baseUnitMagnitude()) to a variable called nextVelocity0Setpoint
         // TODO: assign motor1Profile.calculate(goalVelocity1.baseUnitMagnitude()) to a variable called nextVelocity1Setpoint
+        var lastVelocity0Setpoint = lastVelocity0.baseUnitMagnitude();
+        var lastVelocity1Setpoint = lastVelocity1.baseUnitMagnitude();
         // TODO: assign lastVelocity0.baseUnitMagnitude() to a variable called lastVelocity0Setpoint;
         // TODO: assign lastVelocity1.baseUnitMagnitude() to a variable called lastVelocity1Setpoint;
+        double arbFeedforward0 = motor0Feedforward.calculateWithVelocities(lastVelocity0Setpoint, nextVelocity0Setpoint);
+        double arbFeedforward1 = motor1Feedforward.calculateWithVelocities(lastVelocity1Setpoint, nextVelocity1Setpoint);
         // TODO: call motor0Feedforward's calculate method passing in lastVelocity0Setpoint and nextVelocity0Setpoint and assign to arbFeedforward0
         // TODO: call motor1Feedforward's calculate method passing in lastVelocity1Setpoint and nextVelocity1Setpoint and assign to arbFeedforward1
+        motor0.getClosedLoopController().setReference(nextVelocity0Setpoint, SparkBase.ControlType.kVelocity, motor0ClosedLoopSlot, arbFeedforward0, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        motor1.getClosedLoopController().setReference(nextVelocity1Setpoint, SparkBase.ControlType.kVelocity, motor1ClosedLoopSlot, arbFeedforward1, SparkClosedLoopController.ArbFFUnits.kVoltage);
         // TODO: call motor0.getClosedLoopController's setReference method passing in nextVelocity0Setpoint, SparkBase.ControlType.kVelocity, motor0ClosedLoopSlot, arbFeedforward0, SparkClosedLoopController.ArbFFUnits.kVoltage;
         // TODO: call motor1.getClosedLoopController's setReference method passing in nextVelocity1Setpoint, SparkBase.ControlType.kVelocity, motor1ClosedLoopSlot, arbFeedforward1, SparkClosedLoopController.ArbFFUnits.kVoltage;
+        lastVelocity0.mut_setMagnitude(nextVelocity0Setpoint);
+        lastVelocity1.mut_setMagnitude(nextVelocity1Setpoint);
         // TODO: call lastVelocity0.mut_setMagnitude and pass in nextVelocity0Setpoint
         // TODO: call lastVelocity1.mut_setMagnitude and pass in nextVelocity1Setpoint
     }
