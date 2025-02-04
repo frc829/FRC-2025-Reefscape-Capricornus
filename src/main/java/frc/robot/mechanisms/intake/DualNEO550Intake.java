@@ -1,5 +1,6 @@
 package frc.robot.mechanisms.intake;
 
+import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -9,7 +10,10 @@ import edu.wpi.first.units.measure.MutLinearVelocity;
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.robot.mechanisms.arm.ArmState;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -17,7 +21,16 @@ import static edu.wpi.first.units.Units.Seconds;
 
 public class DualNEO550Intake implements Intake {
 
-    private final Time profilePeriod;
+    private final IntakeMotorState lastIntakeMotor0State = new IntakeMotorState();
+    private final IntakeMotorState lastIntakeMotor1State = new IntakeMotorState();
+    private final IntakeMotorState intakeMotor0State = new IntakeMotorState();
+    private final IntakeMotorState intakeMotor1State = new IntakeMotorState();
+    private final List<IntakeMotorState> lastIntakeMotorStates = List.of(lastIntakeMotor0State, lastIntakeMotor1State);
+    private final List<IntakeMotorState> intakeMotorStates = List.of(intakeMotor0State, intakeMotor1State);
+    private IntakeMotorRequest intakeMotor0Request;
+    private IntakeMotorRequest intakeMotor1Request;
+    private final IntakeMotorConstants intakeMotor0Constants;
+    private final IntakeMotorConstants intakeMotor1Constants;
     private final SparkMax motor0;
     private final SparkMax motor1;
     private final SparkBaseConfig motor0Config;
@@ -26,12 +39,17 @@ public class DualNEO550Intake implements Intake {
     private final SlewRateLimiter motor1Profile;
     private final SimpleMotorFeedforward feedforward0;
     private final SimpleMotorFeedforward feedforward1;
+    private final Time profilePeriod;
     private final MutLinearVelocity velocity0 = MetersPerSecond.mutable(0.0);
     private final MutLinearVelocity velocity1 = MetersPerSecond.mutable(0.0);
     private final MutTime timestamp0 = Seconds.mutable(0.0);
     private final MutTime timestamp1 = Seconds.mutable(0.0);
     private final MutLinearVelocity goalVelocity0 = MetersPerSecond.mutable(0.0);
     private final MutLinearVelocity goalVelocity1 = MetersPerSecond.mutable(0.0);
+    private DCMotorSim simIntakeMotor0 = null;
+    private DCMotorSim simIntakeMotor1 = null;
+    private SparkMaxSim sparkMax0Sim = null;
+    private SparkMaxSim sparkMax1Sim = null;
 
     public DualNEO550Intake(
             IntakeMotorConstants intakeMotor0Constants,
@@ -41,6 +59,8 @@ public class DualNEO550Intake implements Intake {
             SparkBaseConfig motor0Config,
             SparkBaseConfig motor1Config,
             Time updatePeriod) {
+        this.intakeMotor0Constants = intakeMotor0Constants;
+        this.intakeMotor1Constants = intakeMotor1Constants;
         this.motor0 = motor0;
         this.motor1 = motor1;
         this.motor0Config = motor0Config;
@@ -76,6 +96,21 @@ public class DualNEO550Intake implements Intake {
     public boolean setNeutralModeToCoast() {
         // TODO: identical to setNeutralModeToBrake but with kCoast instead of kBrake
         return false;  // TODO: remove this when done.  Since you've returned in the previous line.
+    }
+
+    @Override
+    public List<IntakeMotorState> getStates() {
+        return intakeMotorStates;
+    }
+
+    @Override
+    public List<IntakeMotorState> getStatesCopy() {
+
+    }
+
+    @Override
+    public List<IntakeMotorState> getLastIntakeStates() {
+        return List.of();
     }
 
     @Override

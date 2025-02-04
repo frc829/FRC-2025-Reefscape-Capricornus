@@ -10,11 +10,11 @@ public interface Intake {
 
     public void setControl(IntakeMotorRequest... request);
 
-    public List<IntakeMotorState> getState();
+    public List<IntakeMotorState> getStates();
 
-    public List<IntakeMotorState> getStateCopy();
+    public List<IntakeMotorState> getStatesCopy();
 
-    public List<IntakeMotorState> getLastIntakeState();
+    public List<IntakeMotorState> getLastIntakeStates();
 
     public boolean hasElement();
 
