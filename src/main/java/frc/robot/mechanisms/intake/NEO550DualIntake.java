@@ -134,23 +134,13 @@ public class NEO550DualIntake extends DualIntake {
     private void applyVelocity() {
         var nextVelocity0Setpoint = motor0Profile.calculate((goalVelocity0.baseUnitMagnitude()));
         var nextVelocity1Setpoint = motor1Profile.calculate((goalVelocity1.baseUnitMagnitude()));
-        // TODO: assign motor0Profile.calculate(goalVelocity0.baseUnitMagnitude()) to a variable called nextVelocity0Setpoint
-        // TODO: assign motor1Profile.calculate(goalVelocity1.baseUnitMagnitude()) to a variable called nextVelocity1Setpoint
         var lastVelocity0Setpoint = lastVelocity0.baseUnitMagnitude();
         var lastVelocity1Setpoint = lastVelocity1.baseUnitMagnitude();
-        // TODO: assign lastVelocity0.baseUnitMagnitude() to a variable called lastVelocity0Setpoint;
-        // TODO: assign lastVelocity1.baseUnitMagnitude() to a variable called lastVelocity1Setpoint;
         double arbFeedforward0 = motor0Feedforward.calculateWithVelocities(lastVelocity0Setpoint, nextVelocity0Setpoint);
         double arbFeedforward1 = motor1Feedforward.calculateWithVelocities(lastVelocity1Setpoint, nextVelocity1Setpoint);
-        // TODO: call motor0Feedforward's calculate method passing in lastVelocity0Setpoint and nextVelocity0Setpoint and assign to arbFeedforward0
-        // TODO: call motor1Feedforward's calculate method passing in lastVelocity1Setpoint and nextVelocity1Setpoint and assign to arbFeedforward1
         motor0.getClosedLoopController().setReference(nextVelocity0Setpoint, SparkBase.ControlType.kVelocity, motor0ClosedLoopSlot, arbFeedforward0, SparkClosedLoopController.ArbFFUnits.kVoltage);
         motor1.getClosedLoopController().setReference(nextVelocity1Setpoint, SparkBase.ControlType.kVelocity, motor1ClosedLoopSlot, arbFeedforward1, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        // TODO: call motor0.getClosedLoopController's setReference method passing in nextVelocity0Setpoint, SparkBase.ControlType.kVelocity, motor0ClosedLoopSlot, arbFeedforward0, SparkClosedLoopController.ArbFFUnits.kVoltage;
-        // TODO: call motor1.getClosedLoopController's setReference method passing in nextVelocity1Setpoint, SparkBase.ControlType.kVelocity, motor1ClosedLoopSlot, arbFeedforward1, SparkClosedLoopController.ArbFFUnits.kVoltage;
         lastVelocity0.mut_setMagnitude(nextVelocity0Setpoint);
         lastVelocity1.mut_setMagnitude(nextVelocity1Setpoint);
-        // TODO: call lastVelocity0.mut_setMagnitude and pass in nextVelocity0Setpoint
-        // TODO: call lastVelocity1.mut_setMagnitude and pass in nextVelocity1Setpoint
     }
 }
