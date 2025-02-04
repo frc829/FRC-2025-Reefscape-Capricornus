@@ -4,9 +4,11 @@ import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 
 public class ElevatorConstants {
-
+    private final String name;
     private final Distance maxHeight;
     private final Distance minHeight;
+    private final LinearVelocity maxVelocity;
+    private final LinearAcceleration maxAcceleration;
     private final Voltage ks;
     private final Voltage kg;
     private final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv;
@@ -18,8 +20,11 @@ public class ElevatorConstants {
     private final LinearVelocity velocityStdDev;
 
     public ElevatorConstants(
+            String name,
             Distance maxHeight,
             Distance minHeight,
+            LinearVelocity maxVelocity,
+            LinearAcceleration maxAcceleration,
             Voltage ks,
             Voltage kg,
             Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv,
@@ -29,8 +34,11 @@ public class ElevatorConstants {
             Distance startingHeight,
             Distance positionStdDev,
             LinearVelocity velocityStdDev) {
+        this.name = name;
         this.maxHeight = maxHeight;
         this.minHeight = minHeight;
+        this.maxVelocity = maxVelocity;
+        this.maxAcceleration = maxAcceleration;
         this.ks = ks;
         this.kg = kg;
         this.kv = kv;
@@ -84,5 +92,17 @@ public class ElevatorConstants {
 
     public LinearVelocity getVelocityStdDev() {
         return velocityStdDev;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LinearVelocity getMaxVelocity() {
+        return maxVelocity;
+    }
+
+    public LinearAcceleration getMaxAcceleration() {
+        return maxAcceleration;
     }
 }

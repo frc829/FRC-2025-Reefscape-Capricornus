@@ -14,6 +14,7 @@ import frc.robot.subsystems.CommandArm;
 import static edu.wpi.first.units.Units.*;
 
 public class CommandHookConstants {
+    private static final String name = "Hook";
     private static final Angle startingAngle = Degrees.of(0.0);
     private static final Angle minAngle = Degrees.of(0.0);
     private static final Angle maxAngle = Degrees.of(90.0);
@@ -52,6 +53,7 @@ public class CommandHookConstants {
 
         motor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
         ArmConstants armConstants = new ArmConstants(
+                name,
                 maxAngle,
                 minAngle,
                 maxAngularVelocity,

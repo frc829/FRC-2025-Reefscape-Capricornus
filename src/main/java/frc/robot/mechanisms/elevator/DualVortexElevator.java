@@ -31,6 +31,7 @@ public class DualVortexElevator implements Elevator {
     private final ElevatorState elevatorState = new ElevatorState();
     private final Distance minHeight;
     private final Distance maxHeight;
+    private final ElevatorTelemetry telemetry;
     private ElevatorRequest elevatorRequest;
     private final SparkFlex primaryMotor;
     private final SparkFlex followerMotor;
@@ -77,7 +78,7 @@ public class DualVortexElevator implements Elevator {
         double maxAcceleration = feedforward.maxAchievableAcceleration(12.0, 0.0);
         this.velocityProfile = new SlewRateLimiter(maxAcceleration);
         this.profilePeriod = updatePeriod;
-        if(RobotBase.isSimulation()){
+        if (RobotBase.isSimulation()) {
             DCMotor dcMotor = DCMotor.getNeoVortex(2);
             LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
                     elevatorConstants.getKv().baseUnitMagnitude(),
@@ -94,6 +95,14 @@ public class DualVortexElevator implements Elevator {
             primarySparkFlexSim.setPosition(elevatorConstants.getStartingHeight().baseUnitMagnitude());
             followerSparkFlexSim.setPosition(elevatorConstants.getStartingHeight().baseUnitMagnitude());
         }
+        this.telemetry = new ElevatorTelemetry(
+                elevatorConstants.getName(),
+                elevatorConstants.getMinHeight(),
+                elevatorConstants.getMaxHeight(),
+                elevatorConstants.getMaxVelocity(),
+                elevatorConstants.getMaxAcceleration()
+        );
+
 
     }
 
@@ -184,11 +193,7 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void updateTelemetry() {
-        SmartDashboard.putNumberArray("State [meters, mps]", new double[]{
-                elevatorState.getPosition().in(Meters),
-                elevatorState.getVelocity().in(MetersPerSecond)});
-        SmartDashboard.putBoolean("Hold", isHoldEnabled());
-        // TODO: will do later
+        telemetry.telemeterize(elevatorState);
     }
 
     @Override

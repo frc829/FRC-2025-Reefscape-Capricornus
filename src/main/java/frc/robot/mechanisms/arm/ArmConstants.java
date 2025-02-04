@@ -4,7 +4,7 @@ import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 
 public class ArmConstants {
-
+    private final String name;
     private final Angle maxAngle;
     private final Angle minAngle;
     private final AngularVelocity maxAngularVelocity;
@@ -20,6 +20,7 @@ public class ArmConstants {
     private final AngularVelocity velocityStdDev;
 
     public ArmConstants(
+            String name,
             Angle maxAngle,
             Angle minAngle,
             AngularVelocity maxAngularVelocity,
@@ -33,6 +34,7 @@ public class ArmConstants {
             Angle startingAngle,
             Angle positionStdDev,
             AngularVelocity velocityStdDev) {
+        this.name = name;
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
         this.maxAngularVelocity = maxAngularVelocity;
@@ -98,5 +100,9 @@ public class ArmConstants {
 
     public AngularAcceleration getMaxAngularAcceleration() {
         return maxAngularAcceleration;
+    }
+
+    public String getName() {
+        return name;
     }
 }

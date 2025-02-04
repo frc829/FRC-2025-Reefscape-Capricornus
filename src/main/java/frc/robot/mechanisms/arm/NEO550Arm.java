@@ -92,12 +92,11 @@ public class NEO550Arm implements Arm {
                     armConstants.getStartingAngle().baseUnitMagnitude());
         }
         this.armTelemetry = new ArmTelemetry(
-                "Hook",
+                armConstants.getName(),
                 armConstants.getMinAngle(),
                 armConstants.getMaxAngle(),
                 armConstants.getMaxAngularVelocity(),
                 armConstants.getMaxAngularAcceleration());
-
     }
 
     @Override

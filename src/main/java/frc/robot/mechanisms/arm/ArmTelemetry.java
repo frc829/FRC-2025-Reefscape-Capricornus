@@ -1,5 +1,8 @@
 package frc.robot.mechanisms.arm;
 
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -10,15 +13,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static edu.wpi.first.units.Units.*;
 
 public class ArmTelemetry {
-    // TODO: all fields are private final
-    // TODO: create a NetworkTable called armStateTable
-    // TODO: create an Angle called minAngle
-    // TODO: create an Angle called maxAngle
-    // TODO: create an AngularVelocity called maxVelocity
-    // TODO: careat an AngularAcceleration called maxAcceleration
-    // TODO: create a DoublePublisher called timestamp;
-    // TODO: the rest are DoublePublishers
-    // TODO: for angle, angularVelocity, minAnglePublisher, maxAnglePublisher, maxVelocityPublisher, maxAccelerationPublisher,
+    private final NetworkTable armStateTable;
+    private final Angle minAngle;
+    private final Angle maxAngle;
+    private final AngularVelocity maxVelocity;
+    private final AngularAcceleration maxAcceleration;
+    private final DoublePublisher timestamp;
+    private final DoublePublisher angle;
+    private final DoublePublisher angularVelocity;
+    private final DoublePublisher minAnglePublisher;
+    private final DoublePublisher maxAnglePublisher;
+    private final DoublePublisher maxVelocityPublisher;
+    private final DoublePublisher maxAccelerationPublisher;
     private final Mechanism2d armMechanism;
     private final MechanismLigament2d armLigament;
 
@@ -28,13 +34,18 @@ public class ArmTelemetry {
             Angle maxAngle,
             AngularVelocity maxVelocity,
             AngularAcceleration maxAcceleration) {
-        // TODO: set the fields for minAngle, maxAngle, maxVelocity, maxAcceleration.  Use the this keyword.
-        // TODO: this.minAngle = minAngle, etc.
-        // TODO: set this.armStateTable to NetworkTableInstance.getDefault().getTable(name)
-        // TODO: set this.timestamp to armStateTable.getDoubleTopic("Timestamp").publish();
-        // TODO: set this.angle to armStateTable.getDoubleTopic("Angle").publish()
-        // TODO: set this.angularVelocity to armStateTable.getDoubleTopic("AngularVelocity").publish()
-        // TODO: repeat for minAnglePublisher, maxAnglePublisher, maxVelocityPublisher, maxAccelerationPublisher
+        this.armStateTable = NetworkTableInstance.getDefault().getTable(name);
+        this.maxAngle = maxAngle;
+        this.minAngle = minAngle;
+        this.maxVelocity = maxVelocity;
+        this.maxAcceleration = maxAcceleration;
+        this.timestamp = armStateTable.getDoubleTopic("Timestamp").publish();
+        this.angle = armStateTable.getDoubleTopic("Angle").publish();
+        this.angularVelocity = armStateTable.getDoubleTopic("AngularVelocity").publish();
+        this.minAnglePublisher = armStateTable.getDoubleTopic("MinAngle").publish();
+        this.maxAnglePublisher = armStateTable.getDoubleTopic("MaxAngle").publish();
+        this.maxVelocityPublisher = armStateTable.getDoubleTopic("MaxVelocity").publish();
+        this.maxAccelerationPublisher = armStateTable.getDoubleTopic("MaxAcceleration").publish();
         armMechanism = new Mechanism2d(1, 1);
         armLigament = armMechanism
                 .getRoot("ArmRoot", 0.5, 0.5)
@@ -43,13 +54,13 @@ public class ArmTelemetry {
     }
 
     public void telemeterize(ArmState state) {
-        // TODO: call minAnglePublisher's set method and pass in minAngle.in(Degrees)
-        // TODO: repeat for maxAnglePublisher using maxAngle
-        // TODO: repeat for maxVelocityPublisher using maxVelocity
-        // TODO: repeat for maxAccelerationPublisher using maxAcceleration
-        // TODO: repeat for timestamp using state.getTimeStamp.in(Seconds)
-        // TODO: repeat for angle using state.getPosition.in(Degrees)
-        // TODO: repeat for angularVelocity using state.getVelocity.in(DegreesPerSecond)
+        minAnglePublisher.set(minAngle.in(Degrees));
+        maxAnglePublisher.set(maxAngle.in(Degrees));
+        maxVelocityPublisher.set(maxVelocity.in(DegreesPerSecond));
+        maxAccelerationPublisher.set(maxAcceleration.in(DegreesPerSecondPerSecond));
+        timestamp.set(state.getTimestamp().in(Seconds));
+        angle.set(state.getPosition().in(Degrees));
+        angularVelocity.set(state.getVelocity().in(DegreesPerSecond));
         armLigament.setAngle(state.getPosition().in(Degrees));
     }
 }

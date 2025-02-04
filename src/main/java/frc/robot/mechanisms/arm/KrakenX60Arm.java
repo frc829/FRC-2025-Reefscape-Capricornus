@@ -63,7 +63,7 @@ public class KrakenX60Arm implements Arm {
                 true,
                 Radians.of(0.0).baseUnitMagnitude());
         this.armTelemetry = new ArmTelemetry(
-                "Arm",
+                armConstants.getName(),
                 armConstants.getMinAngle(),
                 armConstants.getMaxAngle(),
                 armConstants.getMaxAngularVelocity(),

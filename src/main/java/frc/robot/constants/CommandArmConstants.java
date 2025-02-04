@@ -22,6 +22,7 @@ import frc.robot.mechanisms.arm.KrakenX60Arm;
 import frc.robot.subsystems.CommandArm;
 
 public class CommandArmConstants {
+    private static final String name = "Arm";
     private static final Angle minAngle = Degrees.of(-45);
     private static final Angle maxAngle = Degrees.of(225);
     private static final Distance armLength = Inches.of(31.0);
@@ -103,7 +104,9 @@ public class CommandArmConstants {
         talonFX.getConfigurator().apply(talonFXConfiguration);
 
 
-        ArmConstants armConstants = new ArmConstants(maxAngle, minAngle, maxAngularVelocity, maxAngularAcceleration, ks, kg, kv, ka, armLength, reduction, Radians.of(0.0), Radians.of(0.0), RadiansPerSecond.of(0.0));
+        ArmConstants armConstants = new ArmConstants(
+                name,
+                maxAngle, minAngle, maxAngularVelocity, maxAngularAcceleration, ks, kg, kv, ka, armLength, reduction, Radians.of(0.0), Radians.of(0.0), RadiansPerSecond.of(0.0));
 
 
         Arm arm = new KrakenX60Arm(armConstants, talonFX, cancoder);
