@@ -11,9 +11,7 @@ import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import frc.robot.mechanisms.arm.ArmState;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -99,62 +97,61 @@ public class DualNEO550Intake implements Intake {
     }
 
     @Override
+    public void setVelocities(LinearVelocity... velocity) {
+
+    }
+
+    @Override
+    public void updateSimState(double dtSeconds, double supplyVoltage) {
+
+    }
+
+    @Override
+    public void setControl(IntakeMotorRequest... request) {
+
+    }
+
+    @Override
     public List<IntakeMotorState> getStates() {
         return intakeMotorStates;
     }
 
     @Override
     public List<IntakeMotorState> getStatesCopy() {
-
+        return intakeMotorStates
+                .stream()
+                .map(state -> state.clone())
+                .toList();
     }
 
     @Override
     public List<IntakeMotorState> getLastIntakeStates() {
-        return List.of();
+        return lastIntakeMotorStates;
     }
 
     @Override
-    public void setVelocity(LinearVelocity velocity0, LinearVelocity velocity1) {
-        goalVelocity0.mut_replace(velocity0);
-        goalVelocity1.mut_replace(velocity1);
-        controlState = ControlState.VELOCITY;
-    }
-
-    @Override
-    public void setIdle() {
-        if (controlState != ControlState.IDLE) {
-            controlState = ControlState.IDLE;
-            goalVelocity0.mut_replace(MetersPerSecond.of(0.0));
-            goalVelocity1.mut_replace(MetersPerSecond.of(0.0));
-        }
+    public boolean hasElement() {
+        return false;
     }
 
     @Override
     public void update() {
-        super.update();
-        dualIntakeState.withVelocity(
-                intakeVelocity0.mut_setMagnitude(motor0.getEncoder().getVelocity()),
-                intakeVelocity1.mut_setMagnitude(motor1.getEncoder().getVelocity()));
-        dualIntakeState.withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()));
-        applyVelocity();
+        lastIntakeMotor0State.withIntakeState(intakeMotor0State);
+        lastIntakeMotor1State.withIntakeState(intakeMotor1State);
+        updateState();
+        updateTelemetry();
+    }
+
+    private void updateState() {
+        intakeMotor0State.withVelocity(velocity0.mut_setMagnitude(motor0.getEncoder().getVelocity()))
+                .withTimestamp(timestamp0.mut_setMagnitude(Timer.getFPGATimestamp()));
+        intakeMotor1State.withVelocity(velocity1.mut_setMagnitude(motor1.getEncoder().getVelocity()))
+                .withTimestamp(timestamp1.mut_setMagnitude(Timer.getFPGATimestamp()));
     }
 
 
     @Override
     public void updateTelemetry() {
         // TODO: will do later
-    }
-
-    private void applyVelocity() {
-        // TODO: assign motor0Profile.calculate(goalVelocity0.baseUnitMagnitude()) to a variable called nextVelocity0Setpoint
-        // TODO: assign motor1Profile.calculate(goalVelocity1.baseUnitMagnitude()) to a variable called nextVelocity1Setpoint
-        // TODO: assign lastVelocity0.baseUnitMagnitude() to a variable called lastVelocity0Setpoint;
-        // TODO: assign lastVelocity1.baseUnitMagnitude() to a variable called lastVelocity1Setpoint;
-        // TODO: call motor0Feedforward's calculate method passing in lastVelocity0Setpoint and nextVelocity0Setpoint and assign to arbFeedforward0
-        // TODO: call motor1Feedforward's calculate method passing in lastVelocity1Setpoint and nextVelocity1Setpoint and assign to arbFeedforward1
-        // TODO: call motor0.getClosedLoopController's setReference method passing in nextVelocity0Setpoint, SparkBase.ControlType.kVelocity, motor0ClosedLoopSlot, arbFeedforward0, SparkClosedLoopController.ArbFFUnits.kVoltage;
-        // TODO: call motor1.getClosedLoopController's setReference method passing in nextVelocity1Setpoint, SparkBase.ControlType.kVelocity, motor1ClosedLoopSlot, arbFeedforward1, SparkClosedLoopController.ArbFFUnits.kVoltage;
-        // TODO: call lastVelocity0.mut_setMagnitude and pass in nextVelocity0Setpoint
-        // TODO: call lastVelocity1.mut_setMagnitude and pass in nextVelocity1Setpoint
     }
 }
