@@ -1,9 +1,12 @@
 package frc.robot.commandfactories;
 
+import digilib.wrist.WristRequest;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MutDimensionless;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandWrist;
 
+import java.awt.image.WritableRenderedImage;
 import java.util.function.DoubleSupplier;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -14,34 +17,29 @@ public class CommandWristFactory {
 
     public CommandWristFactory(CommandWrist commandWrist) {
         this.commandWrist = commandWrist;
-        // TODO: call commandWrist's setDefaultCommand method and pass in a call to the hold method defined below.  
-        // NOTES:  hold() creates a hold command for the wrist.  We then set it for the set in this todo.
+        commandWrist.setDefaultCommand(hold());
     }
 
     public Command hold() {
-        // TODO: create an wristRequest.Hold called request and assign a new wristRequest.Hold to it.  
-        // TODO: return command.applyRequest(() -> request).withName("HOLD")
-        return null; // TODO: remove this when done.
+        WristRequest.Hold request = new WristRequest.Hold();
+//        return commandWrist.applyRequest(() -> request).withName("HOLD");
+        return null;
     }
 
     public Command goToAngle(Angle position) {
-        // TODO: create an wristRequest.Position called request.  Assign it appropriately.
-        // TODO: called request.withPosition method and pass in position.  
-        // return commandWrist.applyRequest(() -> request).withName(String.format("POSITION: %s degrees", position.in(Degrees)));
-        return null; // TODO: remove this when done.
+        WristRequest.Position request = new WristRequest.Position();
+        request.withPosition(position);
+        return commandWrist.applyRequest(() -> request).withName(String.format("POSITION: %s degrees", position.in(Degrees)));
     }
 
     public Command moveAtVelocity(DoubleSupplier maxwristVelocityPercentage) {
-        // TODO: create a MutDimensionless named wristVelocityPercent and assign Value.mutable(0.0);
-        // TODO: wristRequest.Velocity called request.  Assign it appropriately.  
-        // TODO: call request withVelocity methodd and pass in wristVelocityPercent.
-        // return
-        // TODO: uncomment this out.  return commandWrist
-        //         .applyRequest(() -> {
-        //             wristVelocityPercent.mut_setMagnitude(maxwristVelocityPercentage.getAsDouble());
-        //             return request;
-        //         })
-        return null; // TODO: remove this when done.
+        MutDimensionless wristVelocityPercent = Value.mutable(0.0);
+        WristRequest.Velocity request = new WristRequest.Velocity();
+        request.withVelocity(wristVelocityPercent);
+        return commandWrist.applyRequest(() -> {
+                     wristVelocityPercent.mut_setMagnitude(maxwristVelocityPercentage.getAsDouble());
+                     return request;
+                 });
     }
 
 }
