@@ -15,8 +15,10 @@ public class CommandDualIntakeFactory {
 
     public CommandDualIntakeFactory(CommandDualIntake commandDualIntake) {
         this.commandDualIntake = commandDualIntake;
-        // TODO: call commandintake's setDefaultCommand method and pass in a call to the hold method defined below.
-        // NOTES:  hold() creates a hold command for the intake.  We then set it for the set in this todo.
+        // TODO: call commandIntake's setDefaultCommand method and pass in a call to the moveAtVelocity method defined below.
+        // TODO:  you'll passing in () -> 0.0, () -> 0.0 into the moveToVelocityMethod.
+        // TODO: Say Hi to Keith
+        // Also Keith says hi dead guy number 2
     }
 
     public Command moveAtVelocity(DoubleSupplier maxIntakeVelocity0Percentage, DoubleSupplier maxIntakeVelocity1Percentage) {
