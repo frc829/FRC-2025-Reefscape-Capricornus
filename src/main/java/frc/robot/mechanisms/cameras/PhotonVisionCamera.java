@@ -1,6 +1,8 @@
 package frc.robot.mechanisms.cameras;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import org.photonvision.EstimatedRobotPose;
@@ -76,10 +78,43 @@ public class PhotonVisionCamera implements Camera {
 
     public void updateState() {
         lastState.withCameraState(state);
+        Optional<EstimatedRobotPose> estimatedRobotPose = Optional.empty();
+        Matrix<N3, N1> estimatedRobotPoseStdDev;
         for (var change : photonCamera.getAllUnreadResults()) {
-            Optional<EstimatedRobotPose> estimatedRobotPose = photonPoseEstimator.update(change);
+            estimatedRobotPose = photonPoseEstimator.update(change);
             if (estimatedRobotPose.isPresent()) {
-                Matrix<N3, N1> stdDevs = updateEstimationStdDevs(estimatedRobotPose.get(), change.getTargets());
+                var pose = estimatedRobotPose.get();
+                var targets = change.getTargets();
+                int numTags = 0;
+                double avgDist = 0;
+
+                // Precalculation - see how many tags we found, and calculate an average-distance metric
+                for (var tgt : targets) {
+                    Optional<Pose3d> tagPose = photonPoseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+                    if (tagPose.isPresent()) {
+                        numTags++;
+                        avgDist +=
+                                tagPose
+                                        .get()
+                                        .toPose2d()
+                                        .getTranslation()
+                                        .getDistance(pose.estimatedPose.toPose2d().getTranslation());
+                    }
+                }
+
+                if (numTags == 0) {
+                    // No tags visible. Default to single-tag std devs
+                    estimatedRobotPoseStdDev = singleTagStdDevs;
+                } else {
+                    // One or more tags visible, run the full heuristic.
+                    avgDist /= numTags;
+                    // Decrease std devs if multiple targets are visible
+                    if (numTags > 1) estimatedRobotPoseStdDev = multiTagStdDevs;
+                    // Increase std devs based on (average) distance
+                    if (numTags == 1 && avgDist > 4)
+                        estimatedRobotPoseStdDev = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+                    else estimatedRobotPoseStdDev = singleTagStdDevs.times(1 + (avgDist * avgDist / 30));
+                }
             }
         }
     }
@@ -87,22 +122,7 @@ public class PhotonVisionCamera implements Camera {
     private Matrix<N3, N1> updateEstimationStdDevs(
             EstimatedRobotPose estimatedRobotPose,
             List<PhotonTrackedTarget> targets) {
-        var estStdDevs = singleTagStdDevs;
-        int numTags = 0;
-        double avgDist = 0;
 
-        // Precalculation - see how many tags we found, and calculate an average-distance metric
-        for (var tgt : targets) {
-            var tagPose = photonPoseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
-            if (tagPose.isEmpty()) continue;
-            numTags++;
-            avgDist +=
-                    tagPose
-                            .get()
-                            .toPose2d()
-                            .getTranslation()
-                            .getDistance(estimatedRobotPose.estimatedPose.toPose2d().getTranslation());
-        }
     }
 
 
