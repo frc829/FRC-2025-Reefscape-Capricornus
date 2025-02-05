@@ -1,19 +1,19 @@
 package frc.robot.routines;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.CommandFactory;
+import frc.robot.ComboCommandFactory;
 import frc.robot.subsystems.CommandArm;
 import frc.robot.subsystems.CommandElevator;
 
 public class OperatorRoutines {
 
     private final CommandXboxController operatorController;
-    private final CommandFactory commandFactory;
+    private final ComboCommandFactory commandFactory;
     private final CommandArm commandArm;
     private final CommandElevator commandElevator;
 
     public OperatorRoutines(CommandXboxController operatorController,
-                            CommandFactory commandFactory,
+                            ComboCommandFactory commandFactory,
                             CommandArm commandArm,
                             CommandElevator commandElevator) {
         this.operatorController = operatorController;

@@ -12,24 +12,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import digilib.arm.ArmRequest;
 import digilib.elevator.ElevatorRequest;
 import frc.robot.subsystems.CommandArm;
 import frc.robot.subsystems.CommandElevator;
 import frc.robot.subsystems.CommandSwerveDrive;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.constants.CommandSwerveDriveConstants.*;
 
-public class CommandFactory {
+public class ComboCommandFactory {
     private final CommandXboxController driverController;
     private final CommandXboxController operatorController;
     private final CommandSwerveDrive commandSwerveDrive;
     private final CommandArm commandArm;
     private final CommandElevator commandElevator;
 
-    public CommandFactory(
+    public ComboCommandFactory(
             CommandXboxController driverController,
             CommandXboxController operatorController,
             CommandSwerveDrive commandSwerveDrive,
@@ -129,21 +127,6 @@ public class CommandFactory {
         // Since AutoBuilder is configured, we can use it to build pathfinding commands
         return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0).withName("Reef0"); // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
 
-    }
-
-
-
-
-
-    public Command defaultElevator() {
-        ElevatorRequest.Hold holdRequest = new ElevatorRequest.Hold();
-        return commandElevator.applyRequest(() -> holdRequest).withName("HOLD");
-    }
-
-    public Command elevatorTestCommand() {
-        ElevatorRequest.Position position = new ElevatorRequest.Position()
-                .withPosition(Meters.of(1));
-        return commandElevator.applyRequest(() -> position).withName("Half Corbin");
     }
 
 
