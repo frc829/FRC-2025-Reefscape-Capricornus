@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import au.grapplerobotics.LaserCan;
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.units.measure.Time;
@@ -18,13 +19,13 @@ public class CommandDualIntake implements Subsystem {
     private final IntakeWheel wheel0;
     private final IntakeWheel wheel1;
     private double lastSimTime;
-    public final Trigger hasCoral;
+    public final LaserCan laserCan;
     private final Time simLoopPeriod;
 
-    public CommandDualIntake(IntakeWheel wheel0, IntakeWheel wheel1, Trigger hasCoral, Time simLoopPeriod) {
+    public CommandDualIntake(IntakeWheel wheel0, IntakeWheel wheel1, LaserCan laserCan, Time simLoopPeriod) {
         this.wheel0 = wheel0;
         this.wheel1 = wheel1;
-        this.hasCoral = hasCoral;
+        this.laserCan = laserCan;
         this.simLoopPeriod = simLoopPeriod;
         if (RobotBase.isSimulation()) {
             startSimThread();

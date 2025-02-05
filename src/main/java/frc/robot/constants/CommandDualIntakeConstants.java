@@ -93,15 +93,6 @@ public class CommandDualIntakeConstants {
             System.out.println(e.getMessage());
         }
 
-        Trigger hasCoral = new Trigger(() -> {
-            try{
-                return laserCan.getMeasurement().distance_mm <= maximumHasElementDistance.in(Millimeters);
-            }catch(Exception e){
-                System.out.println("Error getting measurement");
-                return false;
-            }
-        });
-
 
         IntakeWheelConstants algaeWheelConstants = new IntakeWheelConstants(
                 "Algae",
@@ -135,7 +126,7 @@ public class CommandDualIntakeConstants {
                 coralMotor,
                 coralConfig);
 
-        return new CommandDualIntake(algaeWheel, coralWheel, hasCoral, simLoopPeriod);
+        return new CommandDualIntake(algaeWheel, coralWheel, laserCan, simLoopPeriod);
     }
 
 

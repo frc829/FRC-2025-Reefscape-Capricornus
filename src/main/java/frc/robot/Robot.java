@@ -4,74 +4,58 @@
 
 package frc.robot;
 
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import static frc.robot.RobotContainer.commandArm;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.constants.CommandArmConstants;
+import frc.robot.constants.CommandElevatorConstants;
+import frc.robot.constants.CommandSwerveDriveConstants;
+import frc.robot.subsystems.CommandArm;
+import frc.robot.subsystems.CommandElevator;
+import frc.robot.subsystems.CommandSwerveDrive;
 
 public class Robot extends TimedRobot {
-  private Command autonomousCommand;
 
-  private final RobotContainer robotContainer;
-
-  public Robot() {
-    robotContainer = new RobotContainer();
-  }
-
-  @Override
-  public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
-  }
-
-  @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
-
-  @Override
-  public void disabledExit() {}
-
-  @Override
-  public void autonomousInit() {
-    autonomousCommand = robotContainer.getAutonomousCommand();
-
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
+    public Robot() {
+        CommandXboxController driverController = new CommandXboxController(0);
+        CommandXboxController operatorController = new CommandXboxController(1);
+        CommandSwerveDrive commandSwerveDrive = CommandSwerveDriveConstants.createCommandSwerve();
+        commandSwerveDrive.configureAutoBuilder();
+        CommandArm commandArm = CommandArmConstants.createCommandArm();
+        CommandElevator commandElevator = CommandElevatorConstants.createCommandElevator();
+        CommandFactory commandFactory = new CommandFactory(
+                driverController,
+                operatorController,
+                commandSwerveDrive,
+                commandArm,
+                commandElevator);
+        new DefaultRoutines(driverController,
+                operatorController,
+                commandFactory,
+                commandSwerveDrive,
+                commandArm,
+                commandElevator);
+        new DriverRoutines(
+                driverController,
+                commandFactory,
+                commandSwerveDrive,
+                commandArm,
+                commandElevator);
+        new OperatorRoutines(
+                operatorController,
+                commandFactory,
+                commandArm,
+                commandElevator);
+        AutoChooser autoChooser = new AutoChooser();
+        AutoFactory autoFactory = commandSwerveDrive.createAutoFactory();
+        new AutoRoutines(autoFactory, autoChooser);
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+        SmartDashboard.putData(CommandScheduler.getInstance());
+        RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
+        addPeriodic(CommandScheduler.getInstance()::run, 0.020);
     }
-  }
-
-  @Override
-  public void autonomousPeriodic() {}
-
-  @Override
-  public void autonomousExit() {}
-
-  @Override
-  public void teleopInit() {
-    if (autonomousCommand != null) {
-      autonomousCommand.cancel();
-    }
-  }
-
-  @Override
-  public void teleopPeriodic() {}
-
-  @Override
-  public void teleopExit() {}
-
-  @Override
-  public void testInit() {
-    CommandScheduler.getInstance().cancelAll();
-  }
-
-  @Override
-  public void testPeriodic() {}
-
-  @Override
-  public void testExit() {}
-
-  @Override
-  public void simulationPeriodic() {}
 }

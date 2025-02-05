@@ -1,16 +1,29 @@
 package frc.robot;
 
-import static frc.robot.RobotContainer.commandSwerveDrive;
-import static frc.robot.RobotContainer.driverController;
+
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.CommandArm;
+import frc.robot.subsystems.CommandElevator;
+import frc.robot.subsystems.CommandSwerveDrive;
 
 public class DriverRoutines {
 
-    private DriverRoutines() {
-        // prevents instantiation
-        // utility class
-    }
+    private final CommandXboxController driverController;
+    private final CommandFactory commandFactory;
+    private final CommandSwerveDrive commandSwerveDrive;
+    private final CommandArm commandArm;
+    private final CommandElevator commandElevator;
 
-    static void bind() {
+    public DriverRoutines(CommandXboxController driverController,
+                          CommandFactory commandFactory,
+                          CommandSwerveDrive commandSwerveDrive,
+                          CommandArm commandArm,
+                          CommandElevator commandElevator) {
+        this.driverController = driverController;
+        this.commandFactory = commandFactory;
+        this.commandSwerveDrive = commandSwerveDrive;
+        this.commandArm = commandArm;
+        this.commandElevator = commandElevator;
         zeroWheels();
         brake();
         pointModules();
@@ -19,35 +32,29 @@ public class DriverRoutines {
         toggleClock();
     }
 
-    private static void zeroWheels() {
+    private void zeroWheels() {
         // TODO: bind to driverController button either while or on True
     }
 
     private static void brake() {
+        //  bind to driverController button either while or on True
+    }
+
+    private void pointModules() {
         // TODO: bind to driverController button either while or on True
     }
 
-    private static void pointModules() {
-        // TODO: bind to driverController button either while or on True
-    }
-
-    private static void seedFieldCentric() {
+    private void seedFieldCentric() {
         // reset the field-centric heading on left bumper press
         // TODO: bind to driverController button either while or on True
     }
 
-    private static void goToReef0(){
-        driverController.a().whileTrue(CommandFactory.DriveCommands.goToReef0());
+    private void goToReef0(){
+        driverController.a().whileTrue(commandFactory.goToReef0());
     }
 
 
-    private static void toggleClock() {
+    private void toggleClock() {
         driverController.x().onTrue(commandSwerveDrive.toggleClock());
     }
-
-
-
-
-
-
 }
