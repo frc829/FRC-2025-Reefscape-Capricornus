@@ -1,4 +1,27 @@
 package frc.robot.subsystems;
 
-public class CommandCoralClaw {
+import digilib.claws.Claw;
+import digilib.claws.ClawRequest;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+
+import java.util.function.Supplier;
+
+public class CommandCoralClaw implements Subsystem {
+    private final Claw claw;
+
+    public CommandCoralClaw(Claw claw) {
+        this.claw = claw;
+    }
+
+    public Command applyRequest(Supplier<ClawRequest> requestSupplier) {
+        return run(() -> claw.setControl(requestSupplier.get()));
+    }
+
+    @Override
+    public void periodic() {
+        claw.update();
+    }
+
+
 }
