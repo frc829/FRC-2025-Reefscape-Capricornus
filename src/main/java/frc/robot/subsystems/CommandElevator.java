@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.mechanisms.elevator.Elevator;
-import frc.robot.mechanisms.elevator.ElevatorRequest;
+import digilib.elevator.Elevator;
+import digilib.elevator.ElevatorRequest;
 
 import java.util.function.Supplier;
 

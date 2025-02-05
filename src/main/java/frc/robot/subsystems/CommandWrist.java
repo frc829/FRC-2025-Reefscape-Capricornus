@@ -5,11 +5,10 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.mechanisms.wrist.Wrist;
-import frc.robot.mechanisms.wrist.WristRequest;
+import digilib.wrist.Wrist;
+import digilib.wrist.WristRequest;
 
 import java.util.function.Supplier;
 
