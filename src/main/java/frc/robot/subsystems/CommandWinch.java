@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.mechanisms.winch.Winch;
-import frc.robot.mechanisms.winch.WinchRequest;
+import digilib.winch.Winch;
+import digilib.winch.WinchRequest;
 
 import java.util.function.Supplier;
 

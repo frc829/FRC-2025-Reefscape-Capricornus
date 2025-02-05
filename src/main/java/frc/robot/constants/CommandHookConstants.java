@@ -6,9 +6,9 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
-import frc.robot.mechanisms.arm.Arm;
-import frc.robot.mechanisms.arm.ArmConstants;
-import frc.robot.mechanisms.arm.NEO550Arm;
+import digilib.arm.Arm;
+import digilib.arm.ArmConstants;
+import digilib.arm.NEO550Arm;
 import frc.robot.subsystems.CommandArm;
 
 import static edu.wpi.first.units.Units.*;

@@ -9,9 +9,9 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
-import frc.robot.mechanisms.wrist.NEO550Wrist;
-import frc.robot.mechanisms.wrist.Wrist;
-import frc.robot.mechanisms.wrist.WristConstants;
+import digilib.wrist.NEO550Wrist;
+import digilib.wrist.Wrist;
+import digilib.wrist.WristConstants;
 import frc.robot.subsystems.CommandWrist;
 
 import static edu.wpi.first.units.Units.*;

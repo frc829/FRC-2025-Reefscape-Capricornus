@@ -15,10 +15,9 @@ import edu.wpi.first.units.PerUnit;
 import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.mechanisms.arm.Arm;
-import frc.robot.mechanisms.arm.ArmConstants;
-import frc.robot.mechanisms.arm.KrakenX60Arm;
+import digilib.arm.Arm;
+import digilib.arm.ArmConstants;
+import digilib.arm.KrakenX60Arm;
 import frc.robot.subsystems.CommandArm;
 
 public class CommandArmConstants {

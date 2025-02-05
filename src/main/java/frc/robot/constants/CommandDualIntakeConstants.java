@@ -14,10 +14,9 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.mechanisms.intakeWheel.IntakeWheel;
-import frc.robot.mechanisms.intakeWheel.IntakeWheelConstants;
-import frc.robot.mechanisms.intakeWheel.NEO550IntakeWheel;
+import digilib.intakeWheel.IntakeWheel;
+import digilib.intakeWheel.IntakeWheelConstants;
+import digilib.intakeWheel.NEO550IntakeWheel;
 import frc.robot.subsystems.CommandDualIntake;
 
 import static edu.wpi.first.units.Units.*;
@@ -126,7 +125,7 @@ public class CommandDualIntakeConstants {
                 coralMotor,
                 coralConfig);
 
-        return new CommandDualIntake(algaeWheel, coralWheel, laserCan, simLoopPeriod);
+        return new CommandDualIntake(algaeWheel, coralWheel, maximumHasElementDistance, laserCan, simLoopPeriod);
     }
 
 

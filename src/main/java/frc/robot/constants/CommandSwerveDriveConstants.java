@@ -17,10 +17,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.*;
 
-import frc.robot.mechanisms.cameras.CameraConstants;
-import frc.robot.mechanisms.cameras.PhotonVisionCamera;
-import frc.robot.mechanisms.swerve.SwerveDrive;
-import frc.robot.mechanisms.swerve.SwerveDriveTelemetry;
+import digilib.cameras.CameraConstants;
+import digilib.cameras.PhotonVisionCamera;
+import digilib.swerve.SwerveDrive;
+import digilib.swerve.SwerveDriveTelemetry;
 import frc.robot.subsystems.CommandSwerveDrive;
 import org.photonvision.PhotonCamera;
 

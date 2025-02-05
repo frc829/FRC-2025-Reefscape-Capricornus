@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.mechanisms.arm.Arm;
-import frc.robot.mechanisms.arm.ArmRequest;
+import digilib.arm.Arm;
+import digilib.arm.ArmRequest;
 
 import java.util.function.Supplier;
 

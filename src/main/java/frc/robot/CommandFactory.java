@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.mechanisms.arm.ArmRequest;
-import frc.robot.mechanisms.elevator.ElevatorRequest;
+import digilib.arm.ArmRequest;
+import digilib.elevator.ElevatorRequest;
 import frc.robot.subsystems.CommandArm;
 import frc.robot.subsystems.CommandElevator;
 import frc.robot.subsystems.CommandSwerveDrive;
@@ -131,28 +131,20 @@ public class CommandFactory {
 
     }
 
-    public Command defaultArm() {
-        ArmRequest.Hold holdRequest = new ArmRequest.Hold();
-        return commandArm.applyRequest(() -> holdRequest).withName("HOLD");
+
+
+
+
+    public Command defaultElevator() {
+        ElevatorRequest.Hold holdRequest = new ElevatorRequest.Hold();
+        return commandElevator.applyRequest(() -> holdRequest).withName("HOLD");
     }
 
-    public Command testCommand() {
-        ArmRequest.Position position = new ArmRequest.Position()
-                .withPosition(Degrees.of(10.0));
-        return commandArm.applyRequest(() -> position).withName("POSITION");
+    public Command elevatorTestCommand() {
+        ElevatorRequest.Position position = new ElevatorRequest.Position()
+                .withPosition(Meters.of(1));
+        return commandElevator.applyRequest(() -> position).withName("Half Corbin");
     }
 
-    public class ElevatorCommands {
-        public Command defaultElevator() {
-            ElevatorRequest.Hold holdRequest = new ElevatorRequest.Hold();
-            return commandElevator.applyRequest(() -> holdRequest).withName("HOLD");
-        }
-
-        public Command testCommand() {
-            ElevatorRequest.Position position = new ElevatorRequest.Position()
-                    .withPosition(Meters.of(1));
-            return commandElevator.applyRequest(() -> position).withName("Half Corbin");
-        }
-    }
 
 }

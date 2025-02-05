@@ -1,10 +1,7 @@
 package frc.robot.constants;
 
 import com.ctre.phoenix6.CANBus;
-import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.DistanceUnit;
-import edu.wpi.first.units.PerUnit;
-import edu.wpi.first.units.VoltageUnit;
 
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.derive;
