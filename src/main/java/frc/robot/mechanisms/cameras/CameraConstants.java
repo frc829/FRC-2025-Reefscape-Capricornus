@@ -1,18 +1,25 @@
 package frc.robot.mechanisms.cameras;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Distance;
-import org.photonvision.PhotonPoseEstimator;
 
 import static org.photonvision.PhotonPoseEstimator.*;
 
 public class CameraConstants {
     private final Transform3d cameraTransform;
     private final AprilTagFieldLayout aprilTagFieldLayout;
-    private final PoseStrategy poseStrategy;
+    private final PoseStrategy primaryStrategy;
     private final PoseStrategy fallBackPoseStrategy;
+
+    // TODO: (Fake values. Experiment and determine estimation noise on an actual robot.)
+    private final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(4, 4, 8);
+    private final Matrix<N3, N1> multiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
     public CameraConstants(
             Distance cameraX,
@@ -20,10 +27,10 @@ public class CameraConstants {
             Distance cameraZ,
             Rotation3d rotation3d,
             AprilTagFieldLayout aprilTagFieldLayout,
-            PoseStrategy poseStrategy,
+            PoseStrategy primaryStrategy,
             PoseStrategy fallBackPoseStrategy) {
         this.aprilTagFieldLayout = aprilTagFieldLayout;
-        this.poseStrategy = poseStrategy;
+        this.primaryStrategy = primaryStrategy;
         this.fallBackPoseStrategy = fallBackPoseStrategy;
         cameraTransform = new Transform3d(
                 cameraX.baseUnitMagnitude(),
@@ -40,11 +47,19 @@ public class CameraConstants {
         return aprilTagFieldLayout;
     }
 
-    public PoseStrategy getPoseStrategy() {
-        return poseStrategy;
+    public PoseStrategy getPrimaryStrategy() {
+        return primaryStrategy;
     }
 
     public PoseStrategy getFallBackPoseStrategy() {
         return fallBackPoseStrategy;
+    }
+
+    public Matrix<N3, N1> getSingleTagStdDevs() {
+        return singleTagStdDevs;
+    }
+
+    public Matrix<N3, N1> getMultiTagStdDevs() {
+        return multiTagStdDevs;
     }
 }

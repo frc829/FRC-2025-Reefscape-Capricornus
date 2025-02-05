@@ -12,9 +12,9 @@ import static frc.robot.mechanisms.claws.ClawState.*;
 public class SolenoidClaw implements Claw {
     private final ClawState lastClawState = new ClawState();
     private final ClawState clawState = new ClawState();
+    private ClawRequest clawRequest;
     private final Solenoid solenoid;
     private final Map<Boolean, ClawValue> solenoidClawValueMap;
-    private ClawRequest clawRequest;
     private final Map<ClawValue, Boolean> clawValueSolenoidMap;
     private final MutTime timestamp = Seconds.mutable(0.0);
     private final ClawTelemetry clawTelemetry;
