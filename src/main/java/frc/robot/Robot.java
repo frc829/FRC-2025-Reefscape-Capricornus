@@ -51,5 +51,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData(CommandScheduler.getInstance());
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
         addPeriodic(CommandScheduler.getInstance()::run, 0.020);
+        //Keith says hi
     }
 }
