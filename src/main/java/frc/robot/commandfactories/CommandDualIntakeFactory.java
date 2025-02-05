@@ -42,6 +42,7 @@ public class CommandDualIntakeFactory {
                      intakeVelocityPercent0.mut_setMagnitude(maxIntakeVelocity1Percentage.getAsDouble());
                          request0.withVelocity
                      return intakeRequests;
+                         //delete in post
                  });
 
     }
