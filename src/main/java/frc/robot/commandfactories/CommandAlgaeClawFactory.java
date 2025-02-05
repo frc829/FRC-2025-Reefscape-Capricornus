@@ -1,5 +1,6 @@
 package frc.robot.commandfactories;
 
+import digilib.claws.ClawRequest;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandAlgaeClaw;
 
@@ -11,14 +12,13 @@ public class CommandAlgaeClawFactory {
     }
 
     public Command open(){
-        // TODO: create a ClawRequest.Open called request and assign it to a new ClawRequest.Open();
-        // TODO: return commandAlgaeClaw.applyRequest(() -> request).withName("OPEN");
-        return null; // TODO: remove this when done.
+        ClawRequest.Open request = new ClawRequest.Open();
+        return commandAlgaeClaw.applyRequest(() -> request).withName("OPEN");
     }
 
     public Command close(){
-        // TODO:  same as open but with close :)
-        return null; // TODO: remove this when done.
+        ClawRequest.Close request = new ClawRequest.Close();
+        return commandAlgaeClaw.applyRequest(() -> request).withName("CLOSE");
     }
 
 
