@@ -20,8 +20,7 @@ public class CommandWristFactory {
 
     public Command hold() {
         WristRequest.Hold request = new WristRequest.Hold();
-//        return commandWrist.applyRequest(() -> request).withName("HOLD");
-        return null;
+        return commandWrist.applyRequest(() -> request).withName("HOLD");
     }
 
     public Command goToAngle(Angle position) {
@@ -30,14 +29,13 @@ public class CommandWristFactory {
         return commandWrist.applyRequest(() -> request).withName(String.format("POSITION: %s degrees", position.in(Degrees)));
     }
 
-    public Command moveAtVelocity(DoubleSupplier maxwristVelocityPercentage) {
+    public Command moveAtVelocity(DoubleSupplier maxWristVelocityPercentage) {
         MutDimensionless wristVelocityPercent = Value.mutable(0.0);
         WristRequest.Velocity request = new WristRequest.Velocity();
         request.withVelocity(wristVelocityPercent);
         return commandWrist.applyRequest(() -> {
-                     wristVelocityPercent.mut_setMagnitude(maxwristVelocityPercentage.getAsDouble());
-                     return request;
-                 });
+            wristVelocityPercent.mut_setMagnitude(maxWristVelocityPercentage.getAsDouble());
+            return request;
+        });
     }
-
 }

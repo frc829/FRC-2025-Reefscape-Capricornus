@@ -126,7 +126,7 @@ public class NEO550Arm implements Arm {
     }
 
     @Override
-    public ArmState getLastArmState() {
+    public ArmState getLastState() {
         return lastArmState;
     }
 
