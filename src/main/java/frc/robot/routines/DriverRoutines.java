@@ -3,9 +3,9 @@ package frc.robot.routines;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.ComboCommandFactory;
-import frc.robot.subsystems.CommandArm;
-import frc.robot.subsystems.CommandElevator;
-import frc.robot.subsystems.CommandSwerveDrive;
+import frc.robot.subsystems.arm.CommandArm;
+import frc.robot.subsystems.elevator.CommandElevator;
+import frc.robot.subsystems.swerveDrive.CommandSwerveDrive;
 
 public class DriverRoutines {
 

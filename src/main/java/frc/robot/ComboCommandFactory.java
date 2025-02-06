@@ -12,13 +12,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import digilib.elevator.ElevatorRequest;
-import frc.robot.subsystems.CommandArm;
-import frc.robot.subsystems.CommandElevator;
-import frc.robot.subsystems.CommandSwerveDrive;
+import frc.robot.subsystems.arm.CommandArm;
+import frc.robot.subsystems.elevator.CommandElevator;
+import frc.robot.subsystems.swerveDrive.CommandSwerveDrive;
 
-import static edu.wpi.first.units.Units.Meters;
-import static frc.robot.constants.CommandSwerveDriveConstants.*;
+import static frc.robot.subsystems.swerveDrive.CommandSwerveDriveConstants.*;
 
 public class ComboCommandFactory {
     private final CommandXboxController driverController;
