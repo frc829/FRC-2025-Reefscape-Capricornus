@@ -36,13 +36,27 @@ public class Robot extends TimedRobot {
         CommandElevatorFactory commandElevatorFactory = new CommandElevatorFactory(commandElevator);
          new DriverRoutines(
                 driverController,
-                commandSwerveDrive,
-                commandArm,
-                commandElevator);
+                null,
+                 null,
+                 null,
+                 null,
+                 null,
+                 null,
+                 null,
+                 null,
+                 null,
+                 null);
         new OperatorRoutines(
                 operatorController,
-                commandArm,
-                commandElevator);
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
         AutoChooser autoChooser = new AutoChooser();
         AutoFactory autoFactory = commandSwerveDrive.createAutoFactory();
         new AutoRoutines(autoFactory, autoChooser);

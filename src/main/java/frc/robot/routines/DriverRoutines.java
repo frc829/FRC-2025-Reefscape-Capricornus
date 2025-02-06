@@ -1,61 +1,52 @@
 package frc.robot.routines;
 
-
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.ComboCommandFactory;
-import frc.robot.subsystems.arm.CommandArm;
-import frc.robot.subsystems.elevator.CommandElevator;
-import frc.robot.subsystems.swerveDrive.CommandSwerveDrive;
+import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
+import frc.robot.subsystems.arm.CommandArmFactory;
+import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
+import frc.robot.subsystems.dualIntake.CommandDualIntakeFactory;
+import frc.robot.subsystems.elevator.CommandElevatorFactory;
+import frc.robot.subsystems.hook.CommandHookFactory;
+import frc.robot.subsystems.swerveDrive.CommandSwerveFactory;
+import frc.robot.subsystems.winch.CommandWinchFactory;
+import frc.robot.subsystems.wrist.CommandWristFactory;
 
 public class DriverRoutines {
 
     private final CommandXboxController driverController;
-    private final ComboCommandFactory commandFactory;
-    private final CommandSwerveDrive commandSwerveDrive;
-    private final CommandArm commandArm;
-    private final CommandElevator commandElevator;
+    private final CommandAlgaeClawFactory commandAlgaeClawFactory;
+    private final CommandArmFactory commandArmFactory;
+    private final CommandCoralClawFactory commandCoralClawFactory;
+    private final CommandDualIntakeFactory commandDualIntakeFactory;
+    private final CommandElevatorFactory commandElevatorFactory;
+    private final CommandHookFactory commandHookFactory;
+    private final CommandSwerveFactory commandSwerveFactory;
+    private final CommandWinchFactory commandWinchFactory;
+    private final CommandWristFactory commandWristFactory;
+    private final ComboCommandFactory comboCommandFactory;
 
     public DriverRoutines(CommandXboxController driverController,
-                          ComboCommandFactory commandFactory,
-                          CommandSwerveDrive commandSwerveDrive,
-                          CommandArm commandArm,
-                          CommandElevator commandElevator) {
+                            CommandAlgaeClawFactory commandAlgaeClawFactory,
+                            CommandArmFactory commandArmFactory,
+                            CommandCoralClawFactory commandCoralClawFactory,
+                            CommandDualIntakeFactory commandDualIntakeFactory,
+                            CommandElevatorFactory commandElevatorFactory,
+                            CommandHookFactory commandHookFactory,
+                            CommandSwerveFactory commandSwerveFactory,
+                            CommandWinchFactory commandWinchFactory,
+                            CommandWristFactory commandWristFactory,
+                            ComboCommandFactory comboCommandFactory) {
         this.driverController = driverController;
-        this.commandFactory = commandFactory;
-        this.commandSwerveDrive = commandSwerveDrive;
-        this.commandArm = commandArm;
-        this.commandElevator = commandElevator;
-        zeroWheels();
-        brake();
-        pointModules();
-        seedFieldCentric();
-        goToReef0();
-        toggleClock();
-    }
-
-    private void zeroWheels() {
-        // TODO: bind to driverController button either while or on True
-    }
-
-    private static void brake() {
-        //  bind to driverController button either while or on True
-    }
-
-    private void pointModules() {
-        // TODO: bind to driverController button either while or on True
-    }
-
-    private void seedFieldCentric() {
-        // reset the field-centric heading on left bumper press
-        // TODO: bind to driverController button either while or on True
-    }
-
-    private void goToReef0(){
-        driverController.a().whileTrue(commandFactory.goToReef0());
-    }
-
-
-    private void toggleClock() {
-        driverController.x().onTrue(commandSwerveDrive.toggleClock());
+        this.commandAlgaeClawFactory = commandAlgaeClawFactory;
+        this.commandArmFactory = commandArmFactory;
+        this.commandCoralClawFactory = commandCoralClawFactory;
+        this.commandDualIntakeFactory = commandDualIntakeFactory;
+        this.commandElevatorFactory = commandElevatorFactory;
+        this.commandHookFactory = commandHookFactory;
+        this.commandSwerveFactory = commandSwerveFactory;
+        this.commandWinchFactory = commandWinchFactory;
+        this.commandWristFactory = commandWristFactory;
+        this.comboCommandFactory = comboCommandFactory;
     }
 }
