@@ -16,13 +16,9 @@ public class CommandDualIntakeFactory {
 
     public CommandDualIntakeFactory(CommandDualIntake commandDualIntake) {
         this.commandDualIntake = commandDualIntake;
-        // TODO: call commandDualIntake's setDefaultCommand method and pass in a call to the moveAtVelocity method defined below.
-        // TODO:  you'll passing in () -> 0.0, () -> 0.0 into the moveToVelocityMethod.
-        // TODO: DEAD GUY NUMBER 1 SAYS HI SAYS HI
-
-        commandDualIntake.setDefaultCommand(moveAtVelocity(() -> 0.0, () -> 0.0));
-
-
+        commandDualIntake.setDefaultCommand(moveAtVelocity(
+                () -> 0.0,
+                () -> 0.0));
     }
 
     public Command moveAtVelocity(DoubleSupplier maxIntakeVelocity0Percentage, DoubleSupplier maxIntakeVelocity1Percentage) {
