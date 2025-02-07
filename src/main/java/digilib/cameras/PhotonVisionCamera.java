@@ -147,6 +147,4 @@ public class PhotonVisionCamera implements Camera {
         poseStdDev.set(1, 0, yStdDev);
         poseStdDev.set(2, 0, thetaStdDev);
     }
-
-
 }

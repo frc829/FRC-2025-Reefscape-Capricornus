@@ -2,6 +2,7 @@ package frc.robot.subsystems.arm;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.DoubleSupplier;
 
@@ -13,6 +14,10 @@ public class CommandArmFactory {
         commandArm.register();
         // TODO: call commandArms's setDefaultCommand method and pass in a call to the hold method defined below.
         // NOTES:  hold() creates a hold command for the arm.  We then set it for the set in this todo.
+    }
+
+    public Trigger atPosition(Angle position, Angle tolerance){
+        return commandArm.atPosition(position, tolerance);
     }
 
     public Command hold() {
