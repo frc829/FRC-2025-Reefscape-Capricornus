@@ -1,5 +1,6 @@
 package frc.robot.commandFactories;
 
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
 import frc.robot.subsystems.arm.CommandArmFactory;
 import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
@@ -11,15 +12,15 @@ import frc.robot.subsystems.winch.CommandWinchFactory;
 import frc.robot.subsystems.wrist.CommandWristFactory;
 
 public class SubsystemCommandFactories {
-    public final CommandAlgaeClawFactory commandAlgaeClawFactory;
-    public final CommandArmFactory commandArmFactory;
-    public final CommandCoralClawFactory commandCoralClawFactory;
-    public final CommandDualIntakeFactory commandDualIntakeFactory;
-    public final CommandElevatorFactory commandElevatorFactory;
-    public final CommandHookFactory commandHookFactory;
-    public final CommandSwerveDriveFactory commandSwerveDriveFactory;
-    public final CommandWinchFactory commandWinchFactory;
-    public final CommandWristFactory commandWristFactory;
+    public final CommandAlgaeClawFactory algae;
+    public final CommandArmFactory arm;
+    public final CommandCoralClawFactory coral;
+    public final CommandDualIntakeFactory intake;
+    public final CommandElevatorFactory elevator;
+    public final CommandHookFactory hook;
+    public final CommandSwerveDriveFactory swerve;
+    public final CommandWinchFactory winch;
+    public final CommandWristFactory wrist;
 
     public SubsystemCommandFactories(
             CommandAlgaeClawFactory commandAlgaeClawFactory,
@@ -31,14 +32,14 @@ public class SubsystemCommandFactories {
             CommandSwerveDriveFactory commandSwerveDriveFactory,
             CommandWinchFactory commandWinchFactory,
             CommandWristFactory commandWristFactory) {
-        this.commandAlgaeClawFactory = commandAlgaeClawFactory;
-        this.commandArmFactory = commandArmFactory;
-        this.commandCoralClawFactory = commandCoralClawFactory;
-        this.commandDualIntakeFactory = commandDualIntakeFactory;
-        this.commandElevatorFactory = commandElevatorFactory;
-        this.commandHookFactory = commandHookFactory;
-        this.commandSwerveDriveFactory = commandSwerveDriveFactory;
-        this.commandWinchFactory = commandWinchFactory;
-        this.commandWristFactory = commandWristFactory;
+        this.algae = commandAlgaeClawFactory;
+        this.arm = commandArmFactory;
+        this.coral = commandCoralClawFactory;
+        this.intake = commandDualIntakeFactory;
+        this.elevator = commandElevatorFactory;
+        this.hook = commandHookFactory;
+        this.swerve = commandSwerveDriveFactory;
+        this.winch = commandWinchFactory;
+        this.wrist = commandWristFactory;
     }
 }

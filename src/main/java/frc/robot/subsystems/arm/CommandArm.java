@@ -1,6 +1,7 @@
 package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix6.Utils;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -8,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import digilib.arm.Arm;
 import digilib.arm.ArmRequest;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.Supplier;
 
@@ -22,6 +24,17 @@ public class CommandArm implements Subsystem {
         if (Utils.isSimulation()) {
             startSimThread();
         }
+    }
+
+    public Trigger atPosition(Angle position, Angle tolerance) {
+        // TODO: return a new Trigger passing in a lambda expression
+        // (cont.) The lambda is a BooleanSupplier of the form
+        // (cont.) () ->
+        // (cont.) on the right side of the arrow you will
+        // (cont.) call arm.getState()'s getPosition()'s isNear() method
+        // (cont.) so with dots
+        // (cont.) passing in position and tolerance.
+        return null; // TODO: remove this when done.
     }
 
     public Command applyRequest(Supplier<ArmRequest> requestSupplier) {

@@ -139,7 +139,7 @@ public interface SwerveDriveRequest {
             double vy = Math.sin(heading.baseUnitMagnitude())
                     * swerveDrive.getMaxVelocity().baseUnitMagnitude()
                     * maxVelocityPercent.baseUnitMagnitude();
-            swerveDrive.setFieldCentric(vx, vy, rotation.in(Radians));
+            swerveDrive.setClockDrive(vx, vy, rotation.in(Radians));
         }
 
         public ClockDrive withVelocity(Dimensionless maxVelocityPercent) {

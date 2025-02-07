@@ -2,14 +2,14 @@ package digilib.controllers;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-public class OperatorCommandXBoxController {
+public class OperatorFlightStickController {
 
     private final double deadband;
     private final CommandXboxController controller;
 
-    public OperatorCommandXBoxController(double deadband) {
+    public OperatorFlightStickController(double deadband) {
         this.deadband = deadband;
-        controller = new CommandXboxController(1);
+        controller = new CommandXboxController(2);
     }
 
 }

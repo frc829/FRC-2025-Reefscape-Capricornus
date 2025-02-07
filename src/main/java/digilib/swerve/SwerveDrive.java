@@ -9,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import digilib.cameras.CameraState;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,6 +20,7 @@ import digilib.cameras.Camera;
 import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Seconds;
 
 public class SwerveDrive {
 
@@ -111,23 +113,23 @@ public class SwerveDrive {
                         .withDeadband(0.1 * maxVelocity.baseUnitMagnitude()));
     }
 
-    public void setIdle(){
+    public void setIdle() {
         swerveDriveTrain.setControl(idle);
     }
 
-    public void setDriveCharacterization(Voltage voltage){
+    public void setDriveCharacterization(Voltage voltage) {
         swerveDriveTrain.setControl(driveCharacterization.withVolts(voltage));
     }
 
-    public void setSteerCharacterization(Voltage voltage){
+    public void setSteerCharacterization(Voltage voltage) {
         swerveDriveTrain.setControl(steerCharacterization.withVolts(voltage));
     }
 
-    public void setRotationCharacterization(AngularVelocity newRotationalRate){
+    public void setRotationCharacterization(AngularVelocity newRotationalRate) {
         swerveDriveTrain.setControl(rotationCharacterization.withRotationalRate(newRotationalRate));
     }
 
-    public void setTranslationCharacterization(LinearVelocity velocity){
+    public void setTranslationCharacterization(LinearVelocity velocity) {
         swerveDriveTrain.setControl(translationCharacterization
                 .withVelocityX(velocity.baseUnitMagnitude())
                 .withVelocityY(0.0)
@@ -183,8 +185,7 @@ public class SwerveDrive {
     public void addVisionMeasurement(
             Pose2d visionRobotPoseMeters,
             double timestampSeconds,
-            Matrix<N3, N1> visionMeasurementStdDevs
-    ) {
+            Matrix<N3, N1> visionMeasurementStdDevs) {
         swerveDriveTrain.addVisionMeasurement(
                 visionRobotPoseMeters,
                 Utils.fpgaToCurrentTime(timestampSeconds),
@@ -217,5 +218,17 @@ public class SwerveDrive {
 
     public AngularVelocity getMaxAngularVelocity() {
         return maxAngularVelocity;
+    }
+
+    public void update() {
+        for (var camera : cameras) {
+            CameraState state = camera.getState();
+            if (state.getRobotPose().isPresent()) {
+                addVisionMeasurement(
+                        state.getRobotPose().get().toPose2d(),
+                        state.getTimestamp().in(Seconds),
+                        state.getRobotPoseStdDev().get());
+            }
+        }
     }
 }

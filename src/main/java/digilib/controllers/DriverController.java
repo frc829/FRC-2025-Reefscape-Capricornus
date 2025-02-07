@@ -1,6 +1,5 @@
 package digilib.controllers;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutAngle;
@@ -11,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Value;
 
-public class DriverCommandXBoxController {
+public class DriverController {
 
     private final double deadband;
     private final CommandXboxController controller;
@@ -20,7 +19,7 @@ public class DriverCommandXBoxController {
     private final MutAngle heading = Radians.mutable(0.0);
     private final MutAngle rotation = Radians.mutable(0.0);
 
-    public DriverCommandXBoxController(double deadband) {
+    public DriverController(double deadband) {
         this.deadband = deadband;
         controller = new CommandXboxController(0);
     }
