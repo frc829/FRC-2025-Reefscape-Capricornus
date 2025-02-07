@@ -26,16 +26,14 @@ public class DriverCommandXBoxController {
     }
 
     public Dimensionless getVelocity() {
-        // TODO: return a call to velocity.mut_setMagnitude() passing in getVelocityValue();
-        return null; // TODO: remove this when done.
+        return velocity.mut_setMagnitude(getVelocityValue());
     }
 
     private double getVelocityValue() {
-        // TODO: get x from a call to -MathUtil.applyDeadband() passing in controller.getLeftX() and deadband
-        // TODO: repeat for y
-        // TODO: get the velocity from Math.hypot() passing in x and y
-        // TODO: return the minimum of velocity and 1 using Math.min
-        return 0.0; // TODO: remove this when done.
+        double x = -MathUtil.applyDeadband(controller.getLeftX(), deadband);
+        double y = -MathUtil.applyDeadband(controller.getLeftY(), deadband);
+        double velocity = Math.hypot(x, y);
+        return Math.min(velocity, 1);
     }
 
     public Dimensionless getRotationalVelocity() {
