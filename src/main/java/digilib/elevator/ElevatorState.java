@@ -18,6 +18,10 @@ public class ElevatorState implements Cloneable {
         return velocity;
     }
 
+    public MutTime getTimestamp() {
+        return timestamp;
+    }
+
     public ElevatorState withPosition(Distance position){
         this.position.mut_replace(position);
         return this;
