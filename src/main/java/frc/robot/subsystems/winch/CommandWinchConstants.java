@@ -26,6 +26,7 @@ public class CommandWinchConstants {
 
 
 
+
     public static CommandWinch createCommandWinch() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Voltage.PeakForwardVoltage = 12.0;
