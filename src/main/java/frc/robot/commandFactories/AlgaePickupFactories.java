@@ -30,13 +30,12 @@ public class AlgaePickupFactories {
                 .andThen(factories.wrist.goToAngle(wristAngle)
                         .until(factories.wrist.atPosition(Degrees.of(0.0), Degrees.of(0.1)))
                         .asProxy())
-                .andThen(
-                        factories.arm.goToAngle(armAngle)
-                                .until(factories.arm.atPosition(armAngle, Degrees.of(1.000)))
-                                .asProxy()
-                                .alongWith(factories.elevator.goToPosition(elevatorHeight)
-                                        .until(factories.elevator.atPosition(elevatorHeight, Meters.of(0.001)))
-                                        .asProxy()))
+                .andThen(factories.arm.goToAngle(armAngle)
+                        .until(factories.arm.atPosition(armAngle, Degrees.of(1.000)))
+                        .asProxy()
+                        .alongWith(factories.elevator.goToPosition(elevatorHeight)
+                                .until(factories.elevator.atPosition(elevatorHeight, Meters.of(0.001)))
+                                .asProxy()))
                 .andThen(factories.intake.moveAtVelocity(intake0Velocity, intake1Velocity))
                 .withName(name);
     }

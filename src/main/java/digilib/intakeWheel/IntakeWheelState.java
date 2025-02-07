@@ -9,8 +9,12 @@ public class IntakeWheelState implements Cloneable {
     private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
 
-    public MutLinearVelocity getVelocity() {
+    public LinearVelocity getVelocity() {
         return velocity;
+    }
+
+    public Time getTimestamp() {
+        return timestamp;
     }
 
     public IntakeWheelState withVelocity(LinearVelocity velocity) {

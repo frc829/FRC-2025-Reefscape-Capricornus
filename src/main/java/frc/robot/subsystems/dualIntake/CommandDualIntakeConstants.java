@@ -94,7 +94,7 @@ public class CommandDualIntakeConstants {
 
 
         IntakeWheelConstants algaeWheelConstants = new IntakeWheelConstants(
-                "Algae",
+                "Intake: Algae",
                 algaeKs,
                 algaeKv,
                 algaeKa,
@@ -106,7 +106,7 @@ public class CommandDualIntakeConstants {
                 algaeMaxAcceleration);
 
         IntakeWheelConstants coralWheelConstants = new IntakeWheelConstants(
-                "Coral",
+                "Intake: Coral",
                 coralKs,
                 coralKv,
                 coralKa,
