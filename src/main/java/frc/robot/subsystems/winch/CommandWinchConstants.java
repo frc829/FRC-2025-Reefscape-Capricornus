@@ -1,26 +1,42 @@
 package frc.robot.subsystems.winch;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import digilib.winch.KrakenX60Winch;
+import digilib.winch.Winch;
+import edu.wpi.first.hal.SimLong;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Time;
+import frc.robot.Constants;
+
+import static com.ctre.phoenix6.signals.NeutralModeValue.*;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Seconds;
+
 public class CommandWinchConstants {
-    // TODO: all of these are private static final fields
-    // TODO: int deviceNumber assign 18 to it.
-    // TODO: NeutralModeValue named neutralModeValue assign NeutralModelValue.Brake to it
-    // TODO: InvertedValue named invertedValue and assign InvertedValue.CounterClockwise_Positive to it
-    // TODO: Distance named drumRadius and assign Meters.of(1.0) to it (for now)
-    // TODO: double named reduction assign 1.0 to it.
-    // TODO: Time named simLoopPeriod and assign Seconds.of(0.001) to it.
+    private static final int deviceNumber = 18;
+    private static final NeutralModeValue neutralModeValue = Brake;
+    private static final InvertedValue invertedValue = InvertedValue.CounterClockwise_Positive;
+    private static final Distance drumRadius = Meters.of(1.0);
+    private static final double reduction = 1.0;
+    private static final Time simLoopPeriod = Seconds.of(0.001);
+
+
 
 
     public static CommandWinch createCommandWinch() {
-        // TODO: create a TalonFXConfiguration named config and assign new TalonFXConfiguration() to it.
-        // TODO: assign 12.0 to config.Voltage.PeakForwardVoltage
-        // TODO: repeat on PeakReverseVoltage with -12.0;
-        // TODO: assign reduction to config.Feedback.SensorToMechanismRatio
-        // TODO: assign invertedValue to config.MotorOutput.Inverted
-        // TODO: assign neutralModeValue to config.MotorOutput.NeutralMode
-        // TODO: create a TalonFX named motor and assign new TalonFX() passing in deviceNumber, and RobotConstants.rio
-        // TODO: call motor.getConfigurator().apply() passing in config
-        // TODO: create a new Winch named winch and assign new KrakenX60Winch() passing in motor and drumRadius to it.
-        // TODO: return new CommandWinch() passing winch, and SimLoopPeriod to it.
-        return null; // TODO: remove this when done.
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.Voltage.PeakForwardVoltage = 12.0;
+        config.Voltage.PeakReverseVoltage = -12.0;
+        config.Feedback.SensorToMechanismRatio = reduction;
+        config.MotorOutput.Inverted = invertedValue;
+        config.MotorOutput.NeutralMode = neutralModeValue;
+
+        TalonFX motor = new TalonFX(deviceNumber, Constants.rio);
+        motor.getConfigurator().apply(config);
+        Winch winch = new KrakenX60Winch(motor, drumRadius);
+        return new CommandWinch(winch, simLoopPeriod);
     }
 }
