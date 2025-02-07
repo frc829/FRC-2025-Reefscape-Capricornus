@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
+import digilib.elevator.ElevatorTelemetry;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
@@ -32,6 +33,7 @@ public class NEO550IntakeWheel implements IntakeWheel {
     private final IntakeWheelState lastState = new IntakeWheelState();
     private final IntakeWheelState state = new IntakeWheelState();
     private final LinearVelocity maxVelocity;
+    private final IntakeWheelTelemetry telemetry;
     private IntakeWheelRequest intakeWheelRequest;
     private final SparkMax motor;
     private final SparkBaseConfig config;
@@ -62,6 +64,11 @@ public class NEO550IntakeWheel implements IntakeWheel {
                     plant,
                     dcMotor);
         }
+        this.telemetry = new IntakeWheelTelemetry(
+                constants.getName(),
+                constants.getWheelRadius(),
+                constants.getMaxVelocity(),
+                constants.getMaxAcceleration());
     }
 
     @Override
@@ -135,7 +142,7 @@ public class NEO550IntakeWheel implements IntakeWheel {
 
     @Override
     public void updateTelemetry() {
-        // TODO: will do later
+        telemetry.telemeterize(state);
     }
 
     @Override
