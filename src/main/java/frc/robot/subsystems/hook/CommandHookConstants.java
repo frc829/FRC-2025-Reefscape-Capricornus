@@ -38,7 +38,7 @@ public class CommandHookConstants {
     private static final AngularAcceleration maxAngularAcceleration = RadiansPerSecondPerSecond.of(
             (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / ka.baseUnitMagnitude());
 
-    public static CommandArm createCommandHook() {
+    public static CommandHook createCommandHook() {
         SparkMax motor = new SparkMax(motorDeviceId, SparkLowLevel.MotorType.kBrushless);
 
         SparkBaseConfig config = new SparkFlexConfig()
@@ -70,7 +70,7 @@ public class CommandHookConstants {
                 motor,
                 config,
                 updatePeriod);
-        return new CommandArm(arm, simLoopPeriod);
+        return new CommandHook(arm, simLoopPeriod);
 
 
     }

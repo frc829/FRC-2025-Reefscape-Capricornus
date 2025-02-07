@@ -9,11 +9,11 @@ import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-public class CommandSwerveFactory {
+public class CommandSwerveDriveFactory {
 
     private final CommandSwerveDrive commandSwerveDrive;
 
-    public CommandSwerveFactory(CommandSwerveDrive commandSwerveDrive) {
+    public CommandSwerveDriveFactory(CommandSwerveDrive commandSwerveDrive) {
         this.commandSwerveDrive = commandSwerveDrive;
         commandSwerveDrive.setDefaultCommand(idle());
     }

@@ -12,6 +12,7 @@ public class Constants {
         // utility class
     }
 
+    public static final double controllerDeadband = 0.1;
     public static final DistanceUnit Corbins = derive(Feet).aggregate(6).named("Corbin").symbol("cb").make();
     private static final DistanceUnit Corbin = Corbins;
     private static final DistanceUnit Adams = Corbins;
