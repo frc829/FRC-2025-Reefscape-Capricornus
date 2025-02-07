@@ -23,4 +23,6 @@ public interface IntakeWheel {
     public void setVelocity(LinearVelocity velocity);
 
     public void update();
+
+    public LinearVelocity getMaxVelocity();
 }

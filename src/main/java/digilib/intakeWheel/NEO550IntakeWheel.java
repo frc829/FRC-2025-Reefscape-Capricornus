@@ -31,6 +31,7 @@ import static edu.wpi.first.units.Units.Seconds;
 public class NEO550IntakeWheel implements IntakeWheel {
     private final IntakeWheelState lastState = new IntakeWheelState();
     private final IntakeWheelState state = new IntakeWheelState();
+    private final LinearVelocity maxVelocity;
     private IntakeWheelRequest intakeWheelRequest;
     private final SparkMax motor;
     private final SparkBaseConfig config;
@@ -47,6 +48,7 @@ public class NEO550IntakeWheel implements IntakeWheel {
     public NEO550IntakeWheel(IntakeWheelConstants constants, SparkMax motor, SparkBaseConfig config) {
         this.motor = motor;
         this.config = config;
+        this.maxVelocity = constants.getMaxVelocity();
         this.feedforward = new SimpleMotorFeedforward(constants.getKs().baseUnitMagnitude(), constants.getKv().baseUnitMagnitude(), constants.getKa().baseUnitMagnitude(), constants.getUpdatePeriod().baseUnitMagnitude());
         this.profile = new SlewRateLimiter(constants.getMaxAcceleration().baseUnitMagnitude());
         this.profilePeriod = constants.getUpdatePeriod();
@@ -134,5 +136,10 @@ public class NEO550IntakeWheel implements IntakeWheel {
     @Override
     public void updateTelemetry() {
         // TODO: will do later
+    }
+
+    @Override
+    public LinearVelocity getMaxVelocity() {
+        return maxVelocity;
     }
 }

@@ -95,7 +95,7 @@ public class KrakenX60Arm implements Arm {
     }
 
     @Override
-    public ArmState getLastArmState() {
+    public ArmState getLastState() {
         return lastArmState;
     }
 

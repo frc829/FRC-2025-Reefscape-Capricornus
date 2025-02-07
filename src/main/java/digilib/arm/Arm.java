@@ -13,7 +13,7 @@ public interface Arm {
 
     public ArmState getStateCopy();
 
-    public ArmState getLastArmState();
+    public ArmState getLastState();
 
     public void enableHold();
 

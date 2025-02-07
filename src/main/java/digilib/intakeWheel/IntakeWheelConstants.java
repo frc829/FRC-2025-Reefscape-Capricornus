@@ -12,6 +12,7 @@ public class IntakeWheelConstants {
     private final double reduction;
     private final LinearVelocity velocityStdDev;
     private final Time updatePeriod;
+    private final LinearVelocity maxVelocity;
     private final LinearAcceleration maxAcceleration;
 
 
@@ -24,6 +25,7 @@ public class IntakeWheelConstants {
             double reduction,
             LinearVelocity velocityStdDev,
             Time updatePeriod,
+            LinearVelocity maxVelocity,
             LinearAcceleration maxAcceleration) {
         this.name = name;
         this.ks = ks;
@@ -33,6 +35,7 @@ public class IntakeWheelConstants {
         this.reduction = reduction;
         this.velocityStdDev = velocityStdDev;
         this.updatePeriod = updatePeriod;
+        this.maxVelocity = maxVelocity;
         this.maxAcceleration = maxAcceleration;
     }
 
@@ -71,5 +74,9 @@ public class IntakeWheelConstants {
 
     public String getName() {
         return name;
+    }
+
+    public LinearVelocity getMaxVelocity() {
+        return maxVelocity;
     }
 }

@@ -14,6 +14,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,15 +22,15 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class SwerveDriveTelemetry {
-    private final double MaxSpeed;
+    private final LinearVelocity maxVelocity;
 
     /**
      * Construct a telemetry object, with the specified max speed of the robot
      * 
-     * @param maxSpeed Maximum speed in meters per second
+     * @param maxVelocity Maximum speed in meters per second
      */
-    public SwerveDriveTelemetry(double maxSpeed) {
-        MaxSpeed = maxSpeed;
+    public SwerveDriveTelemetry(LinearVelocity maxVelocity) {
+        this.maxVelocity = maxVelocity;
     }
 
     /* What to publish over networktables for telemetry */
@@ -115,7 +116,7 @@ public class SwerveDriveTelemetry {
         for (int i = 0; i < 4; ++i) {
             moduleSpeeds[i].setAngle(state.ModuleStates[i].angle);
             moduleDirections[i].setAngle(state.ModuleStates[i].angle);
-            moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
+            moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * maxVelocity.baseUnitMagnitude()));
 
             SmartDashboard.putData("Module " + i, moduleMechanisms[i]);
         }

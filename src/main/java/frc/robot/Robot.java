@@ -11,39 +11,56 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.commandfactories.CommandArmFactory;
-import frc.robot.commandfactories.CommandElevatorFactory;
-import frc.robot.commandfactories.CommandWristFactory;
-import frc.robot.constants.CommandArmConstants;
-import frc.robot.constants.CommandElevatorConstants;
-import frc.robot.constants.CommandSwerveDriveConstants;
+import frc.robot.commandFactories.AlgaePickupFactories;
+import frc.robot.commandFactories.SubsystemCommandFactories;
+import frc.robot.subsystems.algaeClaw.CommandAlgaeClaw;
+import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
+import frc.robot.subsystems.arm.CommandArmFactory;
+import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
+import frc.robot.subsystems.dualIntake.CommandDualIntake;
+import frc.robot.subsystems.dualIntake.CommandDualIntakeConstants;
+import frc.robot.subsystems.dualIntake.CommandDualIntakeFactory;
+import frc.robot.subsystems.elevator.CommandElevatorFactory;
+import frc.robot.subsystems.arm.CommandArmConstants;
+import frc.robot.subsystems.elevator.CommandElevatorConstants;
+import frc.robot.subsystems.hook.CommandHookConstants;
+import frc.robot.subsystems.hook.CommandHookFactory;
+import frc.robot.subsystems.pneumatics.CommandPneumaticsConstants;
+import frc.robot.subsystems.swerveDrive.CommandSwerveDriveConstants;
 import frc.robot.routines.AutoRoutines;
 import frc.robot.routines.DriverRoutines;
 import frc.robot.routines.OperatorRoutines;
-import frc.robot.subsystems.CommandArm;
-import frc.robot.subsystems.CommandElevator;
-import frc.robot.subsystems.CommandSwerveDrive;
+import frc.robot.subsystems.arm.CommandArm;
+import frc.robot.subsystems.elevator.CommandElevator;
+import frc.robot.subsystems.swerveDrive.CommandSwerveDrive;
+import frc.robot.subsystems.swerveDrive.CommandSwerveDriveFactory;
+import frc.robot.subsystems.winch.CommandWinch;
+import frc.robot.subsystems.winch.CommandWinchConstants;
+import frc.robot.subsystems.winch.CommandWinchFactory;
+import frc.robot.subsystems.wrist.CommandWristConstants;
+import frc.robot.subsystems.wrist.CommandWristFactory;
 
 public class Robot extends TimedRobot {
 
     public Robot() {
-        CommandXboxController driverController = new CommandXboxController(0);
-        CommandXboxController operatorController = new CommandXboxController(1);
         CommandSwerveDrive commandSwerveDrive = CommandSwerveDriveConstants.createCommandSwerve();
         commandSwerveDrive.configureAutoBuilder();
-        CommandArm commandArm = CommandArmConstants.createCommandArm();
-        CommandElevator commandElevator = CommandElevatorConstants.createCommandElevator();
-        CommandArmFactory commandArmFactory = new CommandArmFactory(commandArm);
-        CommandElevatorFactory commandElevatorFactory = new CommandElevatorFactory(commandElevator);
-         new DriverRoutines(
-                driverController,
-                commandSwerveDrive,
-                commandArm,
-                commandElevator);
+        SubsystemCommandFactories subsystemCommandFactories = new SubsystemCommandFactories(
+                new CommandAlgaeClawFactory(CommandPneumaticsConstants.createCommandAlgaeClaw()),
+                new CommandArmFactory(CommandArmConstants.createCommandArm()),
+                new CommandCoralClawFactory(CommandPneumaticsConstants.createCommandCoralClaw()),
+                new CommandDualIntakeFactory(CommandDualIntakeConstants.createCommandIntake()),
+                new CommandElevatorFactory(CommandElevatorConstants.createCommandElevator()),
+                new CommandHookFactory(CommandHookConstants.createCommandHook()),
+                new CommandSwerveDriveFactory(commandSwerveDrive),
+                new CommandWinchFactory(CommandWinchConstants.createCommandWinch()),
+                new CommandWristFactory(CommandWristConstants.createCommandWrist()));
+        AlgaePickupFactories algaePickupFactories = new AlgaePickupFactories(subsystemCommandFactories);
+        new DriverRoutines(
+                subsystemCommandFactories);
         new OperatorRoutines(
-                operatorController,
-                commandArm,
-                commandElevator);
+                subsystemCommandFactories,
+                algaePickupFactories);
         AutoChooser autoChooser = new AutoChooser();
         AutoFactory autoFactory = commandSwerveDrive.createAutoFactory();
         new AutoRoutines(autoFactory, autoChooser);
@@ -51,6 +68,5 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData(CommandScheduler.getInstance());
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
         addPeriodic(CommandScheduler.getInstance()::run, 0.020);
-        //Keith says hi
     }
 }

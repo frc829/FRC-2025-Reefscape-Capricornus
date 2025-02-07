@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.Distance;
 import static org.photonvision.PhotonPoseEstimator.*;
 
 public class CameraConstants {
-    private final Transform3d cameraTransform;
+    private final Transform3d robotToCamera;
     private final AprilTagFieldLayout aprilTagFieldLayout;
     private final PoseStrategy primaryStrategy;
     private final PoseStrategy fallBackPoseStrategy;
@@ -32,15 +32,15 @@ public class CameraConstants {
         this.aprilTagFieldLayout = aprilTagFieldLayout;
         this.primaryStrategy = primaryStrategy;
         this.fallBackPoseStrategy = fallBackPoseStrategy;
-        cameraTransform = new Transform3d(
+        robotToCamera = new Transform3d(
                 cameraX.baseUnitMagnitude(),
                 cameraY.baseUnitMagnitude(),
                 cameraZ.baseUnitMagnitude(),
                 rotation3d);
     }
 
-    public Transform3d getCameraTransform() {
-        return cameraTransform;
+    public Transform3d getRobotToCamera() {
+        return robotToCamera;
     }
 
     public AprilTagFieldLayout getAprilTagFieldLayout() {

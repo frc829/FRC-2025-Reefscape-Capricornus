@@ -1,34 +1,28 @@
 package frc.robot.routines;
 
+import digilib.controllers.OperatorCommandXBoxController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.ComboCommandFactory;
-import frc.robot.subsystems.CommandArm;
-import frc.robot.subsystems.CommandElevator;
+import frc.robot.Constants;
+import frc.robot.commandFactories.AlgaePickupFactories;
+import frc.robot.commandFactories.SubsystemCommandFactories;
+import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
+import frc.robot.subsystems.arm.CommandArmFactory;
+import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
+import frc.robot.subsystems.dualIntake.CommandDualIntakeFactory;
+import frc.robot.subsystems.elevator.CommandElevatorFactory;
+import frc.robot.subsystems.hook.CommandHookFactory;
+import frc.robot.subsystems.winch.CommandWinchFactory;
+import frc.robot.subsystems.wrist.CommandWristFactory;
 
 public class OperatorRoutines {
+    private final OperatorCommandXBoxController operatorController = new OperatorCommandXBoxController(Constants.controllerDeadband);
+    private final SubsystemCommandFactories subsystemCommandFactories;
+    private final AlgaePickupFactories algaePickupFactories;
 
-    private final CommandXboxController operatorController;
-    private final ComboCommandFactory commandFactory;
-    private final CommandArm commandArm;
-    private final CommandElevator commandElevator;
-
-    public OperatorRoutines(CommandXboxController operatorController,
-                            ComboCommandFactory commandFactory,
-                            CommandArm commandArm,
-                            CommandElevator commandElevator) {
-        this.operatorController = operatorController;
-        this.commandFactory = commandFactory;
-        this.commandArm = commandArm;
-        this.commandElevator = commandElevator;
-        elevator();
-        arm();
-    }
-
-
-    private void elevator(){
-        operatorController.b().whileTrue(commandFactory.testCommand());
-    }
-    private void arm(){
-        operatorController.a().whileTrue(commandFactory.testCommand());
+    public OperatorRoutines(
+            SubsystemCommandFactories subsystemCommandFactories,
+            AlgaePickupFactories algaePickupFactories) {
+        this.algaePickupFactories = algaePickupFactories;
+        this.subsystemCommandFactories = subsystemCommandFactories;
     }
 }

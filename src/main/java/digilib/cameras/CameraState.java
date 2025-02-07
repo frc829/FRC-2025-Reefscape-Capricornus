@@ -1,7 +1,10 @@
 package digilib.cameras;
 
+import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.MutTime;
@@ -13,9 +16,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 public class CameraState implements Cloneable {
 
-
-
-    public enum CameraMode{
+    public enum CameraMode {
         ROBOT_POSE
     }
 
@@ -51,11 +52,11 @@ public class CameraState implements Cloneable {
     }
 
     public CameraState withRobotPoseStdDev(Matrix<N3, N1> robotPoseStdDev) {
-        this.robotPoseStdDev = robotPoseStdDev;
+        this.robotPoseStdDev.assignBlock(0, 0, robotPoseStdDev);
         return this;
     }
 
-    public CameraState withTimestamp(MutTime timestamp) {
+    public CameraState withTimestamp(Time timestamp) {
         this.timestamp.mut_replace(timestamp);
         return this;
     }
@@ -71,7 +72,7 @@ public class CameraState implements Cloneable {
     @Override
     public CameraState clone() {
         try {
-            CameraState toReturn =  (CameraState) super.clone();
+            CameraState toReturn = (CameraState) super.clone();
             toReturn.mode = mode;
             toReturn.robotPose = robotPose;
             toReturn.robotPoseStdDev = robotPoseStdDev;
@@ -81,11 +82,6 @@ public class CameraState implements Cloneable {
             throw new AssertionError();
         }
     }
-
-
-
-
-
 
 
 }
