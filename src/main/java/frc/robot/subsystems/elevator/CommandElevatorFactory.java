@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.DoubleSupplier;
 
@@ -14,9 +15,13 @@ public class CommandElevatorFactory {
         // NOTES:  hold() creates a hold command for the elevator.  We then set it for the set in this todo.
     }
 
+    public Trigger atPosition(Distance position, Distance tolerance){
+        return commandElevator.atPosition(position, tolerance);
+    }
+
     public Command hold() {
         // TODO: create an elevatorRequest.Hold called request and assign a new elevatorRequest.Hold to it.  
-        // TODO: return command.applyRequest(() -> request).withName("HOLD")
+        // TODO: return commandElevator.applyRequest(() -> request).withName("HOLD")
         return null; // TODO: remove this when done.
     }
 
