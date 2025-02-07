@@ -5,8 +5,10 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,10 +16,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import digilib.cameras.Camera;
+import edu.wpi.first.units.measure.*;
 
-/**
- * Swerve Drive class utilizing CTR Electronics' Phoenix 6 API with the selected device types.
- */
+import static edu.wpi.first.units.Units.Degrees;
+
 public class SwerveDrive {
 
     private final SwerveDrivetrain<TalonFX, TalonFX, CANcoder> swerveDriveTrain;
@@ -26,7 +28,24 @@ public class SwerveDrive {
     private final PhoenixPIDController pathThetaController;
     private final SwerveDriveTelemetry swerveDriveTelemetry;
     private final SwerveRequest.ApplyFieldSpeeds pathApplyFieldSpeeds = new SwerveRequest.ApplyFieldSpeeds();
+    private final LinearVelocity maxVelocity;
+    private final AngularVelocity maxAngularVelocity;
     private final Camera[] cameras;
+    private final SwerveRequest.Idle idle = new SwerveRequest.Idle();
+    private final SwerveRequest.FieldCentric fieldCentric = new SwerveRequest.FieldCentric()
+            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);     // Use open-loop control for drive motors
+    private final SwerveRequest.RobotCentric robotCentric = new SwerveRequest.RobotCentric()
+            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);     // Use open-loop control for drive motors
+    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();   // Use open-loop control for drive motors
+    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    private final SwerveRequest.ApplyRobotSpeeds applyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+    private final SwerveRequest.FieldCentricFacingAngle clockDrive = new SwerveRequest.FieldCentricFacingAngle()
+            .withForwardPerspective(SwerveRequest.ForwardPerspectiveValue.OperatorPerspective);
+
+    private final SwerveRequest.SysIdSwerveTranslation driveCharacterization = new SwerveRequest.SysIdSwerveTranslation();
+    private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
+    private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+    private final SwerveRequest.FieldCentric translationCharacterization = new SwerveRequest.FieldCentric();
 
     public SwerveDrive(
             SwerveDrivetrain<TalonFX, TalonFX, CANcoder> swerveDriveTrain,
@@ -34,17 +53,85 @@ public class SwerveDrive {
             PhoenixPIDController pathYController,
             PhoenixPIDController pathThetaController,
             SwerveDriveTelemetry swerveDriveTelemetry,
+            LinearVelocity maxVelocity,
+            AngularVelocity maxAngularVelocity,
             Camera... cameras) {
         this.swerveDriveTrain = swerveDriveTrain;
         this.pathXController = pathXController;
         this.pathYController = pathYController;
         this.pathThetaController = pathThetaController;
         this.swerveDriveTelemetry = swerveDriveTelemetry;
+        this.maxVelocity = maxVelocity;
+        this.maxAngularVelocity = maxAngularVelocity;
         this.cameras = cameras;
+        clockDrive.HeadingController = pathThetaController;
     }
 
-    public void setControl(SwerveRequest request) {
-        swerveDriveTrain.setControl(request);
+    public void setControl(SwerveDriveRequest request) {
+        request.apply(this);
+    }
+
+    public void setFieldCentric(double vx, double vy, double omega) {
+        swerveDriveTrain.setControl(fieldCentric.withVelocityX(vx)
+                .withVelocityY(vy)
+                .withRotationalRate(omega));
+    }
+
+    public void setRobotCentric(double vx, double vy, double omega) {
+        swerveDriveTrain.setControl(robotCentric.withVelocityX(vx)
+                .withVelocityY(vy)
+                .withRotationalRate(omega));
+    }
+
+    public void setApplyRobotSpeeds(ChassisSpeeds speeds, DriveFeedforwards driveFeedforwards) {
+        swerveDriveTrain.setControl(applyRobotSpeeds.withSpeeds(speeds)
+                .withWheelForceFeedforwardsX(driveFeedforwards.robotRelativeForcesYNewtons())
+                .withWheelForceFeedforwardsY(driveFeedforwards.robotRelativeForcesYNewtons()));
+    }
+
+    public void setBrake() {
+        swerveDriveTrain.setControl(brake);
+    }
+
+    public void setWheels(Angle direction) {
+        swerveDriveTrain.setControl(point.withModuleDirection(
+                Rotation2d.fromDegrees(direction.in(Degrees))));
+    }
+
+    public void setFieldCentricSeed() {
+        swerveDriveTrain.seedFieldCentric();
+    }
+
+    public void setClockDrive(double vx, double vy, double thetaRadians) {
+        swerveDriveTrain.setControl(
+                clockDrive
+                        .withVelocityX(vx)
+                        .withVelocityY(vy)
+                        .withTargetDirection(Rotation2d.fromRadians(thetaRadians))
+                        .withDeadband(0.1 * maxVelocity.baseUnitMagnitude()));
+    }
+
+    public void setIdle(){
+        swerveDriveTrain.setControl(idle);
+    }
+
+    public void setDriveCharacterization(Voltage voltage){
+        swerveDriveTrain.setControl(driveCharacterization.withVolts(voltage));
+    }
+
+    public void setSteerCharacterization(Voltage voltage){
+        swerveDriveTrain.setControl(steerCharacterization.withVolts(voltage));
+    }
+
+    public void setRotationCharacterization(AngularVelocity newRotationalRate){
+        swerveDriveTrain.setControl(rotationCharacterization.withRotationalRate(newRotationalRate));
+    }
+
+    public void setTranslationCharacterization(LinearVelocity velocity){
+        swerveDriveTrain.setControl(translationCharacterization
+                .withVelocityX(velocity.baseUnitMagnitude())
+                .withVelocityY(0.0)
+                .withRotationalRate(0.0));
     }
 
     public void updateSimState(double dtSeconds,
@@ -120,11 +207,15 @@ public class SwerveDrive {
         swerveDriveTrain.setOperatorPerspectiveForward(rotation2d);
     }
 
-    public void seedFieldCentric() {
-        swerveDriveTrain.seedFieldCentric();
-    }
-
     public void updateTelemetry() {
         swerveDriveTelemetry.telemeterize(swerveDriveTrain.getState());
+    }
+
+    public LinearVelocity getMaxVelocity() {
+        return maxVelocity;
+    }
+
+    public AngularVelocity getMaxAngularVelocity() {
+        return maxAngularVelocity;
     }
 }

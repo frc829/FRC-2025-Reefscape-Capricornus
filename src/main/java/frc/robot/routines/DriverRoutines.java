@@ -1,7 +1,7 @@
 package frc.robot.routines;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.ComboCommandFactory;
+import frc.robot.subsystems.SubsystemCommandFactories;
 import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
 import frc.robot.subsystems.arm.CommandArmFactory;
 import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
@@ -24,7 +24,7 @@ public class DriverRoutines {
     private final CommandSwerveFactory commandSwerveFactory;
     private final CommandWinchFactory commandWinchFactory;
     private final CommandWristFactory commandWristFactory;
-    private final ComboCommandFactory comboCommandFactory;
+    private final SubsystemCommandFactories subsystemCommandFactories;
 
     public DriverRoutines(CommandXboxController driverController,
                             CommandAlgaeClawFactory commandAlgaeClawFactory,
@@ -36,7 +36,7 @@ public class DriverRoutines {
                             CommandSwerveFactory commandSwerveFactory,
                             CommandWinchFactory commandWinchFactory,
                             CommandWristFactory commandWristFactory,
-                            ComboCommandFactory comboCommandFactory) {
+                            SubsystemCommandFactories subsystemCommandFactories) {
         this.driverController = driverController;
         this.commandAlgaeClawFactory = commandAlgaeClawFactory;
         this.commandArmFactory = commandArmFactory;
@@ -47,6 +47,6 @@ public class DriverRoutines {
         this.commandSwerveFactory = commandSwerveFactory;
         this.commandWinchFactory = commandWinchFactory;
         this.commandWristFactory = commandWristFactory;
-        this.comboCommandFactory = comboCommandFactory;
+        this.subsystemCommandFactories = subsystemCommandFactories;
     }
 }

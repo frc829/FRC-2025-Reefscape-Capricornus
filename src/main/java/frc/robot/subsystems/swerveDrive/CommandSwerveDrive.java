@@ -15,8 +15,11 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import digilib.swerve.SwerveDriveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.units.measure.MutLinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -39,17 +42,6 @@ public class CommandSwerveDrive implements Subsystem {
     private final Rotation2d redAlliancePerspectiveRotation;
     private double lastSimTime;
     private boolean hasAppliedOperatorPerspective = false;
-    public final MutAngle angle = Radians.mutable(0.0);
-    private boolean isClock = true;
-    public final Trigger defaultDriveState;
-
-
-    /* Swerve requests to apply during SysId characterization */
-    private final SwerveRequest.SysIdSwerveTranslation driveCharacterization = new SwerveRequest.SysIdSwerveTranslation();
-    private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
-    private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
-    private final SwerveRequest.FieldCentric translationCharacterization = new SwerveRequest.FieldCentric();
-
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine sysIdRoutineDrive;
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
@@ -59,8 +51,10 @@ public class CommandSwerveDrive implements Subsystem {
      * This is used to find PID gains for the FieldCentricFacingAngle HeadingController.
      * See the documentation of SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
      */
+    private final MutAngularVelocity rotationCharacterizationVelocity = RadiansPerSecond.mutable(0.0);
     private final SysIdRoutine sysIdRoutineRotation;
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
+    private final MutLinearVelocity translationCharacterizationVelocity = MetersPerSecond.mutable(0.0);
     private final SysIdRoutine sysIdRoutineTranslation;
 
 
@@ -68,7 +62,6 @@ public class CommandSwerveDrive implements Subsystem {
             SwerveDrive swerveDrive,
             Rotation2d blueAlliancePerspectiveRotation,
             Rotation2d redAlliancePerspectiveRotation) {
-        this.defaultDriveState = new Trigger(() -> isClock);
         this.swerveDrive = swerveDrive;
         this.blueAlliancePerspectiveRotation = blueAlliancePerspectiveRotation;
         this.redAlliancePerspectiveRotation = redAlliancePerspectiveRotation;
@@ -82,7 +75,7 @@ public class CommandSwerveDrive implements Subsystem {
                         state -> SignalLogger.writeString("SysIdDrive_State", state.toString())
                 ),
                 new SysIdRoutine.Mechanism(
-                        output -> swerveDrive.setControl(driveCharacterization.withVolts(output)),
+                        swerveDrive::setDriveCharacterization,
                         null,
                         this
                 )
@@ -97,7 +90,7 @@ public class CommandSwerveDrive implements Subsystem {
                         state -> SignalLogger.writeString("SysIdSteer_State", state.toString())
                 ),
                 new SysIdRoutine.Mechanism(
-                        volts -> swerveDrive.setControl(steerCharacterization.withVolts(volts)),
+                        swerveDrive::setSteerCharacterization,
                         null,
                         this
                 )
@@ -116,7 +109,7 @@ public class CommandSwerveDrive implements Subsystem {
                 new SysIdRoutine.Mechanism(
                         output -> {
                             /* output is actually radians per second, but SysId only supports "volts" */
-                            swerveDrive.setControl(rotationCharacterization.withRotationalRate(output.in(Volts)));
+                            swerveDrive.setRotationCharacterization(rotationCharacterizationVelocity.mut_setMagnitude(output.in(Volts)));
                             /* also log the requested output for SysId */
                             SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
                         },
@@ -134,10 +127,8 @@ public class CommandSwerveDrive implements Subsystem {
                 ),
                 new SysIdRoutine.Mechanism(
                         output -> {
-                            swerveDrive.setControl(translationCharacterization
-                                    .withVelocityX(output.magnitude())
-                                    .withVelocityY(0.0)
-                                    .withRotationalRate(0.0));
+                            swerveDrive.setTranslationCharacterization(translationCharacterizationVelocity
+                                    .mut_setMagnitude(output.in(Volts)));
                             SignalLogger.writeDouble("Translational_Rate", output.in(Volts));
                         },
                         null,
@@ -149,26 +140,12 @@ public class CommandSwerveDrive implements Subsystem {
         }
     }
 
-    public Command toggleClock(){
-        return runOnce(() -> isClock = !isClock);
+    public Command applyRequest(Supplier<SwerveDriveRequest> request) {
+        return run(() -> swerveDrive.setControl(request.get()));
     }
 
-    /**
-     * Returns a command that applies the specified control request to this swerve drivetrain.
-     *
-     * @param requestSupplier Function returning the request to apply
-     * @return Command to run
-     */
-    public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
-        return run(() -> swerveDrive.setControl(requestSupplier.get()));
-    }
-
-    public Command seedFieldCentric() {
-        return runOnce(swerveDrive::seedFieldCentric);
-    }
-
-    public Command setClockDriveAngleFromPose() {
-        return runOnce(() -> angle.mut_setMagnitude(swerveDrive.getPose().getRotation().getRadians())).withName("Clock Drive Angle Set");
+    public Command applyRequestOnce(Supplier<SwerveDriveRequest> request) {
+        return runOnce(() -> swerveDrive.setControl(request.get()));
     }
 
     public Command sysIdQuasistaticSteer(SysIdRoutine.Direction direction) {
@@ -266,11 +243,7 @@ public class CommandSwerveDrive implements Subsystem {
                     swerveDrive::resetPose,         // Consumer for seeding pose against auto
                     swerveDrive::getRobotRelativeSpeeds, // Supplier of current robot speeds
                     // Consumer of ChassisSpeeds and feedforwards to drive the robot
-                    (speeds, feedforwards) -> swerveDrive.setControl(
-                            pathApplyRobotSpeeds.withSpeeds(speeds)
-                                    .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-                                    .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
-                    ),
+                    swerveDrive::setApplyRobotSpeeds,
                     new PPHolonomicDriveController(
                             // PID constants for translation
                             new PIDConstants(10, 0, 0),

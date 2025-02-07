@@ -347,14 +347,14 @@ public class CommandSwerveDriveConstants {
                     kBackRightXPos, kBackRightYPos, kInvertRightSide, kBackRightSteerMotorInverted, kBackRightEncoderInverted
             );
 
-    public static final double MaxSpeed = CommandSwerveDriveConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    public static final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    public static final LinearVelocity maxVelocity = CommandSwerveDriveConstants.kSpeedAt12Volts; // kSpeedAt12Volts desired top speed
+    public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.75); // 3/4 of a rotation per second max angular velocity
 
     private static final PhoenixPIDController m_pathXController = new PhoenixPIDController(10, 0, 0);
     private static final PhoenixPIDController m_pathYController = new PhoenixPIDController(10, 0, 0);
     public static final PhoenixPIDController m_pathThetaController = new PhoenixPIDController(5.9918340044856690519902612191937, 0, 0);
 
-    private static final SwerveDriveTelemetry swerveDriveTelemetry = new SwerveDriveTelemetry(MaxSpeed);
+    private static final SwerveDriveTelemetry swerveDriveTelemetry = new SwerveDriveTelemetry(maxVelocity);
 
     private static final SwerveDrivetrain<TalonFX, TalonFX, CANcoder> swerveDriveTrain = new SwerveDrivetrain<>(
             TalonFX::new,
@@ -378,6 +378,8 @@ public class CommandSwerveDriveConstants {
             m_pathYController,
             m_pathThetaController,
             swerveDriveTelemetry,
+            maxVelocity,
+            MaxAngularRate,
             camera0,
             camera1,
             camera2,

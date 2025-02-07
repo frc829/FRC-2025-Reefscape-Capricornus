@@ -1,7 +1,7 @@
 package frc.robot.routines;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.ComboCommandFactory;
+import frc.robot.subsystems.SubsystemCommandFactories;
 import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
 import frc.robot.subsystems.arm.CommandArmFactory;
 import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
@@ -22,7 +22,7 @@ public class OperatorRoutines {
     private final CommandHookFactory commandHookFactory;
     private final CommandWinchFactory commandWinchFactory;
     private final CommandWristFactory commandWristFactory;
-    private final ComboCommandFactory comboCommandFactory;
+    private final SubsystemCommandFactories subsystemCommandFactories;
 
     public OperatorRoutines(CommandXboxController operatorController,
                             CommandAlgaeClawFactory commandAlgaeClawFactory,
@@ -33,7 +33,7 @@ public class OperatorRoutines {
                             CommandHookFactory commandHookFactory,
                             CommandWinchFactory commandWinchFactory,
                             CommandWristFactory commandWristFactory,
-                            ComboCommandFactory comboCommandFactory) {
+                            SubsystemCommandFactories subsystemCommandFactories) {
         this.operatorController = operatorController;
         this.commandAlgaeClawFactory = commandAlgaeClawFactory;
         this.commandArmFactory = commandArmFactory;
@@ -43,6 +43,6 @@ public class OperatorRoutines {
         this.commandHookFactory = commandHookFactory;
         this.commandWinchFactory = commandWinchFactory;
         this.commandWristFactory = commandWristFactory;
-        this.comboCommandFactory = comboCommandFactory;
+        this.subsystemCommandFactories = subsystemCommandFactories;
     }
 }

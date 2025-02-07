@@ -22,6 +22,7 @@ import frc.robot.routines.OperatorRoutines;
 import frc.robot.subsystems.arm.CommandArm;
 import frc.robot.subsystems.elevator.CommandElevator;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDrive;
+import frc.robot.subsystems.swerveDrive.CommandSwerveFactory;
 
 public class Robot extends TimedRobot {
 
@@ -34,18 +35,19 @@ public class Robot extends TimedRobot {
         CommandElevator commandElevator = CommandElevatorConstants.createCommandElevator();
         CommandArmFactory commandArmFactory = new CommandArmFactory(commandArm);
         CommandElevatorFactory commandElevatorFactory = new CommandElevatorFactory(commandElevator);
-         new DriverRoutines(
+        CommandSwerveFactory commandSwerveFactory = new CommandSwerveFactory(commandSwerveDrive);
+        new DriverRoutines(
                 driverController,
                 null,
-                 null,
-                 null,
-                 null,
-                 null,
-                 null,
-                 null,
-                 null,
-                 null,
-                 null);
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
         new OperatorRoutines(
                 operatorController,
                 null,
