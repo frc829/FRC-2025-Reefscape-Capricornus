@@ -12,6 +12,7 @@ import digilib.wrist.Wrist;
 import digilib.wrist.WristRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class CommandWrist implements Subsystem {
@@ -28,14 +29,7 @@ public class CommandWrist implements Subsystem {
     }
 
     public Trigger atPosition(Angle position, Angle tolerance) {
-        // TODO: return a new Trigger passing in a lambda expression
-        // (cont.) The lambda is a BooleanSupplier of the form
-        // (cont.) () ->
-        // (cont.) on the right side of the arrow you will
-        // (cont.) call wrist.getState()'s getPosition()'s isNear() method
-        // (cont.) so with dots
-        // (cont.) passing in position and tolerance.
-        return null; // TODO: remove this when done.
+        return new Trigger(() -> wrist.getState().getPosition().isNear(position, tolerance));
     }
 
 
