@@ -27,14 +27,7 @@ public class CommandElevator implements Subsystem {
     }
 
     public Trigger atPosition(Distance position, Distance tolerance) {
-        // TODO: return a new Trigger passing in a lambda expression
-        // (cont.) The lambda is a BooleanSupplier of the form
-        // (cont.) () ->
-        // (cont.) on the right side of the arrow you will
-        // (cont.) call elevator.getState()'s getPosition()'s isNear() method
-        // (cont.) so with dots
-        // (cont.) passing in position and tolerance.
-        return null; // TODO: remove this when done.
+        return new Trigger(() -> elevator.getState().getPosition().isNear(position, tolerance));
     }
 
     public Command applyRequest(Supplier<ElevatorRequest> requestSupplier) {
