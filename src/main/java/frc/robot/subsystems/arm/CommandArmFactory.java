@@ -10,6 +10,7 @@ public class CommandArmFactory {
 
     public CommandArmFactory(CommandArm commandArm) {
         this.commandArm = commandArm;
+        commandArm.register();
         // TODO: call commandArms's setDefaultCommand method and pass in a call to the hold method defined below.
         // NOTES:  hold() creates a hold command for the arm.  We then set it for the set in this todo.
     }

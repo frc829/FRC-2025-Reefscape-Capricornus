@@ -129,7 +129,7 @@ public class NEO550IntakeWheel implements IntakeWheel {
         double inputVoltage = motor.getAppliedOutput() * 12.0;
         flywheelSim.setInputVoltage(inputVoltage);
         flywheelSim.update(dtSeconds);
-        sparkMaxSim.iterate(flywheelSim.getOutput(1), 12.0, dtSeconds);
+        sparkMaxSim.iterate(flywheelSim.getOutput(0), 12.0, dtSeconds);
     }
 
 

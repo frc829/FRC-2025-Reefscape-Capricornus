@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import choreo.Choreo;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
@@ -17,7 +16,6 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import digilib.swerve.SwerveDriveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutLinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -26,7 +24,6 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import digilib.swerve.SwerveDrive;
@@ -236,14 +233,16 @@ public class CommandSwerveDrive implements Subsystem {
 
     public void configureAutoBuilder() {
         try {
-            SwerveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+            SwerveDriveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds = new SwerveDriveRequest.ApplyRobotSpeeds();
             RobotConfig config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
                     swerveDrive::getPose,   // Supplier of current robot pose
                     swerveDrive::resetPose,         // Consumer for seeding pose against auto
                     swerveDrive::getRobotRelativeSpeeds, // Supplier of current robot speeds
                     // Consumer of ChassisSpeeds and feedforwards to drive the robot
-                    swerveDrive::setApplyRobotSpeeds,
+                    (speeds, driveFeedforwards) -> swerveDrive.setControl(pathApplyRobotSpeeds
+                            .withSpeeds(speeds)
+                            .withDriveFeedforwards(driveFeedforwards)),
                     new PPHolonomicDriveController(
                             // PID constants for translation
                             new PIDConstants(10, 0, 0),

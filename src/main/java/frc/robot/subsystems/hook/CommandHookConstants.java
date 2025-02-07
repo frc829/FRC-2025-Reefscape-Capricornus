@@ -19,7 +19,7 @@ public class CommandHookConstants {
     private static final Angle minAngle = Degrees.of(0.0);
     private static final Angle maxAngle = Degrees.of(90.0);
     private static final Distance armLength = Inches.of(12);
-    private static final int motorDeviceId = 15;
+    private static final int motorDeviceId = 28;
     private static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kBrake;
     private static final boolean inverted = false;
     private static final double reduction = 12.0;

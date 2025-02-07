@@ -1,16 +1,14 @@
 package frc.robot.routines;
 
-import digilib.controllers.DriverController;
+import digilib.controllers.ManualController;
 import frc.robot.Constants;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 
-public class DriverRoutines {
-
+public class ManualRoutines {
+    private final ManualController controller = new ManualController(Constants.controllerDeadband);
     private final SubsystemCommandFactories subsystemCommandFactories;
-    private final DriverController driverController = new DriverController(Constants.controllerDeadband);
 
-
-    public DriverRoutines(SubsystemCommandFactories subsystemCommandFactories) {
+    public ManualRoutines(SubsystemCommandFactories subsystemCommandFactories) {
         this.subsystemCommandFactories = subsystemCommandFactories;
     }
 }

@@ -4,6 +4,7 @@ import digilib.wrist.WristRequest;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutDimensionless;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.DoubleSupplier;
 
@@ -16,6 +17,10 @@ public class CommandWristFactory {
     public CommandWristFactory(CommandWrist commandWrist) {
         this.commandWrist = commandWrist;
         commandWrist.setDefaultCommand(hold());
+    }
+
+    public Trigger atPosition(Angle position, Angle tolerance){
+        return commandWrist.atPosition(position, tolerance);
     }
 
     public Command hold() {
