@@ -3,7 +3,8 @@ package frc.robot.mechanisms.arm;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 
-public class ArmConstants {
+public class
+ArmConstants {
 
     private final Angle maxAngle;
     private final Angle minAngle;
