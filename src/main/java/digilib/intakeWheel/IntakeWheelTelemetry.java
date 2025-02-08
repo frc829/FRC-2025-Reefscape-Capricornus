@@ -11,7 +11,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 
+import static digilib.DigiMath.roundToDecimal;
 import static edu.wpi.first.units.Units.*;
 
 public class IntakeWheelTelemetry {
@@ -43,10 +46,10 @@ public class IntakeWheelTelemetry {
         this.maxVelocityPublisher = intakeStateTable.getDoubleTopic("MaxVelocity").publish();
         this.maxAccelerationPublisher = intakeStateTable.getDoubleTopic("MaxAcceleration").publish();
         this.maxAcceleration = maxAcceleration;
-        mechanism = new Mechanism2d(1, 4);
+        mechanism = new Mechanism2d(2, 4);
         ligament = mechanism
-                .getRoot("IntakeRoot", 0.5, 0.0)
-                .append(new MechanismLigament2d("Intake", 0.0, 90));
+                .getRoot("IntakeRoot", 1, 2)
+                .append(new MechanismLigament2d("Intake", 0.5, 90, 1, new Color8Bit(Color.kRed)));
         SmartDashboard.putData(name, mechanism);
     }
 
@@ -54,11 +57,11 @@ public class IntakeWheelTelemetry {
         time = Timer.getFPGATimestamp();
         double deltaTime = time - lastTime;
         lastTime = time;
-        velocity.set(state.getVelocity().baseUnitMagnitude());
-        maxVelocityPublisher.set(maxVelocity.in(MetersPerSecond));
-        maxAccelerationPublisher.set(maxAcceleration.in(MetersPerSecondPerSecond));
-        timestamp.set(state.getTimestamp().in(Seconds));
-        double velocity = state.getVelocity().baseUnitMagnitude() / wheelRadius.baseUnitMagnitude();
+        velocity.set(roundToDecimal(state.getVelocity().baseUnitMagnitude(), 2));
+        maxVelocityPublisher.set(roundToDecimal(maxVelocity.in(MetersPerSecond), 2));
+        maxAccelerationPublisher.set(roundToDecimal(maxAcceleration.in(MetersPerSecondPerSecond), 2));
+        timestamp.set(roundToDecimal(state.getTimestamp().in(Seconds), 2));
+        double velocity = roundToDecimal(state.getVelocity().baseUnitMagnitude() / wheelRadius.baseUnitMagnitude(), 2);
         double deltaDegrees = velocity * deltaTime;
         ligament.setAngle(ligamentAngle.mut_plus(deltaDegrees, Degrees).in(Degrees));
     }

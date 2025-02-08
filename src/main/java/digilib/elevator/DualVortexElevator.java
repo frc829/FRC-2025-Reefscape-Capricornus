@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.*;
 import static com.revrobotics.spark.SparkBase.PersistMode.*;
@@ -158,7 +159,7 @@ public class DualVortexElevator implements Elevator {
         double nextPositionSetpoint = lastState.position;
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
         primaryMotor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        velocityProfile.reset(nextVelocitySetpoint);
+        velocityProfile.reset(primaryMotor.getEncoder().getVelocity());
     }
 
     @Override
@@ -167,7 +168,7 @@ public class DualVortexElevator implements Elevator {
         double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
         double lastVelocitySetPoint = lastState.velocity;
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
-        primaryMotor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, kSlot1, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        primaryMotor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, kSlot1, arbFeedfoward);
         lastState.position = primaryMotor.getEncoder().getPosition();
         lastState.velocity = nextVelocitySetpoint;
     }
@@ -190,6 +191,7 @@ public class DualVortexElevator implements Elevator {
         elevatorState.withPosition(position.mut_setMagnitude(primaryMotor.getEncoder().getPosition()));
         elevatorState.withVelocity(velocity.mut_setMagnitude(primaryMotor.getEncoder().getVelocity()));
         elevatorState.withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()));
+        elevatorState.withVoltage(primaryMotor.getAppliedOutput() * primaryMotor.getBusVoltage());
     }
 
     @Override
@@ -199,7 +201,7 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void updateSimState(double dt, double supplyVoltage) {
-        var inputVoltage = primaryMotor.getAppliedOutput() * 12.0;
+        var inputVoltage = primarySparkFlexSim.getAppliedOutput() * 12.0;
         simElevator.setInputVoltage(inputVoltage);
         simElevator.update(dt);
         primarySparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);

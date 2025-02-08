@@ -8,11 +8,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.AngularAccelerationUnit;
-import edu.wpi.first.units.AngularVelocityUnit;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.PerUnit;
-import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import digilib.arm.Arm;
@@ -22,6 +18,7 @@ import frc.robot.Constants;
 
 public class CommandArmConstants {
     private static final String name = "Arm";
+    private static final Angle startingAngle = Degrees.of(-45);
     private static final Angle minAngle = Degrees.of(-45);
     private static final Angle maxAngle = Degrees.of(225);
     private static final Distance armLength = Inches.of(31.0);
@@ -30,29 +27,12 @@ public class CommandArmConstants {
     private static final InvertedValue invertedValue = InvertedValue.CounterClockwise_Positive;
     private static final double reduction = 5.0 * 5.0 * 4.0 * 72.0 / 22.0;
     private static final Voltage ks = Volts.of(0.0);
-
-    private static final Mass armMass = Pounds.of(11.5);
-    private static final MomentOfInertia momentOfInertia = KilogramSquareMeters.of(
-            armMass.baseUnitMagnitude()
-                    * Math.pow(armLength.baseUnitMagnitude(), 2)
-                    / 3.0);
-
-    private static final DCMotor dcMotor = DCMotor.getKrakenX60Foc(1);
-
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(reduction / dcMotor.KvRadPerSecPerVolt);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(
-            dcMotor.rOhms * momentOfInertia.baseUnitMagnitude() / dcMotor.KtNMPerAmp / reduction
-    );
-
-    private static final Voltage kg = Volts.of(
-            3 * 9.8 * ka.baseUnitMagnitude() / 2 / armLength.baseUnitMagnitude()
-    );
-
-
-    private static final double positionKp = 20.0;
-    private static final double positionKd = 0.0;
-    private static final double velocityKp = 0.0;
-
+    private static final Voltage kg = Volts.of(0.07875652705260762);
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(6.439207137006389);
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.004218563904845118);
+    private static final double positionKp = 28.84181199043855;
+    private static final double positionKd = 0.04364823050719911;
+    private static final double velocityKp = 3.8421119127116115E-14;
     private static final int cancoderDeviceNumber = 34;
     private static final double magnetDirection = 0.0;
     private static final Time simLoopPeriod = Seconds.of(0.001);
@@ -72,7 +52,7 @@ public class CommandArmConstants {
         TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
         talonFXConfiguration.Voltage.PeakForwardVoltage = 12.0;
         talonFXConfiguration.Voltage.PeakReverseVoltage = -12.0;
-        talonFXConfiguration.ClosedLoopGeneral.ContinuousWrap = true;
+        talonFXConfiguration.ClosedLoopGeneral.ContinuousWrap = false;
         if (RobotBase.isReal()) {
             talonFXConfiguration.Feedback.FeedbackRemoteSensorID = cancoderDeviceNumber;
             talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;

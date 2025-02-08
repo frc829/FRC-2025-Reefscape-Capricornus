@@ -1,18 +1,22 @@
 package frc.robot.subsystems.elevator;
 
+import digilib.elevator.ElevatorRequest;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.MutDimensionless;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import static edu.wpi.first.units.Units.*;
 
 public class CommandElevatorFactory {
     private final CommandElevator commandElevator;
 
     public CommandElevatorFactory(CommandElevator commandElevator) {
         this.commandElevator = commandElevator;
-        // TODO: call commandElevator's setDefaultCommand method and pass in a call to the hold method defined below.
-        // NOTES:  hold() creates a hold command for the elevator.  We then set it for the set in this todo.
+        commandElevator.setDefaultCommand(hold());
     }
 
     public Trigger atPosition(Distance position, Distance tolerance){
@@ -20,29 +24,24 @@ public class CommandElevatorFactory {
     }
 
     public Command hold() {
-        // TODO: create an elevatorRequest.Hold called request and assign a new elevatorRequest.Hold to it.  
-        // TODO: return commandElevator.applyRequest(() -> request).withName("HOLD")
-        return null; // TODO: remove this when done.
+        ElevatorRequest.Hold request = new ElevatorRequest.Hold();
+        return commandElevator.applyRequest(() -> request).withName("ELEVATOR:HOLD");
     }
 
     public Command goToPosition(Distance position) {
-        // TODO: create an elevatorRequest.Position called request.  Assign it appropriately.
-        // TODO: called request.withPosition method and pass in position.  
-        // return commandElevator.applyRequest(() -> request).withName(String.format("POSITION: %s meters", position.in(Meters)));
-        return null; // TODO: remove this when done.
+        ElevatorRequest.Position request = new ElevatorRequest.Position();
+        request.withPosition(position);
+        return commandElevator.applyRequest(() -> request).withName(String.format("ELEVATOR:%s meters", position.in(Meters)));
     }
 
-    public Command moveAtVelocity(DoubleSupplier maxElevatorVelocityPercentage) {
-        // TODO: create a MutDimensionless named elevatorVelocityPercent and assign Value.mutable(0.0);
-        // TODO: elevatorRequest.Velocity called request.  Assign it appropriately.  
-        // TODO: call request withVelocity method and pass in elevatorVelocityPercent.
-        // return
-        // TODO: uncomment this out.  return commandElevator
-        //         .applyRequest(() -> {
-        //             elevatorVelocityPercent.mut_setMagnitude(maxElevatorVelocityPercentage.getAsDouble());
-        //             return request;
-        //         })
-        return null; // TODO: remove this when done.
+    public Command moveAtVelocity(Supplier<Dimensionless> maxElevatorVelocityPercentage) {
+        MutDimensionless elevatorVelocityPercent = Value.mutable(0.0);
+        ElevatorRequest.Velocity request = new ElevatorRequest.Velocity();
+        request.withVelocity(elevatorVelocityPercent);
+        return commandElevator.applyRequest(() -> {
+            elevatorVelocityPercent.mut_replace(maxElevatorVelocityPercentage.get());
+            return request.withVelocity(elevatorVelocityPercent);
+        }).withName("ELEVATOR:VELOCITY");
     }
 
 }

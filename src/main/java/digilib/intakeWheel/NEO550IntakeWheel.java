@@ -21,6 +21,7 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
 import static com.revrobotics.spark.SparkBase.ResetMode.kNoResetSafeParameters;

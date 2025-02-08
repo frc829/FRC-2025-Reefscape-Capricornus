@@ -79,7 +79,7 @@ public class CommandSwerveDriveFactory {
 
     public Command idle(){
         SwerveDriveRequest.Idle idle = new SwerveDriveRequest.Idle();
-        return commandSwerveDrive.applyRequest(() -> idle).withName("Idle");
+        return commandSwerveDrive.applyRequest(() -> idle).withName("SWERVE:IDLE");
     }
 
 //    public Command goToReef0() {

@@ -11,9 +11,20 @@ public class ManualRoutines {
     public ManualRoutines(SubsystemCommandFactories factories) {
         this.factories = factories;
         arm();
+        elevator();
+        wrist();
     }
 
     private void arm() {
         controller.arm().whileTrue(factories.arm.moveAtVelocity(controller::getArmVelocity));
     }
+
+    private void elevator() {
+        controller.elevator().whileTrue(factories.elevator.moveAtVelocity(controller::getElevatorVelocity));
+    }
+
+    private void wrist() {
+        controller.wrist().whileTrue(factories.wrist.moveAtVelocity(controller::getWristVelocity));
+    }
+
 }
