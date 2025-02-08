@@ -59,7 +59,7 @@ public interface ArmRequest {
             }
             ArmState armState = arm.getState();
             if (armState.getPosition().lte(arm.getMaxAngle()) && armState.getPosition().gte(arm.getMinAngle())) {
-                velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * arm.getMaxAngle().baseUnitMagnitude());
+                velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * arm.getMaxVelocity().baseUnitMagnitude());
             } else {
                 velocity.mut_setMagnitude(0.0);
             }

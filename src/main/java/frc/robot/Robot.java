@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commandFactories.AlgaePickupFactories;
 import frc.robot.commandFactories.SubsystemCommandFactories;
+import frc.robot.routines.ManualRoutines;
 import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
 import frc.robot.subsystems.arm.CommandArmFactory;
 import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
@@ -55,6 +56,7 @@ public class Robot extends TimedRobot {
                 new CommandSwerveDriveFactory(commandSwerveDrive),
                 new CommandWinchFactory(CommandWinchConstants.createCommandWinch()),
                 new CommandWristFactory(CommandWristConstants.createCommandWrist()));
+        new ManualRoutines(subsystemCommandFactories);
         AlgaePickupFactories algaePickupFactories = new AlgaePickupFactories(subsystemCommandFactories);
         new DriverRoutines(
                 subsystemCommandFactories);

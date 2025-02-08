@@ -38,12 +38,12 @@ public class ManualController {
 
     private double getArmVelocityValue() {
         return -MathUtil.applyDeadband(controller.getRightY(), deadband);
+
     }
 
     public Trigger arm() {
         return new Trigger(() -> getArmVelocityValue() != 0);
     }
-
 
 
 }
