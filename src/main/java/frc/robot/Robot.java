@@ -13,8 +13,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.commandFactories.AlgaePickupFactories;
+import frc.robot.commandFactories.PickupFactories;
+import frc.robot.commandFactories.ResetFactories;
 import frc.robot.commandFactories.SubsystemCommandFactories;
+import frc.robot.routines.*;
 import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
 import frc.robot.subsystems.arm.CommandArmFactory;
 import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
@@ -27,9 +29,6 @@ import frc.robot.subsystems.hook.CommandHookConstants;
 import frc.robot.subsystems.hook.CommandHookFactory;
 import frc.robot.subsystems.pneumatics.CommandPneumaticsConstants;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDriveConstants;
-import frc.robot.routines.AutoRoutines;
-import frc.robot.routines.DriverRoutines;
-import frc.robot.routines.ScoringRoutines;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDrive;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDriveFactory;
 import frc.robot.subsystems.winch.CommandWinchConstants;
@@ -55,12 +54,15 @@ public class Robot extends TimedRobot {
                 new CommandSwerveDriveFactory(commandSwerveDrive),
                 new CommandWinchFactory(CommandWinchConstants.createCommandWinch()),
                 new CommandWristFactory(CommandWristConstants.createCommandWrist()));
-        AlgaePickupFactories algaePickupFactories = new AlgaePickupFactories(subsystemCommandFactories);
+        PickupFactories pickupFactories = new PickupFactories(subsystemCommandFactories);
+        ResetFactories resetFactories = new ResetFactories(subsystemCommandFactories);
+        new PickupRoutines(operatorXboxController, pickupFactories, resetFactories);
+        new ManualRoutines(subsystemCommandFactories);
         new DriverRoutines(
                 subsystemCommandFactories);
         new ScoringRoutines(
                 subsystemCommandFactories,
-                algaePickupFactories);
+                pickupFactories);
         AutoChooser autoChooser = new AutoChooser();
         AutoFactory autoFactory = commandSwerveDrive.createAutoFactory();
         new AutoRoutines(autoFactory, autoChooser);

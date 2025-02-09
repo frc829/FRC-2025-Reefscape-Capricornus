@@ -21,7 +21,7 @@ public class CommandCoralClaw implements Subsystem {
     }
 
     public Command applyRequest(Supplier<ClawRequest> requestSupplier) {
-        return run(() -> claw.setControl(requestSupplier.get()));
+        return runOnce(() -> claw.setControl(requestSupplier.get()));
     }
 
     @Override

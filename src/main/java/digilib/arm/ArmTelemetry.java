@@ -1,5 +1,6 @@
 package digilib.arm;
 
+import digilib.DigiMath;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import static digilib.DigiMath.*;
 import static edu.wpi.first.units.Units.*;
 
 public class ArmTelemetry {
@@ -54,13 +56,13 @@ public class ArmTelemetry {
     }
 
     public void telemeterize(ArmState state) {
-        minAnglePublisher.set(minAngle.in(Degrees));
-        maxAnglePublisher.set(maxAngle.in(Degrees));
-        maxVelocityPublisher.set(maxVelocity.in(DegreesPerSecond));
-        maxAccelerationPublisher.set(maxAcceleration.in(DegreesPerSecondPerSecond));
-        timestamp.set(state.getTimestamp().in(Seconds));
-        angle.set(state.getPosition().in(Degrees));
-        angularVelocity.set(state.getVelocity().in(DegreesPerSecond));
-        armLigament.setAngle(state.getPosition().in(Degrees));
+        minAnglePublisher.set(roundToDecimal(minAngle.in(Degrees), 2));
+        maxAnglePublisher.set(roundToDecimal(maxAngle.in(Degrees), 2));
+        maxVelocityPublisher.set(roundToDecimal(maxVelocity.in(DegreesPerSecond), 2));
+        maxAccelerationPublisher.set(roundToDecimal(maxAcceleration.in(DegreesPerSecondPerSecond), 2));
+        timestamp.set(roundToDecimal(state.getTimestamp().in(Seconds), 2));
+        angle.set(roundToDecimal(state.getPosition().in(Degrees), 2));
+        angularVelocity.set(roundToDecimal(state.getVelocity().in(DegreesPerSecond), 2));
+        armLigament.setAngle(roundToDecimal(state.getPosition().in(Degrees), 2));
     }
 }

@@ -18,18 +18,18 @@ import static edu.wpi.first.units.Units.*;
 
 public class CommandWristConstants {
     private static final Angle startingAngle = Degrees.of(0);
-    private static final Angle minAngle = Degrees.of(-90.0);
+    private static final Angle minAngle = Degrees.of(0.0);
     private static final Angle maxAngle = Degrees.of(90.0);
     private static final int motorDeviceId = 17;
     private static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kBrake;
     private static final boolean inverted = false;
-    private static final double reduction = 10.0 * 7.0 * 32.0 / 24.0;
+    private static final double reduction = 10.0 * 7.0 * 32.0 / 18.0;
     private static final Voltage ks = Volts.of(0.0);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of( 8.892526274503728);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of( 0.028028510387446144);
-    private static final double positionKp = 27.510452235583863;
-    private static final double positionKd = 0.024571536850317308;
-    private static final double velocityKp = 6.183764634853723E-4;
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of( 1.2782399036744865);
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of( 9.941089837997054E-4);
+    private static final double positionKp = 23.790020451150006;
+    private static final double positionKd = 0.010130792769467259;
+    private static final double velocityKp = 2.3496718293473E-13;
     private static final Time updatePeriod = Seconds.of(0.020);
     private static final Time simLoopPeriod = Seconds.of(0.001);
 

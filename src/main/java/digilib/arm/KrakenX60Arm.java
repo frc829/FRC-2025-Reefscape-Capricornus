@@ -17,6 +17,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -150,8 +151,10 @@ public class KrakenX60Arm implements Arm {
         var inputVoltage = talonFX.getMotorVoltage().getValue();
         simArm.setInputVoltage(inputVoltage.baseUnitMagnitude());
         simArm.update(dt);
+
         talonFXSimState.setRawRotorPosition(simArm.getAngleRads() * armConstants.getReduction() / 2 / Math.PI);
         talonFXSimState.setRotorVelocity(simArm.getVelocityRadPerSec() * armConstants.getReduction() / 2 / Math.PI);
+
         talonFXSimState.setSupplyVoltage(supplyVoltage);
         canCoderSimState.setSupplyVoltage(supplyVoltage);
         canCoderSimState.setMagnetHealth(MagnetHealthValue.Magnet_Green);

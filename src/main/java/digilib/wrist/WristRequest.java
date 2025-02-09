@@ -33,9 +33,14 @@ public interface WristRequest {
             if (wrist.isHoldEnabled()) {
                 wrist.disableHold();
             }
+            WristState wristState = wrist.getState();
             if (position.lte(wrist.getMaxAngle()) && position.gte(wrist.getMinAngle())) {
                 wrist.setPosition(position);
-            } else {
+            } else if(wristState.getPosition().gte(wrist.getMaxAngle()) && position.lte(wrist.getMaxAngle())){
+                wrist.setPosition(position);
+            } else if(wristState.getPosition().lte(wrist.getMinAngle()) && position.gte(wrist.getMinAngle())){
+                wrist.setPosition(position);
+            }else {
                 wrist.setVelocity(DegreesPerSecond.of(0.0));
             }
         }
@@ -55,10 +60,14 @@ public interface WristRequest {
             if (wrist.isHoldEnabled()) {
                 wrist.disableHold();
             }
-            WristState wristState = wrist.getState();
-            if (wristState.getPosition().lte(wrist.getMaxAngle()) && wristState.getPosition().gte(wrist.getMinAngle())) {
-                velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * wrist.getMaxAngle().baseUnitMagnitude());
-            } else {
+            WristState state = wrist.getState();
+            if (state.getPosition().lte(wrist.getMaxAngle()) && state.getPosition().gte(wrist.getMinAngle())) {
+                velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * wrist.getMaxVelocity().baseUnitMagnitude());
+            } else if(state.getPosition().gte(wrist.getMaxAngle()) && maxVelocityPercent.baseUnitMagnitude() < 0.0){
+                velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * wrist.getMaxVelocity().baseUnitMagnitude());
+            } else if(state.getPosition().lte(wrist.getMinAngle()) && maxVelocityPercent.baseUnitMagnitude() > 0.0){
+                velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * wrist.getMaxVelocity().baseUnitMagnitude());
+            }else {
                 velocity.mut_setMagnitude(0.0);
             }
             wrist.setVelocity(velocity);

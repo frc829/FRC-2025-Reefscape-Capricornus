@@ -6,7 +6,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import digilib.winch.KrakenX60Winch;
 import digilib.winch.Winch;
-import edu.wpi.first.hal.SimLong;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants;
@@ -23,10 +22,6 @@ public class CommandWinchConstants {
     private static final double reduction = 1.0;
     private static final Time simLoopPeriod = Seconds.of(0.001);
 
-
-
-
-
     public static CommandWinch createCommandWinch() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Voltage.PeakForwardVoltage = 12.0;
@@ -34,7 +29,6 @@ public class CommandWinchConstants {
         config.Feedback.SensorToMechanismRatio = reduction;
         config.MotorOutput.Inverted = invertedValue;
         config.MotorOutput.NeutralMode = neutralModeValue;
-
         TalonFX motor = new TalonFX(deviceNumber, Constants.rio);
         motor.getConfigurator().apply(config);
         Winch winch = new KrakenX60Winch(motor, drumRadius);
