@@ -11,6 +11,7 @@ public class AutoRoutines {
     public AutoRoutines(AutoFactory factory, AutoChooser autoChooser) {
         this.factory = factory;
         autoChooser.addRoutine("SimplePath", this::simplePathAuto);
+        autoChooser.addRoutine("TheLoveBoat", this::theLoveBoat);
     }
 
     private AutoRoutine simplePathAuto() {
@@ -22,5 +23,17 @@ public class AutoRoutines {
                 .andThen(simplePath.cmd())
         );
         return routine;
+    }
+
+    private AutoRoutine theLoveBoat() {
+        final AutoRoutine routine = factory.newRoutine("The Love Boat Auto");
+        final AutoTrajectory simplePath = routine.trajectory("The Love Boat");
+
+        routine.active().onTrue(
+                simplePath.resetOdometry()
+                        .andThen(simplePath.cmd())
+        );
+        return routine;
+
     }
 }
