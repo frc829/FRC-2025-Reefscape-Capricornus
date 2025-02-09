@@ -27,10 +27,7 @@ public class CommandElevator implements Subsystem {
     }
 
     public Trigger atPosition(Distance position, Distance tolerance) {
-        return new Trigger(() -> elevator
-                .getState()
-                .getPosition()
-                .isNear(position, tolerance));
+        return new Trigger(() -> elevator.getState().getPosition().isNear(position, tolerance));
     }
 
     public Command applyRequest(Supplier<ElevatorRequest> requestSupplier) {
