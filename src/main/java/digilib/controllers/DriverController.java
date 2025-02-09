@@ -71,7 +71,6 @@ public class DriverController {
     }
 
     public Trigger getRobotCentricTrigger() {
-        // TODO: God I love composing triggers instead of if statement logic.
         return getVelocityTrigger().and(getClockDriveTrigger().negate());
     }
 
