@@ -38,12 +38,46 @@ public class ManualController {
 
     private double getArmVelocityValue() {
         return -MathUtil.applyDeadband(controller.getRightY(), deadband);
+
     }
 
     public Trigger arm() {
         return new Trigger(() -> getArmVelocityValue() != 0);
     }
 
+    public Dimensionless getWristVelocity() {
+        return armVelocity.mut_setMagnitude(getWristVelocityValue());
+    }
+
+    private double getWristVelocityValue() {
+        return MathUtil.applyDeadband(controller.getLeftTriggerAxis(), deadband)
+                - MathUtil.applyDeadband(controller.getRightTriggerAxis(), deadband);
+
+    }
+
+    public Trigger wrist() {
+        return new Trigger(() -> getWristVelocityValue() != 0);
+    }
+
+    public Trigger testElevatorPos(){
+        return controller.a();
+    }
+
+    public Trigger testArmPose(){
+        return controller.b();
+    }
+
+    public Trigger testWristPose0(){
+        return controller.x();
+    }
+
+    public Trigger testWristPose90(){
+        return controller.y();
+    }
+
+    public Trigger testAlgaePickupPose(){
+        return controller.leftBumper();
+    }
 
 
 }

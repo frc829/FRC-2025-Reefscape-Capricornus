@@ -9,6 +9,7 @@ public class WristState implements Cloneable {
     private final MutAngle position = Radians.mutable(0.0);
     private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
+    private final MutVoltage voltage = Volts.mutable(0.0);
 
     public Angle getPosition() {
         return position;
@@ -28,8 +29,17 @@ public class WristState implements Cloneable {
         return this;
     }
 
+    public MutVoltage getVoltage() {
+        return voltage;
+    }
+
     public WristState withTimestamp(Time timestamp) {
         this.timestamp.mut_replace(timestamp);
+        return this;
+    }
+
+    public WristState withVoltage(double voltage) {
+        this.voltage.mut_setMagnitude(voltage);
         return this;
     }
 

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import static digilib.DigiMath.roundToDecimal;
 import static edu.wpi.first.units.Units.*;
 
 public class ElevatorTelemetry {
@@ -23,9 +24,9 @@ public class ElevatorTelemetry {
     private final DoublePublisher maxHeightPublisher;
     private final DoublePublisher maxVelocityPublisher;
     private final DoublePublisher maxAccelerationPublisher;
-    
     private final Mechanism2d elevatorMechanism;
     private final MechanismLigament2d elevatorLigament;
+    private final DoublePublisher voltage;
 
 
     public ElevatorTelemetry(
@@ -41,10 +42,11 @@ public class ElevatorTelemetry {
         this.timestamp = elevatorStateTable.getDoubleTopic("Timestamp").publish();
         this.height = elevatorStateTable.getDoubleTopic("Height").publish();
         this.velocity = elevatorStateTable.getDoubleTopic("Velocity").publish();
-        this.minHeightPublisher = elevatorStateTable.getDoubleTopic("MinHeightPublisher").publish();
-        this.maxHeightPublisher = elevatorStateTable.getDoubleTopic("MaxHeightPublisher").publish();
-        this.maxVelocityPublisher = elevatorStateTable.getDoubleTopic("MaxVelocityPublisher").publish();
-        this.maxAccelerationPublisher = elevatorStateTable.getDoubleTopic("MaxAccelerationPublisher").publish();
+        this.minHeightPublisher = elevatorStateTable.getDoubleTopic("MinHeight").publish();
+        this.maxHeightPublisher = elevatorStateTable.getDoubleTopic("MaxHeight").publish();
+        this.maxVelocityPublisher = elevatorStateTable.getDoubleTopic("MaxVelocity").publish();
+        this.maxAccelerationPublisher = elevatorStateTable.getDoubleTopic("MaxAcceleration").publish();
+        this.voltage = elevatorStateTable.getDoubleTopic("Voltage").publish();
         this.maxAcceleration = maxAcceleration;
         elevatorMechanism = new Mechanism2d(1, 4);
         elevatorLigament = elevatorMechanism
@@ -54,20 +56,15 @@ public class ElevatorTelemetry {
     }
 
     public void telemeterize(ElevatorState state) {
-        // TODO: call minHeightPublisher's set method and pass in minHeight.in(Meters)
-        // TODO: repeat for maxHeightPublisher using maxHeight
-        // TODO: repeat for maxVelocityPublisher using maxVelocity
-        // TODO: repeat for maxAccelerationPublisher using maxAcceleration
-        // TODO: repeat for timestamp using state.getTimeStamp.in(Seconds)
-        // TODO: repeat for height using state.getPosition.in(Meters)
-        // TODO: repeat for velocity using state.getVelocity.in(MetersPerSecond)
-        elevatorLigament.setLength(state.getPosition().in(Meters));
-        minHeightPublisher.set(minHeight.in(Meters));
-        maxHeightPublisher.set(maxHeight.in(Meters));
-        maxVelocityPublisher.set(maxVelocity.in(MetersPerSecond));
-        maxAccelerationPublisher.set(maxAcceleration.in(MetersPerSecondPerSecond));
-        // timestamp.set(state.getTimeStamp.in(Seconds));
-        height.set(state.getPosition().in(Meters));
-        // velocity.set(state.getVelocity.in(MetersPerSecond));
+        minHeightPublisher.set(roundToDecimal(minHeight.in(Meters), 2));
+        maxHeightPublisher.set(roundToDecimal(maxHeight.in(Meters), 2));
+        maxVelocityPublisher.set(roundToDecimal(maxVelocity.in(MetersPerSecond), 2));
+        maxAccelerationPublisher.set(roundToDecimal(maxAcceleration.in(MetersPerSecondPerSecond), 2));
+        timestamp.set(roundToDecimal(state.getTimestamp().in(Seconds), 2));
+        height.set(roundToDecimal(state.getPosition().in(Meters), 2));
+        velocity.set(roundToDecimal(state.getVelocity().in(MetersPerSecond), 2));
+        voltage.set(roundToDecimal(state.getVoltage().in(Volts), 2));
+        elevatorLigament.setLength(roundToDecimal(state.getPosition().in(Meters), 2));
+
     }
 }

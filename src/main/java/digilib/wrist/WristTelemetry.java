@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import static digilib.DigiMath.roundToDecimal;
 import static edu.wpi.first.units.Units.*;
 
 public class WristTelemetry {
@@ -53,34 +54,21 @@ public class WristTelemetry {
         wristMechanism = new Mechanism2d(1, 1);
         wristLigamentRight = wristMechanism
                 .getRoot("WristRoot", 0.5, 0.5)
-                .append(new MechanismLigament2d("Wrist Ligament Right", 0.5, 0));
+                .append(new MechanismLigament2d("Wrist Ligament Right", 0.5, 90));
         wristLigamentLeft = wristMechanism
                 .getRoot("WristRoot", 0.5, 0.5)
-                .append(new MechanismLigament2d("Wrist Ligament Left", 0.5, 180));
+                .append(new MechanismLigament2d("Wrist Ligament Left", 0.5, 270));
         SmartDashboard.putData("Wrist", wristMechanism);
     }
 
     public void telemeterize(WristState state) {
-        minAnglePublisher.set(minAngle.in(Degrees));
-        maxAnglePublisher.set(maxAngle.in(Degrees));
-        maxVelocityPublisher.set(maxVelocity.in(DegreesPerSecond));
-        maxAccelerationPublisher.set(maxAcceleration.in(DegreesPerSecondPerSecond));
-
-
-
-
-
-
-//        timeStamp.set(state.getTimeStamp().in(Seconds));
-
-
-
-
-
-
-        angle.set(state.getPosition().in(Degrees));
-        angularVelocity.set(state.getVelocity().in(DegreesPerSecond));
-        wristLigamentRight.setAngle(state.getPosition().in(Degrees));
-        wristLigamentLeft.setAngle(180.0 + state.getPosition().in(Degrees));
+        minAnglePublisher.set(roundToDecimal(minAngle.in(Degrees), 2));
+        maxAnglePublisher.set(roundToDecimal(maxAngle.in(Degrees), 2));
+        maxVelocityPublisher.set(roundToDecimal(maxVelocity.in(DegreesPerSecond), 2));
+        maxAccelerationPublisher.set(roundToDecimal(maxAcceleration.in(DegreesPerSecondPerSecond), 2));
+        angle.set(roundToDecimal(state.getPosition().in(Degrees), 2));
+        angularVelocity.set(roundToDecimal(state.getVelocity().in(DegreesPerSecond), 2));
+        wristLigamentRight.setAngle(roundToDecimal(90 + state.getPosition().in(Degrees), 2));
+        wristLigamentLeft.setAngle(roundToDecimal(270.0 + state.getPosition().in(Degrees), 2));
     }
 }

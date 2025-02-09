@@ -3,8 +3,6 @@ package digilib.arm;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.awt.*;
-
 import static edu.wpi.first.units.Units.*;
 
 public interface ArmRequest {
@@ -34,12 +32,16 @@ public interface ArmRequest {
             if (arm.isHoldEnabled()) {
                 arm.disableHold();
             }
+            ArmState armState = arm.getState();
             if (position.lte(arm.getMaxAngle()) && position.gte(arm.getMinAngle())) {
                 arm.setPosition(position);
-            } else {
-                arm.setVelocity(RadiansPerSecond.of(0.0));
+            } else if(armState.getPosition().gte(arm.getMaxAngle()) && position.lte(arm.getMaxAngle())){
+                arm.setPosition(position);
+            } else if(armState.getPosition().lte(arm.getMinAngle()) && position.gte(arm.getMinAngle())){
+                arm.setPosition(position);
+            }else {
+                arm.setVelocity(DegreesPerSecond.of(0.0));
             }
-            SmartDashboard.putNumber("Position Setpoint [deg]", position.in(Degrees));
         }
 
         public Position withPosition(Angle position) {
@@ -49,7 +51,7 @@ public interface ArmRequest {
     }
 
     public class Velocity implements ArmRequest {
-        private final MutDimensionless maxVelocityPercent = Percent.mutable(0.0);
+        private final MutDimensionless maxVelocityPercent = Value.mutable(0.0);
         private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
 
         @Override
@@ -60,7 +62,11 @@ public interface ArmRequest {
             ArmState armState = arm.getState();
             if (armState.getPosition().lte(arm.getMaxAngle()) && armState.getPosition().gte(arm.getMinAngle())) {
                 velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * arm.getMaxAngle().baseUnitMagnitude());
-            } else {
+            } else if(armState.getPosition().gte(arm.getMaxAngle()) && maxVelocityPercent.baseUnitMagnitude() < 0.0){
+                velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * arm.getMaxAngle().baseUnitMagnitude());
+            } else if(armState.getPosition().lte(arm.getMinAngle()) && maxVelocityPercent.baseUnitMagnitude() > 0.0){
+                velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * arm.getMaxAngle().baseUnitMagnitude());
+            }else {
                 velocity.mut_setMagnitude(0.0);
             }
             arm.setVelocity(velocity);

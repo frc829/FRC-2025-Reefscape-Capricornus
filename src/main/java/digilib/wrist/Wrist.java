@@ -39,6 +39,8 @@ public interface Wrist {
 
     public Angle getMinAngle();
 
+    public AngularVelocity getMaxVelocity();
+
 
 
 }

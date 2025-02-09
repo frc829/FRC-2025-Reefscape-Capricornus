@@ -9,6 +9,7 @@ public class ElevatorState implements Cloneable {
     private final MutDistance position = Meters.mutable(0.0);
     private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
+    private final MutVoltage voltage = Volts.mutable(0.0);
 
     public Distance getPosition() {
         return position;
@@ -16,6 +17,14 @@ public class ElevatorState implements Cloneable {
 
     public LinearVelocity getVelocity() {
         return velocity;
+    }
+
+    public MutTime getTimestamp() {
+        return timestamp;
+    }
+
+    public Voltage getVoltage() {
+        return voltage;
     }
 
     public ElevatorState withPosition(Distance position){
@@ -30,6 +39,11 @@ public class ElevatorState implements Cloneable {
 
     public ElevatorState withTimestamp(Time timestamp){
         this.timestamp.mut_replace(timestamp);
+        return this;
+    }
+
+    public ElevatorState withVoltage(double voltage){
+        this.voltage.mut_setMagnitude(voltage);
         return this;
     }
 

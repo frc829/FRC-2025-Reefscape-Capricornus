@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
+import static com.revrobotics.spark.ClosedLoopSlot.kSlot0;
+import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
 import static com.revrobotics.spark.SparkBase.PersistMode.*;
 import static com.revrobotics.spark.SparkBase.ResetMode.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
@@ -44,6 +46,7 @@ public class NEO550Wrist implements Wrist {
     private final MutTime timestamp = Seconds.mutable(0.0);
     private final CANcoder cancoder;
     private boolean hold = false;
+    private AngularVelocity maxVelocity;
 
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
 
@@ -85,6 +88,7 @@ public class NEO550Wrist implements Wrist {
                     RadiansPerSecond.of(0.0).baseUnitMagnitude());
             sparkMaxSim.setPosition(wristConstants.getStartingAngle().baseUnitMagnitude());
         }
+        this.maxVelocity = wristConstants.getMaxAngularVelocity();
         this.wristTelemetry = new WristTelemetry(
                 "Wrist",
                 wristConstants.getMinAngle(),
@@ -133,23 +137,26 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void setPosition(Angle position) {
-        var lastVelocitySetpoint = lastState.velocity;
+        goalState.position = position.baseUnitMagnitude();
+        goalState.velocity = 0.0;
+        double lastVelocitySetpoint = lastState.velocity;
         lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
-        var nextVelocitySetPoint = lastState.velocity;
-        var nextPositionSetPoint = lastState.position;
-        var arbFeedForward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetPoint);
-        motor.getClosedLoopController().setReference(nextPositionSetPoint, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0, arbFeedForward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        velocityProfile.reset(nextVelocitySetPoint);
+        double nextVelocitySetpoint = lastState.velocity;
+        double nextPositionSetpoint = lastState.position;
+        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+        motor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        velocityProfile.reset(motor.getEncoder().getVelocity());
     }
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        var nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
-        var lastVelocitySetpoint = lastState.velocity;
-        var arbFeedforward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
-        motor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, ClosedLoopSlot.kSlot1, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        motor.getEncoder().setPosition(lastState.position);
-        lastState.position = nextVelocitySetpoint;
+        goalState.velocity = velocity.baseUnitMagnitude();
+        double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
+        double lastVelocitySetPoint = lastState.velocity;
+        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
+        motor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, kSlot1, arbFeedfoward);
+        lastState.position = motor.getEncoder().getPosition();
+        lastState.velocity = nextVelocitySetpoint;
     }
 
     @Override
@@ -169,6 +176,7 @@ public class NEO550Wrist implements Wrist {
         wristState.withPosition(position.mut_setBaseUnitMagnitude(motor.getEncoder().getPosition()));
         wristState.withVelocity(velocity.mut_setBaseUnitMagnitude(motor.getEncoder().getVelocity()));
         wristState.withTimestamp(timestamp.mut_setBaseUnitMagnitude(Timer.getFPGATimestamp()));
+        wristState.withVoltage(motor.getAppliedOutput() * motor.getBusVoltage());
     }
 
     @Override
@@ -207,5 +215,10 @@ public class NEO550Wrist implements Wrist {
     @Override
     public boolean isHoldEnabled() {
         return hold;
+    }
+
+    @Override
+    public AngularVelocity getMaxVelocity() {
+        return maxVelocity;
     }
 }

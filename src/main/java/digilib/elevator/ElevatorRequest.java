@@ -32,12 +32,16 @@ public interface ElevatorRequest {
             if (elevator.isHoldEnabled()) {
                 elevator.disableHold();
             }
+            ElevatorState wristState = elevator.getState();
             if (position.lte(elevator.getMaxPosition()) && position.gte(elevator.getMinPosition())) {
                 elevator.setPosition(position);
-            } else {
+            } else if(wristState.getPosition().gte(elevator.getMaxPosition()) && position.lte(elevator.getMaxPosition())){
+                elevator.setPosition(position);
+            } else if(wristState.getPosition().lte(elevator.getMinPosition()) && position.gte(elevator.getMinPosition())){
+                elevator.setPosition(position);
+            }else {
                 elevator.setVelocity(MetersPerSecond.of(0.0));
             }
-            SmartDashboard.putNumber("Position Setpoint [meters]", position.in(Meters));
         }
 
         public Position withPosition(Distance position) {
@@ -47,7 +51,7 @@ public interface ElevatorRequest {
     }
 
     public class Velocity implements ElevatorRequest {
-        private final MutDimensionless maxVelocityPercent = Percent.mutable(0.0);
+        private final MutDimensionless maxVelocityPercent = Value.mutable(0.0);
         private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
 
         @Override
@@ -55,10 +59,14 @@ public interface ElevatorRequest {
             if (elevator.isHoldEnabled()) {
                 elevator.disableHold();
             }
-            ElevatorState elevatorState = elevator.getState();
-            if (elevatorState.getPosition().lte(elevator.getMaxPosition()) && elevatorState.getPosition().gte(elevator.getMinPosition())) {
+            ElevatorState state = elevator.getState();
+            if (state.getPosition().lte(elevator.getMaxPosition()) && state.getPosition().gte(elevator.getMinPosition())) {
                 velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * elevator.getMaxVelocity().baseUnitMagnitude());
-            } else {
+            } else if(state.getPosition().gte(elevator.getMaxPosition()) && maxVelocityPercent.baseUnitMagnitude() < 0.0){
+                velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * elevator.getMaxVelocity().baseUnitMagnitude());
+            } else if(state.getPosition().lte(elevator.getMinPosition()) && maxVelocityPercent.baseUnitMagnitude() > 0.0){
+                velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * elevator.getMaxVelocity().baseUnitMagnitude());
+            }else {
                 velocity.mut_setMagnitude(0.0);
             }
             elevator.setVelocity(velocity);
