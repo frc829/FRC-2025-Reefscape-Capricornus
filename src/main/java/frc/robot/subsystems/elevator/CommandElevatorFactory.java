@@ -1,7 +1,8 @@
 package frc.robot.subsystems.elevator;
 
+import digilib.elevator.Elevator;
 import digilib.elevator.ElevatorRequest;
-import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutDimensionless;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,6 +12,9 @@ import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Value;
+
 public class CommandElevatorFactory {
     private final CommandElevator commandElevator;
 
@@ -19,29 +23,31 @@ public class CommandElevatorFactory {
         commandElevator.setDefaultCommand(hold());
     }
 
-    public Trigger atPosition(Distance position, Distance tolerance){
-        return commandElevator.atPosition(position, tolerance);
-    }
-
     public Command hold() {
-        ElevatorRequest.Hold request = new ElevatorRequest.Hold();
-        return commandElevator.applyRequest(() -> request).withName("ELEVATOR:HOLD");
+        ElevatorRequest.Hold request =  new ElevatorRequest.Hold();
+        return commandElevator.applyRequest(() -> request).withName("HOLD");
+
     }
 
     public Command goToPosition(Distance position) {
-        ElevatorRequest.Position request = new ElevatorRequest.Position();
+        ElevatorRequest.Position request =  new ElevatorRequest.Position();
         request.withPosition(position);
-        return commandElevator.applyRequest(() -> request).withName(String.format("ELEVATOR:%s meters", position.in(Meters)));
+        return commandElevator.applyRequest(() -> request).withName(String.format("POSITION: %s meters", position.in(Meters)));
+
     }
 
-    public Command moveAtVelocity(Supplier<Dimensionless> maxElevatorVelocityPercentage) {
+    public Command moveAtVelocity(DoubleSupplier maxElevatorVelocityPercentage) {
         MutDimensionless elevatorVelocityPercent = Value.mutable(0.0);
-        ElevatorRequest.Velocity request = new ElevatorRequest.Velocity();
+        ElevatorRequest.Velocity request =  new ElevatorRequest.Velocity();
         request.withVelocity(elevatorVelocityPercent);
-        return commandElevator.applyRequest(() -> {
-            elevatorVelocityPercent.mut_replace(maxElevatorVelocityPercentage.get());
-            return request.withVelocity(elevatorVelocityPercent);
-        }).withName("ELEVATOR:VELOCITY");
+        return commandElevator
+                 .applyRequest(() -> {
+                     elevatorVelocityPercent.mut_setMagnitude(maxElevatorVelocityPercentage.getAsDouble());
+                     return request;
+                 });
+  
+
+
     }
 
 }
