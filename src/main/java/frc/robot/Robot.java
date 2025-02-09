@@ -6,7 +6,7 @@ package frc.robot;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
-import digilib.controllers.DriverController;
+import digilib.controllers.DriverCommandXBoxController;
 import digilib.controllers.OperatorFlightStickController;
 import digilib.controllers.OperatorXboxController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
     public Robot() {
         CommandSwerveDrive commandSwerveDrive = CommandSwerveDriveConstants.createCommandSwerve();
         commandSwerveDrive.configureAutoBuilder();
-        DriverController driverController = new DriverController(Constants.controllerDeadband);
+        DriverCommandXBoxController driverController = new DriverCommandXBoxController(Constants.controllerDeadband);
         OperatorXboxController operatorXboxController = new OperatorXboxController(Constants.controllerDeadband);
         OperatorFlightStickController operatorFlightStickController = new OperatorFlightStickController(Constants.controllerDeadband);
         SubsystemCommandFactories subsystemCommandFactories = new SubsystemCommandFactories(

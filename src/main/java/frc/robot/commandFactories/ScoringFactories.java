@@ -1,17 +1,17 @@
 package frc.robot.commandFactories;
 
-import digilib.controllers.DriverController;
+import digilib.controllers.DriverCommandXBoxController;
 import digilib.controllers.OperatorFlightStickController;
 import digilib.controllers.OperatorXboxController;
 
 public class ScoringFactories {
 
-    private DriverController driverController;
+    private DriverCommandXBoxController driverController;
     private OperatorXboxController operatorXboxController;
     private OperatorFlightStickController operatorFlightController;
 
     public ScoringFactories(
-            DriverController driverController,
+            DriverCommandXBoxController driverController,
             OperatorXboxController operatorXboxController,
             OperatorFlightStickController operatorFlightStickController
     ) {

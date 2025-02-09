@@ -1,13 +1,13 @@
 package frc.robot.routines;
 
-import digilib.controllers.DriverController;
+import digilib.controllers.DriverCommandXBoxController;
 import frc.robot.Constants;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 
 public class DriverRoutines {
 
     private final SubsystemCommandFactories subsystemCommandFactories;
-    private final DriverController driverController = new DriverController(Constants.controllerDeadband);
+    private final DriverCommandXBoxController driverController = new DriverCommandXBoxController(Constants.controllerDeadband);
 
 
     public DriverRoutines(SubsystemCommandFactories subsystemCommandFactories) {
