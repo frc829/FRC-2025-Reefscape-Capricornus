@@ -25,57 +25,48 @@ public class DriverCommandXBoxController {
     }
 
     public Dimensionless getVelocity() {
-        // TODO: return a call to velocity.mut_setMagnitude() passing in getVelocityValue();
-        return null; // TODO: remove this when done.
+        return velocity.mut_setMagnitude(getVelocityValue());
     }
 
     private double getVelocityValue() {
-        // TODO: get x from a call to -MathUtil.applyDeadband() passing in controller.getLeftX() and deadband
-        // TODO: repeat for y
-        // TODO: get the velocity from Math.hypot() passing in x and y
-        // TODO: return the minimum of velocity and 1 using Math.min
-        return 0.0; // TODO: remove this when done.
+        double x = -MathUtil.applyDeadband(controller.getLeftX(), deadband);
+        double y = -MathUtil.applyDeadband(controller.getLeftY(), deadband);
+        double velocity = Math.hypot(x, y);
+        return Math.min(velocity, 1);
     }
 
     public Dimensionless getRotationalVelocity() {
-        // TODO: return a call to rotationalVelocity.mut_setMagnitude() passing in getRotationalVelocityValue();
-        return null; // TODO: remove this when done.
+        return rotationalVelocity.mut_setMagnitude(getRotationalVelocityValue());
     }
 
     private double getRotationalVelocityValue() {
-        // TODO: get the leftTrigger value from a call to MathUtil.applyDeadband() passing in controller.getLeftTriggerAxis and deadband
-        // TODO: repeat for rightTrigger
-        // TODO: return the difference between leftTrigger and rightTrigger
-        return 0.0; // TODO: remove this when done.
+        double leftTrigger = MathUtil.applyDeadband(controller.getLeftTriggerAxis(), deadband);
+        double rightTrigger = MathUtil.applyDeadband(controller.getRightTriggerAxis(), deadband);
+        return leftTrigger - rightTrigger;
     }
 
     public Angle getHeading() {
-        // TODO: return a call to heading.mut_setMagnitude() passing in getHeadingRadians();
-        return null; // TODO: remove this when done.
+        return heading.mut_setMagnitude(getHeadingRadians());
     }
 
     private double getHeadingRadians() {
-        // TODO: get x from a call to -MathUtil.applyDeadband() passing in controller.getLeftX() and deadband
-        // TODO: repeat for y
-        // TODO: return the heading from Math.atan() passing in x and y.  x is really the y and y is really the x
-        return 0.0; // TODO: remove this when done.
+        double x = -MathUtil.applyDeadband(controller.getLeftX(), deadband);
+        double y = -MathUtil.applyDeadband(controller.getLeftY(), deadband);
+        return Math.atan2(y, x);
     }
 
     public Angle getRotation() {
-        // TODO: return a call to rotation.mut_setMagnitude() passing in getRotationRadians();
-        return null; // TODO: remove this when done.
+        return rotation.mut_setMagnitude(getRotationRadians());
     }
 
     private double getRotationRadians() {
-        // TODO: get x from a call to -MathUtil.applyDeadband() passing in controller.getLeftX() and deadband
-        // TODO: repeat for y
-        // TODO: return the rotation from Math.atan() passing in x and y.  x is really the y and y is really the x
-        return 0.0; // TODO: remove this when done.
+        double x = -MathUtil.applyDeadband(controller.getRightX(), deadband);
+        double y = -MathUtil.applyDeadband(controller.getRightY(), deadband);
+        return Math.atan2(y, x);
     }
 
     public Trigger getVelocityTrigger() {
-        // TODO: return a new Trigger passing in a boolean supplier () -> getVelocityValue() != 0.0;
-        return null; // TODO: remove this when done.
+        return new Trigger(() -> getVelocityValue() != 0.0);
     }
 
     public Trigger getRobotCentricTrigger() {
@@ -84,7 +75,6 @@ public class DriverCommandXBoxController {
     }
 
     public Trigger getClockDriveTrigger() {
-        // TODO: similar to getVelocityTrigger but the call is to getRotationRadians instead of getVelocityValue
-        return null; // TODO: remove this when done.
+        return new Trigger(() -> getRotationRadians() != 0.0);
     }
 }
