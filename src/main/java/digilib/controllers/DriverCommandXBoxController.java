@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Value;
 
-public class DriverController {
+public class DriverCommandXBoxController {
 
     private final double deadband;
     private final CommandXboxController controller;
@@ -19,7 +19,7 @@ public class DriverController {
     private final MutAngle heading = Radians.mutable(0.0);
     private final MutAngle rotation = Radians.mutable(0.0);
 
-    public DriverController(double deadband) {
+    public DriverCommandXBoxController(double deadband) {
         this.deadband = deadband;
         controller = new CommandXboxController(0);
     }
