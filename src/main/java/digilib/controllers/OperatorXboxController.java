@@ -38,4 +38,28 @@ public class OperatorXboxController {
         return controller.leftBumper().and(controller.povUp());
     }
 
+    public Trigger bargeScore(){
+        return controller.povLeft();
+    }
+
+    public Trigger processorScore(){
+        return controller.povDown();
+    }
+
+    public Trigger l1Score(){
+        return controller.a();
+    }
+
+    public Trigger l2Score(){
+        return controller.x();
+    }
+
+    public Trigger l3Score(){
+        return controller.b();
+    }
+
+    public Trigger l4Score(){
+        return controller.y();
+    }
+
 }

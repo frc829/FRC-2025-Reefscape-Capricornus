@@ -75,6 +75,12 @@ public class DriverController {
     }
 
     public Trigger getClockDriveTrigger() {
-        return new Trigger(() -> getRotationRadians() != 0.0);
+        return new Trigger(() -> getClockDriveTriggerValue() != 0.0);
+    }
+
+    private double getClockDriveTriggerValue() {
+        double x = MathUtil.applyDeadband(controller.getRightX(), deadband);
+        double y = MathUtil.applyDeadband(controller.getRightY(), deadband);
+        return Math.hypot(x, y);
     }
 }
