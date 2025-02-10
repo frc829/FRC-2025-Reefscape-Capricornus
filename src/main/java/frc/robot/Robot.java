@@ -58,8 +58,7 @@ public class Robot extends TimedRobot {
         ResetFactories resetFactories = new ResetFactories(subsystemCommandFactories);
         new PickupRoutines(operatorXboxController, pickupFactories, resetFactories);
         new ManualRoutines(subsystemCommandFactories);
-        new DriverRoutines(
-                subsystemCommandFactories);
+        new DriverRoutines(subsystemCommandFactories, driverController);
         new ScoringRoutines(
                 subsystemCommandFactories,
                 pickupFactories);
