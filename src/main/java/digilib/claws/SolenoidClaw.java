@@ -58,7 +58,9 @@ public class SolenoidClaw implements Claw {
 
     @Override
     public void setValue(ClawValue clawValue) {
-        solenoid.set(clawValueSolenoidMap.get(clawValue));
+        if(clawValue != null){
+            solenoid.set(clawValueSolenoidMap.get(clawValue));
+        }
     }
 
     @Override

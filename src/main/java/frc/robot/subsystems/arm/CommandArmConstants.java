@@ -31,7 +31,7 @@ public class CommandArmConstants {
     private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(38.776);
     private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(0.35225);
     private static final double positionKp = 100.84;
-    private static final double positionKd = 0.0;
+    private static final double positionKd = 97.964;
     private static final double velocityKp = 19.725;
     private static final int cancoderDeviceNumber = 34;
     private static final double magnetDirection = 0.0;
@@ -86,7 +86,7 @@ public class CommandArmConstants {
 
         ArmConstants armConstants = new ArmConstants(
                 name,
-                maxAngle, minAngle, maxAngularVelocity, maxAngularAcceleration, ks, kg, kv, ka, armLength, reduction, Radians.of(0.0), Radians.of(0.0), RadiansPerSecond.of(0.0));
+                maxAngle, minAngle, maxAngularVelocity, maxAngularAcceleration, ks, kg, kv, ka, armLength, reduction, startingAngle, Radians.of(0.0), RadiansPerSecond.of(0.0));
 
 
         Arm arm = new KrakenX60Arm(armConstants, talonFX, cancoder);

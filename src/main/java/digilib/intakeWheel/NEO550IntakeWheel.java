@@ -14,10 +14,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.MutLinearVelocity;
-import edu.wpi.first.units.measure.MutTime;
-import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -27,13 +24,12 @@ import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
 import static com.revrobotics.spark.SparkBase.ResetMode.kNoResetSafeParameters;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kCoast;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.*;
 
 public class NEO550IntakeWheel implements IntakeWheel {
-    private final IntakeWheelState lastState = new IntakeWheelState();
-    private final IntakeWheelState state = new IntakeWheelState();
-    private final LinearVelocity maxVelocity;
+    private final IntakeWheelState lastState;
+    private final IntakeWheelState state;
+    private final AngularVelocity maxVelocity;
     private final IntakeWheelTelemetry telemetry;
     private IntakeWheelRequest intakeWheelRequest;
     private final SparkMax motor;
@@ -41,14 +37,16 @@ public class NEO550IntakeWheel implements IntakeWheel {
     private final SlewRateLimiter profile;
     private final SimpleMotorFeedforward feedforward;
     private final Time profilePeriod;
-    private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
+    private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
-    private final MutLinearVelocity goalVelocity = MetersPerSecond.mutable(0.0);
-    private final MutLinearVelocity lastVelocity = MetersPerSecond.mutable(0.0);
+    private final MutAngularVelocity goalVelocity = RadiansPerSecond.mutable(0.0);
+    private final MutAngularVelocity lastVelocity = RadiansPerSecond.mutable(0.0);
     private FlywheelSim flywheelSim = null;
     private SparkMaxSim sparkMaxSim = null;
 
     public NEO550IntakeWheel(IntakeWheelConstants constants, SparkMax motor, SparkBaseConfig config) {
+        lastState = new IntakeWheelState(constants.getWheelRadius());
+        state = new IntakeWheelState(constants.getWheelRadius());
         this.motor = motor;
         this.config = config;
         this.maxVelocity = constants.getMaxVelocity();
@@ -110,13 +108,19 @@ public class NEO550IntakeWheel implements IntakeWheel {
     }
 
     @Override
-    public void setVelocity(LinearVelocity velocity) {
+    public void setVelocity(AngularVelocity velocity) {
         goalVelocity.mut_replace(velocity);
         double nextVelocitySetpoint = profile.calculate(goalVelocity.baseUnitMagnitude());
         double lastVelocitySetpoint = lastVelocity.baseUnitMagnitude();
         double arbFeedforward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
         motor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, ClosedLoopSlot.kSlot1, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
         lastVelocity.mut_setMagnitude(nextVelocitySetpoint);
+    }
+
+    @Override
+    public void setIdle() {
+        lastVelocity.mut_setMagnitude(motor.getEncoder().getVelocity());
+        motor.getClosedLoopController().setReference(0.0, SparkBase.ControlType.kVoltage);
     }
 
     @Override
@@ -147,7 +151,7 @@ public class NEO550IntakeWheel implements IntakeWheel {
     }
 
     @Override
-    public LinearVelocity getMaxVelocity() {
+    public AngularVelocity getMaxVelocity() {
         return maxVelocity;
     }
 }

@@ -1,5 +1,6 @@
 package digilib.intakeWheel;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 
 public interface IntakeWheel {
@@ -20,9 +21,11 @@ public interface IntakeWheel {
 
     public boolean setNeutralModeToCoast();
 
-    public void setVelocity(LinearVelocity velocity);
+    public void setVelocity(AngularVelocity velocity);
+
+    public void setIdle();
 
     public void update();
 
-    public LinearVelocity getMaxVelocity();
+    public AngularVelocity getMaxVelocity();
 }

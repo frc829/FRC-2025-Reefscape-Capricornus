@@ -6,18 +6,24 @@ import static edu.wpi.first.units.Units.*;
 
 public class IntakeWheelState implements Cloneable {
 
-    private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
+    private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
+    private final Distance wheelRadius;
+    private final MutLinearVelocity linearVelocity = MetersPerSecond.mutable(0.0);
+
+    public IntakeWheelState(Distance wheelRadius) {
+        this.wheelRadius = wheelRadius;
+    }
 
     public LinearVelocity getVelocity() {
-        return velocity;
+        return linearVelocity.mut_setBaseUnitMagnitude(wheelRadius.baseUnitMagnitude() * velocity.baseUnitMagnitude());
     }
 
     public Time getTimestamp() {
         return timestamp;
     }
 
-    public IntakeWheelState withVelocity(LinearVelocity velocity) {
+    public IntakeWheelState withVelocity(AngularVelocity velocity) {
         this.velocity.mut_replace(velocity);
         return this;
     }

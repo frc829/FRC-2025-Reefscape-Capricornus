@@ -10,6 +10,7 @@ public class CommandAlgaeClawFactory {
 
     public CommandAlgaeClawFactory(CommandAlgaeClaw commandAlgaeClaw) {
         this.commandAlgaeClaw = commandAlgaeClaw;
+        commandAlgaeClaw.register();
     }
 
     public Command setClawValue(ClawValue clawValue){
@@ -17,7 +18,8 @@ public class CommandAlgaeClawFactory {
         return commandAlgaeClaw.applyRequest(() -> request).withName(clawValue.name());
     }
 
-
-
-
+    public Command toggleClaw(){
+        ClawRequest.Toggle request = new ClawRequest.Toggle();
+        return commandAlgaeClaw.applyRequest(() -> request).withName("Algae:Toggle");
+    }
 }

@@ -3,6 +3,7 @@ package digilib.arm;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
@@ -34,6 +35,7 @@ public class KrakenX60Arm implements Arm {
     private final CANcoder canCoder;
     private final MotionMagicExpoVoltage positionControl;
     private final MotionMagicVelocityVoltage velocityControl;
+    private final VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true);
     private final SingleJointedArmSim simArm;
     private final TalonFXSimState talonFXSimState;
     private final CANcoderSimState canCoderSimState;
@@ -63,7 +65,7 @@ public class KrakenX60Arm implements Arm {
                 armConstants.getMinAngle().baseUnitMagnitude(),
                 armConstants.getMaxAngle().baseUnitMagnitude(),
                 true,
-                Radians.of(0.0).baseUnitMagnitude());
+                armConstants.getStartingAngle().baseUnitMagnitude());
         this.armTelemetry = new ArmTelemetry(
                 armConstants.getName(),
                 armConstants.getMinAngle(),
@@ -116,6 +118,11 @@ public class KrakenX60Arm implements Arm {
     @Override
     public void setVelocity(AngularVelocity velocity) {
         talonFX.setControl(velocityControl.withVelocity(velocity));
+    }
+
+    @Override
+    public void setVoltage(Voltage voltage) {
+        talonFX.setControl(voltageOut.withOutput(voltage));
     }
 
     @Override

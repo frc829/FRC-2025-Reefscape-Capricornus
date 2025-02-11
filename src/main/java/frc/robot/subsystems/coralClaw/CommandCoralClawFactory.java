@@ -9,11 +9,18 @@ public class CommandCoralClawFactory {
 
     public CommandCoralClawFactory(CommandCoralClaw commandCoralClaw) {
         this.commandCoralClaw = commandCoralClaw;
+        commandCoralClaw.register();
+
     }
 
     public Command setClawValue(ClawState.ClawValue clawValue){
         ClawRequest.SetClaw request = new ClawRequest.SetClaw(clawValue);
         return commandCoralClaw.applyRequest(() -> request).withName(clawValue.name());
+    }
+
+    public Command toggleClaw(){
+        ClawRequest.Toggle request = new ClawRequest.Toggle();
+        return commandCoralClaw.applyRequest(() -> request).withName("Coral:Toggle");
     }
 
 

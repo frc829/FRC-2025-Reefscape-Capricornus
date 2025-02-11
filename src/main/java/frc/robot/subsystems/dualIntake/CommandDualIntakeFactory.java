@@ -20,10 +20,8 @@ public class CommandDualIntakeFactory {
     }
 
     public Command idle() {
-        IntakeWheelRequest.Velocity request0 = new IntakeWheelRequest.Velocity()
-                .withVelocity(Value.of(0.0));
-        IntakeWheelRequest.Velocity request1 = new IntakeWheelRequest.Velocity()
-                .withVelocity(Value.of(0.0));
+        IntakeWheelRequest.Idle request0 = new IntakeWheelRequest.Idle();
+        IntakeWheelRequest.Idle request1 = new IntakeWheelRequest.Idle();
         Pair<IntakeWheelRequest, IntakeWheelRequest> request = new Pair<>(request0, request1);
         return commandDualIntake.applyRequest(() -> request).withName("INTAKE:IDLE");
     }

@@ -6,27 +6,27 @@ import edu.wpi.first.units.measure.*;
 public class IntakeWheelConstants {
     private final String name;
     private final Voltage ks;
-    private final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv;
-    private final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka;
+    private final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv;
+    private final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka;
     private final Distance wheelRadius;
     private final double reduction;
     private final LinearVelocity velocityStdDev;
     private final Time updatePeriod;
-    private final LinearVelocity maxVelocity;
-    private final LinearAcceleration maxAcceleration;
+    private final AngularVelocity maxVelocity;
+    private final AngularAcceleration maxAcceleration;
 
 
     public IntakeWheelConstants(
             String name,
             Voltage ks,
-            Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv,
-            Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka,
+            Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv,
+            Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka,
             Distance wheelRadius,
             double reduction,
             LinearVelocity velocityStdDev,
             Time updatePeriod,
-            LinearVelocity maxVelocity,
-            LinearAcceleration maxAcceleration) {
+            AngularVelocity maxVelocity,
+            AngularAcceleration maxAcceleration) {
         this.name = name;
         this.ks = ks;
         this.kv = kv;
@@ -44,11 +44,11 @@ public class IntakeWheelConstants {
         return ks;
     }
 
-    public Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> getKv() {
+    public Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> getKv() {
         return kv;
     }
 
-    public Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> getKa() {
+    public Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> getKa() {
         return ka;
     }
 
@@ -68,7 +68,7 @@ public class IntakeWheelConstants {
         return updatePeriod;
     }
 
-    public LinearAcceleration getMaxAcceleration() {
+    public AngularAcceleration getMaxAcceleration() {
         return maxAcceleration;
     }
 
@@ -76,7 +76,7 @@ public class IntakeWheelConstants {
         return name;
     }
 
-    public LinearVelocity getMaxVelocity() {
+    public AngularVelocity getMaxVelocity() {
         return maxVelocity;
     }
 }

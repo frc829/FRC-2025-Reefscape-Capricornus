@@ -160,6 +160,14 @@ public class NEO550Wrist implements Wrist {
     }
 
     @Override
+    public void setVoltage(Voltage voltage) {
+        motor.setVoltage(voltage.baseUnitMagnitude());
+        velocityProfile.reset(motor.getEncoder().getVelocity());
+        lastState.position = motor.getEncoder().getPosition();
+        lastState.velocity = motor.getEncoder().getVelocity();
+    }
+
+    @Override
     public void resetPosition() {
         motor.getEncoder().setPosition(cancoder.getPosition().getValue().in(Radians));
         update();

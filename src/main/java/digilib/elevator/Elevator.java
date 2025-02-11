@@ -3,6 +3,7 @@ package digilib.elevator;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public interface Elevator {
 
@@ -31,6 +32,8 @@ public interface Elevator {
     public void setVelocity(LinearVelocity velocity);
 
     public void setPosition(Distance position);
+
+    public void setVoltage(Voltage voltage);
 
     public void resetPosition();
 

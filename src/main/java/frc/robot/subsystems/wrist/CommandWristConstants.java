@@ -24,12 +24,12 @@ public class CommandWristConstants {
     private static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kBrake;
     private static final boolean inverted = false;
     private static final double reduction = 10.0 * 7.0 * 32.0 / 18.0;
-    private static final Voltage ks = Volts.of(0.0);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of( 1.2782399036744865);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of( 9.941089837997054E-4);
-    private static final double positionKp = 23.790020451150006;
-    private static final double positionKd = 0.010130792769467259;
-    private static final double velocityKp = 2.3496718293473E-13;
+    private static final Voltage ks = Volts.of(0.15515);
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(1.1386);
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.031241);
+    private static final double positionKp = 0.92837;
+    private static final double positionKd = 0.019622;
+    private static final double velocityKp = 0.013073;
     private static final Time updatePeriod = Seconds.of(0.020);
     private static final Time simLoopPeriod = Seconds.of(0.001);
 

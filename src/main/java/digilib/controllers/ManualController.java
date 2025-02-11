@@ -50,7 +50,7 @@ public class ManualController {
     }
 
     private double getWristVelocityValue() {
-        return 0.05 * MathUtil.applyDeadband(controller.getLeftTriggerAxis(), deadband)
+        return MathUtil.applyDeadband(controller.getLeftTriggerAxis(), deadband)
                 - MathUtil.applyDeadband(controller.getRightTriggerAxis(), deadband);
 
     }
@@ -75,8 +75,20 @@ public class ManualController {
         return controller.y();
     }
 
-    public Trigger testAlgaePickupPose(){
+    public Trigger algaeClawToggle(){
         return controller.leftBumper();
+    }
+
+    public Trigger coralClawToggle(){
+        return controller.rightBumper();
+    }
+
+    public Trigger intakeOutHalfSpeed(){
+        return controller.back();
+    }
+
+    public Trigger intakeInHalfSpeed(){
+        return controller.start();
     }
 
 

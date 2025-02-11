@@ -174,6 +174,14 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
+    public void setVoltage(Voltage voltage) {
+        primaryMotor.setVoltage(voltage.baseUnitMagnitude());
+        velocityProfile.reset(primaryMotor.getEncoder().getVelocity());
+        lastState.position = primaryMotor.getEncoder().getPosition();
+        lastState.velocity = primaryMotor.getEncoder().getVelocity();
+    }
+
+    @Override
     public void resetPosition() {
         primaryMotor.getEncoder().setPosition(0.0);
         followerMotor.getEncoder().setPosition(0.0);

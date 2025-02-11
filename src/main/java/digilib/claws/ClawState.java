@@ -5,15 +5,22 @@ import edu.wpi.first.units.measure.Time;
 
 import static edu.wpi.first.units.Units.Seconds;
 
-public class ClawState implements Cloneable{
+public class ClawState implements Cloneable {
 
     public enum ClawValue {
         OPEN,
-        CLOSED,
-        UNKNOWN
+        CLOSED;
+
+        public ClawValue opposite() {
+            return switch (this) {
+                case OPEN -> CLOSED;
+                case CLOSED -> OPEN;
+            };
+        }
+
     }
 
-    private ClawValue clawValue = ClawValue.UNKNOWN;
+    private ClawValue clawValue = null;
     private final MutTime timestamp = Seconds.mutable(0.0);
 
     public ClawValue getClawValue() {
@@ -43,7 +50,7 @@ public class ClawState implements Cloneable{
     @Override
     public ClawState clone() {
         try {
-            ClawState toReturn =  (ClawState) super.clone();
+            ClawState toReturn = (ClawState) super.clone();
             toReturn.clawValue = clawValue;
             toReturn.timestamp.mut_replace(timestamp);
             return toReturn;

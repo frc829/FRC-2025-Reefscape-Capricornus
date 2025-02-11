@@ -21,7 +21,7 @@ public class CommandPneumaticsConstants {
     private static class CommandAlgaeClawConstants {
         private static final int channel = 9;
         private static final String name = "Algae Claw";
-        private static final ClawState.ClawValue startingState = ClawState.ClawValue.UNKNOWN;
+        private static final ClawState.ClawValue startingState = null;
         private static final Map<ClawState.ClawValue, Boolean> clawValueSolenoidMap = Map.of(
                 ClawState.ClawValue.OPEN, true,
                 ClawState.ClawValue.CLOSED, false
@@ -39,7 +39,7 @@ public class CommandPneumaticsConstants {
     private static class CommandCoralClawConstants {
         private static final int channel = 8;
         private static final String name = "Coral Claw";
-        private static final ClawState.ClawValue startingState = ClawState.ClawValue.UNKNOWN;
+        private static final ClawState.ClawValue startingState = null;
         private static final Map<ClawState.ClawValue, Boolean> clawValueSolenoidMap = Map.of(
                 ClawState.ClawValue.OPEN, true,
                 ClawState.ClawValue.CLOSED, false

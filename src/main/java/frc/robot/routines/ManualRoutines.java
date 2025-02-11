@@ -1,8 +1,10 @@
 package frc.robot.routines;
 
 import digilib.controllers.ManualController;
-import frc.robot.Constants;
 import frc.robot.commandFactories.SubsystemCommandFactories;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Value;
 
 public class ManualRoutines {
     private final ManualController controller;
@@ -15,6 +17,20 @@ public class ManualRoutines {
         arm();
         elevator();
         wrist();
+        testWrist0();
+        testWrist90();
+        toggleAlgaeClaw();
+        toggleCoralClaw();
+        intakeInHalfSpeed();
+        intakeOutHalfSpeed();
+    }
+
+    private void testWrist90() {
+        controller.testWristPose90().whileTrue(factories.wrist.goToAngle(Degrees.of(90.0)));
+    }
+
+    private void testWrist0() {
+        controller.testWristPose0().whileTrue(factories.wrist.goToAngle(Degrees.of(0.0)));
     }
 
     private void arm() {
@@ -27,6 +43,28 @@ public class ManualRoutines {
 
     private void wrist() {
         controller.wrist().whileTrue(factories.wrist.moveAtVelocity(controller::getWristVelocity));
+    }
+
+    private void toggleAlgaeClaw() {
+        controller.algaeClawToggle().whileTrue(factories.algae.toggleClaw());
+    }
+
+    private void toggleCoralClaw() {
+        controller.coralClawToggle().whileTrue(factories.coral.toggleClaw());
+    }
+
+    private void intakeOutHalfSpeed() {
+        controller.intakeOutHalfSpeed().whileTrue(factories.intake.moveAtVelocity(
+                () -> Value.of(0.5),
+                () -> Value.of(0.5)
+        ));
+    }
+
+    public void intakeInHalfSpeed() {
+        controller.intakeInHalfSpeed().whileTrue(factories.intake.moveAtVelocity(
+                () -> Value.of(-0.5),
+                () -> Value.of(-0.5)
+        ));
     }
 
 }

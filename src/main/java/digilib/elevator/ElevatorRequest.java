@@ -19,7 +19,6 @@ public interface ElevatorRequest {
                 elevator.enableHold();
                 holdPosition.mut_replace(elevator.getState().getPosition());
             }
-            SmartDashboard.putNumber("Hold Position [meters]", holdPosition.in(Meters));
             elevator.setPosition(holdPosition);
         }
     }

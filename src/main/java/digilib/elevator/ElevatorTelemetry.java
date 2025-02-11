@@ -48,7 +48,7 @@ public class ElevatorTelemetry {
         this.maxAccelerationPublisher = elevatorStateTable.getDoubleTopic("MaxAcceleration").publish();
         this.voltage = elevatorStateTable.getDoubleTopic("Voltage").publish();
         this.maxAcceleration = maxAcceleration;
-        elevatorMechanism = new Mechanism2d(1, 4);
+        elevatorMechanism = new Mechanism2d(1, 2);
         elevatorLigament = elevatorMechanism
                 .getRoot("ElevatorRoot", 0.5, 0.0)
                 .append(new MechanismLigament2d("Elevator", 0.0, 90));

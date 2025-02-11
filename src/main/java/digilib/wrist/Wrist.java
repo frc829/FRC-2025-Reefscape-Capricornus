@@ -2,6 +2,7 @@ package digilib.wrist;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public interface Wrist {
 
@@ -30,6 +31,8 @@ public interface Wrist {
     public void setVelocity(AngularVelocity velocity);
 
     public void setPosition(Angle position);
+
+    public void setVoltage(Voltage voltage);
 
     public void resetPosition();
 

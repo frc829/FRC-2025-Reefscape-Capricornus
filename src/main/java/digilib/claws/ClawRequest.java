@@ -1,5 +1,7 @@
 package digilib.claws;
 
+import static digilib.claws.ClawState.ClawValue.CLOSED;
+
 public interface ClawRequest {
 
     public void apply(Claw claw);
@@ -15,6 +17,19 @@ public interface ClawRequest {
         @Override
         public void apply(Claw claw) {
             claw.setValue(clawValue);
+        }
+    }
+
+    public class Toggle implements ClawRequest {
+
+        public void apply(Claw claw) {
+            ClawState.ClawValue clawValue = claw.getState().getClawValue();
+            if(clawValue != null){
+                claw.setValue(clawValue.opposite());
+            }
+            else{
+                claw.setValue(CLOSED);
+            }
         }
     }
 }
