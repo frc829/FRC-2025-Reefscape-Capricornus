@@ -1,6 +1,7 @@
 package frc.robot.subsystems.wrist;
 
 import com.ctre.phoenix6.Utils;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
@@ -12,9 +13,9 @@ import digilib.wrist.Wrist;
 import digilib.wrist.WristRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+@Logged
 public class CommandWrist implements Subsystem {
     private final Time simLoopPeriod;
     private final Wrist wrist;
