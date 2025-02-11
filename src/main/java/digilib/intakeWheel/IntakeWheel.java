@@ -1,7 +1,6 @@
 package digilib.intakeWheel;
 
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.LinearVelocity;
 
 public interface IntakeWheel {
 

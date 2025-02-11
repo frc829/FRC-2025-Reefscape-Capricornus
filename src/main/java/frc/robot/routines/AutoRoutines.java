@@ -20,7 +20,7 @@ public class AutoRoutines {
         final AutoTrajectory GtoTopStation = routine.trajectory("GtoTopStation");
 
         routine.active().onTrue(
-                S3toG.resetOdometry()
+                S3toG.cmd()
                         .andThen(S3toG.cmd())
                         .andThen(Commands.print("SCORE L4"))
                         .andThen(Commands.waitSeconds(2))

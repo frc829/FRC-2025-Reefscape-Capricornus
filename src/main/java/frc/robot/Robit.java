@@ -36,9 +36,9 @@ import frc.robot.subsystems.winch.CommandWinchFactory;
 import frc.robot.subsystems.wrist.CommandWristConstants;
 import frc.robot.subsystems.wrist.CommandWristFactory;
 
-public class Robot extends TimedRobot {
+public class Robit extends TimedRobot {
 
-    public Robot() {
+    public Robit() {
         CommandSwerveDrive commandSwerveDrive = CommandSwerveDriveConstants.createCommandSwerve();
         commandSwerveDrive.configureAutoBuilder();
         DriverController driverController = new DriverController(Constants.controllerDeadband);
