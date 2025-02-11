@@ -20,7 +20,7 @@ public class CommandArmConstants {
     private static final String name = "Arm";
     private static final Angle startingAngle = Degrees.of(-45);
     private static final Angle minAngle = Degrees.of(-45);
-    private static final Angle maxAngle = Degrees.of(100);
+    private static final Angle maxAngle = Degrees.of(180);
     private static final Distance armLength = Inches.of(31.0);
     private static final int deviceNumber = 14;
     private static final NeutralModeValue neutralModeValue = NeutralModeValue.Brake;
