@@ -50,7 +50,7 @@ public class ManualController {
     }
 
     private double getWristVelocityValue() {
-        return MathUtil.applyDeadband(controller.getLeftTriggerAxis(), deadband)
+        return 0.05 * MathUtil.applyDeadband(controller.getLeftTriggerAxis(), deadband)
                 - MathUtil.applyDeadband(controller.getRightTriggerAxis(), deadband);
 
     }

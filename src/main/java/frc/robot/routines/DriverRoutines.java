@@ -1,16 +1,38 @@
 package frc.robot.routines;
 
 import digilib.controllers.DriverController;
-import frc.robot.Constants;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 
 public class DriverRoutines {
 
-    private final SubsystemCommandFactories subsystemCommandFactories;
-    private final DriverController driverController = new DriverController(Constants.controllerDeadband);
+    private final SubsystemCommandFactories factories;
+    private final DriverController driverController;
 
 
-    public DriverRoutines(SubsystemCommandFactories subsystemCommandFactories) {
-        this.subsystemCommandFactories = subsystemCommandFactories;
+    public DriverRoutines(SubsystemCommandFactories factories,
+                          DriverController driverController) {
+        this.factories = factories;
+        this.driverController = driverController;
+
+        clockDrive();
     }
+
+    private void clockDrive() {
+        driverController.getClockDriveTrigger().whileTrue(
+                factories.swerve.clockDrive(
+                        driverController::getVelocity,
+                        driverController::getHeading,
+                        driverController::getRotation
+                )
+        );
+        driverController.getRobotCentricTrigger().whileTrue(
+                factories.swerve.robotCentricDrive(
+                        driverController::getVelocity,
+                        driverController::getRotationalVelocity,
+                        driverController::getHeading
+                )
+        );
+    }
+
+
 }

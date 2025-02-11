@@ -5,11 +5,13 @@ import frc.robot.Constants;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 
 public class ManualRoutines {
-    private final ManualController controller = new ManualController(Constants.controllerDeadband);
+    private final ManualController controller;
     private final SubsystemCommandFactories factories;
 
-    public ManualRoutines(SubsystemCommandFactories factories) {
+    public ManualRoutines(SubsystemCommandFactories factories,
+                          ManualController controller) {
         this.factories = factories;
+        this.controller = controller;
         arm();
         elevator();
         wrist();

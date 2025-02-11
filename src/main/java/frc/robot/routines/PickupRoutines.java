@@ -17,23 +17,23 @@ public class PickupRoutines {
         this.factories = factories;
         this.resetFactories = resetFactories;
 
-        controller.algaeFloor()
-                .whileTrue(factories.algaeFloor())
-                .onFalse(resetFactories.algae());
-        controller.algaeL2()
-                .whileTrue(factories.algaeL2())
-                .onFalse(resetFactories.algae());
-        controller.algaeL3()
-                .whileTrue(factories.algaeL3())
-                .onFalse(resetFactories.algae());
-        controller.coralFloor()
-                .whileTrue(factories.coralFloor())
-                .onFalse(resetFactories.coral());
-        controller.coralStationFront()
-                .whileTrue(factories.coralStationFront())
-                .onFalse(resetFactories.coral());
-        controller.coralStationBack()
-                .whileTrue(factories.coralStationBack())
-                .onFalse(resetFactories.coral());
+        // controller.algaeFloor()
+        //         .whileTrue(factories.algaeFloor())
+        //         .onFalse(resetFactories.algae());
+        // controller.algaeL2()
+        //         .whileTrue(factories.algaeL2())
+        //         .onFalse(resetFactories.algae());
+        // controller.algaeL3()
+        //         .whileTrue(factories.algaeL3())
+        //         .onFalse(resetFactories.algae());
+        // controller.coralFloor()
+        //         .whileTrue(factories.coralFloor())
+        //         .onFalse(resetFactories.coral());
+        // controller.coralStationFront()
+        //         .whileTrue(factories.coralStationFront())
+        //         .onFalse(resetFactories.coral());
+        // controller.coralStationBack()
+        //         .whileTrue(factories.coralStationBack())
+        //         .onFalse(resetFactories.coral());
     }
 }

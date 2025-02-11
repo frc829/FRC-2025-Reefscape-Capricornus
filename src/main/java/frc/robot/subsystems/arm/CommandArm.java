@@ -30,6 +30,18 @@ public class CommandArm implements Subsystem {
         return new Trigger(() -> arm.getState().getPosition().isNear(position, tolerance));
     }
 
+    public Trigger lessThanPosition(Angle position, Angle tolerance) {
+        return new Trigger(() -> {
+            double currentPositionValue = arm.getState().getPosition().baseUnitMagnitude();
+            double positionValue = position.baseUnitMagnitude();
+            double diff = Math.abs(currentPositionValue - positionValue);
+            if (currentPositionValue < positionValue && diff >= tolerance.magnitude()) {
+                return true;
+            }
+            return false;
+        });
+    }
+
     public Command applyRequest(Supplier<ArmRequest> requestSupplier) {
         return run(() -> arm.setControl(requestSupplier.get()))
                 .handleInterrupt(arm::disableHold);
@@ -55,6 +67,8 @@ public class CommandArm implements Subsystem {
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
+
+
 }
 
 
