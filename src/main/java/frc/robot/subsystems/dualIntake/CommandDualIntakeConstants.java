@@ -1,6 +1,5 @@
 package frc.robot.subsystems.dualIntake;
 
-import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -9,6 +8,8 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import digilib.objectDetectors.LaserCanObjectDetector;
+import digilib.objectDetectors.ObjectDetector;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 import digilib.intakeWheel.IntakeWheel;
@@ -47,7 +48,7 @@ public class CommandDualIntakeConstants {
 
     private static final int laserCanId = 36;
     private static final LaserCanInterface.RangingMode rangingMode = LaserCanInterface.RangingMode.LONG;
-    private static final Distance maximumHasElementDistance = Millimeters.of(10.0);
+    private static final Distance maxTrueDistance = Millimeters.of(10.0);
 
     public static CommandDualIntake createCommandIntake() {
         SparkMax algaeMotor = new SparkMax(algaeDeviceNumber, SparkLowLevel.MotorType.kBrushless);
@@ -74,24 +75,8 @@ public class CommandDualIntakeConstants {
         algaeMotor.configure(algaeConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
         coralMotor.configure(coralConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-        LaserCan laserCan = null;
-
-        try {
-            laserCan = new LaserCan(laserCanId);
-        } catch (Exception e) {
-            System.out.println("Error creating laser can");
-        }
-
-        try {
-            laserCan.setRangingMode(rangingMode);
-        } catch (ConfigurationFailedException e) {
-            System.out.println("Error setting laser can ranging mode");
-        } catch (NullPointerException e) {
-            System.out.println("Laser Can does not exist");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
+        LaserCan laserCan = LaserCanObjectDetector.createLaserCan(laserCanId, rangingMode);
+        ObjectDetector objectDetector = new LaserCanObjectDetector(laserCan, maxTrueDistance);
 
         IntakeWheelConstants algaeWheelConstants = new IntakeWheelConstants(
                 "Intake: Algae",
@@ -119,15 +104,15 @@ public class CommandDualIntakeConstants {
 
         IntakeWheel algaeWheel = new NEO550IntakeWheel(
                 algaeWheelConstants,
-                algaeMotor,
-                algaeConfig);
+                algaeMotor
+        );
 
         IntakeWheel coralWheel = new NEO550IntakeWheel(
                 coralWheelConstants,
-                coralMotor,
-                coralConfig);
+                coralMotor
+        );
 
-        return new CommandDualIntake(algaeWheel, coralWheel, maximumHasElementDistance, laserCan, simLoopPeriod);
+        return new CommandDualIntake(algaeWheel, coralWheel, objectDetector, simLoopPeriod);
     }
 
 

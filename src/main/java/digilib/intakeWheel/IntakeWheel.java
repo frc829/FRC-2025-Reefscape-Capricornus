@@ -6,31 +6,28 @@ import edu.wpi.first.units.measure.Voltage;
 
 public interface IntakeWheel {
 
-    public MotorControllerType getMotorControllerType();
+    MotorControllerType getMotorControllerType();
 
-    public void updateSimState(double dtSeconds, double supplyVoltage);
+    AngularVelocity getMaxVelocity();
 
-    public void setControl(IntakeWheelRequest request);
+    IntakeWheelState getState();
 
-    public IntakeWheelState getState();
+    void setControl(IntakeWheelRequest request);
 
-    public IntakeWheelState getStateCopy();
+    void setVelocity(AngularVelocity velocity);
 
-    public IntakeWheelState getLastIntakeState();
+    void setIdle();
 
-    public void updateTelemetry();
+    void setVoltage(Voltage voltage);
 
-    public boolean setNeutralModeToBrake();
+    void update();
 
-    public boolean setNeutralModeToCoast();
+    void updateState();
 
-    public void setVelocity(AngularVelocity velocity);
+    void updateTelemetry();
 
-    public void setIdle();
+    void updateSimState(double dtSeconds, double supplyVoltage);
 
-    public void setVoltage(Voltage voltage);
 
-    public void update();
 
-    public AngularVelocity getMaxVelocity();
 }

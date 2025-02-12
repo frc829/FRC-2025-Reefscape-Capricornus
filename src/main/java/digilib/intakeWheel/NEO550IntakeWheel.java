@@ -1,14 +1,11 @@
 package digilib.intakeWheel;
 
-import com.revrobotics.REVLibError;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import digilib.MotorControllerType;
-import digilib.elevator.ElevatorTelemetry;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
@@ -19,12 +16,7 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
-import static com.revrobotics.spark.SparkBase.ResetMode.kNoResetSafeParameters;
-import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
-import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kCoast;
 import static digilib.MotorControllerType.*;
 import static edu.wpi.first.units.Units.*;
 
@@ -35,10 +27,8 @@ public class NEO550IntakeWheel implements IntakeWheel {
     private final IntakeWheelTelemetry telemetry;
     private IntakeWheelRequest intakeWheelRequest;
     private final SparkMax motor;
-    private final SparkBaseConfig config;
     private final SlewRateLimiter profile;
     private final SimpleMotorFeedforward feedforward;
-    private final Time profilePeriod;
     private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
     private final MutAngularVelocity goalVelocity = RadiansPerSecond.mutable(0.0);
@@ -47,15 +37,13 @@ public class NEO550IntakeWheel implements IntakeWheel {
     private FlywheelSim flywheelSim = null;
     private SparkMaxSim sparkMaxSim = null;
 
-    public NEO550IntakeWheel(IntakeWheelConstants constants, SparkMax motor, SparkBaseConfig config) {
+    public NEO550IntakeWheel(IntakeWheelConstants constants, SparkMax motor) {
         lastState = new IntakeWheelState(constants.getWheelRadius());
         state = new IntakeWheelState(constants.getWheelRadius());
         this.motor = motor;
-        this.config = config;
         this.maxVelocity = constants.getMaxVelocity();
         this.feedforward = new SimpleMotorFeedforward(constants.getKs().baseUnitMagnitude(), constants.getKv().baseUnitMagnitude(), constants.getKa().baseUnitMagnitude(), constants.getUpdatePeriod().baseUnitMagnitude());
         this.profile = new SlewRateLimiter(constants.getMaxAcceleration().baseUnitMagnitude());
-        this.profilePeriod = constants.getUpdatePeriod();
         if (RobotBase.isSimulation()) {
             DCMotor dcMotor = DCMotor.getNeo550(1);
             sparkMaxSim = new SparkMaxSim(motor, dcMotor);
@@ -79,17 +67,13 @@ public class NEO550IntakeWheel implements IntakeWheel {
     }
 
     @Override
-    public boolean setNeutralModeToBrake() {
-        config.idleMode(kBrake);
-        REVLibError status = motor.configureAsync(config, kNoResetSafeParameters, kPersistParameters);
-        return status == REVLibError.kOk;
+    public IntakeWheelState getState() {
+        return state;
     }
 
     @Override
-    public boolean setNeutralModeToCoast() {
-        config.idleMode(kCoast);
-        REVLibError status = motor.configureAsync(config, kNoResetSafeParameters, kPersistParameters);
-        return status == REVLibError.kOk;
+    public AngularVelocity getMaxVelocity() {
+        return maxVelocity;
     }
 
     @Override
@@ -98,21 +82,6 @@ public class NEO550IntakeWheel implements IntakeWheel {
             intakeWheelRequest = request;
         }
         request.apply(this);
-    }
-
-    @Override
-    public IntakeWheelState getState() {
-        return state;
-    }
-
-    @Override
-    public IntakeWheelState getStateCopy() {
-        return state.clone();
-    }
-
-    @Override
-    public IntakeWheelState getLastIntakeState() {
-        return lastState;
     }
 
     @Override
@@ -144,12 +113,17 @@ public class NEO550IntakeWheel implements IntakeWheel {
         updateTelemetry();
     }
 
-    private void updateState() {
+    @Override
+    public void updateState() {
         state.withVelocity(velocity.mut_setMagnitude(motor.getEncoder().getVelocity()))
                 .withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()))
                 .withVoltage(voltage.mut_setMagnitude(motor.getAppliedOutput() * motor.getBusVoltage()));
     }
 
+    @Override
+    public void updateTelemetry() {
+        telemetry.telemeterize(state);
+    }
 
     @Override
     public void updateSimState(double dtSeconds, double supplyVoltage) {
@@ -160,13 +134,7 @@ public class NEO550IntakeWheel implements IntakeWheel {
     }
 
 
-    @Override
-    public void updateTelemetry() {
-        telemetry.telemeterize(state);
-    }
 
-    @Override
-    public AngularVelocity getMaxVelocity() {
-        return maxVelocity;
-    }
+
+
 }

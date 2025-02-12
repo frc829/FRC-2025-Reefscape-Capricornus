@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import digilib.controllers.DriverController;
@@ -40,6 +41,7 @@ import frc.robot.subsystems.wrist.CommandWristFactory;
 public class Robit extends TimedRobot {
 
     public Robit() {
+        CanBridge.runTCP();
         CommandSwerveDrive commandSwerveDrive = CommandSwerveDriveConstants.createCommandSwerve();
         commandSwerveDrive.configureAutoBuilder();
         DriverController driverController = new DriverController(Constants.controllerDeadband);
