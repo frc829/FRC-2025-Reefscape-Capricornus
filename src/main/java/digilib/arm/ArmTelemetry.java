@@ -27,6 +27,8 @@ public class ArmTelemetry {
     private final DoublePublisher maxAnglePublisher;
     private final DoublePublisher maxVelocityPublisher;
     private final DoublePublisher maxAccelerationPublisher;
+    private final DoublePublisher absoluteAnglePublisher;
+    private final DoublePublisher absoluteVelocityPublisher;
     private final Mechanism2d armMechanism;
     private final MechanismLigament2d armLigament;
 
@@ -44,6 +46,8 @@ public class ArmTelemetry {
         this.timestamp = armStateTable.getDoubleTopic("Timestamp").publish();
         this.angle = armStateTable.getDoubleTopic("Angle").publish();
         this.angularVelocity = armStateTable.getDoubleTopic("AngularVelocity").publish();
+        this.absoluteAnglePublisher = armStateTable.getDoubleTopic("AbsoluteAngle").publish();
+        this.absoluteVelocityPublisher = armStateTable.getDoubleTopic("AbsoluteVelocity").publish();
         this.minAnglePublisher = armStateTable.getDoubleTopic("MinAngle").publish();
         this.maxAnglePublisher = armStateTable.getDoubleTopic("MaxAngle").publish();
         this.maxVelocityPublisher = armStateTable.getDoubleTopic("MaxVelocity").publish();
@@ -58,6 +62,8 @@ public class ArmTelemetry {
     public void telemeterize(ArmState state) {
         minAnglePublisher.set(roundToDecimal(minAngle.in(Degrees), 2));
         maxAnglePublisher.set(roundToDecimal(maxAngle.in(Degrees), 2));
+        this.absoluteAnglePublisher.set(roundToDecimal(state.getAbsolutePosition().in(Degrees), 2));
+        this.absoluteVelocityPublisher.set(roundToDecimal(state.getAbsoluteVelocity().in(DegreesPerSecond), 2));
         maxVelocityPublisher.set(roundToDecimal(maxVelocity.in(DegreesPerSecond), 2));
         maxAccelerationPublisher.set(roundToDecimal(maxAcceleration.in(DegreesPerSecondPerSecond), 2));
         timestamp.set(roundToDecimal(state.getTimestamp().in(Seconds), 2));

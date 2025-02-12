@@ -23,7 +23,7 @@ public class CommandArmConstants {
     private static final Angle maxAngle = Degrees.of(180);
     private static final Distance armLength = Inches.of(31.0);
     private static final int deviceNumber = 14;
-    private static final NeutralModeValue neutralModeValue = NeutralModeValue.Brake;
+    private static final NeutralModeValue neutralModeValue = NeutralModeValue.Coast;
     private static final InvertedValue invertedValue = InvertedValue.CounterClockwise_Positive;
     private static final double reduction = 5.0 * 5.0 * 4.0 * 72.0 / 22.0;
     private static final Voltage ks = Volts.of(0.19744);
@@ -31,7 +31,7 @@ public class CommandArmConstants {
     private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(38.776);
     private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(0.35225);
     private static final double positionKp = 100.84;
-    private static final double positionKd = 97.964;
+    private static final double positionKd = 0.0; //97.964;
     private static final double velocityKp = 19.725;
     private static final int cancoderDeviceNumber = 34;
     private static final double magnetDirection = 0.0;
@@ -44,8 +44,8 @@ public class CommandArmConstants {
 
     public static CommandArm createCommandArm() {
         CANcoderConfiguration cancoderConfig = new CANcoderConfiguration();
-        cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-        cancoderConfig.MagnetSensor.MagnetOffset = magnetDirection;
+        // cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        // cancoderConfig.MagnetSensor.MagnetOffset = magnetDirection;
         CANcoder cancoder = new CANcoder(cancoderDeviceNumber, Constants.rio);
         cancoder.getConfigurator().apply(cancoderConfig);
 
@@ -55,7 +55,7 @@ public class CommandArmConstants {
         talonFXConfiguration.ClosedLoopGeneral.ContinuousWrap = false;
         if (RobotBase.isReal()) {
             talonFXConfiguration.Feedback.FeedbackRemoteSensorID = cancoderDeviceNumber;
-            talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+            talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         }
         talonFXConfiguration.Feedback.RotorToSensorRatio = 1.0;
         talonFXConfiguration.Feedback.SensorToMechanismRatio = reduction;

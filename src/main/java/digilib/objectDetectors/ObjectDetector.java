@@ -5,4 +5,8 @@ public interface ObjectDetector {
     ObjectDetectorState getState();
 
     void update();
+
+    void updateState();
+
+    void updateTelemetry();
 }

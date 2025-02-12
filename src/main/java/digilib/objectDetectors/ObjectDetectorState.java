@@ -8,6 +8,7 @@ public class ObjectDetectorState {
 
     private boolean inRange = false;
     private final MutTime timestamp = Seconds.mutable(0.0);
+    private final MutDistance distance = Millimeters.mutable(0.0);
 
     public boolean isInRange() {
         return inRange;
@@ -17,8 +18,17 @@ public class ObjectDetectorState {
         return timestamp;
     }
 
+    public MutDistance getDistance() {
+        return distance;
+    }
+
     public ObjectDetectorState withInRange(boolean inRange) {
         this.inRange = inRange;
+        return this;
+    }
+
+    public ObjectDetectorState withDistance(double distance) {
+        this.distance.mut_setMagnitude(distance);
         return this;
     }
 

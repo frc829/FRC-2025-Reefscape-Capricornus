@@ -21,8 +21,10 @@ public class ManualRoutines {
         testWrist90();
         toggleAlgaeClaw();
         toggleCoralClaw();
-        intakeInHalfSpeed();
-        intakeOutHalfSpeed();
+        coralIn();
+        coralOut();
+        algaeIn();
+        algaeOut();
     }
 
     private void testWrist90() {
@@ -53,17 +55,31 @@ public class ManualRoutines {
         controller.coralClawToggle().whileTrue(factories.coral.toggleClaw());
     }
 
-    private void intakeOutHalfSpeed() {
-        controller.intakeOutHalfSpeed().whileTrue(factories.intake.moveAtVelocity(
-                () -> Value.of(0.5),
-                () -> Value.of(0.5)
+    private void coralIn() {
+        controller.coralIn().whileTrue(factories.intake.moveAtVelocity(
+                () -> Value.of(0.0),
+                () -> Value.of(0.25)
+        ).until(factories.intake.hasCoral));
+    }
+
+    public void coralOut() {
+        controller.coralOut().whileTrue(factories.intake.moveAtVelocity(
+                () -> Value.of(0.0),
+                () -> Value.of(-0.25)
         ));
     }
 
-    public void intakeInHalfSpeed() {
-        controller.intakeInHalfSpeed().whileTrue(factories.intake.moveAtVelocity(
-                () -> Value.of(-0.5),
-                () -> Value.of(-0.5)
+    private void algaeIn() {
+        controller.algaeIn().whileTrue(factories.intake.moveAtVelocity(
+                () -> Value.of(-0.25),
+                () -> Value.of(-0.25)
+        ));
+    }
+
+    private void algaeOut() {
+        controller.algaeOut().whileTrue(factories.intake.moveAtVelocity(
+                () -> Value.of(0.25),
+                () -> Value.of(0.25)
         ));
     }
 

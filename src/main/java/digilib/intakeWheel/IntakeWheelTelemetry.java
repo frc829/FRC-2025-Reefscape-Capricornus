@@ -15,14 +15,12 @@ import static digilib.DigiMath.roundToDecimal;
 import static edu.wpi.first.units.Units.*;
 
 public class IntakeWheelTelemetry {
-    private final NetworkTable intakeStateTable;
     private final LinearVelocity maxVelocity;
     private final LinearAcceleration maxAcceleration;
     private final DoublePublisher timestamp;
     private final DoublePublisher velocity;
     private final DoublePublisher maxVelocityPublisher;
     private final DoublePublisher maxAccelerationPublisher;
-    private final Mechanism2d mechanism;
     private final MechanismLigament2d ligament;
     private final Distance wheelRadius;
 
@@ -34,13 +32,13 @@ public class IntakeWheelTelemetry {
             AngularAcceleration maxAcceleration) {
         this.wheelRadius = wheelRadius;
         this.maxVelocity = MetersPerSecond.of(maxVelocity.baseUnitMagnitude() * wheelRadius.baseUnitMagnitude());
-        this.intakeStateTable = NetworkTableInstance.getDefault().getTable(name);
+        NetworkTable intakeStateTable = NetworkTableInstance.getDefault().getTable(name);
         this.timestamp = intakeStateTable.getDoubleTopic("Timestamp").publish();
         this.velocity = intakeStateTable.getDoubleTopic("Velocity").publish();
         this.maxVelocityPublisher = intakeStateTable.getDoubleTopic("MaxVelocity").publish();
         this.maxAccelerationPublisher = intakeStateTable.getDoubleTopic("MaxAcceleration").publish();
         this.maxAcceleration = MetersPerSecondPerSecond.of(maxAcceleration.baseUnitMagnitude() * wheelRadius.baseUnitMagnitude());
-        mechanism = new Mechanism2d(2, 4);
+        Mechanism2d mechanism = new Mechanism2d(2, 4);
         ligament = mechanism
                 .getRoot("IntakeRoot", 1, 3)
                 .append(new MechanismLigament2d("Intake", 0.0, 90, 1, new Color8Bit(Color.kRed)));

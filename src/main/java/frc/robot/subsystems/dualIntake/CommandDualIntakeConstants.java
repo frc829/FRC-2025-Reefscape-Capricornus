@@ -48,7 +48,8 @@ public class CommandDualIntakeConstants {
 
     private static final int laserCanId = 36;
     private static final LaserCanInterface.RangingMode rangingMode = LaserCanInterface.RangingMode.LONG;
-    private static final Distance maxTrueDistance = Millimeters.of(10.0);
+    private static final Distance maxTrueDistance = Millimeters.of(15.0);
+    private static final Distance minTrueDistance = Millimeters.of(-10.0);
 
     public static CommandDualIntake createCommandIntake() {
         SparkMax algaeMotor = new SparkMax(algaeDeviceNumber, SparkLowLevel.MotorType.kBrushless);
@@ -76,7 +77,11 @@ public class CommandDualIntakeConstants {
         coralMotor.configure(coralConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
         LaserCan laserCan = LaserCanObjectDetector.createLaserCan(laserCanId, rangingMode);
-        ObjectDetector objectDetector = new LaserCanObjectDetector(laserCan, maxTrueDistance);
+        ObjectDetector objectDetector = new LaserCanObjectDetector(
+                "Coral Detector",
+                laserCan,
+                maxTrueDistance,
+                minTrueDistance);
 
         IntakeWheelConstants algaeWheelConstants = new IntakeWheelConstants(
                 "Intake: Algae",

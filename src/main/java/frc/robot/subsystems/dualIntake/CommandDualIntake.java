@@ -34,7 +34,7 @@ public class CommandDualIntake implements Subsystem {
         this.wheel1 = wheel1;
         this.objectDetector = objectDetector;
         this.simLoopPeriod = simLoopPeriod;
-        hasCoral = new Trigger(objectDetector::inRange);
+        hasCoral = new Trigger(objectDetector.getState()::isInRange);
 
         SysIdRoutine.Config config = new SysIdRoutine.Config(
                 Volts.per(Second).of(1.0),

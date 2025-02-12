@@ -83,12 +83,20 @@ public class ManualController {
         return controller.rightBumper();
     }
 
-    public Trigger intakeOutHalfSpeed(){
+    public Trigger coralIn(){
         return controller.back();
     }
 
-    public Trigger intakeInHalfSpeed(){
+    public Trigger coralOut(){
         return controller.start();
+    }
+
+    public Trigger algaeIn(){
+        return controller.povLeft();
+    }
+
+    public Trigger algaeOut(){
+        return controller.povRight();
     }
 
 
