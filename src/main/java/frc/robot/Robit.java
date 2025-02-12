@@ -10,8 +10,6 @@ import digilib.controllers.DriverController;
 import digilib.controllers.ManualController;
 import digilib.controllers.OperatorFlightStickController;
 import digilib.controllers.OperatorXboxController;
-import edu.wpi.first.epilogue.Epilogue;
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,7 +37,6 @@ import frc.robot.subsystems.winch.CommandWinchFactory;
 import frc.robot.subsystems.wrist.CommandWristConstants;
 import frc.robot.subsystems.wrist.CommandWristFactory;
 
-@Logged
 public class Robit extends TimedRobot {
 
     public Robit() {
@@ -74,8 +71,7 @@ public class Robit extends TimedRobot {
         SmartDashboard.putData("Auto Chooser", autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
-        // DataLogManager.start();
-        Epilogue.bind(this);
+        DataLogManager.start();
         addPeriodic(CommandScheduler.getInstance()::run, 0.020);
     }
 }

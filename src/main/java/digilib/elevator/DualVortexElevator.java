@@ -18,11 +18,11 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.*;
 import static com.revrobotics.spark.SparkBase.PersistMode.*;
 import static com.revrobotics.spark.SparkBase.ResetMode.*;
+import static com.revrobotics.spark.config.SparkBaseConfig.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
 import static edu.wpi.first.units.Units.*;
 
@@ -110,17 +110,17 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public boolean setNeutralModeToBrake() {
-        primaryMotorConfig.idleMode(kBrake);
-        followerMotorConfig.idleMode(kBrake);
-        REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
-        REVLibError followerMotorConfigStatus = followerMotor.configureAsync(followerMotorConfig, kNoResetSafeParameters, kPersistParameters);
-        return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
+        return setIdleMode(kBrake);
     }
 
     @Override
     public boolean setNeutralModeToCoast() {
-        primaryMotorConfig.idleMode(kCoast);
-        followerMotorConfig.idleMode(kCoast);
+        return setIdleMode(kCoast);
+    }
+
+    private boolean setIdleMode(IdleMode idleMode) {
+        primaryMotorConfig.idleMode(idleMode);
+        followerMotorConfig.idleMode(idleMode);
         REVLibError primaryMotorConfigStatus = primaryMotor.configureAsync(primaryMotorConfig, kNoResetSafeParameters, kPersistParameters);
         REVLibError followerMotorConfigStatus = followerMotor.configureAsync(followerMotorConfig, kNoResetSafeParameters, kPersistParameters);
         return primaryMotorConfigStatus == REVLibError.kOk && followerMotorConfigStatus == REVLibError.kOk;
