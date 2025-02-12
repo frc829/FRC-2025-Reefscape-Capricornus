@@ -10,13 +10,22 @@ public class IntakeWheelState implements Cloneable {
     private final MutTime timestamp = Seconds.mutable(0.0);
     private final Distance wheelRadius;
     private final MutLinearVelocity linearVelocity = MetersPerSecond.mutable(0.0);
+    private final MutVoltage voltage = Volts.mutable(0.0);
 
     public IntakeWheelState(Distance wheelRadius) {
         this.wheelRadius = wheelRadius;
     }
 
+    public AngularVelocity getAngularVelocity() {
+        return velocity;
+    }
+
     public LinearVelocity getVelocity() {
         return linearVelocity.mut_setBaseUnitMagnitude(wheelRadius.baseUnitMagnitude() * velocity.baseUnitMagnitude());
+    }
+
+    public Voltage getVoltage() {
+        return voltage;
     }
 
     public Time getTimestamp() {
@@ -33,9 +42,15 @@ public class IntakeWheelState implements Cloneable {
         return this;
     }
 
+    public IntakeWheelState withVoltage(Voltage voltage) {
+        this.voltage.mut_replace(voltage);
+        return this;
+    }
+
     public IntakeWheelState withIntakeState(IntakeWheelState intakeWheelState) {
         this.velocity.mut_replace(intakeWheelState.velocity);
         this.timestamp.mut_replace(intakeWheelState.timestamp);
+        this.voltage.mut_replace(intakeWheelState.voltage);
         return this;
     }
 
@@ -45,6 +60,7 @@ public class IntakeWheelState implements Cloneable {
             IntakeWheelState toReturn = (IntakeWheelState) super.clone();
             toReturn.velocity.mut_replace(velocity);
             toReturn.timestamp.mut_replace(timestamp);
+            toReturn.voltage.mut_replace(voltage);
             return toReturn;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

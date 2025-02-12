@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
+import digilib.MotorControllerType;
 import digilib.elevator.ElevatorTelemetry;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -24,6 +25,7 @@ import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
 import static com.revrobotics.spark.SparkBase.ResetMode.kNoResetSafeParameters;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kCoast;
+import static digilib.MotorControllerType.*;
 import static edu.wpi.first.units.Units.*;
 
 public class NEO550IntakeWheel implements IntakeWheel {
@@ -41,6 +43,7 @@ public class NEO550IntakeWheel implements IntakeWheel {
     private final MutTime timestamp = Seconds.mutable(0.0);
     private final MutAngularVelocity goalVelocity = RadiansPerSecond.mutable(0.0);
     private final MutAngularVelocity lastVelocity = RadiansPerSecond.mutable(0.0);
+    private final MutVoltage voltage = Volts.mutable(0.0);
     private FlywheelSim flywheelSim = null;
     private SparkMaxSim sparkMaxSim = null;
 
@@ -68,6 +71,11 @@ public class NEO550IntakeWheel implements IntakeWheel {
                 constants.getWheelRadius(),
                 constants.getMaxVelocity(),
                 constants.getMaxAcceleration());
+    }
+
+    @Override
+    public MotorControllerType getMotorControllerType() {
+        return REV_SPARK_MAX;
     }
 
     @Override
@@ -124,6 +132,12 @@ public class NEO550IntakeWheel implements IntakeWheel {
     }
 
     @Override
+    public void setVoltage(Voltage voltage) {
+        lastVelocity.mut_setMagnitude(motor.getEncoder().getVelocity());
+        motor.getClosedLoopController().setReference(voltage.baseUnitMagnitude(), SparkBase.ControlType.kVoltage);
+    }
+
+    @Override
     public void update() {
         lastState.withIntakeState(state);
         updateState();
@@ -132,7 +146,8 @@ public class NEO550IntakeWheel implements IntakeWheel {
 
     private void updateState() {
         state.withVelocity(velocity.mut_setMagnitude(motor.getEncoder().getVelocity()))
-                .withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()));
+                .withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()))
+                .withVoltage(voltage.mut_setMagnitude(motor.getAppliedOutput() * motor.getBusVoltage()));
     }
 
 

@@ -19,21 +19,21 @@ import static edu.wpi.first.units.Units.*;
 
 public class CommandDualIntakeConstants {
     private static final Distance algaeWheelRadius = Inches.of(2.0);
-    private static final Distance coralWheelRadius = Inches.of(2.0);
+    private static final Distance coralWheelRadius = Inches.of(1.5);
     private static final int algaeDeviceNumber = 16;
     private static final int coralDeviceNumber = 26;
     private static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kBrake;
     private static final boolean algaeInverted = false;
     private static final boolean coralInverted = false;
     private static final double reduction = 12.0;
-    private static final Voltage algaeKs = Volts.of(0.0);
-    private static final Voltage coralKs = Volts.of(0.0);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> algaeKv = Volts.per(RadiansPerSecond).of(8.892526274503728);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> coralKv = Volts.per(RadiansPerSecond).of(8.892526274503728);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> algaeKa = Volts.per(RadiansPerSecondPerSecond).of(0.028028510387446144);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> coralKa = Volts.per(RadiansPerSecondPerSecond).of(0.028028510387446144);
-    private static final double algaeKp = 6.183764634853723E-4;
-    private static final double coralKp = 6.183764634853723E-4;
+    private static final Voltage algaeKs = Volts.of(0.11457);
+    private static final Voltage coralKs = Volts.of(0.087863);
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> algaeKv = Volts.per(RadiansPerSecond).of(0.12051);
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> coralKv = Volts.per(RadiansPerSecond).of(0.11972);
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> algaeKa = Volts.per(RadiansPerSecondPerSecond).of(0.0040892);
+    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> coralKa = Volts.per(RadiansPerSecondPerSecond).of(0.003406);
+    private static final double algaeKp = 0.00077424;
+    private static final double coralKp = 0.00040594;
     private static final AngularVelocity algaeMaxVelocity = RadiansPerSecond.of(
             (12.0 - algaeKs.baseUnitMagnitude()) / algaeKv.baseUnitMagnitude());
     private static final AngularVelocity coralMaxVelocity = RadiansPerSecond.of(

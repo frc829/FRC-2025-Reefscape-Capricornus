@@ -1,8 +1,12 @@
 package digilib.intakeWheel;
 
+import digilib.MotorControllerType;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public interface IntakeWheel {
+
+    public MotorControllerType getMotorControllerType();
 
     public void updateSimState(double dtSeconds, double supplyVoltage);
 
@@ -23,6 +27,8 @@ public interface IntakeWheel {
     public void setVelocity(AngularVelocity velocity);
 
     public void setIdle();
+
+    public void setVoltage(Voltage voltage);
 
     public void update();
 

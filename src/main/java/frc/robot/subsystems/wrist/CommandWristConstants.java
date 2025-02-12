@@ -34,7 +34,7 @@ public class CommandWristConstants {
     private static final Time simLoopPeriod = Seconds.of(0.001);
 
     private static final int cancoderDeviceNumber = 37;
-    private static final double magnetDirection = 0.460938;
+    private static final double magnetDirection = 0.4609375;
 
     private static final AngularVelocity maxAngularVelocity = RadiansPerSecond.of(
             (12.0 - ks.baseUnitMagnitude()) / kv.baseUnitMagnitude());
