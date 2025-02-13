@@ -5,6 +5,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PneumaticsBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PneumaticsTelemetry {
     private final DoublePublisher timestamp;
@@ -16,7 +17,7 @@ public class PneumaticsTelemetry {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
         this.timestamp = table.getDoubleTopic("Timestamp").publish();
         this.compressorOnPublisher = table.getBooleanTopic("Compressor On").publish();
-        table.getEntry("Compressor").setValue(pneumaticsBase.getCompressor());
+        SmartDashboard.putData("Compressor", pneumaticsBase.makeCompressor());
     }
 
     public void telemeterize(PneumaticsState state) {

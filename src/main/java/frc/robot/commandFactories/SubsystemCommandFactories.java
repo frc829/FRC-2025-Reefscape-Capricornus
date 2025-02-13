@@ -5,6 +5,8 @@ import frc.robot.subsystems.arm.CommandArmFactory;
 import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
 import frc.robot.subsystems.dualIntake.CommandDualIntakeFactory;
 import frc.robot.subsystems.elevator.CommandElevatorFactory;
+import frc.robot.subsystems.pneumatics.CommandPneumaticsFactory;
+import frc.robot.subsystems.power.CommandPowerFactory;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDriveFactory;
 import frc.robot.subsystems.winch.CommandWinchFactory;
 import frc.robot.subsystems.wrist.CommandWristFactory;
@@ -15,6 +17,8 @@ public class SubsystemCommandFactories {
     public final CommandCoralClawFactory coral;
     public final CommandDualIntakeFactory intake;
     public final CommandElevatorFactory elevator;
+    public final CommandPneumaticsFactory commandPneumaticsFactory;
+    public final CommandPowerFactory commandPowerFactory;
     public final CommandSwerveDriveFactory swerve;
     public final CommandWinchFactory winch;
     public final CommandWristFactory wrist;
@@ -25,6 +29,8 @@ public class SubsystemCommandFactories {
             CommandCoralClawFactory commandCoralClawFactory,
             CommandDualIntakeFactory commandDualIntakeFactory,
             CommandElevatorFactory commandElevatorFactory,
+            CommandPneumaticsFactory commandPneumaticsFactory,
+            CommandPowerFactory commandPowerFactory,
             CommandSwerveDriveFactory commandSwerveDriveFactory,
             CommandWinchFactory commandWinchFactory,
             CommandWristFactory commandWristFactory) {
@@ -33,6 +39,8 @@ public class SubsystemCommandFactories {
         this.coral = commandCoralClawFactory;
         this.intake = commandDualIntakeFactory;
         this.elevator = commandElevatorFactory;
+        this.commandPneumaticsFactory = commandPneumaticsFactory;
+        this.commandPowerFactory = commandPowerFactory;
         this.swerve = commandSwerveDriveFactory;
         this.winch = commandWinchFactory;
         this.wrist = commandWristFactory;

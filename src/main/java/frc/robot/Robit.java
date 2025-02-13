@@ -32,6 +32,9 @@ import frc.robot.subsystems.elevator.CommandElevatorFactory;
 import frc.robot.subsystems.arm.CommandArmConstants;
 import frc.robot.subsystems.elevator.CommandElevatorConstants;
 import frc.robot.subsystems.pneumatics.CommandPneumaticsConstants;
+import frc.robot.subsystems.pneumatics.CommandPneumaticsFactory;
+import frc.robot.subsystems.power.CommandPowerConstants;
+import frc.robot.subsystems.power.CommandPowerFactory;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDriveConstants;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDrive;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDriveFactory;
@@ -56,6 +59,8 @@ public class Robit extends TimedRobot {
                 new CommandCoralClawFactory(CommandCoralClawConstants.create(CommandPneumaticsConstants.PneumaticsModule.pneumaticHub)),
                 new CommandDualIntakeFactory(CommandDualIntakeConstants.create()),
                 new CommandElevatorFactory(CommandElevatorConstants.create()),
+                new CommandPneumaticsFactory(CommandPneumaticsConstants.create()),
+                new CommandPowerFactory(CommandPowerConstants.create()),
                 new CommandSwerveDriveFactory(commandSwerveDrive),
                 new CommandWinchFactory(CommandWinchConstants.createCommandWinch()),
                 new CommandWristFactory(CommandWristConstants.createCommandWrist()));

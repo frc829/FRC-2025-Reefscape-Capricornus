@@ -10,8 +10,8 @@ import java.util.function.Supplier;
 
 public class CommandPneumatics implements Subsystem {
     private final Pneumatics pneumatics;
-    private final Trigger compressorOn;
-    private final Trigger compressorOff;
+    public final Trigger compressorOn;
+    public final Trigger compressorOff;
 
     public CommandPneumatics(Pneumatics pneumatics) {
         this.pneumatics = pneumatics;
@@ -19,7 +19,7 @@ public class CommandPneumatics implements Subsystem {
         compressorOff = new Trigger(() -> !pneumatics.getState().isCompressorOn());
     }
 
-    public Command applyRequest(Supplier<PneumaticsRequest> requestSupplier) {
+    public Command applyRequestOnce(Supplier<PneumaticsRequest> requestSupplier) {
         return runOnce(() -> pneumatics.setControl(requestSupplier.get()));
     }
 

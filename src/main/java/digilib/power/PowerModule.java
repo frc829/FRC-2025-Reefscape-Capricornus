@@ -1,17 +1,21 @@
 package digilib.power;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Timer;
 
-public class REVPower implements Power {
+public class PowerModule implements Power {
 
-    private final PowerDistribution pdh;
-    private final PowerState lastState;
     private final PowerState state;
+    private PowerRequest request;
+    private final PowerTelemetry telemetry;
+    private final PowerDistribution pdh;
 
-    public REVPower(int module) {
-        pdh = new PowerDistribution(module, PowerDistribution.ModuleType.kRev);
-        lastState = new PowerState(pdh.getNumChannels());
+    public PowerModule(PowerConstants constants) {
+        pdh = new PowerDistribution(constants.module(), constants.moduleType());
         state = new PowerState(pdh.getNumChannels());
+        telemetry = new PowerTelemetry(
+                constants.name(),
+                pdh);
     }
 
     @Override
@@ -20,18 +24,11 @@ public class REVPower implements Power {
     }
 
     @Override
-    public PowerState getStateCopy() {
-        return state.clone();
-    }
-
-    @Override
-    public PowerState getLastState() {
-        return lastState;
-    }
-
-    @Override
-    public void setControl() {
-        // TODO: will do later
+    public void setControl(PowerRequest request) {
+        if (this.request != request) {
+            this.request = request;
+        }
+        request.apply(this);
     }
 
     @Override
@@ -41,7 +38,6 @@ public class REVPower implements Power {
 
     @Override
     public void update() {
-        lastState.withState(state);
         updateState();
         updateTelemetry();
     }
@@ -54,19 +50,11 @@ public class REVPower implements Power {
                 .withTotalCurrent(pdh.getTotalCurrent())
                 .withTotalPower(pdh.getTotalPower())
                 .withTotalEnergy(pdh.getTotalPower())
-                .withFaults(pdh.getFaults())
-                .withStickyFaults(pdh.getStickyFaults());
-    }
-
-    @Override
-    public void updateSimState() {
-        // TODO: will do later
+                .withTimeStamp(Timer.getFPGATimestamp());
     }
 
     @Override
     public void updateTelemetry() {
-        // TODO: will do later
+        telemetry.telemeterize(state);
     }
-
-
 }

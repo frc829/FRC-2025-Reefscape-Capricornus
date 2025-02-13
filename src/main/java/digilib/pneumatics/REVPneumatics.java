@@ -10,10 +10,10 @@ public class REVPneumatics implements Pneumatics {
     private final PneumaticHub pneumaticHub;
 
     public REVPneumatics(
-            String name,
+            PneumaticsConstants constants,
             PneumaticHub pneumaticHub) {
         this.pneumaticHub = pneumaticHub;
-        this.telemetry = new PneumaticsTelemetry(name, pneumaticHub);
+        this.telemetry = new PneumaticsTelemetry(constants.name(), pneumaticHub);
     }
 
     @Override

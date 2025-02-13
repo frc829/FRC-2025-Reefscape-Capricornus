@@ -4,7 +4,7 @@ import digilib.claws.ClawRequest;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class CommandAlgaeClawFactory {
-    public final CommandAlgaeClaw commandAlgaeClaw;
+    private final CommandAlgaeClaw commandAlgaeClaw;
 
     public CommandAlgaeClawFactory(CommandAlgaeClaw commandAlgaeClaw) {
         this.commandAlgaeClaw = commandAlgaeClaw;
