@@ -27,7 +27,4 @@ public interface IntakeWheel {
     void updateTelemetry();
 
     void updateSimState(double dtSeconds, double supplyVoltage);
-
-
-
 }

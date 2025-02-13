@@ -1,6 +1,6 @@
 package frc.robot.routines;
 
-import digilib.controllers.ManualController;
+import frc.robot.controllers.ManualController;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -47,11 +47,11 @@ public class ManualRoutines {
     }
 
     private void toggleAlgaeClaw() {
-        controller.algaeClawToggle().whileTrue(factories.algae.toggleClaw());
+        controller.algaeClawToggle().whileTrue(factories.algae.toggle());
     }
 
     private void toggleCoralClaw() {
-        controller.coralClawToggle().whileTrue(factories.coral.toggleClaw());
+        controller.coralClawToggle().whileTrue(factories.coral.toggle());
     }
 
     private void coralIn() {

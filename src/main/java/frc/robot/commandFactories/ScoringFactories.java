@@ -5,7 +5,6 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
-import static digilib.claws.ClawState.ClawValue.*;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 
@@ -62,8 +61,8 @@ public class ScoringFactories {
             Distance elevatorHeight,
             Angle armAngle,
             Angle wristAngle) {
-        return factories.algae.setClawValue(CLOSED)
-                .andThen(factories.coral.setClawValue(CLOSED))
+        return factories.algae.close()
+                .andThen(factories.coral.close())
                 .andThen(Commands.either(
                         createCoralAlignSafe(elevatorHeight, armAngle, wristAngle),
                         createCoralAlignUnSafe(elevatorHeight, armAngle, wristAngle),

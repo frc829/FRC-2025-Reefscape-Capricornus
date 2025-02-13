@@ -14,7 +14,6 @@ public class ArmState {
     private final MutTime timestamp = Seconds.mutable(0.0);
     private String status = "";
 
-
     public Angle getPosition() {
         return position;
     }

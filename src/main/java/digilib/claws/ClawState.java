@@ -1,24 +1,10 @@
 package digilib.claws;
 
 import edu.wpi.first.units.measure.MutTime;
-import edu.wpi.first.units.measure.Time;
 
 import static edu.wpi.first.units.Units.Seconds;
 
-public class ClawState implements Cloneable {
-
-    public enum ClawValue {
-        OPEN,
-        CLOSED;
-
-        public ClawValue opposite() {
-            return switch (this) {
-                case OPEN -> CLOSED;
-                case CLOSED -> OPEN;
-            };
-        }
-
-    }
+public class ClawState {
 
     private ClawValue clawValue = null;
     private final MutTime timestamp = Seconds.mutable(0.0);
@@ -36,26 +22,8 @@ public class ClawState implements Cloneable {
         return this;
     }
 
-    public ClawState withTimestamp(Time timestamp) {
-        this.timestamp.mut_replace(timestamp);
+    public ClawState withTimestamp(double seconds) {
+        this.timestamp.mut_setBaseUnitMagnitude(seconds);
         return this;
-    }
-
-    public ClawState withClawState(ClawState clawState) {
-        this.clawValue = clawState.clawValue;
-        this.timestamp.mut_replace(clawState.timestamp);
-        return this;
-    }
-
-    @Override
-    public ClawState clone() {
-        try {
-            ClawState toReturn = (ClawState) super.clone();
-            toReturn.clawValue = clawValue;
-            toReturn.timestamp.mut_replace(timestamp);
-            return toReturn;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
     }
 }

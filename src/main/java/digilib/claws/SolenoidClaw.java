@@ -1,39 +1,37 @@
 package digilib.claws;
 
-import edu.wpi.first.units.measure.MutTime;
+import digilib.SolenoidType;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 
-import java.util.Map;
-
-import static edu.wpi.first.units.Units.Seconds;
-import static digilib.claws.ClawState.*;
-
 public class SolenoidClaw implements Claw {
-    private final ClawState lastClawState = new ClawState();
     private final ClawState clawState = new ClawState();
-    private ClawRequest clawRequest;
-    private final Solenoid solenoid;
-    private final Map<Boolean, ClawValue> solenoidClawValueMap;
-    private final Map<ClawValue, Boolean> clawValueSolenoidMap;
-    private final MutTime timestamp = Seconds.mutable(0.0);
+    private final PneumaticsModuleType moduleType;
+    private final ClawValue solenoidOnClawValue;
+    private ClawRequest request;
     private final ClawTelemetry clawTelemetry;
+    private final Solenoid solenoid;
 
     public SolenoidClaw(
             ClawConstants clawConstants,
             Solenoid solenoid) {
         this.solenoid = solenoid;
-        clawValueSolenoidMap = clawConstants.getClawValueSolenoidMap();
-        solenoidClawValueMap = clawConstants.getSolenoidClawValueMap();
-        this.clawTelemetry = new ClawTelemetry(clawConstants.getName());
+        this.solenoidOnClawValue = clawConstants.solenoidOnClawValue();
+        this.clawTelemetry = new ClawTelemetry(
+                clawConstants.name(),
+                clawConstants.solenoidOnClawValue());
+        this.moduleType = getPneumaticsModuleType();
     }
 
     @Override
-    public void setControl(ClawRequest request) {
-        if(clawRequest != request){
-            clawRequest = request;
-        }
-        request.apply(this);
+    public SolenoidType getSolenoidType() {
+        return SolenoidType.SINGLE;
+    }
+
+    @Override
+    public PneumaticsModuleType getPneumaticsModuleType() {
+        return moduleType;
     }
 
     @Override
@@ -42,24 +40,19 @@ public class SolenoidClaw implements Claw {
     }
 
     @Override
-    public ClawState getStateCopy() {
-        return clawState.clone();
-    }
-
-    @Override
-    public ClawState getLastState() {
-        return lastClawState;
-    }
-
-    @Override
-    public void updateTelemetry() {
-        clawTelemetry.telemeterize(clawState);
+    public void setControl(ClawRequest request) {
+        if (this.request != request) {
+            this.request = request;
+        }
+        request.apply(this);
     }
 
     @Override
     public void setValue(ClawValue clawValue) {
-        if(clawValue != null){
-            solenoid.set(clawValueSolenoidMap.get(clawValue));
+        if (clawValue == solenoidOnClawValue) {
+            solenoid.set(true);
+        } else {
+            solenoid.set(false);
         }
     }
 
@@ -69,10 +62,14 @@ public class SolenoidClaw implements Claw {
         updateTelemetry();
     }
 
-    private void updateState(){
-        lastClawState.withClawState(clawState);
-        ClawValue clawValue = solenoidClawValueMap.get(solenoid.get());
-        clawState.withClawValue(clawValue);
-        clawState.withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()));
+    @Override
+    public void updateState() {
+        clawState.withClawValue(solenoid.get() ? solenoidOnClawValue : solenoidOnClawValue.opposite())
+                .withTimestamp(Timer.getFPGATimestamp());
+    }
+
+    @Override
+    public void updateTelemetry() {
+        clawTelemetry.telemeterize(clawState);
     }
 }

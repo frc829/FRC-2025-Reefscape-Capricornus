@@ -8,19 +8,20 @@ import edu.wpi.first.networktables.StringPublisher;
 import static edu.wpi.first.units.Units.Seconds;
 
 public class ClawTelemetry {
-    private final NetworkTable clawStateTable;
+    private final NetworkTable table;
     private final DoublePublisher timestampPublisher;
     private final StringPublisher clawStatePublisher;
 
-    public ClawTelemetry(String name) {
-        clawStateTable = NetworkTableInstance.getDefault().getTable(name);
-        timestampPublisher = clawStateTable.getDoubleTopic("Timestamp").publish();
-        clawStatePublisher = clawStateTable.getStringTopic("State").publish();
+    public ClawTelemetry(String name,
+                         ClawValue clawValueWhenSolenoidOn) {
+        table = NetworkTableInstance.getDefault().getTable(name);
+        table.getStringTopic("Solenoid On, Claw Value").publish().set(clawValueWhenSolenoidOn.name());
+        timestampPublisher = table.getDoubleTopic("Timestamp").publish();
+        clawStatePublisher = table.getStringTopic("State").publish();
     }
 
     public void telemeterize(ClawState state){
         timestampPublisher.set(state.getTimestamp().in(Seconds));
         clawStatePublisher.set(state.getClawValue().name());
     }
-
 }

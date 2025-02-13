@@ -1,23 +1,23 @@
 package digilib.claws;
 
-import static digilib.claws.ClawState.*;
+import digilib.SolenoidType;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public interface Claw {
 
-    public void setControl(ClawRequest request);
+    SolenoidType getSolenoidType();
 
-    public ClawState getState();
+    PneumaticsModuleType getPneumaticsModuleType();
 
-    public ClawState getStateCopy();
+    ClawState getState();
 
-    public ClawState getLastState();
+    void setControl(ClawRequest request);
 
-    public void updateTelemetry();
+    void setValue(ClawValue state);
 
-    public void setValue(ClawValue state);
+    void update();
 
-    public void update();
+    void updateState();
 
-
-
+    void updateTelemetry();
 }

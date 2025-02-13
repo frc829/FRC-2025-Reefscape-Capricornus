@@ -7,10 +7,10 @@ package frc.robot;
 import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
-import digilib.controllers.DriverController;
-import digilib.controllers.ManualController;
-import digilib.controllers.OperatorFlightStickController;
-import digilib.controllers.OperatorXboxController;
+import frc.robot.controllers.DriverController;
+import frc.robot.controllers.ManualController;
+import frc.robot.controllers.OperatorFlightStickController;
+import frc.robot.controllers.OperatorXboxController;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,8 +21,10 @@ import frc.robot.commandFactories.ResetFactories;
 import frc.robot.commandFactories.ScoringFactories;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 import frc.robot.routines.*;
+import frc.robot.subsystems.algaeClaw.CommandAlgaeClawConstants;
 import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
 import frc.robot.subsystems.arm.CommandArmFactory;
+import frc.robot.subsystems.coralClaw.CommandCoralClawConstants;
 import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
 import frc.robot.subsystems.dualIntake.CommandDualIntakeConstants;
 import frc.robot.subsystems.dualIntake.CommandDualIntakeFactory;
@@ -49,11 +51,11 @@ public class Robit extends TimedRobot {
         OperatorFlightStickController operatorFlightStickController = new OperatorFlightStickController(Constants.controllerDeadband);
         ManualController manualController = new ManualController(Constants.controllerDeadband);
         SubsystemCommandFactories subsystemCommandFactories = new SubsystemCommandFactories(
-                new CommandAlgaeClawFactory(CommandPneumaticsConstants.createCommandAlgaeClaw()),
-                new CommandArmFactory(CommandArmConstants.createCommandArm()),
-                new CommandCoralClawFactory(CommandPneumaticsConstants.createCommandCoralClaw()),
-                new CommandDualIntakeFactory(CommandDualIntakeConstants.createCommandIntake()),
-                new CommandElevatorFactory(CommandElevatorConstants.createCommandElevator()),
+                new CommandAlgaeClawFactory(CommandAlgaeClawConstants.create(CommandPneumaticsConstants.PneumaticsModule.pneumaticHub)),
+                new CommandArmFactory(CommandArmConstants.create()),
+                new CommandCoralClawFactory(CommandCoralClawConstants.create(CommandPneumaticsConstants.PneumaticsModule.pneumaticHub)),
+                new CommandDualIntakeFactory(CommandDualIntakeConstants.create()),
+                new CommandElevatorFactory(CommandElevatorConstants.create()),
                 new CommandSwerveDriveFactory(commandSwerveDrive),
                 new CommandWinchFactory(CommandWinchConstants.createCommandWinch()),
                 new CommandWristFactory(CommandWristConstants.createCommandWrist()));

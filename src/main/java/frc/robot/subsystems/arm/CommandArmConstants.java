@@ -120,7 +120,7 @@ public class CommandArmConstants {
                 .withSlot1(slot1Configs);
     }
 
-    public static CommandArm createCommandArm() {
+    public static CommandArm create() {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         talonFX.getConfigurator().apply(Motor.config);
         Arm arm = new KrakenX60Arm(constants, talonFX, cancoder);

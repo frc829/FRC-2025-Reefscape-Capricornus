@@ -147,7 +147,7 @@ public class CommandDualIntakeConstants {
         static final LaserCan laserCan = LaserCanObjectDetector.createLaserCan(laserCanId, rangingMode);
     }
 
-    public static CommandDualIntake createCommandIntake() {
+    public static CommandDualIntake create() {
         Algae.Motor.motor.configure(Algae.Motor.config, kResetSafeParameters, kPersistParameters);
         Coral.Motor.motor.configure(Coral.Motor.config, kResetSafeParameters, kPersistParameters);
         IntakeWheel algaeWheel = new NEO550IntakeWheel(Algae.Mechanism.constants, Algae.Motor.motor, Algae.Control.updatePeriod);

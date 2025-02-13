@@ -103,7 +103,7 @@ public class CommandElevatorConstants {
         static final SparkFlex motor = new SparkFlex(deviceId, kBrushless);
     }
 
-    public static CommandElevator createCommandElevator() {
+    public static CommandElevator create() {
         Motor.motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
         Follower.motor.configure(Follower.config, kResetSafeParameters, kPersistParameters);
         Elevator elevator = new DualVortexElevator(

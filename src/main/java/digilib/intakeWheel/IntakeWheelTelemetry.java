@@ -22,7 +22,6 @@ public class IntakeWheelTelemetry {
 
     public IntakeWheelTelemetry(
             String name,
-            Distance wheelRadius,
             AngularVelocity maxVelocity,
             AngularAcceleration maxAcceleration) {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);

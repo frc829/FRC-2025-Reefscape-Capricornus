@@ -37,13 +37,12 @@ public class NEO550IntakeWheel implements IntakeWheel {
             SparkMax motor,
             Time updatePeriod) {
         state = new IntakeWheelState(constants.wheelRadius());
-        this.maxVelocity = constants.maxVelocity();
         this.motor = motor;
+        this.maxVelocity = constants.maxVelocity();
         this.feedforward = new SimpleMotorFeedforward(constants.ks().baseUnitMagnitude(), constants.kv().baseUnitMagnitude(), constants.ka().baseUnitMagnitude(), updatePeriod.baseUnitMagnitude());
         this.profile = new SlewRateLimiter(constants.maxAcceleration().baseUnitMagnitude());
         this.telemetry = new IntakeWheelTelemetry(
                 constants.name(),
-                constants.wheelRadius(),
                 constants.maxVelocity(),
                 constants.maxAcceleration());
 

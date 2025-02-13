@@ -2,15 +2,12 @@ package frc.robot.subsystems.wrist;
 
 import digilib.wrist.WristRequest;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.units.measure.MutDimensionless;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import java.util.function.Supplier;
+import java.util.function.DoubleSupplier;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Value;
+import static edu.wpi.first.units.Units.*;
 
 public class CommandWristFactory {
     private final CommandWrist commandWrist;
@@ -31,17 +28,12 @@ public class CommandWristFactory {
 
     public Command goToAngle(Angle position) {
         WristRequest.Position request = new WristRequest.Position();
-        request.withPosition(position);
+        request.withPosition(position.in(Radians));
         return commandWrist.applyRequest(() -> request).withName(String.format("WRIST:%s degrees", position.in(Degrees)));
     }
 
-    public Command moveAtVelocity(Supplier<Dimensionless> maxWristVelocityPercentage) {
-        MutDimensionless wristVelocityPercent = Value.mutable(0.0);
+    public Command moveAtVelocity(DoubleSupplier value) {
         WristRequest.Velocity request = new WristRequest.Velocity();
-        request.withVelocity(wristVelocityPercent);
-        return commandWrist.applyRequest(() -> {
-            wristVelocityPercent.mut_replace(maxWristVelocityPercentage.get());
-            return request.withVelocity(wristVelocityPercent);
-        }).withName("WRIST:VELOCITY");
+        return commandWrist.applyRequest(() -> request.withVelocity(value.getAsDouble())).withName("WRIST:VELOCITY");
     }
 }

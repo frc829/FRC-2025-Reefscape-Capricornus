@@ -1,7 +1,7 @@
 package frc.robot.routines;
 
-import digilib.controllers.OperatorFlightStickController;
-import digilib.controllers.OperatorXboxController;
+import frc.robot.controllers.OperatorFlightStickController;
+import frc.robot.controllers.OperatorXboxController;
 import frc.robot.commandFactories.ScoringFactories;
 
 public class ScoringRoutines {

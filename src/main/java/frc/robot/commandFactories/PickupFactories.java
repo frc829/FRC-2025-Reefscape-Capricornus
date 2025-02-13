@@ -4,9 +4,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 
-import static digilib.claws.ClawState.*;
-import static digilib.claws.ClawState.ClawValue.*;
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 
 public class PickupFactories {
     public final SubsystemCommandFactories factories;
@@ -18,8 +17,6 @@ public class PickupFactories {
     public Command algaeFloor() {
         return createPickup(
                 "Pickup:Algae Floor",
-                OPEN,
-                CLOSED,
                 Meters.of(0.4),
                 Degrees.of(180),
                 0.5,
@@ -29,8 +26,6 @@ public class PickupFactories {
     public Command algaeL2() {
         return createPickup(
                 "Pickup:Algae L2",
-                OPEN,
-                CLOSED,
                 Meters.of(1.5),
                 Degrees.of(35),
                 0.5,
@@ -40,8 +35,6 @@ public class PickupFactories {
     public Command algaeL3() {
         return createPickup(
                 "Pickup:Algae L3",
-                OPEN,
-                CLOSED,
                 Meters.of(1.75),
                 Degrees.of(35),
                 0.5,
@@ -51,8 +44,6 @@ public class PickupFactories {
     public Command coralFloor() {
         return createPickup(
                 "Pickup:Coral Floor",
-                CLOSED,
-                CLOSED,
                 Meters.of(0.4),
                 Degrees.of(-40),
                 0.5,
@@ -62,8 +53,6 @@ public class PickupFactories {
     public Command coralStationFront() {
         return createPickup(
                 "Pickup:Coral Station Front",
-                CLOSED,
-                CLOSED,
                 Meters.of(1.0),
                 Degrees.of(0.0),
                 0.5,
@@ -73,8 +62,6 @@ public class PickupFactories {
     public Command coralStationBack() {
         return createPickup(
                 "Pickup:Coral Station Back",
-                CLOSED,
-                CLOSED,
                 Meters.of(1.0),
                 Degrees.of(180.0),
                 0.5,
@@ -83,15 +70,13 @@ public class PickupFactories {
 
     private Command createPickup(
             String name,
-            ClawValue algaeClawValue,
-            ClawValue coralClawValue,
             Distance elevatorHeight,
             Angle armAngle,
             double intake0Velocity,
             double intake1Velocity) {
 
-        return factories.algae.setClawValue(algaeClawValue)
-                .andThen(factories.coral.setClawValue(coralClawValue))
+        return factories.algae.close()
+                .andThen(factories.coral.close())
                 .andThen(factories.wrist.goToAngle(Degrees.of(90.0))
                         .until(factories.wrist.atPosition(Degrees.of(90.0), Degrees.of(0.1)))
                         .asProxy())

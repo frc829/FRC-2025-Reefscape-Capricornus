@@ -23,13 +23,6 @@ public interface IntakeWheelRequest {
         }
     }
 
-    class Idle implements IntakeWheelRequest {
-        @Override
-        public void apply(IntakeWheel intakeWheel) {
-            intakeWheel.setIdle();
-        }
-    }
-
     class VoltageRequest implements IntakeWheelRequest {
         private final MutVoltage voltage = Volts.mutable(0.0);
 
@@ -44,5 +37,10 @@ public interface IntakeWheelRequest {
         }
     }
 
-
+    class Idle implements IntakeWheelRequest {
+        @Override
+        public void apply(IntakeWheel intakeWheel) {
+            intakeWheel.setIdle();
+        }
+    }
 }
