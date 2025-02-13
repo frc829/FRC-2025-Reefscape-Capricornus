@@ -4,76 +4,77 @@ import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.*;
 
-public class ArmState implements Cloneable {
+public class ArmState {
 
     private final MutAngle position = Radians.mutable(0.0);
     private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
-    private final MutTime timestamp = Seconds.mutable(0.0);
     private final MutAngle absolutePosition = Radians.mutable(0.0);
     private final MutAngularVelocity absoluteVelocity = RadiansPerSecond.mutable(0.0);
+    private final MutVoltage voltage = Volts.mutable(0.0);
+    private final MutTime timestamp = Seconds.mutable(0.0);
+    private String status = "";
+
 
     public Angle getPosition() {
         return position;
-    }
-
-    public AngularVelocity getVelocity() {
-        return velocity;
-    }
-
-    public Time getTimestamp() {
-        return timestamp;
-    }
-
-    public ArmState withPosition(Angle position){
-        this.position.mut_replace(position);
-        return this;
-    }
-
-    public ArmState withVelocity(AngularVelocity velocity){
-        this.velocity.mut_replace(velocity);
-        return this;
-    }
-
-    public ArmState withTimestamp(Time timestamp){
-        this.timestamp.mut_replace(timestamp);
-        return this;
-    }
-
-    public ArmState withAbsolutePosition(Angle absolutePosition){
-        this.absolutePosition.mut_replace(absolutePosition);
-        return this;
-    }
-
-    public ArmState withAbsoluteVelocity(AngularVelocity absoluteVelocity){
-        this.absoluteVelocity.mut_replace(absoluteVelocity);
-        return this;
-    }
-
-    public ArmState withArmState(ArmState armState){
-        this.position.mut_replace(armState.position);
-        this.velocity.mut_replace(armState.velocity);
-        this.timestamp.mut_replace(armState.timestamp);
-        return this;
-    }
-
-    @Override
-    public ArmState clone() {
-        try {
-            ArmState toReturn =  (ArmState) super.clone();
-            toReturn.position.mut_replace(position);
-            toReturn.velocity.mut_replace(velocity);
-            toReturn.timestamp.mut_replace(timestamp);
-            return toReturn;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
     }
 
     public Angle getAbsolutePosition() {
         return absolutePosition;
     }
 
+    public AngularVelocity getVelocity() {
+        return velocity;
+    }
+
     public AngularVelocity getAbsoluteVelocity() {
         return absoluteVelocity;
+    }
+
+    public Voltage getVoltage() {
+        return voltage;
+    }
+
+    public Time getTimestamp() {
+        return timestamp;
+    }
+
+    public String getAbsoluteEncoderStatus() {
+        return status;
+    }
+
+    public ArmState withPosition(double radians) {
+        this.position.mut_setBaseUnitMagnitude(radians);
+        return this;
+    }
+
+    public ArmState withAbsolutePosition(double radians) {
+        this.absolutePosition.mut_setBaseUnitMagnitude(radians);
+        return this;
+    }
+
+    public ArmState withVelocity(double radians) {
+        this.velocity.mut_setBaseUnitMagnitude(radians);
+        return this;
+    }
+
+    public ArmState withAbsoluteVelocity(double radiansPerSecond) {
+        this.absoluteVelocity.mut_setBaseUnitMagnitude(radiansPerSecond);
+        return this;
+    }
+
+    public ArmState withVoltage(double volts) {
+        this.voltage.mut_setBaseUnitMagnitude(volts);
+        return this;
+    }
+
+    public ArmState withTimestamp(double seconds) {
+        this.timestamp.mut_setBaseUnitMagnitude(seconds);
+        return this;
+    }
+
+    public ArmState withAbsoluteEncoderStatus(String status) {
+        this.status = status;
+        return this;
     }
 }

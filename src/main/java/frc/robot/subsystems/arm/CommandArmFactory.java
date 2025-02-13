@@ -2,15 +2,12 @@ package frc.robot.subsystems.arm;
 
 import digilib.arm.ArmRequest;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.units.measure.MutDimensionless;
- import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import java.util.function.Supplier;
+import java.util.function.DoubleSupplier;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Value;
+import static edu.wpi.first.units.Units.*;
 
 public class CommandArmFactory {
     private final CommandArm commandArm;
@@ -35,18 +32,12 @@ public class CommandArmFactory {
 
     public Command goToAngle(Angle position) {
         ArmRequest.Position request = new ArmRequest.Position();
-        request.withPosition(position);
+        request.withPosition(position.in(Radians));
         return commandArm.applyRequest(() -> request).withName(String.format("ARM:%s degrees", position.in(Degrees)));
-
     }
 
-    public Command moveAtVelocity(Supplier<Dimensionless> maxArmVelocityPercentage) {
-        MutDimensionless armVelocityPercent = Value.mutable(0.0);
+    public Command moveAtVelocity(DoubleSupplier value) {
         ArmRequest.Velocity request = new ArmRequest.Velocity();
-        request.withVelocity(armVelocityPercent);
-        return commandArm.applyRequest(() -> {
-            armVelocityPercent.mut_replace(maxArmVelocityPercentage.get());
-            return request.withVelocity(armVelocityPercent);
-        }).withName("ARM:VELOCITY");
+        return commandArm.applyRequest(() -> request.withVelocity(value.getAsDouble())).withName("ARM:VELOCITY");
     }
 }

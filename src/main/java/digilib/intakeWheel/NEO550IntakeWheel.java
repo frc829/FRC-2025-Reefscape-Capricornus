@@ -21,44 +21,42 @@ import static digilib.MotorControllerType.*;
 import static edu.wpi.first.units.Units.*;
 
 public class NEO550IntakeWheel implements IntakeWheel {
-    private final IntakeWheelState lastState;
     private final IntakeWheelState state;
     private final AngularVelocity maxVelocity;
     private final IntakeWheelTelemetry telemetry;
-    private IntakeWheelRequest intakeWheelRequest;
     private final SparkMax motor;
     private final SlewRateLimiter profile;
     private final SimpleMotorFeedforward feedforward;
-    private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
-    private final MutTime timestamp = Seconds.mutable(0.0);
-    private final MutAngularVelocity goalVelocity = RadiansPerSecond.mutable(0.0);
     private final MutAngularVelocity lastVelocity = RadiansPerSecond.mutable(0.0);
-    private final MutVoltage voltage = Volts.mutable(0.0);
+    private IntakeWheelRequest intakeWheelRequest;
     private FlywheelSim flywheelSim = null;
     private SparkMaxSim sparkMaxSim = null;
 
-    public NEO550IntakeWheel(IntakeWheelConstants constants, SparkMax motor) {
-        lastState = new IntakeWheelState(constants.getWheelRadius());
-        state = new IntakeWheelState(constants.getWheelRadius());
+    public NEO550IntakeWheel(
+            IntakeWheelConstants constants,
+            SparkMax motor,
+            Time updatePeriod) {
+        state = new IntakeWheelState(constants.wheelRadius());
+        this.maxVelocity = constants.maxVelocity();
         this.motor = motor;
-        this.maxVelocity = constants.getMaxVelocity();
-        this.feedforward = new SimpleMotorFeedforward(constants.getKs().baseUnitMagnitude(), constants.getKv().baseUnitMagnitude(), constants.getKa().baseUnitMagnitude(), constants.getUpdatePeriod().baseUnitMagnitude());
-        this.profile = new SlewRateLimiter(constants.getMaxAcceleration().baseUnitMagnitude());
+        this.feedforward = new SimpleMotorFeedforward(constants.ks().baseUnitMagnitude(), constants.kv().baseUnitMagnitude(), constants.ka().baseUnitMagnitude(), updatePeriod.baseUnitMagnitude());
+        this.profile = new SlewRateLimiter(constants.maxAcceleration().baseUnitMagnitude());
+        this.telemetry = new IntakeWheelTelemetry(
+                constants.name(),
+                constants.wheelRadius(),
+                constants.maxVelocity(),
+                constants.maxAcceleration());
+
         if (RobotBase.isSimulation()) {
             DCMotor dcMotor = DCMotor.getNeo550(1);
             sparkMaxSim = new SparkMaxSim(motor, dcMotor);
             LinearSystem<N1, N1, N1> plant = LinearSystemId.identifyVelocitySystem(
-                    constants.getKv().baseUnitMagnitude(),
-                    constants.getKa().baseUnitMagnitude());
+                    constants.kv().baseUnitMagnitude(),
+                    constants.ka().baseUnitMagnitude());
             flywheelSim = new FlywheelSim(
                     plant,
                     dcMotor);
         }
-        this.telemetry = new IntakeWheelTelemetry(
-                constants.getName(),
-                constants.getWheelRadius(),
-                constants.getMaxVelocity(),
-                constants.getMaxAcceleration());
     }
 
     @Override
@@ -86,10 +84,8 @@ public class NEO550IntakeWheel implements IntakeWheel {
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        goalVelocity.mut_replace(velocity);
-        double nextVelocitySetpoint = profile.calculate(goalVelocity.baseUnitMagnitude());
-        double lastVelocitySetpoint = lastVelocity.baseUnitMagnitude();
-        double arbFeedforward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+        double nextVelocitySetpoint = profile.calculate(velocity.baseUnitMagnitude());
+        double arbFeedforward = feedforward.calculateWithVelocities(lastVelocity.baseUnitMagnitude(), nextVelocitySetpoint);
         motor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, ClosedLoopSlot.kSlot1, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
         lastVelocity.mut_setMagnitude(nextVelocitySetpoint);
     }
@@ -108,16 +104,15 @@ public class NEO550IntakeWheel implements IntakeWheel {
 
     @Override
     public void update() {
-        lastState.withIntakeState(state);
         updateState();
         updateTelemetry();
     }
 
     @Override
     public void updateState() {
-        state.withVelocity(velocity.mut_setMagnitude(motor.getEncoder().getVelocity()))
-                .withTimestamp(timestamp.mut_setMagnitude(Timer.getFPGATimestamp()))
-                .withVoltage(voltage.mut_setMagnitude(motor.getAppliedOutput() * motor.getBusVoltage()));
+        state.withAngularVelocity(motor.getEncoder().getVelocity())
+                .withVoltage(motor.getAppliedOutput() * motor.getBusVoltage())
+                .withTimestamp(Timer.getFPGATimestamp());
     }
 
     @Override
@@ -132,9 +127,6 @@ public class NEO550IntakeWheel implements IntakeWheel {
         flywheelSim.update(dtSeconds);
         sparkMaxSim.iterate(flywheelSim.getOutput(0), 12.0, dtSeconds);
     }
-
-
-
 
 
 }

@@ -1,11 +1,10 @@
 package frc.robot.commandFactories;
 
-import digilib.claws.ClawState;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 
+import static digilib.claws.ClawState.*;
 import static digilib.claws.ClawState.ClawValue.*;
 import static edu.wpi.first.units.Units.*;
 
@@ -23,8 +22,8 @@ public class PickupFactories {
                 CLOSED,
                 Meters.of(0.4),
                 Degrees.of(180),
-                Value.of(0.5),
-                Value.of(0.5));
+                0.5,
+                0.5);
     }
 
     public Command algaeL2() {
@@ -34,9 +33,8 @@ public class PickupFactories {
                 CLOSED,
                 Meters.of(1.5),
                 Degrees.of(35),
-                Value.of(0.5),
-                Value.of(0.5)
-        );
+                0.5,
+                0.5);
     }
 
     public Command algaeL3() {
@@ -46,9 +44,8 @@ public class PickupFactories {
                 CLOSED,
                 Meters.of(1.75),
                 Degrees.of(35),
-                Value.of(0.5),
-                Value.of(0.5)
-        );
+                0.5,
+                0.5);
     }
 
     public Command coralFloor() {
@@ -58,8 +55,8 @@ public class PickupFactories {
                 CLOSED,
                 Meters.of(0.4),
                 Degrees.of(-40),
-                Value.of(0.5),
-                Value.of(0.5));
+                0.5,
+                0.5);
     }
 
     public Command coralStationFront() {
@@ -69,8 +66,8 @@ public class PickupFactories {
                 CLOSED,
                 Meters.of(1.0),
                 Degrees.of(0.0),
-                Value.of(0.5),
-                Value.of(0.5));
+                0.5,
+                0.5);
     }
 
     public Command coralStationBack() {
@@ -80,18 +77,18 @@ public class PickupFactories {
                 CLOSED,
                 Meters.of(1.0),
                 Degrees.of(180.0),
-                Value.of(0.5),
-                Value.of(0.5));
+                0.5,
+                0.5);
     }
 
     private Command createPickup(
             String name,
-            ClawState.ClawValue algaeClawValue,
-            ClawState.ClawValue coralClawValue,
+            ClawValue algaeClawValue,
+            ClawValue coralClawValue,
             Distance elevatorHeight,
             Angle armAngle,
-            Dimensionless intake0Velocity,
-            Dimensionless intake1Velocity) {
+            double intake0Velocity,
+            double intake1Velocity) {
 
         return factories.algae.setClawValue(algaeClawValue)
                 .andThen(factories.coral.setClawValue(coralClawValue))

@@ -1,105 +1,108 @@
 package digilib.arm;
 
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import digilib.MotorControllerType;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import static digilib.MotorControllerType.*;
 import static edu.wpi.first.units.Units.*;
 
 public class KrakenX60Arm implements Arm {
-    private final ArmState lastArmState = new ArmState();
-    private final ArmState armState = new ArmState();
+    private final ArmState state = new ArmState();
     private final Angle minAngle;
     private final Angle maxAngle;
     private final AngularVelocity maxAngularVelocity;
-    private final ArmTelemetry armTelemetry;
-    private ArmRequest armRequest;
-    private final ArmConstants armConstants;
+    private final double reduction;
+    private final ArmTelemetry telemetry;
     private final TalonFX talonFX;
-    private final CANcoder canCoder;
-    private final MotionMagicExpoVoltage positionControl;
-    private final MotionMagicVelocityVoltage velocityControl;
+    private final CANcoder cancoder;
+    private final MotionMagicExpoVoltage positionControl = new MotionMagicExpoVoltage(0.0).withSlot(0).withEnableFOC(true);
+    private final MotionMagicVelocityVoltage velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(1).withEnableFOC(true);
     private final VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true);
-    private final SingleJointedArmSim simArm;
-    private final TalonFXSimState talonFXSimState;
-    private final CANcoderSimState canCoderSimState;
-    private final MutTime timeStamp = Seconds.mutable(0.0);
+    private ArmRequest armRequest;
     private boolean hold = false;
+    private SingleJointedArmSim simArm = null;
+    private TalonFXSimState talonFXSimState = null;
+    private CANcoderSimState canCoderSimState = null;
 
     public KrakenX60Arm(
-            ArmConstants armConstants,
+            ArmConstants constants,
             TalonFX talonFX,
-            CANcoder canCoder) {
-        this.minAngle = armConstants.getMinAngle();
-        this.maxAngle = armConstants.getMaxAngle();
-        this.maxAngularVelocity = armConstants.getMaxAngularVelocity();
-        this.armConstants = armConstants;
+            CANcoder cancoder) {
+        minAngle = constants.minAngle();
+        maxAngle = constants.maxAngle();
+        maxAngularVelocity = constants.maxAngularVelocity();
+        reduction = constants.reduction();
         this.talonFX = talonFX;
-        this.talonFXSimState = new TalonFXSimState(talonFX);
-        this.canCoder = canCoder;
-        this.canCoderSimState = new CANcoderSimState(canCoder);
-        this.positionControl = new MotionMagicExpoVoltage(0.0).withSlot(0).withEnableFOC(true);
-        this.velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(1).withEnableFOC(true);
-        LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(armConstants.getKv().baseUnitMagnitude(), armConstants.getKa().baseUnitMagnitude());
-        this.simArm = new SingleJointedArmSim(
-                plant,
-                DCMotor.getKrakenX60Foc(1),
-                armConstants.getReduction(),
-                armConstants.getArmLength().baseUnitMagnitude(),
-                armConstants.getMinAngle().baseUnitMagnitude(),
-                armConstants.getMaxAngle().baseUnitMagnitude(),
-                true,
-                armConstants.getStartingAngle().baseUnitMagnitude());
-        this.armTelemetry = new ArmTelemetry(
-                armConstants.getName(),
-                armConstants.getMinAngle(),
-                armConstants.getMaxAngle(),
-                armConstants.getMaxAngularVelocity(),
-                armConstants.getMaxAngularAcceleration()
-        );
+        this.cancoder = cancoder;
+        this.telemetry = new ArmTelemetry(
+                constants.name(),
+                constants.minAngle(),
+                constants.maxAngle(),
+                constants.maxAngularVelocity(),
+                constants.maxAngularAcceleration());
+
+        if (RobotBase.isSimulation()) {
+            canCoderSimState = new CANcoderSimState(cancoder);
+            talonFXSimState = new TalonFXSimState(talonFX);
+            LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(constants.kv().baseUnitMagnitude(), constants.ka().baseUnitMagnitude());
+            simArm = new SingleJointedArmSim(
+                    plant,
+                    DCMotor.getKrakenX60Foc(1),
+                    constants.reduction(),
+                    constants.armLength().baseUnitMagnitude(),
+                    constants.minAngle().baseUnitMagnitude(),
+                    constants.maxAngle().baseUnitMagnitude(),
+                    true,
+                    constants.startingAngle().baseUnitMagnitude());
+            canCoderSimState.setRawPosition(simArm.getAngleRads() / 2 / Math.PI);
+            talonFXSimState.setRawRotorPosition(simArm.getAngleRads() * reduction / 2 / Math.PI);
+        }
     }
 
     @Override
-    public boolean setNeutralModeToBrake() {
-        StatusCode code = talonFX.setNeutralMode(NeutralModeValue.Brake);
-        return code == StatusCode.OK;
+    public MotorControllerType getMotorControllerType() {
+        return TALONFX;
     }
 
     @Override
-    public boolean setNeutralModeToCoast() {
-        StatusCode code = talonFX.setNeutralMode(NeutralModeValue.Coast);
-        return code == StatusCode.OK;
+    public Angle getMaxAngle() {
+        return maxAngle;
+    }
+
+    @Override
+    public Angle getMinAngle() {
+        return minAngle;
+    }
+
+    @Override
+    public AngularVelocity getMaxVelocity() {
+        return maxAngularVelocity;
     }
 
     @Override
     public ArmState getState() {
-        return armState;
+        return state;
     }
 
     @Override
-    public ArmState getStateCopy() {
-        return armState.clone();
-    }
-
-    @Override
-    public ArmState getLastState() {
-        return lastArmState;
+    public boolean isHoldEnabled() {
+        return hold;
     }
 
     @Override
@@ -126,50 +129,6 @@ public class KrakenX60Arm implements Arm {
     }
 
     @Override
-    public void resetPosition() {
-        if (canCoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Invalid && canCoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Red) {
-            talonFX.setPosition(canCoder.getPosition().getValue());
-        }
-        updateState();
-    }
-
-    @Override
-    public void update() {
-        lastArmState.withArmState(armState);
-        updateState();
-        updateTelemetry();
-    }
-
-    private void updateState() {
-        armState.withPosition(talonFX.getPosition().getValue())
-                .withVelocity(talonFX.getVelocity().getValue())
-                .withAbsolutePosition(canCoder.getAbsolutePosition().getValue())
-                .withAbsoluteVelocity(canCoder.getVelocity().getValue())
-                .withTimestamp(timeStamp.mut_setMagnitude(Timer.getFPGATimestamp()));
-    }
-
-    @Override
-    public void updateTelemetry() {
-        armTelemetry.telemeterize(armState);
-    }
-
-    @Override
-    public void updateSimState(double dt, double supplyVoltage) {
-        var inputVoltage = talonFX.getMotorVoltage().getValue();
-        simArm.setInputVoltage(inputVoltage.baseUnitMagnitude());
-        simArm.update(dt);
-
-        talonFXSimState.setRawRotorPosition(simArm.getAngleRads() * armConstants.getReduction() / 2 / Math.PI);
-        talonFXSimState.setRotorVelocity(simArm.getVelocityRadPerSec() * armConstants.getReduction() / 2 / Math.PI);
-
-        talonFXSimState.setSupplyVoltage(supplyVoltage);
-        canCoderSimState.setSupplyVoltage(supplyVoltage);
-        canCoderSimState.setMagnetHealth(MagnetHealthValue.Magnet_Green);
-        canCoderSimState.setVelocity(simArm.getVelocityRadPerSec() / 2 / Math.PI);
-        canCoderSimState.setRawPosition(simArm.getAngleRads() / 2 / Math.PI);
-    }
-
-    @Override
     public void enableHold() {
         hold = true;
     }
@@ -180,22 +139,47 @@ public class KrakenX60Arm implements Arm {
     }
 
     @Override
-    public boolean isHoldEnabled() {
-        return hold;
+    public void resetPosition() {
+        if (cancoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Invalid && cancoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Red) {
+            talonFX.setPosition(cancoder.getPosition().getValue());
+        }
+        updateState();
     }
 
     @Override
-    public Angle getMinAngle() {
-        return minAngle;
+    public void update() {
+        updateState();
+        updateTelemetry();
+    }
+
+    public void updateState() {
+        state.withPosition(talonFX.getPosition().getValue().in(Radians))
+                .withAbsolutePosition(cancoder.getAbsolutePosition().getValue().in(Radians))
+                .withVelocity(talonFX.getVelocity().getValue().in(RadiansPerSecond))
+                .withAbsoluteVelocity(cancoder.getVelocity().getValue().in(RadiansPerSecond))
+                .withVoltage(talonFX.getMotorVoltage().getValueAsDouble())
+                .withTimestamp(Timer.getFPGATimestamp())
+                .withAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
     }
 
     @Override
-    public Angle getMaxAngle() {
-        return maxAngle;
+    public void updateTelemetry() {
+        telemetry.telemeterize(state);
     }
 
     @Override
-    public AngularVelocity getMaxVelocity() {
-        return maxAngularVelocity;
+    public void updateSimState(double dt, double supplyVoltage) {
+        var inputVoltage = talonFX.getMotorVoltage().getValue();
+        simArm.setInputVoltage(inputVoltage.baseUnitMagnitude());
+        simArm.update(dt);
+
+        canCoderSimState.setSupplyVoltage(supplyVoltage);
+        canCoderSimState.setMagnetHealth(MagnetHealthValue.Magnet_Green);
+        canCoderSimState.setVelocity(simArm.getVelocityRadPerSec() / 2 / Math.PI);
+        canCoderSimState.setRawPosition(simArm.getAngleRads() / 2 / Math.PI);
+
+        talonFXSimState.setRawRotorPosition(simArm.getAngleRads() * reduction / 2 / Math.PI);
+        talonFXSimState.setRotorVelocity(simArm.getVelocityRadPerSec() * reduction / 2 / Math.PI);
+        talonFXSimState.setSupplyVoltage(supplyVoltage);
     }
 }

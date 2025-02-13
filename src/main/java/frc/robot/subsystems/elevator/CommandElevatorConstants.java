@@ -1,10 +1,9 @@
 package frc.robot.subsystems.elevator;
 
 import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.units.*;
@@ -13,85 +12,105 @@ import digilib.elevator.DualVortexElevator;
 import digilib.elevator.Elevator;
 import digilib.elevator.ElevatorConstants;
 
+import static com.revrobotics.spark.SparkBase.PersistMode.*;
+import static com.revrobotics.spark.SparkBase.ResetMode.*;
+import static com.revrobotics.spark.SparkLowLevel.MotorType.*;
+import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.*;
+import static com.revrobotics.spark.config.SparkBaseConfig.*;
+import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.elevator.CommandElevatorConstants.Control.*;
+import static frc.robot.subsystems.elevator.CommandElevatorConstants.Mechanism.*;
+import static frc.robot.subsystems.elevator.CommandElevatorConstants.Simulation.*;
 
 public class CommandElevatorConstants {
 
-    private static final String name = "Elevator";
-    private static final Distance startingHeight = Feet.of(0.0);
-    private static final Distance minHeight = Feet.of(0.0);
-    private static final Distance maxHeight = Meters.of(1.3);
-    private static final Distance drumRadius = Inches.of(1.757 / 2.0).times(2); // because 2 stages
-    private static final int primaryMotorDeviceId = 15;
-    private static final int followerMotorDeviceId = 25;
-    private static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kBrake;
-    private static final boolean primaryInverted = false;
-    private static final double reduction = 5 * 4;
-    private static final Voltage ks = Volts.of(0.07837);
-    private static final Voltage kg = Volts.of(0.18624);
-    private static final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv = Volts.per(MetersPerSecond).of(7.8471);
-    private static final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka = Volts.per(MetersPerSecondPerSecond).of(0.1667);
-    private static final double positionKp = 3.6685;
-    private static final double positionKd = 0.41091;
-    private static final double velocityKp = 0.39203;
-    private static final Time updatePeriod = Seconds.of(0.020);
-    private static final Time simLoopPeriod = Seconds.of(0.001);
-    private static final LinearVelocity maxVelocity = MetersPerSecond.of(
-            (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.baseUnitMagnitude());
-    private static final LinearAcceleration maxAcceleration = MetersPerSecondPerSecond.of(
-            (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / ka.baseUnitMagnitude());
+    static final class Control {
+        static final Voltage ks = Volts.of(0.07837);
+        static final Voltage kg = Volts.of(0.18624);
+        static final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv = Volts.per(MetersPerSecond).of(7.8471);
+        static final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka = Volts.per(MetersPerSecondPerSecond).of(0.1667);
+        static final double positionKp = 3.6685;
+        static final double positionKd = 0.41091;
+        static final double velocityKp = 0.39203;
+        static final LinearVelocity maxVelocity = MetersPerSecond.of(
+                (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.baseUnitMagnitude());
+        static final LinearAcceleration maxAcceleration = MetersPerSecondPerSecond.of(
+                (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / ka.baseUnitMagnitude());
+        static final Time updatePeriod = Seconds.of(0.020);
+    }
 
-    public static CommandElevator createCommandElevator() {
-        SparkFlex primaryMotor = new SparkFlex(primaryMotorDeviceId, SparkLowLevel.MotorType.kBrushless);
-        SparkFlex followerMotor = new SparkFlex(followerMotorDeviceId, SparkLowLevel.MotorType.kBrushless);
-
-        SparkBaseConfig primaryMotorConfig = new SparkFlexConfig()
-                .idleMode(idleMode)
-                .inverted(primaryInverted);
-        primaryMotorConfig.encoder.positionConversionFactor(2 * Math.PI * drumRadius.in(Meters) / reduction);
-        primaryMotorConfig.encoder.velocityConversionFactor(2 * Math.PI * drumRadius.in(Meters) / reduction / 60.0);
-        primaryMotorConfig.encoder.quadratureAverageDepth(2);
-        primaryMotorConfig.encoder.quadratureMeasurementPeriod(16);
-        primaryMotorConfig.closedLoop
-                .pid(positionKp, 0, positionKd)
-                .velocityFF(0.0)
-                .feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
-                .outputRange(-1, 1);
-        primaryMotorConfig.closedLoop
-                .pid(velocityKp, 0, 0, ClosedLoopSlot.kSlot1)
-                .velocityFF(0.0, ClosedLoopSlot.kSlot1)
-                .feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
-                .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
-
-        SparkBaseConfig followerMotorConfig = new SparkFlexConfig()
-                .idleMode(idleMode);
-        followerMotorConfig.follow(primaryMotor, true);
-
-        primaryMotor.configure(primaryMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-        followerMotor.configure(followerMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-        ElevatorConstants elevatorConstants = new ElevatorConstants(
+    static final class Mechanism {
+        static final String name = "Elevator";
+        static final double reduction = 5 * 4;
+        static final Distance drumRadius = Inches.of(1.757 / 2.0);
+        static final ElevatorConstants constants = new ElevatorConstants(
                 name,
+                reduction,
+                drumRadius,
                 maxHeight,
                 minHeight,
-                maxVelocity,
-                maxAcceleration,
+                startingHeight,
                 ks,
                 kg,
                 kv,
                 ka,
-                drumRadius,
-                reduction,
-                startingHeight, Meters.of(0.0), MetersPerSecond.of(0.0));
-        Elevator elevator = new DualVortexElevator(
-                elevatorConstants,
-                primaryMotor,
-                followerMotor,
-                primaryMotorConfig,
-                followerMotorConfig,
-                updatePeriod);
-        return new CommandElevator(elevator, simLoopPeriod);
-
-
+                maxVelocity,
+                maxAcceleration,
+                positionStdDev,
+                velocityStdDev);
     }
 
+    static final class Simulation {
+        static final Distance startingHeight = Meters.of(0.0);
+        static final Distance minHeight = Meters.of(0.0);
+        static final Distance maxHeight = Meters.of(1.3);
+        static final Distance positionStdDev = Meters.of(0.0);
+        static final LinearVelocity velocityStdDev = MetersPerSecond.of(0.0);
+        static final Time simLoopPeriod = Seconds.of(0.001);
+    }
+
+    static final class Motor {
+        static final int deviceId = 15;
+        static final IdleMode idleMode = kBrake;
+        static final boolean inverted = false;
+        static final int depth = 2;
+        static final int periodMs = 16;
+        static final EncoderConfig encoderConfig = new EncoderConfig()
+                .positionConversionFactor(2 * Math.PI * drumRadius.in(Meters) / reduction)
+                .velocityConversionFactor(2 * Math.PI * drumRadius.in(Meters) / reduction / 60.0)
+                .quadratureAverageDepth(depth)
+                .quadratureMeasurementPeriod(periodMs);
+        static final ClosedLoopConfig closedLoopConfig = new ClosedLoopConfig()
+                .pidf(positionKp, 0.0, positionKd, 0.0)
+                .pidf(velocityKp, 0.0, 0.0, 0.0, ClosedLoopSlot.kSlot1)
+                .feedbackSensor(kPrimaryEncoder);
+        static final SparkBaseConfig config = new SparkFlexConfig()
+                .idleMode(idleMode)
+                .inverted(inverted)
+                .apply(encoderConfig)
+                .apply(closedLoopConfig);
+        static final SparkFlex motor = new SparkFlex(deviceId, kBrushless);
+    }
+
+    static final class Follower {
+        static final int deviceId = 25;
+        static final IdleMode idleMode = kBrake;
+        static final boolean inverted = true;
+        static final SparkBaseConfig config = new SparkFlexConfig()
+                .idleMode(idleMode)
+                .follow(Motor.deviceId, inverted);
+        static final SparkFlex motor = new SparkFlex(deviceId, kBrushless);
+    }
+
+    public static CommandElevator createCommandElevator() {
+        Motor.motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
+        Follower.motor.configure(Follower.config, kResetSafeParameters, kPersistParameters);
+        Elevator elevator = new DualVortexElevator(
+                constants,
+                Motor.motor,
+                Follower.motor,
+                updatePeriod);
+        return new CommandElevator(elevator, simLoopPeriod);
+    }
 }

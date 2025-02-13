@@ -25,15 +25,17 @@ public class CommandDualIntake implements Subsystem {
     private final IntakeWheel wheel1;
     private double lastSimTime;
     private final ObjectDetector objectDetector;
-    private final Time simLoopPeriod;
+    private final Time wheel0SimLoopPeriod;
+    private final Time wheel1SimLoopPeriod;
     public final Trigger hasCoral;
 
-    public CommandDualIntake(IntakeWheel wheel0, IntakeWheel wheel1, ObjectDetector objectDetector, Time simLoopPeriod) {
+    public CommandDualIntake(IntakeWheel wheel0, IntakeWheel wheel1, ObjectDetector objectDetector, Time wheel0SimLoopPeriod, Time wheel1SimLoopPeriod) {
 
         this.wheel0 = wheel0;
         this.wheel1 = wheel1;
         this.objectDetector = objectDetector;
-        this.simLoopPeriod = simLoopPeriod;
+        this.wheel0SimLoopPeriod = wheel0SimLoopPeriod;
+        this.wheel1SimLoopPeriod = wheel1SimLoopPeriod;
         hasCoral = new Trigger(objectDetector.getState()::isInRange);
 
         SysIdRoutine.Config config = new SysIdRoutine.Config(
@@ -70,7 +72,8 @@ public class CommandDualIntake implements Subsystem {
         SmartDashboard.putData("Wheel1 Dynam Reverse", wheel1Routine.dynamic(SysIdRoutine.Direction.kReverse));
 
         if (RobotBase.isSimulation()) {
-            startSimThread();
+            startWheel0SimThread();
+            startWheel1SimThread();
         }
 
     }
@@ -89,7 +92,7 @@ public class CommandDualIntake implements Subsystem {
         objectDetector.update();
     }
 
-    private void startSimThread() {
+    private void startWheel0SimThread() {
         lastSimTime = Utils.getCurrentTimeSeconds();
 
         /* Run simulation at a faster rate so PID gains behave more reasonably */
@@ -101,9 +104,24 @@ public class CommandDualIntake implements Subsystem {
 
             /* use the measured time delta, get battery voltage from WPILib */
             wheel0.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+        });
+        m_simNotifier.startPeriodic(wheel0SimLoopPeriod.baseUnitMagnitude());
+    }
+
+    private void startWheel1SimThread() {
+        lastSimTime = Utils.getCurrentTimeSeconds();
+
+        /* Run simulation at a faster rate so PID gains behave more reasonably */
+        /* use the measured time delta, get battery voltage from WPILib */
+        Notifier m_simNotifier = new Notifier(() -> {
+            final double currentTime = Utils.getCurrentTimeSeconds();
+            double deltaTime = currentTime - lastSimTime;
+            lastSimTime = currentTime;
+
+            /* use the measured time delta, get battery voltage from WPILib */
             wheel1.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
-        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
+        m_simNotifier.startPeriodic(wheel1SimLoopPeriod.baseUnitMagnitude());
     }
 
 

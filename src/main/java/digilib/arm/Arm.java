@@ -1,46 +1,43 @@
 package digilib.arm;
 
+import digilib.MotorControllerType;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 
 public interface Arm {
 
-    public void updateSimState(double dt, double supplyVoltage);
+    MotorControllerType getMotorControllerType();
 
-    public void setControl(ArmRequest request);
+    Angle getMaxAngle();
 
-    public ArmState getState();
+    Angle getMinAngle();
 
-    public ArmState getStateCopy();
+    AngularVelocity getMaxVelocity();
 
-    public ArmState getLastState();
+    ArmState getState();
 
-    public void enableHold();
+    boolean isHoldEnabled();
 
-    public void disableHold();
+    void setControl(ArmRequest request);
 
-    public boolean isHoldEnabled();
+    void setPosition(Angle position);
 
-    public void updateTelemetry();
+    void setVelocity(AngularVelocity velocity);
 
-    public boolean setNeutralModeToBrake();
+    void setVoltage(Voltage voltage);
 
-    public boolean setNeutralModeToCoast();
+    void enableHold();
 
-    public void setVelocity(AngularVelocity velocity);
+    void disableHold();
 
-    public void setPosition(Angle position);
+    void resetPosition();
 
-    public void setVoltage(Voltage voltage);
+    void update();
 
-    public void resetPosition();
+    void updateState();
 
-    public void update();
+    void updateTelemetry();
 
-    public Angle getMaxAngle();
-
-    public Angle getMinAngle();
-
-    public AngularVelocity getMaxVelocity();
+    void updateSimState(double dt, double supplyVoltage);
 }

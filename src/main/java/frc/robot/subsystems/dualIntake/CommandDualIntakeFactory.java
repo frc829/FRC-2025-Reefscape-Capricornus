@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 
 import java.awt.*;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Value;
@@ -31,19 +32,15 @@ public class CommandDualIntakeFactory {
         return commandDualIntake.applyRequest(() -> request).withName("INTAKE:IDLE");
     }
 
-    public Command moveAtVelocity(Supplier<Dimensionless> maxIntakeVelocity0Percentage, Supplier<Dimensionless> maxIntakeVelocity1Percentage) {
-        MutDimensionless intakeVelocityPercent0 = Value.mutable(0.0);
-        MutDimensionless intakeVelocityPercent1 = Value.mutable(0.0);
+    public Command moveAtVelocity(DoubleSupplier maxIntak0VelocityValue, DoubleSupplier maxIntak1VelocityValue) {
         IntakeWheelRequest.Velocity request0 = new IntakeWheelRequest.Velocity();
         IntakeWheelRequest.Velocity request1 = new IntakeWheelRequest.Velocity();
         Pair<IntakeWheelRequest, IntakeWheelRequest> intakeRequests = new Pair<>(request0, request1);
 
         return commandDualIntake
                 .applyRequest(() -> {
-                    intakeVelocityPercent0.mut_replace(maxIntakeVelocity0Percentage.get());
-                    intakeVelocityPercent1.mut_replace(maxIntakeVelocity1Percentage.get());
-                    request0.withVelocity(intakeVelocityPercent0);
-                    request1.withVelocity(intakeVelocityPercent1);
+                    request0.withVelocity(maxIntak0VelocityValue.getAsDouble());
+                    request1.withVelocity(maxIntak1VelocityValue.getAsDouble());
                     return intakeRequests;
                 }).withName("INTAKE:VELOCITY");
     }

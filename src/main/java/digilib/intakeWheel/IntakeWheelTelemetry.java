@@ -4,7 +4,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.*;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,17 +11,13 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
 import static digilib.DigiMath.roundToDecimal;
-import static edu.wpi.first.units.Units.*;
 
 public class IntakeWheelTelemetry {
-    private final LinearVelocity maxVelocity;
-    private final LinearAcceleration maxAcceleration;
-    private final DoublePublisher timestamp;
     private final DoublePublisher velocity;
-    private final DoublePublisher maxVelocityPublisher;
-    private final DoublePublisher maxAccelerationPublisher;
+    private final DoublePublisher linearVelocity;
+    private final DoublePublisher voltage;
+    private final DoublePublisher timestamp;
     private final MechanismLigament2d ligament;
-    private final Distance wheelRadius;
 
 
     public IntakeWheelTelemetry(
@@ -30,14 +25,14 @@ public class IntakeWheelTelemetry {
             Distance wheelRadius,
             AngularVelocity maxVelocity,
             AngularAcceleration maxAcceleration) {
-        this.wheelRadius = wheelRadius;
-        this.maxVelocity = MetersPerSecond.of(maxVelocity.baseUnitMagnitude() * wheelRadius.baseUnitMagnitude());
-        NetworkTable intakeStateTable = NetworkTableInstance.getDefault().getTable(name);
-        this.timestamp = intakeStateTable.getDoubleTopic("Timestamp").publish();
-        this.velocity = intakeStateTable.getDoubleTopic("Velocity").publish();
-        this.maxVelocityPublisher = intakeStateTable.getDoubleTopic("MaxVelocity").publish();
-        this.maxAccelerationPublisher = intakeStateTable.getDoubleTopic("MaxAcceleration").publish();
-        this.maxAcceleration = MetersPerSecondPerSecond.of(maxAcceleration.baseUnitMagnitude() * wheelRadius.baseUnitMagnitude());
+        NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
+        table.getDoubleTopic("Max Velocity").publish().set(maxVelocity.baseUnitMagnitude());
+        table.getDoubleTopic("Max Acceleration").publish().set(maxAcceleration.baseUnitMagnitude());
+        velocity = table.getDoubleTopic("Velocity").publish();
+        linearVelocity = table.getDoubleTopic("Linear Velocity").publish();
+        voltage = table.getDoubleTopic("Voltage").publish();
+        timestamp = table.getDoubleTopic("Timestamp").publish();
+
         Mechanism2d mechanism = new Mechanism2d(2, 4);
         ligament = mechanism
                 .getRoot("IntakeRoot", 1, 3)
@@ -46,11 +41,10 @@ public class IntakeWheelTelemetry {
     }
 
     public void telemeterize(IntakeWheelState state) {
-        velocity.set(roundToDecimal(state.getVelocity().baseUnitMagnitude(), 2));
-        maxVelocityPublisher.set(roundToDecimal(maxVelocity.in(MetersPerSecond), 2));
-        maxAccelerationPublisher.set(roundToDecimal(maxAcceleration.in(MetersPerSecondPerSecond), 2));
-        timestamp.set(roundToDecimal(state.getTimestamp().in(Seconds), 2));
-        double velocity = roundToDecimal(state.getVelocity().baseUnitMagnitude() / wheelRadius.baseUnitMagnitude(), 2);
-        ligament.setLength(velocity / maxVelocity.baseUnitMagnitude());
+        velocity.set(roundToDecimal(state.getAngularVelocity().baseUnitMagnitude(), 2));
+        linearVelocity.set(roundToDecimal(state.getVelocity().baseUnitMagnitude(), 2));
+        voltage.set(roundToDecimal(state.getVoltage().baseUnitMagnitude(), 2));
+        timestamp.set(roundToDecimal(state.getTimestamp().baseUnitMagnitude(), 2));
+        ligament.setLength(roundToDecimal(state.getVelocity().baseUnitMagnitude(), 2));
     }
 }

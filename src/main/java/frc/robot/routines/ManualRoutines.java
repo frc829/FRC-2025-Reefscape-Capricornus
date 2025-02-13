@@ -4,7 +4,6 @@ import digilib.controllers.ManualController;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Value;
 
 public class ManualRoutines {
     private final ManualController controller;
@@ -57,30 +56,27 @@ public class ManualRoutines {
 
     private void coralIn() {
         controller.coralIn().whileTrue(factories.intake.moveAtVelocity(
-                () -> Value.of(0.0),
-                () -> Value.of(0.25)
-        ).until(factories.intake.hasCoral));
+                        () -> 0.0,
+                        () -> 0.25)
+                .until(factories.intake.hasCoral));
     }
 
     public void coralOut() {
         controller.coralOut().whileTrue(factories.intake.moveAtVelocity(
-                () -> Value.of(0.0),
-                () -> Value.of(-0.25)
-        ));
+                () -> 0.0,
+                () -> -0.25));
     }
 
     private void algaeIn() {
         controller.algaeIn().whileTrue(factories.intake.moveAtVelocity(
-                () -> Value.of(-0.25),
-                () -> Value.of(-0.25)
-        ));
+                () -> -0.25,
+                () -> -0.25));
     }
 
     private void algaeOut() {
         controller.algaeOut().whileTrue(factories.intake.moveAtVelocity(
-                () -> Value.of(0.25),
-                () -> Value.of(0.25)
-        ));
+                () -> 0.25,
+                () -> 0.25));
     }
 
 }
