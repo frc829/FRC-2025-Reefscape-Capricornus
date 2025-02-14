@@ -177,12 +177,14 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void resetPosition() {
-        motor.getEncoder().setPosition(cancoder.getPosition().getValue().in(Radians));
-        update();
     }
 
     @Override
     public void update() {
+        double absolutePositionRotations = cancoder.getAbsolutePosition().getValueAsDouble();
+        absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
+        double absolutePositionRadians = absolutePositionRotations * 2 * Math.PI;
+        motor.getEncoder().setPosition(absolutePositionRadians);
         updateState();
         updateTelemetry();
     }

@@ -4,6 +4,7 @@ import frc.robot.controllers.ManualController;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 
 public class ManualRoutines {
     private final ManualController controller;
@@ -24,6 +25,7 @@ public class ManualRoutines {
         coralOut();
         algaeIn();
         algaeOut();
+        elevatorTo10CM();
     }
 
     private void testWrist90() {
@@ -77,6 +79,11 @@ public class ManualRoutines {
         controller.algaeOut().whileTrue(factories.intake.moveAtVelocity(
                 () -> 0.25,
                 () -> 0.25));
+    }
+
+    private void elevatorTo10CM(){
+        controller.testElevatorPos().whileTrue(factories.elevator.goToPosition(
+                Meters.of(0.1)));
     }
 
 }

@@ -27,12 +27,12 @@ import static frc.robot.subsystems.wrist.CommandWristConstants.Simulation.*;
 public class CommandWristConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(0.15515);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(1.1386);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.031241);
-        static final double positionKp = 0.92837;
-        static final double positionKd = 0.019622;
-        static final double velocityKp = 0.013073;
+        static final Voltage ks = Volts.of(0.14461);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(1.1894);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.026599);
+        static final double positionKp = 0.77955;
+        static final double positionKd = 0.0073908;
+        static final double velocityKp = 6.8211E-05;
         static final Time updatePeriod = Seconds.of(0.020);
         static final AngularVelocity maxAngularVelocity = RadiansPerSecond.of(
                 (12.0 - ks.baseUnitMagnitude()) / kv.baseUnitMagnitude());
@@ -67,9 +67,11 @@ public class CommandWristConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 37;
-        static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive;
+        static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.Clockwise_Positive;
+        static final double magnetOffset = 0.441895;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
-                .withSensorDirection(sensorDirectionValue);
+                .withSensorDirection(sensorDirectionValue)
+                .withMagnetOffset(magnetOffset);
         static final CANcoderConfiguration config = new CANcoderConfiguration()
                 .withMagnetSensor(magnetSensorConfigs);
         static final CANcoder cancoder = new CANcoder(cancoderDeviceNumber, Constants.rio);
@@ -90,8 +92,7 @@ public class CommandWristConstants {
                 .pidf(positionKp, 0.0, positionKd, 0.0)
                 .pidf(velocityKp, 0.0, 0.0, 0.0, ClosedLoopSlot.kSlot1)
                 .feedbackSensor(kPrimaryEncoder)
-                .positionWrappingInputRange(-Math.PI, Math.PI)
-                .positionWrappingEnabled(true);
+                .positionWrappingEnabled(false);
         static final SparkBaseConfig config = new SparkFlexConfig()
                 .idleMode(idleMode)
                 .inverted(inverted)

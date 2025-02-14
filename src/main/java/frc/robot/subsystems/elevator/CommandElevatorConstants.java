@@ -26,13 +26,13 @@ import static frc.robot.subsystems.elevator.CommandElevatorConstants.Simulation.
 public class CommandElevatorConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(0.07837);
-        static final Voltage kg = Volts.of(0.18624);
-        static final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv = Volts.per(MetersPerSecond).of(7.8471);
-        static final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka = Volts.per(MetersPerSecondPerSecond).of(0.1667);
-        static final double positionKp = 3.6685;
-        static final double positionKd = 0.41091;
-        static final double velocityKp = 0.39203;
+        static final Voltage ks = Volts.of(0.11192);
+        static final Voltage kg = Volts.of(0.182);
+        static final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv = Volts.per(MetersPerSecond).of(15.432);
+        static final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka = Volts.per(MetersPerSecondPerSecond).of(0.42208);
+        static final double positionKp = 2.5813;
+        static final double positionKd = 0.20567;
+        static final double velocityKp = 0.18863;
         static final LinearVelocity maxVelocity = MetersPerSecond.of(
                 (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.baseUnitMagnitude());
         static final LinearAcceleration maxAcceleration = MetersPerSecondPerSecond.of(
@@ -64,7 +64,7 @@ public class CommandElevatorConstants {
     static final class Simulation {
         static final Distance startingHeight = Meters.of(0.0);
         static final Distance minHeight = Meters.of(0.0);
-        static final Distance maxHeight = Meters.of(1.3);
+        static final Distance maxHeight = Meters.of(0.60);
         static final Distance positionStdDev = Meters.of(0.0);
         static final LinearVelocity velocityStdDev = MetersPerSecond.of(0.0);
         static final Time simLoopPeriod = Seconds.of(0.001);
