@@ -62,6 +62,23 @@ public interface WristRequest {
         }
     }
 
+    class VoltageRequest implements WristRequest {
+        private final MutVoltage voltage = Volts.mutable(0.0);
+
+        @Override
+        public void apply(Wrist wrist) {
+            if (wrist.isHoldEnabled()) {
+                wrist.disableHold();
+            }
+            wrist.setVoltage(voltage);
+        }
+
+        public VoltageRequest withVoltage(Voltage voltage) {
+            this.voltage.mut_replace(voltage);
+            return this;
+        }
+    }
+
     class Hold implements WristRequest {
         private final MutAngle holdPosition = Radians.mutable(0.0);
 

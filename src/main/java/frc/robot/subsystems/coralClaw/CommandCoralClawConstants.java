@@ -19,7 +19,7 @@ public class CommandCoralClawConstants {
     }
 
     static final class Mechanism {
-        static final String name = "Claw: Algae";
+        static final String name = "Claw: Coral";
         static final PneumaticsModuleType moduleType = REVPH;
         static final ClawConstants constants = new ClawConstants(
                 name,

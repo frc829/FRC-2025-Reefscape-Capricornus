@@ -56,21 +56,6 @@ public class ScoringFactories {
         return Commands.none();
     }
 
-    private Command createCoralAlign(
-            String name,
-            Distance elevatorHeight,
-            Angle armAngle,
-            Angle wristAngle) {
-        return factories.algae.close()
-                .andThen(factories.coral.close())
-                .andThen(Commands.either(
-                        createCoralAlignSafe(elevatorHeight, armAngle, wristAngle),
-                        createCoralAlignUnSafe(elevatorHeight, armAngle, wristAngle),
-                        factories.arm.lessThanPosition(safeArmAngleForWrist, Degrees.of(0.1))))
-                .withName(name);
-
-    }
-
     private Command createCoralAlignSafe(
             Distance elevatorHeight,
             Angle armAngle,

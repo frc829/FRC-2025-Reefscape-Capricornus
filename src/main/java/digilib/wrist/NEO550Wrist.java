@@ -6,6 +6,7 @@ import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.*;
 import digilib.MotorControllerType;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
@@ -18,6 +19,7 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot0;
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
@@ -72,8 +74,10 @@ public class NEO550Wrist implements Wrist {
         this.velocityProfile = new SlewRateLimiter(constants.maxAngularAcceleration().baseUnitMagnitude());
         this.profilePeriod = updatePeriod;
 
-        motor.getEncoder().setPosition(cancoder.getPosition().getValue().in(Radians));
-
+        double absolutePositionRotations = cancoder.getAbsolutePosition().getValueAsDouble();
+        absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
+        double absolutePositionRadians = absolutePositionRotations * 2 * Math.PI;
+        motor.getEncoder().setPosition(absolutePositionRadians);
         if (RobotBase.isSimulation()) {
             DCMotor dcMotor = DCMotor.getNeo550(1);
             sparkMaxSim = new SparkMaxSim(motor, dcMotor);
@@ -86,10 +90,9 @@ public class NEO550Wrist implements Wrist {
                     dcMotor,
                     constants.positionStdDev().baseUnitMagnitude(),
                     constants.velocityStdDev().baseUnitMagnitude());
-            canCoderSimState.setRawPosition(simWrist.getAngularPositionRad() / 2 / Math.PI);
-            sparkMaxSim.setPosition(constants.startingAngle().baseUnitMagnitude());
+            simWrist.setState(absolutePositionRadians, 0.0);
+            sparkMaxSim.setPosition(absolutePositionRadians);
         }
-
     }
 
     @Override
@@ -206,10 +209,13 @@ public class NEO550Wrist implements Wrist {
         simWrist.setInputVoltage(inputVoltage);
         simWrist.update(dt);
 
+        double rotations = simWrist.getAngularPositionRotations();
+        rotations = MathUtil.inputModulus(rotations, -0.5, 0.5);
+
         canCoderSimState.setSupplyVoltage(supplyVoltage);
         canCoderSimState.setMagnetHealth(MagnetHealthValue.Magnet_Green);
-        canCoderSimState.setVelocity(simWrist.getAngularVelocityRadPerSec() / 2 / Math.PI);
-        canCoderSimState.setRawPosition(simWrist.getAngularPositionRad() / 2 / Math.PI);
+        canCoderSimState.setVelocity(simWrist.getAngularVelocityRPM() / 60.0);
+        canCoderSimState.setRawPosition(rotations);
 
         sparkMaxSim.iterate(simWrist.getAngularVelocityRadPerSec(), 12.0, dt);
     }

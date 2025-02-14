@@ -48,7 +48,6 @@ public class CommandWristConstants {
                 reduction,
                 maxAngle,
                 minAngle,
-                startingAngle,
                 ks,
                 kv,
                 ka,
@@ -59,7 +58,6 @@ public class CommandWristConstants {
     }
 
     static final class Simulation {
-        static final Angle startingAngle = Degrees.of(0);
         static final Angle minAngle = Degrees.of(0.0);
         static final Angle maxAngle = Degrees.of(90.0);
         static final Angle positionStdDev = Degrees.of(0.0);
@@ -69,11 +67,9 @@ public class CommandWristConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 37;
-        static final double magnetDirection = 0.4609375;
         static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
-                .withSensorDirection(sensorDirectionValue)
-                .withMagnetOffset(magnetDirection);
+                .withSensorDirection(sensorDirectionValue);
         static final CANcoderConfiguration config = new CANcoderConfiguration()
                 .withMagnetSensor(magnetSensorConfigs);
         static final CANcoder cancoder = new CANcoder(cancoderDeviceNumber, Constants.rio);
@@ -88,12 +84,14 @@ public class CommandWristConstants {
         static final EncoderConfig encoderConfig = new EncoderConfig()
                 .positionConversionFactor(2 * Math.PI / reduction)
                 .velocityConversionFactor(2 * Math.PI / reduction / 60.0)
-                .quadratureAverageDepth(depth)
-                .quadratureMeasurementPeriod(periodMs);
+                .uvwAverageDepth(depth)
+                .uvwMeasurementPeriod(periodMs);
         static final ClosedLoopConfig closedLoopConfig = new ClosedLoopConfig()
                 .pidf(positionKp, 0.0, positionKd, 0.0)
                 .pidf(velocityKp, 0.0, 0.0, 0.0, ClosedLoopSlot.kSlot1)
-                .feedbackSensor(kPrimaryEncoder);
+                .feedbackSensor(kPrimaryEncoder)
+                .positionWrappingInputRange(-Math.PI, Math.PI)
+                .positionWrappingEnabled(true);
         static final SparkBaseConfig config = new SparkFlexConfig()
                 .idleMode(idleMode)
                 .inverted(inverted)

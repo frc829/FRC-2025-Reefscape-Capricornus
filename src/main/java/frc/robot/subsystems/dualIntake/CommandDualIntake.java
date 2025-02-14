@@ -1,14 +1,15 @@
 package frc.robot.subsystems.dualIntake;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import digilib.objectDetectors.ObjectDetector;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import digilib.intakeWheel.IntakeWheel;
 import digilib.intakeWheel.IntakeWheelRequest;
@@ -23,14 +24,19 @@ import static edu.wpi.first.units.Units.*;
 public class CommandDualIntake implements Subsystem {
     private final IntakeWheel wheel0;
     private final IntakeWheel wheel1;
-    private double lastSimTime;
+    private double wheel0LastSimTime;
+    private double wheel1LastSimTime;
     private final ObjectDetector objectDetector;
     private final Time wheel0SimLoopPeriod;
     private final Time wheel1SimLoopPeriod;
     public final Trigger hasCoral;
 
-    public CommandDualIntake(IntakeWheel wheel0, IntakeWheel wheel1, ObjectDetector objectDetector, Time wheel0SimLoopPeriod, Time wheel1SimLoopPeriod) {
-
+    public CommandDualIntake(
+            IntakeWheel wheel0,
+            IntakeWheel wheel1,
+            ObjectDetector objectDetector,
+            Time wheel0SimLoopPeriod,
+            Time wheel1SimLoopPeriod) {
         this.wheel0 = wheel0;
         this.wheel1 = wheel1;
         this.objectDetector = objectDetector;
@@ -38,10 +44,16 @@ public class CommandDualIntake implements Subsystem {
         this.wheel1SimLoopPeriod = wheel1SimLoopPeriod;
         hasCoral = new Trigger(objectDetector.getState()::isInRange);
 
-        SysIdRoutine.Config config = new SysIdRoutine.Config(
+        SysIdRoutine.Config wheel0Config = new SysIdRoutine.Config(
                 Volts.per(Second).of(1.0),
                 Volts.of(7.0),
-                Seconds.of(10.0));
+                Seconds.of(10.0),
+                state -> SignalLogger.writeString("wheel0-sysIdRoutine", state.toString()));
+        SysIdRoutine.Config wheel1Config = new SysIdRoutine.Config(
+                Volts.per(Second).of(1.0),
+                Volts.of(7.0),
+                Seconds.of(10.0),
+                state -> SignalLogger.writeString("wheel1-sysIdRoutine", state.toString()));
         VoltageRequest intakeWheel0VoltageRequest = new VoltageRequest();
         VoltageRequest intakeWheel1VoltageRequest = new VoltageRequest();
         SysIdRoutine.Mechanism wheel0Mechanism = new SysIdRoutine.Mechanism(
@@ -60,22 +72,45 @@ public class CommandDualIntake implements Subsystem {
                         .voltage(wheel1.getState().getVoltage()),
                 this,
                 "wheel1-sysIdRoutine");
-        SysIdRoutine wheel0Routine = new SysIdRoutine(config, wheel0Mechanism);
-        SysIdRoutine wheel1Routine = new SysIdRoutine(config, wheel1Mechanism);
-        SmartDashboard.putData("Wheel0 Quasi Forward", wheel0Routine.quasistatic(SysIdRoutine.Direction.kForward));
-        SmartDashboard.putData("Wheel0 Quasi Reverse", wheel0Routine.quasistatic(SysIdRoutine.Direction.kReverse));
-        SmartDashboard.putData("Wheel0 Dynam Forward", wheel0Routine.dynamic(SysIdRoutine.Direction.kForward));
-        SmartDashboard.putData("Wheel0 Dynam Reverse", wheel0Routine.dynamic(SysIdRoutine.Direction.kReverse));
-        SmartDashboard.putData("Wheel1 Quasi Forward", wheel1Routine.quasistatic(SysIdRoutine.Direction.kForward));
-        SmartDashboard.putData("Wheel1 Quasi Reverse", wheel1Routine.quasistatic(SysIdRoutine.Direction.kReverse));
-        SmartDashboard.putData("Wheel1 Dynam Forward", wheel1Routine.dynamic(SysIdRoutine.Direction.kForward));
-        SmartDashboard.putData("Wheel1 Dynam Reverse", wheel1Routine.dynamic(SysIdRoutine.Direction.kReverse));
+        SysIdRoutine wheel0Routine = new SysIdRoutine(wheel0Config, wheel0Mechanism);
+        SysIdRoutine wheel1Routine = new SysIdRoutine(wheel1Config, wheel1Mechanism);
+        SmartDashboard.putData("Wheel0 Quasistatic Forward",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(wheel0Routine.quasistatic(SysIdRoutine.Direction.kForward))
+                        .andThen(SignalLogger::stop).withName("Wheel0 Quasistatic Forward"));
+        SmartDashboard.putData("Wheel0 Quasistatic Reverse",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(wheel0Routine.quasistatic(SysIdRoutine.Direction.kReverse))
+                        .andThen(SignalLogger::stop).withName("Wheel0 Quasistatic Reverse"));
+        SmartDashboard.putData("Wheel0 Dynamic Forward",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(wheel0Routine.dynamic(SysIdRoutine.Direction.kForward))
+                        .andThen(SignalLogger::stop).withName("Wheel0 Dynamic Forward"));
+        SmartDashboard.putData("Wheel0 Dynamic Reverse",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(wheel0Routine.dynamic(SysIdRoutine.Direction.kReverse))
+                        .andThen(SignalLogger::stop).withName("Wheel0 Dynamic Reverse"));
+        SmartDashboard.putData("Wheel1 Quasistatic Forward",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(wheel1Routine.quasistatic(SysIdRoutine.Direction.kForward))
+                        .andThen(SignalLogger::stop).withName("Wheel1 Quasistatic Forward"));
+        SmartDashboard.putData("Wheel1 Quasistatic Reverse",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(wheel1Routine.quasistatic(SysIdRoutine.Direction.kReverse))
+                        .andThen(SignalLogger::stop).withName("Wheel1 Quasistatic Reverse"));
+        SmartDashboard.putData("Wheel1 Dynamic Forward",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(wheel1Routine.dynamic(SysIdRoutine.Direction.kForward))
+                        .andThen(SignalLogger::stop).withName("Wheel1 Dynamic Forward"));
+        SmartDashboard.putData("Wheel1 Dynamic Reverse",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(wheel1Routine.dynamic(SysIdRoutine.Direction.kReverse))
+                        .andThen(SignalLogger::stop).withName("Wheel1 Dynamic Reverse"));
 
-        if (RobotBase.isSimulation()) {
+        if (Utils.isSimulation()) {
             startWheel0SimThread();
             startWheel1SimThread();
         }
-
     }
 
     public Command applyRequest(Supplier<Pair<IntakeWheelRequest, IntakeWheelRequest>> requestSupplier) {
@@ -93,36 +128,28 @@ public class CommandDualIntake implements Subsystem {
     }
 
     private void startWheel0SimThread() {
-        lastSimTime = Utils.getCurrentTimeSeconds();
+        wheel0LastSimTime = Utils.getCurrentTimeSeconds();
 
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        /* use the measured time delta, get battery voltage from WPILib */
         Notifier m_simNotifier = new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - lastSimTime;
-            lastSimTime = currentTime;
+            double deltaTime = currentTime - wheel0LastSimTime;
+            wheel0LastSimTime = currentTime;
 
-            /* use the measured time delta, get battery voltage from WPILib */
             wheel0.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(wheel0SimLoopPeriod.baseUnitMagnitude());
     }
 
     private void startWheel1SimThread() {
-        lastSimTime = Utils.getCurrentTimeSeconds();
+        wheel1LastSimTime = Utils.getCurrentTimeSeconds();
 
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        /* use the measured time delta, get battery voltage from WPILib */
         Notifier m_simNotifier = new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - lastSimTime;
-            lastSimTime = currentTime;
+            double deltaTime = currentTime - wheel1LastSimTime;
+            wheel1LastSimTime = currentTime;
 
-            /* use the measured time delta, get battery voltage from WPILib */
             wheel1.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(wheel1SimLoopPeriod.baseUnitMagnitude());
     }
-
-
 }

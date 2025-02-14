@@ -1,17 +1,23 @@
 package frc.robot.subsystems.arm;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import digilib.arm.Arm;
 import digilib.arm.ArmRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import java.util.function.Supplier;
+
+import static edu.wpi.first.units.Units.*;
 
 public class CommandArm implements Subsystem {
     private final Arm arm;
@@ -21,6 +27,35 @@ public class CommandArm implements Subsystem {
     public CommandArm(Arm arm, Time simLoopPeriod) {
         this.arm = arm;
         this.simLoopPeriod = simLoopPeriod;
+
+        SysIdRoutine.Config config = new SysIdRoutine.Config(
+                Volts.per(Second).of(1.0),
+                Volts.of(3.0),
+                Seconds.of(10.0),
+                state -> SignalLogger.writeString("arm-sysIdRoutine", state.toString()));
+        ArmRequest.VoltageRequest voltageRequest = new ArmRequest.VoltageRequest();
+        SysIdRoutine.Mechanism mechanism = new SysIdRoutine.Mechanism(
+                volts -> arm.setControl(voltageRequest.withVoltage(volts)),
+                null,
+                this);
+        SysIdRoutine routine = new SysIdRoutine(config, mechanism);
+        SmartDashboard.putData("Arm Quasistatic Forward",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(routine.quasistatic(SysIdRoutine.Direction.kForward))
+                        .andThen(SignalLogger::stop).withName("Arm Quasistatic Forward"));
+        SmartDashboard.putData("Arm Quasistatic Reverse",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(routine.quasistatic(SysIdRoutine.Direction.kReverse))
+                        .andThen(SignalLogger::stop).withName("Arm Quasistatic Reverse"));
+        SmartDashboard.putData("Arm Dynamic Forward",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(routine.dynamic(SysIdRoutine.Direction.kForward))
+                        .andThen(SignalLogger::stop).withName("Arm Dynamic Forward"));
+        SmartDashboard.putData("Arm Dynamic Reverse",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(routine.dynamic(SysIdRoutine.Direction.kReverse))
+                        .andThen(SignalLogger::stop).withName("Arm Dynamic Reverse"));
+
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -30,21 +65,8 @@ public class CommandArm implements Subsystem {
         return new Trigger(() -> arm.getState().getPosition().isNear(position, tolerance));
     }
 
-    public Trigger lessThanPosition(Angle position, Angle tolerance) {
-        return new Trigger(() -> {
-            double currentPositionValue = arm.getState().getPosition().baseUnitMagnitude();
-            double positionValue = position.baseUnitMagnitude();
-            double diff = Math.abs(currentPositionValue - positionValue);
-            if (currentPositionValue < positionValue && diff >= tolerance.magnitude()) {
-                return true;
-            }
-            return false;
-        });
-    }
-
     public Command applyRequest(Supplier<ArmRequest> requestSupplier) {
-        return run(() -> arm.setControl(requestSupplier.get()))
-                .handleInterrupt(arm::disableHold);
+        return run(() -> arm.setControl(requestSupplier.get()));
     }
 
     @Override
@@ -55,21 +77,13 @@ public class CommandArm implements Subsystem {
     private void startSimThread() {
         lastSimTime = Utils.getCurrentTimeSeconds();
 
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        /* use the measured time delta, get battery voltage from WPILib */
         Notifier m_simNotifier = new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
 
-            /* use the measured time delta, get battery voltage from WPILib */
             arm.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
-
-
 }
-
-
-

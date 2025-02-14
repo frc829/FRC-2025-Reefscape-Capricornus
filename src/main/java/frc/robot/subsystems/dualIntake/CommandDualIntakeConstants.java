@@ -1,5 +1,6 @@
 package frc.robot.subsystems.dualIntake;
 
+import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface;
 import com.revrobotics.spark.*;
@@ -20,6 +21,8 @@ import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
 import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.dualIntake.CommandDualIntakeConstants.ObjectDetection.laserCanId;
+import static frc.robot.subsystems.dualIntake.CommandDualIntakeConstants.ObjectDetection.rangingMode;
 
 public class CommandDualIntakeConstants {
 
@@ -144,7 +147,6 @@ public class CommandDualIntakeConstants {
         static final Distance maxTrueDistance = Millimeters.of(15.0);
         static final Distance minTrueDistance = Millimeters.of(-10.0);
         static final ObjectDetectorConstants constants = new ObjectDetectorConstants(name, maxTrueDistance, minTrueDistance);
-        static final LaserCan laserCan = LaserCanObjectDetector.createLaserCan(laserCanId, rangingMode);
     }
 
     public static CommandDualIntake create() {
@@ -152,9 +154,16 @@ public class CommandDualIntakeConstants {
         Coral.Motor.motor.configure(Coral.Motor.config, kResetSafeParameters, kPersistParameters);
         IntakeWheel algaeWheel = new NEO550IntakeWheel(Algae.Mechanism.constants, Algae.Motor.motor, Algae.Control.updatePeriod);
         IntakeWheel coralWheel = new NEO550IntakeWheel(Coral.Mechanism.constants, Coral.Motor.motor, Coral.Control.updatePeriod);
+        LaserCan laserCan;
+        try{
+            laserCan = new LaserCan(laserCanId);
+            laserCan.setRangingMode(rangingMode);
+        } catch (ConfigurationFailedException e) {
+            laserCan = null;
+        }
         ObjectDetector objectDetector = new LaserCanObjectDetector(
                 ObjectDetection.name,
-                ObjectDetection.laserCan,
+                laserCan,
                 ObjectDetection.maxTrueDistance,
                 ObjectDetection.minTrueDistance);
         return new CommandDualIntake(algaeWheel, coralWheel, objectDetector, Algae.Simulation.simLoopPeriod, Coral.Simulation.simLoopPeriod);

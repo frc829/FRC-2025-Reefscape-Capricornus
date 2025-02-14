@@ -1,5 +1,7 @@
 package digilib.elevator;
 
+import digilib.wrist.Wrist;
+import digilib.wrist.WristRequest;
 import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.*;
@@ -58,6 +60,23 @@ public interface ElevatorRequest {
 
         public Velocity withVelocity(double value) {
             this.maxVelocityValue.mut_setBaseUnitMagnitude(value);
+            return this;
+        }
+    }
+
+    class VoltageRequest implements ElevatorRequest {
+        private final MutVoltage voltage = Volts.mutable(0.0);
+
+        @Override
+        public void apply(Elevator elevator) {
+            if (elevator.isHoldEnabled()) {
+                elevator.disableHold();
+            }
+            elevator.setVoltage(voltage);
+        }
+
+        public VoltageRequest withVoltage(Voltage voltage) {
+            this.voltage.mut_replace(voltage);
             return this;
         }
     }

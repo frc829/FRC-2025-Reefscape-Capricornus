@@ -28,6 +28,4 @@ public class CommandCoralClaw implements Subsystem {
     public void periodic() {
         claw.update();
     }
-
-
 }

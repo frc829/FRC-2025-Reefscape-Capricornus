@@ -21,10 +21,6 @@ public class CommandArmFactory {
         return commandArm.atPosition(position, tolerance);
     }
 
-    public Trigger lessThanPosition(Angle position, Angle tolerance) {
-        return commandArm.lessThanPosition(position, tolerance);
-    }
-
     public Command hold() {
         ArmRequest.Hold request = new ArmRequest.Hold();
         return commandArm.applyRequest(() -> request).withName("ARM:HOLD");

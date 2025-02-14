@@ -62,6 +62,23 @@ public interface ArmRequest {
         }
     }
 
+    class VoltageRequest implements ArmRequest {
+        private final MutVoltage voltage = Volts.mutable(0.0);
+
+        @Override
+        public void apply(Arm arm) {
+            if (arm.isHoldEnabled()) {
+                arm.disableHold();
+            }
+            arm.setVoltage(voltage);
+        }
+
+        public VoltageRequest withVoltage(Voltage voltage) {
+            this.voltage.mut_replace(voltage);
+            return this;
+        }
+    }
+
     class Hold implements ArmRequest {
         private final MutAngle holdPosition = Radians.mutable(0.0);
 
