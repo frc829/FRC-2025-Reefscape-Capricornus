@@ -223,11 +223,11 @@ public class SwerveDrive {
     public void update() {
         for (var camera : cameras) {
             CameraState state = camera.getState();
-            if (state.getRobotPose().isPresent()) {
+            if (Double.isFinite(camera.getState().getRobotPose().getX())) {
                 addVisionMeasurement(
-                        state.getRobotPose().get().toPose2d(),
+                        state.getRobotPose().toPose2d(),
                         state.getTimestamp().in(Seconds),
-                        state.getRobotPoseStdDev().get());
+                        state.getRobotPoseStdDev());
             }
         }
     }

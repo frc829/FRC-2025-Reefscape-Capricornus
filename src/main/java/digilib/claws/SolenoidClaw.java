@@ -10,7 +10,7 @@ public class SolenoidClaw implements Claw {
     private final PneumaticsModuleType moduleType;
     private final ClawValue solenoidOnClawValue;
     private ClawRequest request;
-    private final ClawTelemetry clawTelemetry;
+    private final ClawTelemetry telemetry;
     private final Solenoid solenoid;
 
     public SolenoidClaw(
@@ -18,10 +18,10 @@ public class SolenoidClaw implements Claw {
             Solenoid solenoid) {
         this.solenoid = solenoid;
         this.solenoidOnClawValue = clawConstants.solenoidOnClawValue();
-        this.clawTelemetry = new ClawTelemetry(
+        this.moduleType = clawConstants.moduleType();
+        this.telemetry = new ClawTelemetry(
                 clawConstants.name(),
                 clawConstants.solenoidOnClawValue());
-        this.moduleType = getPneumaticsModuleType();
     }
 
     @Override
@@ -70,6 +70,6 @@ public class SolenoidClaw implements Claw {
 
     @Override
     public void updateTelemetry() {
-        clawTelemetry.telemeterize(clawState);
+        telemetry.telemeterize(clawState);
     }
 }

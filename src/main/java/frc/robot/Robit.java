@@ -80,7 +80,7 @@ public class Robit extends TimedRobot {
         SmartDashboard.putData("Auto Chooser", autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
-        DataLogManager.start();
+        // DataLogManager.start();
         addPeriodic(CommandScheduler.getInstance()::run, 0.020);
     }
 }
