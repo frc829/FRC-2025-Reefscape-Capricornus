@@ -64,7 +64,7 @@ public class CommandElevatorConstants {
     static final class Simulation {
         static final Distance startingHeight = Meters.of(0.0);
         static final Distance minHeight = Meters.of(0.0);
-        static final Distance maxHeight = Meters.of(0.60);
+        static final Distance maxHeight = Meters.of(0.65);
         static final Distance positionStdDev = Meters.of(0.0);
         static final LinearVelocity velocityStdDev = MetersPerSecond.of(0.0);
         static final Time simLoopPeriod = Seconds.of(0.001);

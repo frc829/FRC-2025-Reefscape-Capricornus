@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static digilib.MotorControllerType.*;
 import static edu.wpi.first.units.Units.*;
@@ -56,6 +57,7 @@ public class KrakenX60Arm implements Arm {
                 constants.maxAngle(),
                 constants.maxAngularVelocity(),
                 constants.maxAngularAcceleration());
+        talonFX.setPosition(cancoder.getAbsolutePosition().getValue());
 
         if (RobotBase.isSimulation()) {
             canCoderSimState = new CANcoderSimState(cancoder);
@@ -141,7 +143,7 @@ public class KrakenX60Arm implements Arm {
     @Override
     public void resetPosition() {
         if (cancoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Invalid && cancoder.getMagnetHealth().getValue() != MagnetHealthValue.Magnet_Red) {
-            talonFX.setPosition(cancoder.getPosition().getValue());
+            talonFX.setPosition(cancoder.getAbsolutePosition().getValue());
         }
         updateState();
     }

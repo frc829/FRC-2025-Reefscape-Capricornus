@@ -54,6 +54,7 @@ public class LaserCanObjectDetector implements ObjectDetector {
             state.withDistance(meters)
                     .withInRange(meters <= maxTrueDistance.baseUnitMagnitude() && meters >= minTrueDistance.baseUnitMagnitude())
                     .withTimestamp(Timer.getFPGATimestamp());
+            alert.set(false);
         } catch (Exception e) {
             alert.setText("Error: " + e.getMessage());
             alert.set(true);

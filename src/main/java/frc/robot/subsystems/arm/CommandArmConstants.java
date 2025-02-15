@@ -21,14 +21,14 @@ import frc.robot.Constants;
 public class CommandArmConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(0.19744);
-        static final Voltage kg = Volts.of(0.15216);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(38.776);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(0.35225);
+        static final Voltage ks = Volts.of(0.10054);
+        static final Voltage kg = Volts.of(0.22122);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(39.269);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(0.50276);
         static final GravityTypeValue gravityTypeValue = GravityTypeValue.Arm_Cosine;
-        static final double positionKp = 100.84;
-        static final double positionKd = 0.0; //97.964;
-        static final double velocityKp = 19.725;
+        static final double positionKp = 31.504;
+        static final double positionKd = 4.2443; //97.964;
+        static final double velocityKp = 4.1462;
         static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(
                 (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.magnitude());
         static final AngularAcceleration maxAngularAcceleration = RadiansPerSecondPerSecond.of(
@@ -67,8 +67,8 @@ public class CommandArmConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 34;
-        static final double magnetDirection = 0.0;
-        static final FeedbackSensorSourceValue feedbackSensorSourceValue = FeedbackSensorSourceValue.FusedCANcoder;
+        static final double magnetDirection = -0.217529296875;
+        static final FeedbackSensorSourceValue feedbackSensorSourceValue = FeedbackSensorSourceValue.RemoteCANcoder;
         static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)

@@ -85,7 +85,7 @@ public class CommandElevator implements Subsystem {
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
-
+            SmartDashboard.putNumber("ElapsedTime", deltaTime);
             elevator.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());

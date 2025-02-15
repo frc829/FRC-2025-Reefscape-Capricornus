@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.*;
 
@@ -197,7 +198,7 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void updateSimState(double dt, double supplyVoltage) {
-        var inputVoltage = sparkFlexSim.getAppliedOutput() * 12.0;
+        var inputVoltage = motor.getAppliedOutput() * 12.0;
         simElevator.setInputVoltage(inputVoltage);
         simElevator.update(dt);
         sparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);

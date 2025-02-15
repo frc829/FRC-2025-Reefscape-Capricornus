@@ -1,7 +1,5 @@
 package digilib.elevator;
 
-import digilib.wrist.Wrist;
-import digilib.wrist.WristRequest;
 import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.*;
@@ -18,12 +16,12 @@ public interface ElevatorRequest {
             if (elevator.isHoldEnabled()) {
                 elevator.disableHold();
             }
-            ElevatorState wristState = elevator.getState();
+            ElevatorState state = elevator.getState();
             if (position.lte(elevator.getMaxPosition()) && position.gte(elevator.getMinPosition())) {
                 elevator.setPosition(position);
-            } else if (wristState.getPosition().gte(elevator.getMaxPosition()) && position.lte(elevator.getMaxPosition())) {
+            } else if (state.getPosition().gte(elevator.getMaxPosition()) && position.lte(elevator.getMaxPosition())) {
                 elevator.setPosition(position);
-            } else if (wristState.getPosition().lte(elevator.getMinPosition()) && position.gte(elevator.getMinPosition())) {
+            } else if (state.getPosition().lte(elevator.getMinPosition()) && position.gte(elevator.getMinPosition())) {
                 elevator.setPosition(position);
             } else {
                 elevator.setVelocity(MetersPerSecond.of(0.0));
