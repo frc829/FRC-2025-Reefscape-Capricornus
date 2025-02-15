@@ -97,7 +97,7 @@ public class CommandArmConstants {
                 .withNeutralMode(neutralModeValue);
         static final Slot0Configs slot0Configs = new Slot0Configs()
                 .withKS(ks.baseUnitMagnitude())
-                .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
+                .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseVelocitySign)
                 .withKG(kg.baseUnitMagnitude())
                 .withKV(kv.magnitude())
                 .withKA(ka.magnitude())

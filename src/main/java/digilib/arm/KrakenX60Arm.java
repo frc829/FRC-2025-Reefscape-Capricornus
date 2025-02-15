@@ -146,6 +146,7 @@ public class KrakenX60Arm implements Arm {
                 .withVoltage(talonFX.getMotorVoltage().getValueAsDouble())
                 .withTimestamp(Timer.getFPGATimestamp())
                 .withAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
+        SmartDashboard.putNumber("Kg contrib", 0.22122 * Math.cos(cancoder.getAbsolutePosition().getValue().in(Radians)));
         SmartDashboard.putNumber("FF output", talonFX.getClosedLoopFeedForward().getValueAsDouble());
     }
 
