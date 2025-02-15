@@ -78,18 +78,4 @@ public interface ElevatorRequest {
             return this;
         }
     }
-
-    class Hold implements ElevatorRequest {
-        private final MutDistance holdPosition = Meters.mutable(0.0);
-
-        @Override
-        public void apply(Elevator elevator) {
-            boolean isHoldEnabled = elevator.isHoldEnabled();
-            if (!isHoldEnabled) {
-                elevator.enableHold();
-                holdPosition.mut_replace(elevator.getState().getPosition());
-            }
-            elevator.setPosition(holdPosition);
-        }
-    }
 }

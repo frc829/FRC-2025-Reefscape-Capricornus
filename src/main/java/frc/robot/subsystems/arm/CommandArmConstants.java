@@ -59,8 +59,8 @@ public class CommandArmConstants {
 
     static final class Simulation {
         static final Angle startingAngle = Degrees.of(0.0);
-        static final Angle minAngle = Degrees.of(-45);
-        static final Angle maxAngle = Degrees.of(180);
+        static final Angle minAngle = Degrees.of(-20.0);
+        static final Angle maxAngle = Degrees.of(160.0);
         static final Angle positionStdDev = Degrees.of(0.0);
         static final AngularVelocity velocityStdDev = DegreesPerSecond.of(0.0);
         static final Time simLoopPeriod = Seconds.of(0.001);
@@ -68,7 +68,7 @@ public class CommandArmConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 34;
-        static final double magnetDirection = RobotBase.isReal() ? 0.035889 : 0.0;
+        static final double magnetDirection = RobotBase.isReal() ? 0.173828 : 0.0;
         static final FeedbackSensorSourceValue feedbackSensorSourceValue = RobotBase.isReal() ? FeedbackSensorSourceValue.FusedCANcoder : FeedbackSensorSourceValue.RotorSensor;
         static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()

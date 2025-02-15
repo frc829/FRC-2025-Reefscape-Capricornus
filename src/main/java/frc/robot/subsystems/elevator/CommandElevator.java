@@ -15,6 +15,7 @@ import digilib.elevator.ElevatorRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
@@ -71,6 +72,24 @@ public class CommandElevator implements Subsystem {
 
     public Command applyRequest(Supplier<ElevatorRequest> requestSupplier) {
         return run(() -> elevator.setControl(requestSupplier.get()));
+    }
+
+    public Command hold() {
+        ElevatorRequest.Position request = new ElevatorRequest.Position();
+        return Commands.runOnce(() -> request.withPosition(elevator.getState().getPosition().in(Meters)))
+                .andThen(applyRequest(() -> request)).withName("ELEVATOR:HOLD");
+    }
+
+    public Command goToPosition(Distance position) {
+        ElevatorRequest.Position request = new ElevatorRequest.Position();
+        request.withPosition(position.in(Meters));
+        return applyRequest(() -> request)
+                .withName(String.format("ELEVATOR:%s meters", position.in(Meters)));
+    }
+
+    public Command moveAtVelocity(DoubleSupplier value) {
+        ElevatorRequest.Velocity request = new ElevatorRequest.Velocity();
+        return applyRequest(() -> request.withVelocity(value.getAsDouble())).withName("ELEVATOR:VELOCITY");
     }
 
     @Override

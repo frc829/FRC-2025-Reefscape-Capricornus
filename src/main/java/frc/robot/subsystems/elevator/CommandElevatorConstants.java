@@ -111,6 +111,8 @@ public class CommandElevatorConstants {
                 Motor.motor,
                 Follower.motor,
                 updatePeriod);
-        return new CommandElevator(elevator, simLoopPeriod);
+        CommandElevator commandElevator = new CommandElevator(elevator, simLoopPeriod);
+        commandElevator.setDefaultCommand(commandElevator.hold());
+        return commandElevator;
     }
 }

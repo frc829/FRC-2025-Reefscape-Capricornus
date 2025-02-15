@@ -45,13 +45,13 @@ public interface WristRequest {
             }
             WristState state = wrist.getState();
             if (state.getPosition().lte(wrist.getMaxAngle()) && state.getPosition().gte(wrist.getMinAngle())) {
-                velocity.mut_setMagnitude(maxVelocityValue.baseUnitMagnitude() * wrist.getMaxVelocity().baseUnitMagnitude());
-            } else if(state.getPosition().gte(wrist.getMaxAngle()) && maxVelocityValue.baseUnitMagnitude() < 0.0){
-                velocity.mut_setMagnitude(maxVelocityValue.baseUnitMagnitude() * wrist.getMaxVelocity().baseUnitMagnitude());
-            } else if(state.getPosition().lte(wrist.getMinAngle()) && maxVelocityValue.baseUnitMagnitude() > 0.0){
-                velocity.mut_setMagnitude(maxVelocityValue.baseUnitMagnitude() * wrist.getMaxVelocity().baseUnitMagnitude());
-            }else {
-                velocity.mut_setMagnitude(0.0);
+                velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * wrist.getMaxAngle().baseUnitMagnitude());
+            } else if (state.getPosition().gte(wrist.getMaxAngle()) && maxVelocityValue.baseUnitMagnitude() < 0.0) {
+                velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * wrist.getMaxAngle().baseUnitMagnitude());
+            } else if (state.getPosition().lte(wrist.getMinAngle()) && maxVelocityValue.baseUnitMagnitude() > 0.0) {
+                velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * wrist.getMaxAngle().baseUnitMagnitude());
+            } else {
+                velocity.mut_setBaseUnitMagnitude(0.0);
             }
             wrist.setVelocity(velocity);
         }

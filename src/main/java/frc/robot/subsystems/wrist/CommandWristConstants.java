@@ -68,8 +68,8 @@ public class CommandWristConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 37;
-        static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.Clockwise_Positive;
-        static final double magnetOffset = RobotBase.isReal() ? 0.441895 : 0.0;
+        static final SensorDirectionValue sensorDirectionValue = RobotBase.isReal() ? SensorDirectionValue.CounterClockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
+        static final double magnetOffset = RobotBase.isReal() ? -0.202637 : 0.0;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)
                 .withMagnetOffset(magnetOffset);
@@ -80,8 +80,8 @@ public class CommandWristConstants {
 
     static final class Motor {
         static final int deviceId = 17;
-        static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kBrake;
-        static final boolean inverted = false;
+        static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kCoast;
+        static final boolean inverted = true;
         static final int depth = 2;
         static final int periodMs = 16;
         static final EncoderConfig encoderConfig = new EncoderConfig()
@@ -102,7 +102,7 @@ public class CommandWristConstants {
         static final SparkMax motor = new SparkMax(deviceId, kBrushless);
     }
 
-    public static CommandWrist createCommandWrist() {
+    public static CommandWrist create() {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
         Wrist wrist = new NEO550Wrist(
@@ -110,6 +110,8 @@ public class CommandWristConstants {
                 motor,
                 cancoder,
                 updatePeriod);
-        return new CommandWrist(wrist, simLoopPeriod);
+        CommandWrist commandWrist = new CommandWrist(wrist, simLoopPeriod);
+        commandWrist.setDefaultCommand(commandWrist.hold());
+        return commandWrist;
     }
 }

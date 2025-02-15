@@ -81,9 +81,9 @@ public class ManualRoutines {
                 () -> 0.25));
     }
 
-    private void elevatorTo10CM(){
-        controller.testElevatorPos().whileTrue(factories.arm.goToAngle(
-                Degrees.of(30)));
+    private void elevatorTo10CM() {
+        controller.testElevatorPos()
+                .whileTrue(factories.arm.goToAngle(Degrees.of(30)));
     }
 
 }

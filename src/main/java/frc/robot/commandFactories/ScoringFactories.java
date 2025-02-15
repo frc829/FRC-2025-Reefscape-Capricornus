@@ -60,26 +60,15 @@ public class ScoringFactories {
             Distance elevatorHeight,
             Angle armAngle,
             Angle wristAngle) {
-        return factories.wrist.goToAngle(wristAngle).asProxy()
-                .alongWith(factories.elevator.goToPosition(elevatorHeight).asProxy())
-                .until(factories.wrist.atPosition(wristAngle, Degrees.of(0.1)))
-                .andThen(factories.elevator
-                        .goToPosition(elevatorHeight).asProxy()
-                        .until(factories.elevator.atPosition(elevatorHeight, Meters.of(0.001)))
-                        .alongWith(factories.arm
-                                .goToAngle(armAngle).asProxy()
-                                .until(factories.arm.atPosition(armAngle, Degrees.of(0.1)))));
+        return Commands.none();
+
     }
 
     private Command createCoralAlignUnSafe(
             Distance elevatorHeight,
             Angle armAngle,
             Angle wristAngle) {
-        return factories.wrist.goToAngle(Degrees.of(0.0)).asProxy()
-                .alongWith(factories.elevator.goToPosition(elevatorHeight).asProxy())
-                .until(factories.wrist.atPosition(Degrees.of(0.0), Degrees.of(0.1)))
-                .andThen(factories.elevator
-                        .goToPosition(elevatorHeight).asProxy()
-                        .alongWith(factories.arm.goToAngle(armAngle)));
+        return Commands.none();
+
     }
 }

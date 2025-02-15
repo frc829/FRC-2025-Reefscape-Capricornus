@@ -1572,6 +1572,20 @@
             },
             "children": [
               {
+                "title": "Angle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Arm/Angle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
                 "title": "Absolute Angle",
                 "x": 0.0,
                 "y": 0.0,
@@ -1586,20 +1600,6 @@
                 }
               },
               {
-                "title": "Absolute Encoder Status",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Arm/Absolute Encoder Status",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              },
-              {
                 "title": "AbsoluteVelocity",
                 "x": 0.0,
                 "y": 0.0,
@@ -1608,20 +1608,6 @@
                 "type": "Text Display",
                 "properties": {
                   "topic": "/Arm/AbsoluteVelocity",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Angle",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Arm/Angle",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -1642,16 +1628,16 @@
                 }
               },
               {
-                "title": "Max Angle",
+                "title": "Absolute Encoder Status",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/Arm/Max Angle",
+                  "topic": "/Arm/Absolute Encoder Status",
                   "period": 0.06,
-                  "data_type": "double",
+                  "data_type": "string",
                   "show_submit_button": false
                 }
               },
@@ -1724,6 +1710,20 @@
                   "data_type": "double",
                   "show_submit_button": false
                 }
+              },
+              {
+                "title": "Max Angle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Arm/Max Angle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
               }
             ]
           }
@@ -1731,8 +1731,8 @@
         "containers": [
           {
             "title": "FF output",
-            "x": 512.0,
-            "y": 384.0,
+            "x": 128.0,
+            "y": 704.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -1745,8 +1745,8 @@
           },
           {
             "title": "Kg contrib",
-            "x": 512.0,
-            "y": 512.0,
+            "x": 0.0,
+            "y": 704.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -1755,6 +1755,18 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Scheduler",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "Scheduler",
+            "properties": {
+              "topic": "/SmartDashboard/Scheduler",
+              "period": 0.06
             }
           }
         ]

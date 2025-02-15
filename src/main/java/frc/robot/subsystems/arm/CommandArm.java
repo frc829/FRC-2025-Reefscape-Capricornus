@@ -72,13 +72,15 @@ public class CommandArm implements Subsystem {
     }
 
     public Command hold() {
-        ArmRequest.Hold request = new ArmRequest.Hold();
-        return applyRequest(() -> request).withName("ARM:HOLD");
+        ArmRequest.Position request = new ArmRequest.Position();
+        return Commands.runOnce(() -> request.withPosition(arm.getState().getPosition().in(Radians)))
+                .andThen(applyRequest(() -> request)).withName("ARM:HOLD");
     }
 
     public Command goToAngle(Angle position) {
         ArmRequest.Position request = new ArmRequest.Position();
-        return applyRequest(() -> request.withPosition(position.in(Radians))).withName(String.format("ARM:%s degrees", position.in(Degrees)));
+        return applyRequest(() -> request.withPosition(position.in(Radians)))
+                .withName(String.format("ARM:%s degrees", position.in(Degrees)));
     }
 
     public Command moveAtVelocity(DoubleSupplier value) {

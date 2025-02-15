@@ -15,6 +15,7 @@ import digilib.wrist.WristRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
@@ -71,6 +72,24 @@ public class CommandWrist implements Subsystem {
 
     public Command applyRequest(Supplier<WristRequest> requestSupplier) {
         return run(() -> wrist.setControl(requestSupplier.get()));
+    }
+
+    public Command hold() {
+        WristRequest.Position request = new WristRequest.Position();
+        return Commands.runOnce(() -> request.withPosition(wrist.getState().getPosition().in(Radians)))
+                .andThen(applyRequest(() -> request)).withName("WRIST:HOLD");
+    }
+
+    public Command goToAngle(Angle position) {
+        WristRequest.Position request = new WristRequest.Position();
+        request.withPosition(position.in(Radians));
+        return applyRequest(() -> request)
+                .withName(String.format("WRIST:%s degrees", position.in(Degrees)));
+    }
+
+    public Command moveAtVelocity(DoubleSupplier value) {
+        WristRequest.Velocity request = new WristRequest.Velocity();
+        return applyRequest(() -> request.withVelocity(value.getAsDouble())).withName("WRIST:VELOCITY");
     }
 
     @Override
