@@ -1,5 +1,6 @@
 package digilib.arm;
 
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -39,11 +40,13 @@ public class KrakenX60Arm implements Arm {
     private SingleJointedArmSim simArm = null;
     private TalonFXSimState talonFXSimState = null;
     private CANcoderSimState canCoderSimState = null;
+    private boolean hold = false;
 
     public KrakenX60Arm(
             ArmConstants constants,
             TalonFX talonFX,
-            CANcoder cancoder) {
+            CANcoder cancoder,
+            FeedbackConfigs feedbackConfigs) {
         minAngle = constants.minAngle();
         maxAngle = constants.maxAngle();
         maxAngularVelocity = constants.maxAngularVelocity();
@@ -56,7 +59,7 @@ public class KrakenX60Arm implements Arm {
                 constants.maxAngle(),
                 constants.maxAngularVelocity(),
                 constants.maxAngularAcceleration());
-        talonFX.setPosition(cancoder.getAbsolutePosition().getValue());
+        // talonFX.setPosition(cancoder.getAbsolutePosition().getValue());
 
         if (RobotBase.isSimulation()) {
             canCoderSimState = new CANcoderSimState(cancoder);
@@ -102,6 +105,11 @@ public class KrakenX60Arm implements Arm {
     }
 
     @Override
+    public boolean isHoldEnabled() {
+        return hold;
+    }
+
+    @Override
     public void setControl(ArmRequest request) {
         if (armRequest != request) {
             armRequest = request;
@@ -122,6 +130,16 @@ public class KrakenX60Arm implements Arm {
     @Override
     public void setVoltage(Voltage voltage) {
         talonFX.setControl(voltageOut.withOutput(voltage));
+    }
+
+    @Override
+    public void enableHold() {
+        hold = true;
+    }
+
+    @Override
+    public void disableHold() {
+        hold = false;
     }
 
     @Override

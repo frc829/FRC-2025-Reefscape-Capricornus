@@ -7,11 +7,7 @@ package frc.robot;
 import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
-import frc.robot.controllers.DriverController;
 import frc.robot.controllers.ManualController;
-import frc.robot.controllers.OperatorFlightStickController;
-import frc.robot.controllers.OperatorXboxController;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -23,7 +19,6 @@ import frc.robot.commandFactories.SubsystemCommandFactories;
 import frc.robot.routines.*;
 import frc.robot.subsystems.algaeClaw.CommandAlgaeClawConstants;
 import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
-import frc.robot.subsystems.arm.CommandArmFactory;
 import frc.robot.subsystems.coralClaw.CommandCoralClawConstants;
 import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
 import frc.robot.subsystems.dualIntake.CommandDualIntakeConstants;
@@ -49,13 +44,13 @@ public class Robit extends TimedRobot {
         CanBridge.runTCP();
         CommandSwerveDrive commandSwerveDrive = CommandSwerveDriveConstants.createCommandSwerve();
         commandSwerveDrive.configureAutoBuilder();
-        DriverController driverController = new DriverController(Constants.controllerDeadband);
-        OperatorXboxController operatorXboxController = new OperatorXboxController(Constants.controllerDeadband);
-        OperatorFlightStickController operatorFlightStickController = new OperatorFlightStickController(Constants.controllerDeadband);
+        // DriverController driverController = new DriverController(Constants.controllerDeadband);
+        // OperatorXboxController operatorXboxController = new OperatorXboxController(Constants.controllerDeadband);
+        // OperatorFlightStickController operatorFlightStickController = new OperatorFlightStickController(Constants.controllerDeadband);
         ManualController manualController = new ManualController(Constants.controllerDeadband);
         SubsystemCommandFactories subsystemCommandFactories = new SubsystemCommandFactories(
                 new CommandAlgaeClawFactory(CommandAlgaeClawConstants.create(CommandPneumaticsConstants.PneumaticsModule.pneumaticHub)),
-                new CommandArmFactory(CommandArmConstants.create()),
+                CommandArmConstants.create(),
                 new CommandCoralClawFactory(CommandCoralClawConstants.create(CommandPneumaticsConstants.PneumaticsModule.pneumaticHub)),
                 new CommandDualIntakeFactory(CommandDualIntakeConstants.create()),
                 new CommandElevatorFactory(CommandElevatorConstants.create()),
@@ -67,13 +62,13 @@ public class Robit extends TimedRobot {
         PickupFactories pickupFactories = new PickupFactories(subsystemCommandFactories);
         ResetFactories resetFactories = new ResetFactories(subsystemCommandFactories);
         ScoringFactories scoringFactories = new ScoringFactories(subsystemCommandFactories, resetFactories);
-        new PickupRoutines(operatorXboxController, pickupFactories, resetFactories);
+        // new PickupRoutines(operatorXboxController, pickupFactories, resetFactories);
         new ManualRoutines(subsystemCommandFactories, manualController);
-        new DriverRoutines(subsystemCommandFactories, driverController);
-        new ScoringRoutines(
-                operatorXboxController,
-                operatorFlightStickController,
-                scoringFactories);
+        // new DriverRoutines(subsystemCommandFactories, driverController);
+        // new ScoringRoutines(
+        //         operatorXboxController,
+        //         operatorFlightStickController,
+        //         scoringFactories);
         AutoChooser autoChooser = new AutoChooser();
         AutoFactory autoFactory = commandSwerveDrive.createAutoFactory();
         new AutoRoutines(autoFactory, autoChooser);

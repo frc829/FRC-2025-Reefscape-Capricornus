@@ -1,7 +1,7 @@
 package frc.robot.commandFactories;
 
 import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
-import frc.robot.subsystems.arm.CommandArmFactory;
+import frc.robot.subsystems.arm.CommandArm;
 import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
 import frc.robot.subsystems.dualIntake.CommandDualIntakeFactory;
 import frc.robot.subsystems.elevator.CommandElevatorFactory;
@@ -13,7 +13,7 @@ import frc.robot.subsystems.wrist.CommandWristFactory;
 
 public class SubsystemCommandFactories {
     public final CommandAlgaeClawFactory algae;
-    public final CommandArmFactory arm;
+    public final CommandArm arm;
     public final CommandCoralClawFactory coral;
     public final CommandDualIntakeFactory intake;
     public final CommandElevatorFactory elevator;
@@ -25,7 +25,7 @@ public class SubsystemCommandFactories {
 
     public SubsystemCommandFactories(
             CommandAlgaeClawFactory commandAlgaeClawFactory,
-            CommandArmFactory commandArmFactory,
+            CommandArm arm,
             CommandCoralClawFactory commandCoralClawFactory,
             CommandDualIntakeFactory commandDualIntakeFactory,
             CommandElevatorFactory commandElevatorFactory,
@@ -35,7 +35,7 @@ public class SubsystemCommandFactories {
             CommandWinchFactory commandWinchFactory,
             CommandWristFactory commandWristFactory) {
         this.algae = commandAlgaeClawFactory;
-        this.arm = commandArmFactory;
+        this.arm = arm;
         this.coral = commandCoralClawFactory;
         this.intake = commandDualIntakeFactory;
         this.elevator = commandElevatorFactory;

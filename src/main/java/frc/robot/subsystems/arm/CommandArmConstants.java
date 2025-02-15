@@ -68,8 +68,8 @@ public class CommandArmConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 34;
-        static final double magnetDirection = RobotBase.isReal() ? -0.217529296875 : 0.0;
-        static final FeedbackSensorSourceValue feedbackSensorSourceValue = RobotBase.isReal() ? FeedbackSensorSourceValue.RemoteCANcoder : FeedbackSensorSourceValue.RotorSensor;
+        static final double magnetDirection = RobotBase.isReal() ? 0.035889 : 0.0;
+        static final FeedbackSensorSourceValue feedbackSensorSourceValue = RobotBase.isReal() ? FeedbackSensorSourceValue.FusedCANcoder : FeedbackSensorSourceValue.RotorSensor;
         static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)
@@ -86,7 +86,8 @@ public class CommandArmConstants {
         static final FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(cancoderDeviceNumber)
                 .withFeedbackSensorSource(feedbackSensorSourceValue)
-                .withSensorToMechanismRatio(reduction);
+                .withSensorToMechanismRatio(1.0)
+                .withRotorToSensorRatio(reduction);
         static final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs()
                 .withMotionMagicExpo_kV(kv.magnitude())
                 .withMotionMagicExpo_kA(ka.magnitude())
@@ -124,7 +125,9 @@ public class CommandArmConstants {
     public static CommandArm create() {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         talonFX.getConfigurator().apply(Motor.config);
-        Arm arm = new KrakenX60Arm(constants, talonFX, cancoder);
-        return new CommandArm(arm, simLoopPeriod);
+        Arm arm = new KrakenX60Arm(constants, talonFX, cancoder, feedbackConfigs);
+        CommandArm commandArm = new CommandArm(arm, simLoopPeriod);
+        commandArm.setDefaultCommand(commandArm.hold());
+        return commandArm;
     }
 }

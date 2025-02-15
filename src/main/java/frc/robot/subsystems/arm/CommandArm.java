@@ -2,6 +2,7 @@ package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import digilib.elevator.ElevatorRequest;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
@@ -15,6 +16,7 @@ import digilib.arm.ArmRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
@@ -65,14 +67,23 @@ public class CommandArm implements Subsystem {
         return new Trigger(() -> arm.getState().getPosition().isNear(position, tolerance));
     }
 
-    public Command applyRequest(Supplier<ArmRequest> requestSupplier) {
+    private Command applyRequest(Supplier<ArmRequest> requestSupplier) {
         return run(() -> arm.setControl(requestSupplier.get()));
     }
 
     public Command hold() {
+        ArmRequest.Hold request = new ArmRequest.Hold();
+        return applyRequest(() -> request).withName("ARM:HOLD");
+    }
+
+    public Command goToAngle(Angle position) {
         ArmRequest.Position request = new ArmRequest.Position();
-        return Commands.runOnce(() -> request.withPosition(arm.getState().getPosition().in(Radians)), this)
-                .andThen(applyRequest(() -> request)).withName("ARM:HOLD");
+        return applyRequest(() -> request.withPosition(position.in(Radians))).withName(String.format("ARM:%s degrees", position.in(Degrees)));
+    }
+
+    public Command moveAtVelocity(DoubleSupplier value) {
+        ArmRequest.Velocity request = new ArmRequest.Velocity();
+        return applyRequest(() -> request.withVelocity(value.getAsDouble())).withName("ARM:VELOCITY");
     }
 
     @Override
