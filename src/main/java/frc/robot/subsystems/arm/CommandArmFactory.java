@@ -14,17 +14,14 @@ public class CommandArmFactory {
 
     public CommandArmFactory(CommandArm commandArm) {
         this.commandArm = commandArm;
-        commandArm.setDefaultCommand(hold());
+        commandArm.setDefaultCommand(commandArm.hold());
     }
 
     public Trigger atPosition(Angle position, Angle tolerance) {
         return commandArm.atPosition(position, tolerance);
     }
 
-    public Command hold() {
-        ArmRequest.Hold request = new ArmRequest.Hold();
-        return commandArm.applyRequest(() -> request).withName("ARM:HOLD");
-    }
+
 
     public Command goToAngle(Angle position) {
         ArmRequest.Position request = new ArmRequest.Position();

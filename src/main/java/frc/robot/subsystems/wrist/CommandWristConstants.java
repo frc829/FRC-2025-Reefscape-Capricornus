@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.*;
 import digilib.wrist.NEO550Wrist;
 import digilib.wrist.Wrist;
 import digilib.wrist.WristConstants;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants;
 
 import static com.revrobotics.spark.SparkBase.PersistMode.*;
@@ -68,7 +69,7 @@ public class CommandWristConstants {
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 37;
         static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.Clockwise_Positive;
-        static final double magnetOffset = 0.441895;
+        static final double magnetOffset = RobotBase.isReal() ? 0.441895 : 0.0;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)
                 .withMagnetOffset(magnetOffset);

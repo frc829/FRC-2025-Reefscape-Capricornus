@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.*;
 import digilib.arm.Arm;
 import digilib.arm.ArmConstants;
 import digilib.arm.KrakenX60Arm;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants;
 
 public class CommandArmConstants {
@@ -57,7 +58,7 @@ public class CommandArmConstants {
     }
 
     static final class Simulation {
-        static final Angle startingAngle = Degrees.of(-45);
+        static final Angle startingAngle = Degrees.of(0.0);
         static final Angle minAngle = Degrees.of(-45);
         static final Angle maxAngle = Degrees.of(180);
         static final Angle positionStdDev = Degrees.of(0.0);
@@ -67,8 +68,8 @@ public class CommandArmConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 34;
-        static final double magnetDirection = -0.217529296875;
-        static final FeedbackSensorSourceValue feedbackSensorSourceValue = FeedbackSensorSourceValue.RemoteCANcoder;
+        static final double magnetDirection = RobotBase.isReal() ? -0.217529296875 : 0.0;
+        static final FeedbackSensorSourceValue feedbackSensorSourceValue = RobotBase.isReal() ? FeedbackSensorSourceValue.RemoteCANcoder : FeedbackSensorSourceValue.RotorSensor;
         static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)

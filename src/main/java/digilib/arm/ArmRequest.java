@@ -13,9 +13,6 @@ public interface ArmRequest {
 
         @Override
         public void apply(Arm arm) {
-            if (arm.isHoldEnabled()) {
-                arm.disableHold();
-            }
             ArmState armState = arm.getState();
             if (position.lte(arm.getMaxAngle()) && position.gte(arm.getMinAngle())) {
                 arm.setPosition(position);
@@ -40,9 +37,6 @@ public interface ArmRequest {
 
         @Override
         public void apply(Arm arm) {
-            if (arm.isHoldEnabled()) {
-                arm.disableHold();
-            }
             ArmState armState = arm.getState();
             if (armState.getPosition().lte(arm.getMaxAngle()) && armState.getPosition().gte(arm.getMinAngle())) {
                 velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * arm.getMaxAngle().baseUnitMagnitude());
@@ -67,29 +61,12 @@ public interface ArmRequest {
 
         @Override
         public void apply(Arm arm) {
-            if (arm.isHoldEnabled()) {
-                arm.disableHold();
-            }
             arm.setVoltage(voltage);
         }
 
         public VoltageRequest withVoltage(Voltage voltage) {
             this.voltage.mut_replace(voltage);
             return this;
-        }
-    }
-
-    class Hold implements ArmRequest {
-        private final MutAngle holdPosition = Radians.mutable(0.0);
-
-        @Override
-        public void apply(Arm arm) {
-            boolean isHoldEnabled = arm.isHoldEnabled();
-            if (!isHoldEnabled) {
-                arm.enableHold();
-                holdPosition.mut_replace(arm.getState().getPosition());
-            }
-            arm.setPosition(holdPosition);
         }
     }
 }

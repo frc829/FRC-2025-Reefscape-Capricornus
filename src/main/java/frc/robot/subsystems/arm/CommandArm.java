@@ -69,6 +69,12 @@ public class CommandArm implements Subsystem {
         return run(() -> arm.setControl(requestSupplier.get()));
     }
 
+    public Command hold() {
+        ArmRequest.Position request = new ArmRequest.Position();
+        return Commands.runOnce(() -> request.withPosition(arm.getState().getPosition().in(Radians)), this)
+                .andThen(applyRequest(() -> request)).withName("ARM:HOLD");
+    }
+
     @Override
     public void periodic() {
         arm.update();

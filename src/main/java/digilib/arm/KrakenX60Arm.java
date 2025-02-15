@@ -36,7 +36,6 @@ public class KrakenX60Arm implements Arm {
     private final MotionMagicVelocityVoltage velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(1).withEnableFOC(true);
     private final VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true);
     private ArmRequest armRequest;
-    private boolean hold = false;
     private SingleJointedArmSim simArm = null;
     private TalonFXSimState talonFXSimState = null;
     private CANcoderSimState canCoderSimState = null;
@@ -103,11 +102,6 @@ public class KrakenX60Arm implements Arm {
     }
 
     @Override
-    public boolean isHoldEnabled() {
-        return hold;
-    }
-
-    @Override
     public void setControl(ArmRequest request) {
         if (armRequest != request) {
             armRequest = request;
@@ -128,16 +122,6 @@ public class KrakenX60Arm implements Arm {
     @Override
     public void setVoltage(Voltage voltage) {
         talonFX.setControl(voltageOut.withOutput(voltage));
-    }
-
-    @Override
-    public void enableHold() {
-        hold = true;
-    }
-
-    @Override
-    public void disableHold() {
-        hold = false;
     }
 
     @Override
@@ -162,6 +146,7 @@ public class KrakenX60Arm implements Arm {
                 .withVoltage(talonFX.getMotorVoltage().getValueAsDouble())
                 .withTimestamp(Timer.getFPGATimestamp())
                 .withAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
+        SmartDashboard.putNumber("FF output", talonFX.getClosedLoopFeedForward().getValueAsDouble());
     }
 
     @Override
