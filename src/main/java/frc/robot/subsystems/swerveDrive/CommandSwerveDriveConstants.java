@@ -35,7 +35,7 @@ public class CommandSwerveDriveConstants {
         private static final PoseStrategy fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
 
         public static final class Camera0 {
-            private static final String name = "camera0";
+            private static final String name = "Thrifty_Cam_2025";
             private static final Distance cameraX = Meter.of(0.0);
             private static final Distance cameraY = Meter.of(0.0);
             private static final Distance cameraZ = Meter.of(0.0);
@@ -52,7 +52,7 @@ public class CommandSwerveDriveConstants {
         }
 
         public static final class Camera1 {
-            private static final String name = "camera1";
+            private static final String name = "OV9782-07";
             private static final Distance cameraX = Meter.of(0.0);
             private static final Distance cameraY = Meter.of(0.0);
             private static final Distance cameraZ = Meter.of(0.0);
@@ -69,7 +69,7 @@ public class CommandSwerveDriveConstants {
         }
 
         public static final class Camera2 {
-            private static final String name = "camera2";
+            private static final String name = "OV9782-08";
             private static final Distance cameraX = Meter.of(0.0);
             private static final Distance cameraY = Meter.of(0.0);
             private static final Distance cameraZ = Meter.of(0.0);

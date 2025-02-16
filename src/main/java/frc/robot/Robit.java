@@ -7,6 +7,7 @@ package frc.robot;
 import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
+import edu.wpi.first.net.PortForwarder;
 import frc.robot.controllers.ManualController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,6 +33,7 @@ import frc.robot.subsystems.wrist.WristSubsystemConstants;
 public class Robit extends TimedRobot {
 
     public Robit() {
+        PortForwarder.add(5800, "orangepi50.local", 5800);
         CanBridge.runTCP();
         CommandSwerveDrive commandSwerveDrive = CommandSwerveDriveConstants.createCommandSwerve();
         commandSwerveDrive.configureAutoBuilder();
