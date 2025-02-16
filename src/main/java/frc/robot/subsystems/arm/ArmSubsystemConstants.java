@@ -68,7 +68,7 @@ public class ArmSubsystemConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 34;
-        static final double magnetDirection = RobotBase.isReal() ? 0.173828 : 0.0;
+        static final double magnetDirection = RobotBase.isReal() ? -0.217041 : 0.0;
         static final FeedbackSensorSourceValue feedbackSensorSourceValue = FeedbackSensorSourceValue.FusedCANcoder;
         static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()

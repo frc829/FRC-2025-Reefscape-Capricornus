@@ -69,7 +69,7 @@ public class WristSubsystemConstants {
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 37;
         static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive;
-        static final double magnetOffset = RobotBase.isReal() ? -0.202637 : 0.0;
+        static final double magnetOffset = RobotBase.isReal() ? -0.188477 : 0.0;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)
                 .withMagnetOffset(magnetOffset);
