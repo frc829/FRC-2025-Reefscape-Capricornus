@@ -19,13 +19,13 @@ import static com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters;
 import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
 import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder;
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.wrist.CommandWristConstants.AbsoluteEncoder.cancoder;
-import static frc.robot.subsystems.wrist.CommandWristConstants.Control.*;
-import static frc.robot.subsystems.wrist.CommandWristConstants.Mechanism.*;
-import static frc.robot.subsystems.wrist.CommandWristConstants.Motor.motor;
-import static frc.robot.subsystems.wrist.CommandWristConstants.Simulation.*;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.AbsoluteEncoder.cancoder;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Control.*;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.*;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Motor.motor;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.*;
 
-public class CommandWristConstants {
+public class WristSubsystemConstants {
 
     static final class Control {
         static final Voltage ks = Volts.of(0.14461);
@@ -68,7 +68,7 @@ public class CommandWristConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 37;
-        static final SensorDirectionValue sensorDirectionValue = RobotBase.isReal() ? SensorDirectionValue.CounterClockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
+        static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive;
         static final double magnetOffset = RobotBase.isReal() ? -0.202637 : 0.0;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)
@@ -80,7 +80,7 @@ public class CommandWristConstants {
 
     static final class Motor {
         static final int deviceId = 17;
-        static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kCoast;
+        static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kBrake;
         static final boolean inverted = true;
         static final int depth = 2;
         static final int periodMs = 16;
@@ -102,7 +102,7 @@ public class CommandWristConstants {
         static final SparkMax motor = new SparkMax(deviceId, kBrushless);
     }
 
-    public static CommandWrist create() {
+    public static WristSubsystem create() {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
         Wrist wrist = new NEO550Wrist(
@@ -110,8 +110,8 @@ public class CommandWristConstants {
                 motor,
                 cancoder,
                 updatePeriod);
-        CommandWrist commandWrist = new CommandWrist(wrist, simLoopPeriod);
-        commandWrist.setDefaultCommand(commandWrist.hold());
-        return commandWrist;
+        WristSubsystem wristSubsystem = new WristSubsystem(wrist, simLoopPeriod);
+        wristSubsystem.setDefaultCommand(wristSubsystem.hold());
+        return wristSubsystem;
     }
 }

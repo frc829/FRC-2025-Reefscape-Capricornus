@@ -4,7 +4,6 @@ import frc.robot.controllers.ManualController;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
 
 public class ManualRoutines {
     private final ManualController controller;
@@ -57,26 +56,26 @@ public class ManualRoutines {
     }
 
     private void coralIn() {
-        controller.coralIn().whileTrue(factories.intake.moveAtVelocity(
+        controller.coralIn().whileTrue(factories.dualIntake.moveAtVelocity(
                         () -> 0.0,
                         () -> 0.25)
-                .until(factories.intake.hasCoral));
+                .until(factories.dualIntake.hasCoral));
     }
 
     public void coralOut() {
-        controller.coralOut().whileTrue(factories.intake.moveAtVelocity(
+        controller.coralOut().whileTrue(factories.dualIntake.moveAtVelocity(
                 () -> 0.0,
                 () -> -0.25));
     }
 
     private void algaeIn() {
-        controller.algaeIn().whileTrue(factories.intake.moveAtVelocity(
+        controller.algaeIn().whileTrue(factories.dualIntake.moveAtVelocity(
                 () -> -0.25,
                 () -> -0.25));
     }
 
     private void algaeOut() {
-        controller.algaeOut().whileTrue(factories.intake.moveAtVelocity(
+        controller.algaeOut().whileTrue(factories.dualIntake.moveAtVelocity(
                 () -> 0.25,
                 () -> 0.25));
     }

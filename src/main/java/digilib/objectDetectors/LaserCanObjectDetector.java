@@ -5,8 +5,6 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Timer;
 
-import static au.grapplerobotics.interfaces.LaserCanInterface.*;
-
 public class LaserCanObjectDetector implements ObjectDetector {
     private final ObjectDetectorState state;
     private ObjectDetectorRequest request;

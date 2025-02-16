@@ -18,24 +18,16 @@ import frc.robot.commandFactories.ScoringFactories;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 import frc.robot.controllers.OperatorXboxController;
 import frc.robot.routines.*;
-import frc.robot.subsystems.algaeClaw.CommandAlgaeClawConstants;
-import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
-import frc.robot.subsystems.coralClaw.CommandCoralClawConstants;
-import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
-import frc.robot.subsystems.dualIntake.CommandDualIntakeConstants;
-import frc.robot.subsystems.dualIntake.CommandDualIntakeFactory;
-import frc.robot.subsystems.arm.CommandArmConstants;
-import frc.robot.subsystems.elevator.CommandElevatorConstants;
-import frc.robot.subsystems.pneumatics.CommandPneumaticsConstants;
-import frc.robot.subsystems.pneumatics.CommandPneumaticsFactory;
-import frc.robot.subsystems.power.CommandPowerConstants;
-import frc.robot.subsystems.power.CommandPowerFactory;
+import frc.robot.subsystems.dualIntake.DualIntakeSubsystemConstants;
+import frc.robot.subsystems.arm.ArmSubsystemConstants;
+import frc.robot.subsystems.elevator.ElevatorSubsystemConstants;
+import frc.robot.subsystems.pneumatics.PneumaticsSubsystemConstants;
+import frc.robot.subsystems.power.PowerSubsystemConstants;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDriveConstants;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDrive;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDriveFactory;
-import frc.robot.subsystems.winch.CommandWinchConstants;
-import frc.robot.subsystems.winch.CommandWinchFactory;
-import frc.robot.subsystems.wrist.CommandWristConstants;
+import frc.robot.subsystems.winch.WinchSubsystemConstants;
+import frc.robot.subsystems.wrist.WristSubsystemConstants;
 
 public class Robit extends TimedRobot {
 
@@ -48,16 +40,16 @@ public class Robit extends TimedRobot {
         // OperatorFlightStickController operatorFlightStickController = new OperatorFlightStickController(Constants.controllerDeadband);
         ManualController manualController = new ManualController(Constants.controllerDeadband);
         SubsystemCommandFactories subsystemCommandFactories = new SubsystemCommandFactories(
-                new CommandAlgaeClawFactory(CommandAlgaeClawConstants.create(CommandPneumaticsConstants.PneumaticsModule.pneumaticHub)),
-                CommandArmConstants.create(),
-                new CommandCoralClawFactory(CommandCoralClawConstants.create(CommandPneumaticsConstants.PneumaticsModule.pneumaticHub)),
-                new CommandDualIntakeFactory(CommandDualIntakeConstants.create()),
-                CommandElevatorConstants.create(),
-                new CommandPneumaticsFactory(CommandPneumaticsConstants.create()),
-                new CommandPowerFactory(CommandPowerConstants.create()),
+                PneumaticsSubsystemConstants.createAlgaeClaw(),
+                ArmSubsystemConstants.create(),
+                PneumaticsSubsystemConstants.createCoralClaw(),
+                DualIntakeSubsystemConstants.create(),
+                ElevatorSubsystemConstants.create(),
+                PneumaticsSubsystemConstants.create(),
+                PowerSubsystemConstants.create(),
                 new CommandSwerveDriveFactory(commandSwerveDrive),
-                new CommandWinchFactory(CommandWinchConstants.createCommandWinch()),
-                CommandWristConstants.create());
+                WinchSubsystemConstants.create(),
+                WristSubsystemConstants.create());
         PickupFactories pickupFactories = new PickupFactories(subsystemCommandFactories);
         ResetFactories resetFactories = new ResetFactories(subsystemCommandFactories);
         ScoringFactories scoringFactories = new ScoringFactories(subsystemCommandFactories, resetFactories);

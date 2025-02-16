@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
-import digilib.swerve.SwerveDrive;
+import digilib.swerve.CTRESwerveDrive;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -34,7 +34,7 @@ import digilib.swerve.SwerveDrive;
  */
 public class CommandSwerveDrive implements Subsystem {
     private static final double SIM_LOOP_PERIOD = 0.005; // 5 ms
-    private final SwerveDrive swerveDrive;
+    private final CTRESwerveDrive CTRESwerveDrive;
     private final Rotation2d blueAlliancePerspectiveRotation;
     private final Rotation2d redAlliancePerspectiveRotation;
     private double lastSimTime;
@@ -56,10 +56,10 @@ public class CommandSwerveDrive implements Subsystem {
 
 
     public CommandSwerveDrive(
-            SwerveDrive swerveDrive,
+            CTRESwerveDrive CTRESwerveDrive,
             Rotation2d blueAlliancePerspectiveRotation,
             Rotation2d redAlliancePerspectiveRotation) {
-        this.swerveDrive = swerveDrive;
+        this.CTRESwerveDrive = CTRESwerveDrive;
         this.blueAlliancePerspectiveRotation = blueAlliancePerspectiveRotation;
         this.redAlliancePerspectiveRotation = redAlliancePerspectiveRotation;
 
@@ -72,7 +72,7 @@ public class CommandSwerveDrive implements Subsystem {
                         state -> SignalLogger.writeString("SysIdDrive_State", state.toString())
                 ),
                 new SysIdRoutine.Mechanism(
-                        swerveDrive::setDriveCharacterization,
+                        CTRESwerveDrive::setDriveCharacterization,
                         null,
                         this
                 )
@@ -87,7 +87,7 @@ public class CommandSwerveDrive implements Subsystem {
                         state -> SignalLogger.writeString("SysIdSteer_State", state.toString())
                 ),
                 new SysIdRoutine.Mechanism(
-                        swerveDrive::setSteerCharacterization,
+                        CTRESwerveDrive::setSteerCharacterization,
                         null,
                         this
                 )
@@ -106,7 +106,7 @@ public class CommandSwerveDrive implements Subsystem {
                 new SysIdRoutine.Mechanism(
                         output -> {
                             /* output is actually radians per second, but SysId only supports "volts" */
-                            swerveDrive.setRotationCharacterization(rotationCharacterizationVelocity.mut_setMagnitude(output.in(Volts)));
+                            CTRESwerveDrive.setRotationCharacterization(rotationCharacterizationVelocity.mut_setMagnitude(output.in(Volts)));
                             /* also log the requested output for SysId */
                             SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
                         },
@@ -124,7 +124,7 @@ public class CommandSwerveDrive implements Subsystem {
                 ),
                 new SysIdRoutine.Mechanism(
                         output -> {
-                            swerveDrive.setTranslationCharacterization(translationCharacterizationVelocity
+                            CTRESwerveDrive.setTranslationCharacterization(translationCharacterizationVelocity
                                     .mut_setMagnitude(output.in(Volts)));
                             SignalLogger.writeDouble("Translational_Rate", output.in(Volts));
                         },
@@ -138,11 +138,11 @@ public class CommandSwerveDrive implements Subsystem {
     }
 
     public Command applyRequest(Supplier<SwerveDriveRequest> request) {
-        return run(() -> swerveDrive.setControl(request.get()));
+        return run(() -> CTRESwerveDrive.setControl(request.get()));
     }
 
     public Command applyRequestOnce(Supplier<SwerveDriveRequest> request) {
-        return runOnce(() -> swerveDrive.setControl(request.get()));
+        return runOnce(() -> CTRESwerveDrive.setControl(request.get()));
     }
 
     public Command sysIdQuasistaticSteer(SysIdRoutine.Direction direction) {
@@ -188,7 +188,7 @@ public class CommandSwerveDrive implements Subsystem {
          */
         if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
-                swerveDrive.setOperatorPerspectiveForward(
+                CTRESwerveDrive.setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red
                                 ? redAlliancePerspectiveRotation
                                 : blueAlliancePerspectiveRotation
@@ -196,7 +196,7 @@ public class CommandSwerveDrive implements Subsystem {
                 hasAppliedOperatorPerspective = true;
             });
         }
-        swerveDrive.updateTelemetry();
+        CTRESwerveDrive.updateTelemetry();
     }
 
     private void startSimThread() {
@@ -210,7 +210,7 @@ public class CommandSwerveDrive implements Subsystem {
             lastSimTime = currentTime;
 
             /* use the measured time delta, get battery voltage from WPILib */
-            swerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            CTRESwerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(SIM_LOOP_PERIOD);
     }
@@ -222,9 +222,9 @@ public class CommandSwerveDrive implements Subsystem {
 
     public AutoFactory createAutoFactory(Choreo.TrajectoryLogger<SwerveSample> trajLogger) {
         return new AutoFactory(
-                swerveDrive::getPose,
-                swerveDrive::resetPose,
-                swerveDrive::followPath,
+                CTRESwerveDrive::getPose,
+                CTRESwerveDrive::resetPose,
+                CTRESwerveDrive::followPath,
                 true,
                 this,
                 trajLogger
@@ -236,11 +236,11 @@ public class CommandSwerveDrive implements Subsystem {
             SwerveDriveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds = new SwerveDriveRequest.ApplyRobotSpeeds();
             RobotConfig config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
-                    swerveDrive::getPose,   // Supplier of current robot pose
-                    swerveDrive::resetPose,         // Consumer for seeding pose against auto
-                    swerveDrive::getRobotRelativeSpeeds, // Supplier of current robot speeds
+                    CTRESwerveDrive::getPose,   // Supplier of current robot pose
+                    CTRESwerveDrive::resetPose,         // Consumer for seeding pose against auto
+                    CTRESwerveDrive::getRobotRelativeSpeeds, // Supplier of current robot speeds
                     // Consumer of ChassisSpeeds and feedforwards to drive the robot
-                    (speeds, driveFeedforwards) -> swerveDrive.setControl(pathApplyRobotSpeeds
+                    (speeds, driveFeedforwards) -> CTRESwerveDrive.setControl(pathApplyRobotSpeeds
                             .withSpeeds(speeds)
                             .withDriveFeedforwards(driveFeedforwards)),
                     new PPHolonomicDriveController(

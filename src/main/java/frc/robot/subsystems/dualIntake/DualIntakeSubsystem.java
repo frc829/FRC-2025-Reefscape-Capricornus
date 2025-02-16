@@ -16,12 +16,13 @@ import digilib.intakeWheel.IntakeWheelRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static digilib.intakeWheel.IntakeWheelRequest.*;
 import static edu.wpi.first.units.Units.*;
 
-public class CommandDualIntake implements Subsystem {
+public class DualIntakeSubsystem implements Subsystem {
     private final IntakeWheel wheel0;
     private final IntakeWheel wheel1;
     private double wheel0LastSimTime;
@@ -31,7 +32,7 @@ public class CommandDualIntake implements Subsystem {
     private final Time wheel1SimLoopPeriod;
     public final Trigger hasCoral;
 
-    public CommandDualIntake(
+    public DualIntakeSubsystem(
             IntakeWheel wheel0,
             IntakeWheel wheel1,
             ObjectDetector objectDetector,
@@ -118,6 +119,27 @@ public class CommandDualIntake implements Subsystem {
             wheel0.setControl(requestSupplier.get().getFirst());
             wheel1.setControl(requestSupplier.get().getSecond());
         });
+    }
+
+    public Command moveAtVelocity(DoubleSupplier maxIntake0VelocityValue, DoubleSupplier maxIntake1VelocityValue) {
+        IntakeWheelRequest.Velocity request0 = new IntakeWheelRequest.Velocity();
+        IntakeWheelRequest.Velocity request1 = new IntakeWheelRequest.Velocity();
+        Pair<IntakeWheelRequest, IntakeWheelRequest> intakeRequests = new Pair<>(request0, request1);
+
+        return applyRequest(() -> {
+            request0.withVelocity(maxIntake0VelocityValue.getAsDouble());
+            request1.withVelocity(maxIntake1VelocityValue.getAsDouble());
+            return intakeRequests;
+        })
+                .withName(String.format("%s: VELOCITY", getName()));
+    }
+
+    public Command idle() {
+        IntakeWheelRequest.Idle request0 = new IntakeWheelRequest.Idle();
+        IntakeWheelRequest.Idle request1 = new IntakeWheelRequest.Idle();
+        Pair<IntakeWheelRequest, IntakeWheelRequest> request = new Pair<>(request0, request1);
+        return applyRequest(() -> request)
+                .withName(String.format("%s: IDLE", getName()));
     }
 
     @Override

@@ -17,7 +17,6 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.*;
 
@@ -36,7 +35,6 @@ public class DualVortexElevator implements Elevator {
     private final ElevatorFeedforward feedforward;
     private final Time profilePeriod;
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private boolean hold = false;
     private ElevatorSim simElevator = null;
     private SparkFlexSim sparkFlexSim = null;
     private SparkFlexSim followerSparkFlexSim = null;
@@ -116,11 +114,6 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
-    public boolean isHoldEnabled() {
-        return hold;
-    }
-
-    @Override
     public void setControl(ElevatorRequest request) {
         if (elevatorRequest != request) {
             elevatorRequest = request;
@@ -158,16 +151,6 @@ public class DualVortexElevator implements Elevator {
         velocityProfile.reset(motor.getEncoder().getVelocity());
         lastState.position = motor.getEncoder().getPosition();
         lastState.velocity = motor.getEncoder().getVelocity();
-    }
-
-    @Override
-    public void enableHold() {
-        hold = true;
-    }
-
-    @Override
-    public void disableHold() {
-        hold = false;
     }
 
     @Override

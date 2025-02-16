@@ -4,10 +4,10 @@ import digilib.power.Power;
 import digilib.power.PowerConstants;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
-import static frc.robot.subsystems.power.CommandPowerConstants.Mechanism.name;
-import static frc.robot.subsystems.power.CommandPowerConstants.Module.*;
+import static frc.robot.subsystems.power.PowerSubsystemConstants.Mechanism.name;
+import static frc.robot.subsystems.power.PowerSubsystemConstants.Module.*;
 
-public class CommandPowerConstants {
+public class PowerSubsystemConstants {
 
     static final class Mechanism{
         static final String name = "Main Power";
@@ -19,8 +19,10 @@ public class CommandPowerConstants {
         static final PowerConstants constants = new PowerConstants(name, module, moduleType);
     }
 
-    public static CommandPower create() {
+    public static PowerSubsystem create() {
         Power power = new digilib.power.PowerModule(constants);
-        return new CommandPower(power);
+        PowerSubsystem powerSubsystem = new PowerSubsystem(power);
+        powerSubsystem.register();
+        return powerSubsystem;
     }
 }

@@ -20,12 +20,12 @@ import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
 
-public class CommandWrist implements Subsystem {
+public class WristSubsystem implements Subsystem {
     private final Wrist wrist;
     private double lastSimTime;
     private final Time simLoopPeriod;
 
-    public CommandWrist(Wrist wrist, Time simLoopPeriod) {
+    public WristSubsystem(Wrist wrist, Time simLoopPeriod) {
         this.wrist = wrist;
         this.simLoopPeriod = simLoopPeriod;
 
@@ -77,19 +77,21 @@ public class CommandWrist implements Subsystem {
     public Command hold() {
         WristRequest.Position request = new WristRequest.Position();
         return Commands.runOnce(() -> request.withPosition(wrist.getState().getPosition().in(Radians)))
-                .andThen(applyRequest(() -> request)).withName("WRIST:HOLD");
+                .andThen(applyRequest(() -> request))
+                .withName(String.format("%s: HOLD", getName()));
     }
 
     public Command goToAngle(Angle position) {
         WristRequest.Position request = new WristRequest.Position();
         request.withPosition(position.in(Radians));
         return applyRequest(() -> request)
-                .withName(String.format("WRIST:%s degrees", position.in(Degrees)));
+                .withName(String.format("%s: %s degrees", getName(), position.in(Degrees)));
     }
 
     public Command moveAtVelocity(DoubleSupplier value) {
         WristRequest.Velocity request = new WristRequest.Velocity();
-        return applyRequest(() -> request.withVelocity(value.getAsDouble())).withName("WRIST:VELOCITY");
+        return applyRequest(() -> request.withVelocity(value.getAsDouble()))
+                .withName(String.format("%s: VELOCITY", getName()));
     }
 
     @Override

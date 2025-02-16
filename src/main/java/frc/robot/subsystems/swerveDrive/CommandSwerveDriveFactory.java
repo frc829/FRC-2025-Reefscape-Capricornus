@@ -81,17 +81,4 @@ public class CommandSwerveDriveFactory {
         SwerveDriveRequest.Idle idle = new SwerveDriveRequest.Idle();
         return commandSwerveDrive.applyRequest(() -> idle).withName("SWERVE:IDLE");
     }
-
-//    public Command goToReef0() {
-//        // Since we are using a holonomic drivetrain, the rotation component of this pose
-//        // represents the goal holonomic rotation
-//        Pose2d targetPose = new Pose2d(6.177279949188232, 3.9847822189331055, Rotation2d.fromDegrees(180));
-//
-//        // Create the constraints to use while pathfinding
-//        PathConstraints constraints = new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
-//
-//        // Since AutoBuilder is configured, we can use it to build pathfinding commands
-//        return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0).withName("Reef0"); // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
-//
-//    }
 }

@@ -19,11 +19,11 @@ import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.elevator.CommandElevatorConstants.Control.*;
-import static frc.robot.subsystems.elevator.CommandElevatorConstants.Mechanism.*;
-import static frc.robot.subsystems.elevator.CommandElevatorConstants.Simulation.*;
+import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Control.*;
+import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Mechanism.*;
+import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Simulation.*;
 
-public class CommandElevatorConstants {
+public class ElevatorSubsystemConstants {
 
     static final class Control {
         static final Voltage ks = Volts.of(0.11192);
@@ -103,7 +103,7 @@ public class CommandElevatorConstants {
         static final SparkFlex motor = new SparkFlex(deviceId, kBrushless);
     }
 
-    public static CommandElevator create() {
+    public static ElevatorSubsystem create() {
         Motor.motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
         Follower.motor.configure(Follower.config, kResetSafeParameters, kPersistParameters);
         Elevator elevator = new DualVortexElevator(
@@ -111,8 +111,8 @@ public class CommandElevatorConstants {
                 Motor.motor,
                 Follower.motor,
                 updatePeriod);
-        CommandElevator commandElevator = new CommandElevator(elevator, simLoopPeriod);
-        commandElevator.setDefaultCommand(commandElevator.hold());
-        return commandElevator;
+        ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(elevator, simLoopPeriod);
+        elevatorSubsystem.setDefaultCommand(elevatorSubsystem.hold());
+        return elevatorSubsystem;
     }
 }

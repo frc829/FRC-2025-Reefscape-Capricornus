@@ -49,11 +49,7 @@ public class SolenoidClaw implements Claw {
 
     @Override
     public void setValue(ClawValue clawValue) {
-        if (clawValue == solenoidOnClawValue) {
-            solenoid.set(true);
-        } else {
-            solenoid.set(false);
-        }
+        solenoid.set(clawValue == solenoidOnClawValue);
     }
 
     @Override

@@ -11,7 +11,6 @@ import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -26,7 +25,7 @@ public class CameraState {
             this.pipelineIndex = pipelineIndex;
         }
 
-        private static Map<Integer, CameraMode> map = Map.of(
+        private static final Map<Integer, CameraMode> map = Map.of(
                 0, ROBOT_POSE);
 
 

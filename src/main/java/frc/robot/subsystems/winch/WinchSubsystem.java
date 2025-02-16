@@ -1,34 +1,38 @@
 package frc.robot.subsystems.winch;
 
 import com.ctre.phoenix6.Utils;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import digilib.winch.Winch;
 import digilib.winch.WinchRequest;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.Supplier;
 
-public class CommandWinch implements Subsystem {
+public class WinchSubsystem implements Subsystem {
     private final Time simLoopPeriod;
     private final Winch winch;
     private double lastSimTime;
 
-    public CommandWinch(Winch winch, Time simLoopPeriod) {
+    public WinchSubsystem(Winch winch, Time simLoopPeriod) {
         this.winch = winch;
         this.simLoopPeriod = simLoopPeriod;
-        if (RobotBase.isSimulation()) {
+
+        if (Utils.isSimulation()) {
             startSimThread();
         }
     }
 
     public Command applyRequest(Supplier<WinchRequest> requestSupplier) {
         return run(() -> winch.setControl(requestSupplier.get()));
+    }
+
+    public Command idle() {
+        WinchRequest.Idle request = new WinchRequest.Idle();
+        return applyRequest(() -> request)
+                .withName(String.format("%s: IDLE", getName()));
     }
 
     @Override

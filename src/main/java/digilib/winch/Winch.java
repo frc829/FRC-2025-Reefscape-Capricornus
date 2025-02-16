@@ -1,32 +1,27 @@
 package digilib.winch;
 
+import digilib.MotorControllerType;
 import edu.wpi.first.units.measure.Dimensionless;
 
 public interface Winch {
 
-    public void updateSimState(double dt, double supplyVoltage);
+    MotorControllerType getMotorControllerType();
 
-    public void setControl(WinchRequest request);
+    WinchState getState();
 
-    public WinchState getState();
+    void setControl(WinchRequest request);
 
-    public WinchState getStateCopy();
+    void setDutyCycle(Dimensionless dutyCycle);
 
-    public WinchState getLastArmState();
+    void setIdle();
 
-    public void enableHold();
+    void update();
 
-    public void disableHold();
+    void updateState();
 
-    public boolean isHoldEnabled();
+    void updateTelemetry();
 
-    public void updateTelemetry();
+    void updateSimState(double dt, double supplyVoltage);
 
-    public boolean setNeutralModeToBrake();
 
-    public boolean setNeutralModeToCoast();
-
-    public void setDutyCycle(Dimensionless dutyCycle);
-
-    public void update();
 }

@@ -20,12 +20,12 @@ import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
 
-public class CommandElevator implements Subsystem {
+public class ElevatorSubsystem implements Subsystem {
     private final Elevator elevator;
     private double lastSimTime;
     private final Time simLoopPeriod;
 
-    public CommandElevator(Elevator elevator, Time simLoopPeriod) {
+    public ElevatorSubsystem(Elevator elevator, Time simLoopPeriod) {
         this.elevator = elevator;
         this.simLoopPeriod = simLoopPeriod;
 
@@ -77,19 +77,21 @@ public class CommandElevator implements Subsystem {
     public Command hold() {
         ElevatorRequest.Position request = new ElevatorRequest.Position();
         return Commands.runOnce(() -> request.withPosition(elevator.getState().getPosition().in(Meters)))
-                .andThen(applyRequest(() -> request)).withName("ELEVATOR:HOLD");
+                .andThen(applyRequest(() -> request))
+                .withName(String.format("%s: HOLD", getName()));
     }
 
     public Command goToPosition(Distance position) {
         ElevatorRequest.Position request = new ElevatorRequest.Position();
         request.withPosition(position.in(Meters));
         return applyRequest(() -> request)
-                .withName(String.format("ELEVATOR:%s meters", position.in(Meters)));
+                .withName(String.format(String.format("%s: %s meters", getName(), position.in(Meters))));
     }
 
     public Command moveAtVelocity(DoubleSupplier value) {
         ElevatorRequest.Velocity request = new ElevatorRequest.Velocity();
-        return applyRequest(() -> request.withVelocity(value.getAsDouble())).withName("ELEVATOR:VELOCITY");
+        return applyRequest(() -> request.withVelocity(value.getAsDouble()))
+                .withName(String.format("%s: VELOCITY", getName()));
     }
 
     @Override

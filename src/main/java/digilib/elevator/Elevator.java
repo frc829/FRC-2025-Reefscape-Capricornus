@@ -17,8 +17,6 @@ public interface Elevator {
 
     ElevatorState getState();
 
-    boolean isHoldEnabled();
-
     void setControl(ElevatorRequest request);
 
     void setPosition(Distance position);
@@ -28,10 +26,6 @@ public interface Elevator {
     void setVoltage(Voltage voltage);
 
     void resetPosition();
-
-    void enableHold();
-
-    void disableHold();
 
     void update();
 

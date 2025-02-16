@@ -1,11 +1,11 @@
 package frc.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.arm.CommandArmConstants.AbsoluteEncoder.*;
-import static frc.robot.subsystems.arm.CommandArmConstants.Control.*;
-import static frc.robot.subsystems.arm.CommandArmConstants.Mechanism.*;
-import static frc.robot.subsystems.arm.CommandArmConstants.Motor.*;
-import static frc.robot.subsystems.arm.CommandArmConstants.Simulation.*;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.AbsoluteEncoder.*;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.Control.*;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.Mechanism.*;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.Motor.*;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.Simulation.*;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -19,7 +19,7 @@ import digilib.arm.KrakenX60Arm;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants;
 
-public class CommandArmConstants {
+public class ArmSubsystemConstants {
 
     static final class Control {
         static final Voltage ks = Volts.of(0.10054);
@@ -122,12 +122,12 @@ public class CommandArmConstants {
                 .withSlot1(slot1Configs);
     }
 
-    public static CommandArm create() {
+    public static ArmSubsystem create() {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         talonFX.getConfigurator().apply(Motor.config);
         Arm arm = new KrakenX60Arm(constants, talonFX, cancoder, feedbackConfigs);
-        CommandArm commandArm = new CommandArm(arm, simLoopPeriod);
-        commandArm.setDefaultCommand(commandArm.hold());
-        return commandArm;
+        ArmSubsystem armSubsystem = new ArmSubsystem(arm, simLoopPeriod);
+        armSubsystem.setDefaultCommand(armSubsystem.hold());
+        return armSubsystem;
     }
 }

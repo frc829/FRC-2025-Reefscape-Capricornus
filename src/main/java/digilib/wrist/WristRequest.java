@@ -13,9 +13,6 @@ public interface WristRequest {
 
         @Override
         public void apply(Wrist wrist) {
-            if (wrist.isHoldEnabled()) {
-                wrist.disableHold();
-            }
             WristState wristState = wrist.getState();
             if (position.lte(wrist.getMaxAngle()) && position.gte(wrist.getMinAngle())) {
                 wrist.setPosition(position);
@@ -40,9 +37,6 @@ public interface WristRequest {
 
         @Override
         public void apply(Wrist wrist) {
-            if (wrist.isHoldEnabled()) {
-                wrist.disableHold();
-            }
             WristState state = wrist.getState();
             if (state.getPosition().lte(wrist.getMaxAngle()) && state.getPosition().gte(wrist.getMinAngle())) {
                 velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * wrist.getMaxAngle().baseUnitMagnitude());
@@ -67,29 +61,12 @@ public interface WristRequest {
 
         @Override
         public void apply(Wrist wrist) {
-            if (wrist.isHoldEnabled()) {
-                wrist.disableHold();
-            }
             wrist.setVoltage(voltage);
         }
 
         public VoltageRequest withVoltage(Voltage voltage) {
             this.voltage.mut_replace(voltage);
             return this;
-        }
-    }
-
-    class Hold implements WristRequest {
-        private final MutAngle holdPosition = Radians.mutable(0.0);
-
-        @Override
-        public void apply(Wrist wrist) {
-            boolean isHoldEnabled = wrist.isHoldEnabled();
-            if (!isHoldEnabled) {
-                wrist.enableHold();
-                holdPosition.mut_replace(wrist.getState().getPosition());
-            }
-            wrist.setPosition(holdPosition);
         }
     }
 }

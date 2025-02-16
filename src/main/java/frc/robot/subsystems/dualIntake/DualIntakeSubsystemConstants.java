@@ -21,10 +21,10 @@ import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
 import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.dualIntake.CommandDualIntakeConstants.ObjectDetection.laserCanId;
-import static frc.robot.subsystems.dualIntake.CommandDualIntakeConstants.ObjectDetection.rangingMode;
+import static frc.robot.subsystems.dualIntake.DualIntakeSubsystemConstants.ObjectDetection.laserCanId;
+import static frc.robot.subsystems.dualIntake.DualIntakeSubsystemConstants.ObjectDetection.rangingMode;
 
-public class CommandDualIntakeConstants {
+public class DualIntakeSubsystemConstants {
 
     static final class Algae {
         static final class Control {
@@ -149,7 +149,7 @@ public class CommandDualIntakeConstants {
         static final ObjectDetectorConstants constants = new ObjectDetectorConstants(name, maxTrueDistance, minTrueDistance);
     }
 
-    public static CommandDualIntake create() {
+    public static DualIntakeSubsystem create() {
         Algae.Motor.motor.configure(Algae.Motor.config, kResetSafeParameters, kPersistParameters);
         Coral.Motor.motor.configure(Coral.Motor.config, kResetSafeParameters, kPersistParameters);
         IntakeWheel algaeWheel = new NEO550IntakeWheel(Algae.Mechanism.constants, Algae.Motor.motor, Algae.Control.updatePeriod);
@@ -166,6 +166,8 @@ public class CommandDualIntakeConstants {
                 laserCan,
                 ObjectDetection.maxTrueDistance,
                 ObjectDetection.minTrueDistance);
-        return new CommandDualIntake(algaeWheel, coralWheel, objectDetector, Algae.Simulation.simLoopPeriod, Coral.Simulation.simLoopPeriod);
+        DualIntakeSubsystem dualIntakeSubsystem = new DualIntakeSubsystem(algaeWheel, coralWheel, objectDetector, Algae.Simulation.simLoopPeriod, Coral.Simulation.simLoopPeriod);
+        dualIntakeSubsystem.setDefaultCommand(dualIntakeSubsystem.idle());
+        return dualIntakeSubsystem;
     }
 }

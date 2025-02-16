@@ -20,7 +20,7 @@ import edu.wpi.first.units.measure.*;
 
 import digilib.cameras.CameraConstants;
 import digilib.cameras.PhotonVisionCamera;
-import digilib.swerve.SwerveDrive;
+import digilib.swerve.CTRESwerveDrive;
 import digilib.swerve.SwerveDriveTelemetry;
 import frc.robot.Constants;
 import org.photonvision.PhotonCamera;
@@ -383,7 +383,7 @@ public class CommandSwerveDriveConstants {
     private static final PhotonVisionCamera camera2 = new PhotonVisionCamera(OurCameraConstants.Camera2.constants, photonCamera2);
 
 
-    private static final SwerveDrive swerveDrive = new SwerveDrive(
+    private static final CTRESwerveDrive CTRE_SWERVE_DRIVE = new CTRESwerveDrive(
             swerveDriveTrain,
             pathXController,
             pathYController,
@@ -401,7 +401,7 @@ public class CommandSwerveDriveConstants {
      */
     public static CommandSwerveDrive createCommandSwerve() {
         return new CommandSwerveDrive(
-                swerveDrive,
+                CTRE_SWERVE_DRIVE,
                 BLUE_ALLIANCE_PERSPECTIVE_ROTATION,
                 RED_ALLIANCE_PERSPECTIVE_ROTATION);
     }

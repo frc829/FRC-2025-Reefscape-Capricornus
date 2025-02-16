@@ -1,48 +1,47 @@
 package frc.robot.commandFactories;
 
-import frc.robot.subsystems.algaeClaw.CommandAlgaeClawFactory;
-import frc.robot.subsystems.arm.CommandArm;
-import frc.robot.subsystems.coralClaw.CommandCoralClawFactory;
-import frc.robot.subsystems.dualIntake.CommandDualIntakeFactory;
-import frc.robot.subsystems.elevator.CommandElevator;
-import frc.robot.subsystems.pneumatics.CommandPneumaticsFactory;
-import frc.robot.subsystems.power.CommandPowerFactory;
+import frc.robot.subsystems.dualIntake.DualIntakeSubsystem;
+import frc.robot.subsystems.pneumatics.ClawSubsystem;
+import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.pneumatics.PneumaticSubsystem;
+import frc.robot.subsystems.power.PowerSubsystem;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDriveFactory;
-import frc.robot.subsystems.winch.CommandWinchFactory;
-import frc.robot.subsystems.wrist.CommandWrist;
+import frc.robot.subsystems.winch.WinchSubsystem;
+import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class SubsystemCommandFactories {
-    public final CommandAlgaeClawFactory algae;
-    public final CommandArm arm;
-    public final CommandCoralClawFactory coral;
-    public final CommandDualIntakeFactory intake;
-    public final CommandElevator elevator;
-    public final CommandPneumaticsFactory commandPneumaticsFactory;
-    public final CommandPowerFactory commandPowerFactory;
+    public final ClawSubsystem algae;
+    public final ArmSubsystem arm;
+    public final ClawSubsystem coral;
+    public final DualIntakeSubsystem dualIntake;
+    public final ElevatorSubsystem elevator;
+    public final PneumaticSubsystem pneumatics;
+    public final PowerSubsystem power;
     public final CommandSwerveDriveFactory swerve;
-    public final CommandWinchFactory winch;
-    public final CommandWrist wrist;
+    public final WinchSubsystem winch;
+    public final WristSubsystem wrist;
 
     public SubsystemCommandFactories(
-            CommandAlgaeClawFactory commandAlgaeClawFactory,
-            CommandArm arm,
-            CommandCoralClawFactory commandCoralClawFactory,
-            CommandDualIntakeFactory commandDualIntakeFactory,
-            CommandElevator elevator,
-            CommandPneumaticsFactory commandPneumaticsFactory,
-            CommandPowerFactory commandPowerFactory,
+            ClawSubsystem algae,
+            ArmSubsystem arm,
+            ClawSubsystem coral,
+            DualIntakeSubsystem dualIntake,
+            ElevatorSubsystem elevator,
+            PneumaticSubsystem pneumatics,
+            PowerSubsystem power,
             CommandSwerveDriveFactory commandSwerveDriveFactory,
-            CommandWinchFactory commandWinchFactory,
-            CommandWrist wrist) {
-        this.algae = commandAlgaeClawFactory;
+            WinchSubsystem winch,
+            WristSubsystem wrist) {
+        this.algae = algae;
         this.arm = arm;
-        this.coral = commandCoralClawFactory;
-        this.intake = commandDualIntakeFactory;
+        this.coral = coral;
+        this.dualIntake = dualIntake;
         this.elevator = elevator;
-        this.commandPneumaticsFactory = commandPneumaticsFactory;
-        this.commandPowerFactory = commandPowerFactory;
+        this.pneumatics = pneumatics;
+        this.power = power;
         this.swerve = commandSwerveDriveFactory;
-        this.winch = commandWinchFactory;
+        this.winch = winch;
         this.wrist = wrist;
     }
 }

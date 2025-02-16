@@ -8,7 +8,7 @@ import static edu.wpi.first.units.Units.*;
 
 public interface SwerveDriveRequest {
 
-    public void apply(SwerveDrive swerveDrive);
+    public void apply(CTRESwerveDrive CTRESwerveDrive);
 
     public class FieldCentric implements SwerveDriveRequest {
         private final MutDimensionless maxVelocityPercent = Value.mutable(0.0);
@@ -16,16 +16,16 @@ public interface SwerveDriveRequest {
         private final MutAngle heading = Radians.mutable(0.0);
 
         @Override
-        public void apply(SwerveDrive swerveDrive) {
+        public void apply(CTRESwerveDrive CTRESwerveDrive) {
             double vx = Math.cos(heading.baseUnitMagnitude())
-                    * swerveDrive.getMaxVelocity().baseUnitMagnitude()
+                    * CTRESwerveDrive.getMaxVelocity().baseUnitMagnitude()
                     * maxVelocityPercent.baseUnitMagnitude();
             double vy = Math.sin(heading.baseUnitMagnitude())
-                    * swerveDrive.getMaxVelocity().baseUnitMagnitude()
+                    * CTRESwerveDrive.getMaxVelocity().baseUnitMagnitude()
                     * maxVelocityPercent.baseUnitMagnitude();
-            double omega = swerveDrive.getMaxAngularVelocity().baseUnitMagnitude()
+            double omega = CTRESwerveDrive.getMaxAngularVelocity().baseUnitMagnitude()
                     * maxAngularVelocityPercent.baseUnitMagnitude();
-            swerveDrive.setFieldCentric(vx, vy, omega);
+            CTRESwerveDrive.setFieldCentric(vx, vy, omega);
         }
 
         public FieldCentric withVelocity(Dimensionless maxVelocityPercent) {
@@ -50,16 +50,16 @@ public interface SwerveDriveRequest {
         private final MutAngle heading = Radians.mutable(0.0);
 
         @Override
-        public void apply(SwerveDrive swerveDrive) {
+        public void apply(CTRESwerveDrive CTRESwerveDrive) {
             double vx = Math.cos(heading.baseUnitMagnitude())
-                    * swerveDrive.getMaxVelocity().baseUnitMagnitude()
+                    * CTRESwerveDrive.getMaxVelocity().baseUnitMagnitude()
                     * maxVelocityPercent.baseUnitMagnitude();
             double vy = Math.sin(heading.baseUnitMagnitude())
-                    * swerveDrive.getMaxVelocity().baseUnitMagnitude()
+                    * CTRESwerveDrive.getMaxVelocity().baseUnitMagnitude()
                     * maxVelocityPercent.baseUnitMagnitude();
-            double omega = swerveDrive.getMaxAngularVelocity().baseUnitMagnitude()
+            double omega = CTRESwerveDrive.getMaxAngularVelocity().baseUnitMagnitude()
                     * maxAngularVelocityPercent.baseUnitMagnitude();
-            swerveDrive.setRobotCentric(vx, vy, omega);
+            CTRESwerveDrive.setRobotCentric(vx, vy, omega);
         }
 
         public RobotCentric withVelocity(Dimensionless maxVelocityPercent) {
@@ -81,8 +81,8 @@ public interface SwerveDriveRequest {
     public class Brake implements SwerveDriveRequest {
 
         @Override
-        public void apply(SwerveDrive swerveDrive) {
-            swerveDrive.setBrake();
+        public void apply(CTRESwerveDrive CTRESwerveDrive) {
+            CTRESwerveDrive.setBrake();
         }
     }
 
@@ -90,8 +90,8 @@ public interface SwerveDriveRequest {
         private final MutAngle direction = Radians.mutable(0.0);
 
         @Override
-        public void apply(SwerveDrive swerveDrive) {
-            swerveDrive.setWheels(direction);
+        public void apply(CTRESwerveDrive CTRESwerveDrive) {
+            CTRESwerveDrive.setWheels(direction);
         }
 
         public PointWheels withDirection(Angle direction) {
@@ -101,8 +101,8 @@ public interface SwerveDriveRequest {
     }
 
     public class SeedFieldCentric implements SwerveDriveRequest {
-        public void apply(SwerveDrive swerveDrive) {
-            swerveDrive.setFieldCentricSeed();
+        public void apply(CTRESwerveDrive CTRESwerveDrive) {
+            CTRESwerveDrive.setFieldCentricSeed();
         }
     }
 
@@ -111,8 +111,8 @@ public interface SwerveDriveRequest {
         private DriveFeedforwards driveFeedforwards = null;
 
         @Override
-        public void apply(SwerveDrive swerveDrive) {
-            swerveDrive.setApplyRobotSpeeds(speeds, driveFeedforwards);
+        public void apply(CTRESwerveDrive CTRESwerveDrive) {
+            CTRESwerveDrive.setApplyRobotSpeeds(speeds, driveFeedforwards);
         }
 
         public ApplyRobotSpeeds withSpeeds(ChassisSpeeds speeds) {
@@ -132,14 +132,14 @@ public interface SwerveDriveRequest {
         private final MutAngle rotation = Radians.mutable(0.0);
 
         @Override
-        public void apply(SwerveDrive swerveDrive) {
+        public void apply(CTRESwerveDrive CTRESwerveDrive) {
             double vx = Math.cos(heading.baseUnitMagnitude())
-                    * swerveDrive.getMaxVelocity().baseUnitMagnitude()
+                    * CTRESwerveDrive.getMaxVelocity().baseUnitMagnitude()
                     * maxVelocityPercent.baseUnitMagnitude();
             double vy = Math.sin(heading.baseUnitMagnitude())
-                    * swerveDrive.getMaxVelocity().baseUnitMagnitude()
+                    * CTRESwerveDrive.getMaxVelocity().baseUnitMagnitude()
                     * maxVelocityPercent.baseUnitMagnitude();
-            swerveDrive.setClockDrive(vx, vy, rotation.in(Radians));
+            CTRESwerveDrive.setClockDrive(vx, vy, rotation.in(Radians));
         }
 
         public ClockDrive withVelocity(Dimensionless maxVelocityPercent) {
@@ -160,8 +160,8 @@ public interface SwerveDriveRequest {
 
     public class Idle implements SwerveDriveRequest {
         @Override
-        public void apply(SwerveDrive swerveDrive) {
-            swerveDrive.setIdle();
+        public void apply(CTRESwerveDrive CTRESwerveDrive) {
+            CTRESwerveDrive.setIdle();
         }
     }
 

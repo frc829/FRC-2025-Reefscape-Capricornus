@@ -13,9 +13,6 @@ public interface ElevatorRequest {
 
         @Override
         public void apply(Elevator elevator) {
-            if (elevator.isHoldEnabled()) {
-                elevator.disableHold();
-            }
             ElevatorState state = elevator.getState();
             if (position.lte(elevator.getMaxPosition()) && position.gte(elevator.getMinPosition())) {
                 elevator.setPosition(position);
@@ -40,9 +37,6 @@ public interface ElevatorRequest {
 
         @Override
         public void apply(Elevator elevator) {
-            if (elevator.isHoldEnabled()) {
-                elevator.disableHold();
-            }
             ElevatorState state = elevator.getState();
             if (state.getPosition().lte(elevator.getMaxPosition()) && state.getPosition().gte(elevator.getMinPosition())) {
                 velocity.mut_setMagnitude(maxVelocityValue.baseUnitMagnitude() * elevator.getMaxVelocity().baseUnitMagnitude());
@@ -67,9 +61,6 @@ public interface ElevatorRequest {
 
         @Override
         public void apply(Elevator elevator) {
-            if (elevator.isHoldEnabled()) {
-                elevator.disableHold();
-            }
             elevator.setVoltage(voltage);
         }
 

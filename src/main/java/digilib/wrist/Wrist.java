@@ -17,8 +17,6 @@ public interface Wrist {
 
     WristState getState();
 
-    boolean isHoldEnabled();
-
     void setControl(WristRequest request);
 
     void setPosition(Angle position);
@@ -29,15 +27,11 @@ public interface Wrist {
 
     void resetPosition();
 
-    void enableHold();
-
-    void disableHold();
-
     void update();
 
     void updateState();
 
     void updateTelemetry();
 
-    public void updateSimState(double dt, double supplyVoltage);
+    void updateSimState(double dt, double supplyVoltage);
 }

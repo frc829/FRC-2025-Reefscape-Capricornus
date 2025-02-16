@@ -19,7 +19,6 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot0;
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
@@ -121,11 +120,6 @@ public class NEO550Wrist implements Wrist {
     }
 
     @Override
-    public boolean isHoldEnabled() {
-        return hold;
-    }
-
-    @Override
     public void setControl(WristRequest request) {
         if (wristRequest != request) {
             wristRequest = request;
@@ -163,16 +157,6 @@ public class NEO550Wrist implements Wrist {
         velocityProfile.reset(motor.getEncoder().getVelocity());
         lastState.position = motor.getEncoder().getPosition();
         lastState.velocity = motor.getEncoder().getVelocity();
-    }
-
-    @Override
-    public void enableHold() {
-        hold = true;
-    }
-
-    @Override
-    public void disableHold() {
-        hold = false;
     }
 
     @Override

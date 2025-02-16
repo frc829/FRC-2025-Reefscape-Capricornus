@@ -17,8 +17,6 @@ public interface Arm {
 
     ArmState getState();
 
-    boolean isHoldEnabled();
-
     void setControl(ArmRequest request);
 
     void setPosition(Angle position);
@@ -28,10 +26,6 @@ public interface Arm {
     void setVoltage(Voltage voltage);
 
     void resetPosition();
-
-    void enableHold();
-
-    void disableHold();
 
     void update();
 

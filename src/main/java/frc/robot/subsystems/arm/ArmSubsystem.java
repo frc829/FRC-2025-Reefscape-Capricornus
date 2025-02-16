@@ -2,7 +2,6 @@ package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
-import digilib.elevator.ElevatorRequest;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
@@ -21,12 +20,12 @@ import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
 
-public class CommandArm implements Subsystem {
+public class ArmSubsystem implements Subsystem {
     private final Arm arm;
     private double lastSimTime;
     private final Time simLoopPeriod;
 
-    public CommandArm(Arm arm, Time simLoopPeriod) {
+    public ArmSubsystem(Arm arm, Time simLoopPeriod) {
         this.arm = arm;
         this.simLoopPeriod = simLoopPeriod;
 
@@ -74,18 +73,20 @@ public class CommandArm implements Subsystem {
     public Command hold() {
         ArmRequest.Position request = new ArmRequest.Position();
         return Commands.runOnce(() -> request.withPosition(arm.getState().getPosition().in(Radians)))
-                .andThen(applyRequest(() -> request)).withName("ARM:HOLD");
+                .andThen(applyRequest(() -> request))
+                .withName(String.format("%s: HOLD", getName()));
     }
 
     public Command goToAngle(Angle position) {
         ArmRequest.Position request = new ArmRequest.Position();
         return applyRequest(() -> request.withPosition(position.in(Radians)))
-                .withName(String.format("ARM:%s degrees", position.in(Degrees)));
+                .withName(String.format("%s: %s degrees", getName(), position.in(Degrees)));
     }
 
     public Command moveAtVelocity(DoubleSupplier value) {
         ArmRequest.Velocity request = new ArmRequest.Velocity();
-        return applyRequest(() -> request.withVelocity(value.getAsDouble())).withName("ARM:VELOCITY");
+        return applyRequest(() -> request.withVelocity(value.getAsDouble()))
+                .withName(String.format("%s: VELOCITY", getName()));
     }
 
     @Override
