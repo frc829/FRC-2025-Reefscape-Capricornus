@@ -1,5 +1,6 @@
 package frc.robot.commandFactories;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.dualIntake.DualIntakeSubsystem;
 import frc.robot.subsystems.pneumatics.ClawSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
@@ -43,5 +44,7 @@ public class SubsystemCommandFactories {
         this.swerve = commandSwerveDriveFactory;
         this.winch = winch;
         this.wrist = wrist;
+        SmartDashboard.putData("Power: Clear Sticky Faults", power.clearFaults());
+        SmartDashboard.putData("Pneumatics: Clear Sticky Faults", pneumatics.clearFaults());
     }
 }
