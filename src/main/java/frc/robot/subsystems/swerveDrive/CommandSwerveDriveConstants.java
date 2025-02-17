@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swerveDrive;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.swerveDrive.CommandSwerveDriveConstants.Simulation.*;
 import static org.photonvision.PhotonPoseEstimator.*;
 
 import com.ctre.phoenix6.configs.*;
@@ -16,7 +17,6 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -31,6 +31,10 @@ import frc.robot.Constants;
 import org.photonvision.PhotonCamera;
 
 public class CommandSwerveDriveConstants {
+
+    static final class Simulation {
+        static final Time simLoopPeriod = Seconds.of(0.001);
+    }
 
     public static final class OurCameraConstants {
         private static final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
@@ -109,10 +113,7 @@ public class CommandSwerveDriveConstants {
     }
 
 
-    /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
-    private static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
-    /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
-    private static final Rotation2d RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.k180deg;
+
     /* Keep track if we've ever applied the operator perspective before or not */
 
     // Both sets of gains need to be tuned to your individual robot.
@@ -424,8 +425,7 @@ public class CommandSwerveDriveConstants {
     public static CommandSwerveDrive createCommandSwerve() {
         return new CommandSwerveDrive(
                 CTRE_SWERVE_DRIVE,
-                BLUE_ALLIANCE_PERSPECTIVE_ROTATION,
-                RED_ALLIANCE_PERSPECTIVE_ROTATION);
+                simLoopPeriod);
     }
 
     static {

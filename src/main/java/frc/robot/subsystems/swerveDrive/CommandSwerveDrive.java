@@ -18,6 +18,7 @@ import digilib.swerve.SwerveDriveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutLinearVelocity;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -33,11 +34,11 @@ import digilib.swerve.CTRESwerveDrive;
  * Subsystem so it can easily be used in command-based projects.
  */
 public class CommandSwerveDrive implements Subsystem {
-    private static final double SIM_LOOP_PERIOD = 0.005; // 5 ms
+    private static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
+    private static final Rotation2d RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.k180deg;
     private final CTRESwerveDrive CTRESwerveDrive;
-    private final Rotation2d blueAlliancePerspectiveRotation;
-    private final Rotation2d redAlliancePerspectiveRotation;
     private double lastSimTime;
+    private final Time simLoopPeriod; // 5 ms
     private boolean hasAppliedOperatorPerspective = false;
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine sysIdRoutineDrive;
@@ -57,11 +58,11 @@ public class CommandSwerveDrive implements Subsystem {
 
     public CommandSwerveDrive(
             CTRESwerveDrive CTRESwerveDrive,
-            Rotation2d blueAlliancePerspectiveRotation,
-            Rotation2d redAlliancePerspectiveRotation) {
+            Time simLoopPeriod) {
         this.CTRESwerveDrive = CTRESwerveDrive;
-        this.blueAlliancePerspectiveRotation = blueAlliancePerspectiveRotation;
-        this.redAlliancePerspectiveRotation = redAlliancePerspectiveRotation;
+        this.simLoopPeriod = simLoopPeriod;
+
+
 
         sysIdRoutineDrive = new SysIdRoutine(
                 new SysIdRoutine.Config(
@@ -132,6 +133,7 @@ public class CommandSwerveDrive implements Subsystem {
                         this
                 )
         );
+
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -190,8 +192,8 @@ public class CommandSwerveDrive implements Subsystem {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 CTRESwerveDrive.setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red
-                                ? redAlliancePerspectiveRotation
-                                : blueAlliancePerspectiveRotation
+                                ? RED_ALLIANCE_PERSPECTIVE_ROTATION
+                                : BLUE_ALLIANCE_PERSPECTIVE_ROTATION
                 );
                 hasAppliedOperatorPerspective = true;
             });
@@ -199,21 +201,6 @@ public class CommandSwerveDrive implements Subsystem {
         CTRESwerveDrive.updateTelemetry();
     }
 
-    private void startSimThread() {
-        lastSimTime = Utils.getCurrentTimeSeconds();
-
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        /* use the measured time delta, get battery voltage from WPILib */
-        Notifier m_simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - lastSimTime;
-            lastSimTime = currentTime;
-
-            /* use the measured time delta, get battery voltage from WPILib */
-            CTRESwerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(SIM_LOOP_PERIOD);
-    }
 
     public AutoFactory createAutoFactory() {
         return createAutoFactory((swerveSample, staring) -> {
@@ -258,4 +245,21 @@ public class CommandSwerveDrive implements Subsystem {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
     }
+
+    private void startSimThread() {
+        lastSimTime = Utils.getCurrentTimeSeconds();
+
+        /* Run simulation at a faster rate so PID gains behave more reasonably */
+        /* use the measured time delta, get battery voltage from WPILib */
+        Notifier m_simNotifier = new Notifier(() -> {
+            final double currentTime = Utils.getCurrentTimeSeconds();
+            double deltaTime = currentTime - lastSimTime;
+            lastSimTime = currentTime;
+
+            /* use the measured time delta, get battery voltage from WPILib */
+            CTRESwerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+        });
+        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
+    }
+
 }
