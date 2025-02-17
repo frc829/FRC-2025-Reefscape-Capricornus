@@ -81,11 +81,12 @@ public class ElevatorSubsystem implements Subsystem {
                 .withName(String.format("%s: HOLD", getName()));
     }
 
-    public Command goToPosition(Distance position) {
+    public Command goToPosition(Distance position, Distance tolerance) {
         ElevatorRequest.Position request = new ElevatorRequest.Position();
         request.withPosition(position.in(Meters));
         return applyRequest(() -> request)
-                .withName(String.format(String.format("%s: %s meters", getName(), position.in(Meters))));
+                .until(atPosition(position, tolerance))
+                .withName(String.format(String.format("%s: %s meters, %s meters tolerance", getName(), position.in(Meters), tolerance.in(Meters))));
     }
 
     public Command moveAtVelocity(DoubleSupplier value) {

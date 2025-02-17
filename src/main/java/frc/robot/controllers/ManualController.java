@@ -39,43 +39,39 @@ public class ManualController {
         return new Trigger(() -> getWristVelocity() != 0);
     }
 
-    public Trigger testElevatorPos(){
+    public Trigger testElevatorPos() {
         return controller.a();
     }
 
-    public Trigger testArmPose(){
+    public Trigger testArmPos() {
         return controller.b();
     }
 
-    public Trigger testWristPose0(){
-        return controller.x();
-    }
-
-    public Trigger testWristPose90(){
+    public Trigger wristToggle() {
         return controller.y();
     }
 
-    public Trigger algaeClawToggle(){
+    public Trigger algaeClawToggle() {
         return controller.leftBumper();
     }
 
-    public Trigger coralClawToggle(){
+    public Trigger coralClawToggle() {
         return controller.rightBumper();
     }
 
-    public Trigger coralIn(){
-        return controller.back();
+    public Trigger coralIn() {
+        return controller.povDown();
     }
 
-    public Trigger coralOut(){
-        return controller.start();
+    public Trigger coralOut() {
+        return controller.povUp();
     }
 
-    public Trigger algaeIn(){
+    public Trigger algaeIn() {
         return controller.povLeft();
     }
 
-    public Trigger algaeOut(){
+    public Trigger algaeOut() {
         return controller.povRight();
     }
 

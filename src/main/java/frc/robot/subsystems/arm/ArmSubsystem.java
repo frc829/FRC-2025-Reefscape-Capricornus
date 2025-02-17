@@ -77,10 +77,12 @@ public class ArmSubsystem implements Subsystem {
                 .withName(String.format("%s: HOLD", getName()));
     }
 
-    public Command goToAngle(Angle position) {
+    public Command goToAngle(Angle position, Angle tolerance) {
         ArmRequest.Position request = new ArmRequest.Position();
-        return applyRequest(() -> request.withPosition(position.in(Radians)))
-                .withName(String.format("%s: %s degrees", getName(), position.in(Degrees)));
+        request.withPosition(position.in(Radians));
+        return applyRequest(() -> request)
+                .until(atPosition(position, tolerance))
+                .withName(String.format("%s: %s deg, %s deg tolerance", getName(), position.in(Degrees), tolerance.in(Degrees)));
     }
 
     public Command moveAtVelocity(DoubleSupplier value) {

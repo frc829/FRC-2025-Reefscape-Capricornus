@@ -8,6 +8,7 @@ import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.DataLogManager;
 import frc.robot.controllers.ManualController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -68,7 +69,7 @@ public class Robit extends TimedRobot {
         SmartDashboard.putData("Auto Chooser", autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
-        // DataLogManager.start();
+        DataLogManager.start();
         addPeriodic(CommandScheduler.getInstance()::run, 0.020);
     }
 }

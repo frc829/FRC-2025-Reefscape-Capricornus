@@ -24,8 +24,9 @@ public class PneumaticsSubsystemConstants {
 
         static final class PneumaticsModule {
             static final int module = 2;
-            public static final PneumaticHub pneumaticHub = new PneumaticHub(module);
+            static final PneumaticHub pneumaticHub = new PneumaticHub(module);
             static final PneumaticsConstants constants = new PneumaticsConstants(Mechanism.name);
+            static final boolean isPressureSwitchDigital = true;
         }
 
     }
@@ -73,6 +74,9 @@ public class PneumaticsSubsystemConstants {
     }
 
     public static PneumaticSubsystem create() {
+        if(Module.PneumaticsModule.isPressureSwitchDigital){
+            Module.PneumaticsModule.pneumaticHub.enableCompressorDigital();
+        }
         Pneumatics pneumatics = new REVPneumatics(Module.PneumaticsModule.constants, Module.PneumaticsModule.pneumaticHub);
         PneumaticSubsystem pneumaticSubsystem = new PneumaticSubsystem(pneumatics);
         pneumaticSubsystem.register();

@@ -70,7 +70,7 @@ public class WristSubsystem implements Subsystem {
         return new Trigger(() -> wrist.getState().getPosition().isNear(position, tolerance));
     }
 
-    public Command applyRequest(Supplier<WristRequest> requestSupplier) {
+    private Command applyRequest(Supplier<WristRequest> requestSupplier) {
         return run(() -> wrist.setControl(requestSupplier.get()));
     }
 
@@ -81,17 +81,26 @@ public class WristSubsystem implements Subsystem {
                 .withName(String.format("%s: HOLD", getName()));
     }
 
-    public Command goToAngle(Angle position) {
+    public Command goToAngle(Angle position, Angle tolerance) {
         WristRequest.Position request = new WristRequest.Position();
         request.withPosition(position.in(Radians));
         return applyRequest(() -> request)
-                .withName(String.format("%s: %s degrees", getName(), position.in(Degrees)));
+                .until(atPosition(position, tolerance))
+                .withName(String.format("%s: %s deg, %s deg tolerance", getName(), position.in(Degrees), tolerance.in(Degrees)));
     }
 
     public Command moveAtVelocity(DoubleSupplier value) {
         WristRequest.Velocity request = new WristRequest.Velocity();
         return applyRequest(() -> request.withVelocity(value.getAsDouble()))
                 .withName(String.format("%s: VELOCITY", getName()));
+    }
+
+    public Command toggle() {
+        return Commands.either(
+                        goToAngle(Degrees.of(90.0), Degrees.of(2.0)),
+                        goToAngle(Degrees.of(0.0), Degrees.of(2.0)),
+                        atPosition(Degrees.of(0.0), Degrees.of(10.0)))
+                .withName(String.format("%s: toggle", getName()));
     }
 
     @Override

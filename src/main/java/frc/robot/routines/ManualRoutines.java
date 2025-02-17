@@ -3,6 +3,7 @@ package frc.robot.routines;
 import frc.robot.controllers.ManualController;
 import frc.robot.commandFactories.SubsystemCommandFactories;
 
+import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Degrees;
 
 public class ManualRoutines {
@@ -16,27 +17,24 @@ public class ManualRoutines {
         arm();
         elevator();
         wrist();
-        testWrist0();
-        testWrist90();
+        wristToggle();
         toggleAlgaeClaw();
         toggleCoralClaw();
         coralIn();
         coralOut();
         algaeIn();
         algaeOut();
-        elevatorTo10CM();
+        armTo30Deg();
+        elevatorTo30cm();
     }
 
-    private void testWrist90() {
-        controller.testWristPose90().whileTrue(factories.wrist.goToAngle(Degrees.of(90.0)));
-    }
-
-    private void testWrist0() {
-        controller.testWristPose0().whileTrue(factories.wrist.goToAngle(Degrees.of(0.0)));
+    private void wristToggle() {
+        controller.wristToggle().onTrue(factories.wrist.toggle());
     }
 
     private void arm() {
-        controller.arm().whileTrue(factories.arm.moveAtVelocity(controller::getArmVelocity));
+        controller.arm().whileTrue(factories.arm.moveAtVelocity(controller::getArmVelocity)
+                .withName(String.format("%s: VELOCITY", factories.arm.getName())));
     }
 
     private void elevator() {
@@ -59,30 +57,42 @@ public class ManualRoutines {
         controller.coralIn().whileTrue(factories.dualIntake.moveAtVelocity(
                         () -> 0.0,
                         () -> 0.25)
-                .until(factories.dualIntake.hasCoral));
+                .until(factories.dualIntake.hasCoral)
+                .withName("Manual: CORAL IN"));
     }
 
     public void coralOut() {
         controller.coralOut().whileTrue(factories.dualIntake.moveAtVelocity(
-                () -> 0.0,
-                () -> -0.25));
+                        () -> 0.0,
+                        () -> -0.25)
+                .withName("Manual: CORAL OUT"));
     }
 
     private void algaeIn() {
         controller.algaeIn().whileTrue(factories.dualIntake.moveAtVelocity(
-                () -> -0.25,
-                () -> -0.25));
+                        () -> -0.25,
+                        () -> -0.25)
+                .withName("Manual: ALGAE IN"));
     }
 
     private void algaeOut() {
         controller.algaeOut().whileTrue(factories.dualIntake.moveAtVelocity(
-                () -> 0.25,
-                () -> 0.25));
+                        () -> 0.25,
+                        () -> 0.25)
+                .withName("Manual: ALGAE OUT"));
     }
 
-    private void elevatorTo10CM() {
+    private void elevatorTo30cm() {
         controller.testElevatorPos()
-                .whileTrue(factories.arm.goToAngle(Degrees.of(30)));
+                .whileTrue(
+                        factories.elevator.goToPosition(Centimeters.of(30.0), Centimeters.of(2.0))
+                                .withName("Elevator to 30 cm"));
+    }
+
+    private void armTo30Deg() {
+        controller.testArmPos()
+                .whileTrue((factories.arm.goToAngle(Degrees.of(30), Degrees.of(2.0)))
+                        .withName("Arm to 30 deg"));
     }
 
 }
