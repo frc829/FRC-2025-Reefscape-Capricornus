@@ -75,7 +75,7 @@ public class PneumaticsSubsystemConstants {
 
     public static PneumaticSubsystem create() {
         if(Module.PneumaticsModule.isPressureSwitchDigital){
-            Module.PneumaticsModule.pneumaticHub.enableCompressorDigital();
+            // Module.PneumaticsModule.pneumaticHub.enableCompressorDigital();
         }
         Pneumatics pneumatics = new REVPneumatics(Module.PneumaticsModule.constants, Module.PneumaticsModule.pneumaticHub);
         PneumaticSubsystem pneumaticSubsystem = new PneumaticSubsystem(pneumatics);

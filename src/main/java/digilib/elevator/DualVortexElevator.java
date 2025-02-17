@@ -25,7 +25,7 @@ public class DualVortexElevator implements Elevator {
     private final Distance minHeight;
     private final Distance maxHeight;
     private final LinearVelocity maxVelocity;
-    private final ElevatorTelemetry telemetry;
+    // private final ElevatorTelemetry telemetry;
     private ElevatorRequest elevatorRequest;
     private final SparkFlex motor;
     private final SparkFlex follower;
@@ -49,12 +49,12 @@ public class DualVortexElevator implements Elevator {
         maxVelocity = constants.maxVelocity();
         this.motor = motor;
         this.follower = follower;
-        this.telemetry = new ElevatorTelemetry(
-                constants.name(),
-                constants.minHeight(),
-                constants.maxHeight(),
-                constants.maxVelocity(),
-                constants.maxAcceleration());
+        // this.telemetry = new ElevatorTelemetry(
+        //         constants.name(),
+        //         constants.minHeight(),
+        //         constants.maxHeight(),
+        //         constants.maxVelocity(),
+        //         constants.maxAcceleration());
         this.feedforward = new ElevatorFeedforward(
                 constants.ks().baseUnitMagnitude(),
                 constants.kg().baseUnitMagnitude(),
@@ -176,7 +176,7 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void updateTelemetry() {
-        telemetry.telemeterize(state);
+        // telemetry.telemeterize(state);
     }
 
     @Override

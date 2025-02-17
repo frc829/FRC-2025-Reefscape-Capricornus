@@ -25,7 +25,7 @@ public class ManualRoutines {
         algaeIn();
         algaeOut();
         armTo30Deg();
-        elevatorTo30cm();
+        elevatorTo20cm();
     }
 
     private void wristToggle() {
@@ -56,7 +56,7 @@ public class ManualRoutines {
     private void coralIn() {
         controller.coralIn().whileTrue(factories.dualIntake.moveAtVelocity(
                         () -> 0.0,
-                        () -> 0.25)
+                        () -> 0.50)
                 .until(factories.dualIntake.hasCoral)
                 .withName("Manual: CORAL IN"));
     }
@@ -82,11 +82,11 @@ public class ManualRoutines {
                 .withName("Manual: ALGAE OUT"));
     }
 
-    private void elevatorTo30cm() {
+    private void elevatorTo20cm() {
         controller.testElevatorPos()
                 .whileTrue(
-                        factories.elevator.goToPosition(Centimeters.of(30.0), Centimeters.of(2.0))
-                                .withName("Elevator to 30 cm"));
+                        factories.elevator.goToPosition(Centimeters.of(20.0), Centimeters.of(2.0))
+                                .withName("Elevator to 20 cm"));
     }
 
     private void armTo30Deg() {

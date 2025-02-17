@@ -7,15 +7,15 @@ public class PowerModule implements Power {
 
     private final PowerState state;
     private PowerRequest request;
-    private final PowerTelemetry telemetry;
+    // private final PowerTelemetry telemetry;
     private final PowerDistribution pdh;
 
     public PowerModule(PowerConstants constants) {
         pdh = new PowerDistribution(constants.module(), constants.moduleType());
         state = new PowerState(pdh.getNumChannels());
-        telemetry = new PowerTelemetry(
-                constants.name(),
-                pdh);
+        // telemetry = new PowerTelemetry(
+        //         constants.name(),
+        //         pdh);
     }
 
     @Override
@@ -55,6 +55,6 @@ public class PowerModule implements Power {
 
     @Override
     public void updateTelemetry() {
-        telemetry.telemeterize(state);
+        // telemetry.telemeterize(state);
     }
 }

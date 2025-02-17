@@ -59,7 +59,7 @@ public class ArmSubsystemConstants {
 
     static final class Simulation {
         static final Angle startingAngle = Degrees.of(0.0);
-        static final Angle minAngle = Degrees.of(-20.0);
+        static final Angle minAngle = Degrees.of(-50.0);
         static final Angle maxAngle = Degrees.of(160.0);
         static final Angle positionStdDev = Degrees.of(0.0);
         static final AngularVelocity velocityStdDev = DegreesPerSecond.of(0.0);

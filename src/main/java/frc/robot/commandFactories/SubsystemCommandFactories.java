@@ -20,7 +20,7 @@ public class SubsystemCommandFactories {
     public final PneumaticSubsystem pneumatics;
     public final PowerSubsystem power;
     public final CommandSwerveDriveFactory swerve;
-    public final WinchSubsystem winch;
+    // public final WinchSubsystem winch;
     public final WristSubsystem wrist;
 
 
@@ -33,7 +33,7 @@ public class SubsystemCommandFactories {
             PneumaticSubsystem pneumatics,
             PowerSubsystem power,
             CommandSwerveDriveFactory commandSwerveDriveFactory,
-            WinchSubsystem winch,
+            // WinchSubsystem winch){
             WristSubsystem wrist) {
         this.algae = algae;
         this.arm = arm;
@@ -43,7 +43,7 @@ public class SubsystemCommandFactories {
         this.pneumatics = pneumatics;
         this.power = power;
         this.swerve = commandSwerveDriveFactory;
-        this.winch = winch;
+        // this.winch = winch;
         this.wrist = wrist;
         SmartDashboard.putData("Power: Clear Sticky Faults", power.clearFaults());
         SmartDashboard.putData("Pneumatics: Clear Sticky Faults", pneumatics.clearFaults());

@@ -27,7 +27,7 @@ public class PhotonVisionCamera implements Camera {
     private final AprilTagFieldLayout fieldTags;
     private final Matrix<N3, N1> singleTagStdDev;
     private CameraRequest cameraRequest;
-    private final CameraTelemetry telemetry;
+    // private final CameraTelemetry telemetry;
     private final PhotonCamera photonCamera;
     private final PhotonPoseEstimator photonPoseEstimator;
 
@@ -41,11 +41,11 @@ public class PhotonVisionCamera implements Camera {
                 constants.primaryStrategy(),
                 constants.robotToCamera());
         photonPoseEstimator.setMultiTagFallbackStrategy(constants.fallBackPoseStrategy());
-        telemetry = new CameraTelemetry(
-                constants.name(),
-                constants.robotToCamera(),
-                constants.primaryStrategy(),
-                constants.fallBackPoseStrategy());
+        // telemetry = new CameraTelemetry(
+        //         constants.name(),
+        //         constants.robotToCamera(),
+        //         constants.primaryStrategy(),
+        //         constants.fallBackPoseStrategy());
     }
 
     @Override
@@ -145,6 +145,6 @@ public class PhotonVisionCamera implements Camera {
 
     @Override
     public void updateTelemetry() {
-        telemetry.telemeterize(state);
+        // telemetry.telemeterize(state);
     }
 }

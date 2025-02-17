@@ -31,10 +31,10 @@ public class ArmTelemetry {
             AngularVelocity maxVelocity,
             AngularAcceleration maxAcceleration) {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
-        table.getDoubleTopic("Min Angle").publish().set(roundToDecimal(minAngle.in(Degrees), 2));
-        table.getDoubleTopic("Max Angle").publish().set(roundToDecimal(maxAngle.in(Degrees), 2));
-        table.getDoubleTopic("Max Velocity").publish().set(roundToDecimal(maxVelocity.in(DegreesPerSecond), 2));
-        table.getDoubleTopic("Max Acceleration").publish().set(roundToDecimal(maxAcceleration.in(DegreesPerSecondPerSecond), 2));
+        // table.getDoubleTopic("Min Angle").publish().set(roundToDecimal(minAngle.in(Degrees), 2));
+        // table.getDoubleTopic("Max Angle").publish().set(roundToDecimal(maxAngle.in(Degrees), 2));
+        // table.getDoubleTopic("Max Velocity").publish().set(roundToDecimal(maxVelocity.in(DegreesPerSecond), 2));
+        // table.getDoubleTopic("Max Acceleration").publish().set(roundToDecimal(maxAcceleration.in(DegreesPerSecondPerSecond), 2));
         angle = table.getDoubleTopic("Angle").publish();
         absoluteAngle = table.getDoubleTopic("Absolute Angle").publish();
         angularVelocity = table.getDoubleTopic("Velocity").publish();

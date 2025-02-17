@@ -29,7 +29,7 @@ public class NEO550Wrist implements Wrist {
     private final Angle minAngle;
     private final Angle maxAngle;
     private final AngularVelocity maxVelocity;
-    private final WristTelemetry telemetry;
+    // private final WristTelemetry telemetry;
     private WristRequest wristRequest;
     private final SparkMax motor;
     private final CANcoder cancoder;
@@ -54,12 +54,12 @@ public class NEO550Wrist implements Wrist {
         maxVelocity = constants.maxAngularVelocity();
         this.motor = motor;
         this.cancoder = cancoder;
-        this.telemetry = new WristTelemetry(
-                "Wrist",
-                constants.minAngle(),
-                constants.maxAngle(),
-                constants.maxAngularVelocity(),
-                constants.maxAngularAcceleration());
+        // this.telemetry = new WristTelemetry(
+        //         constants.name(),
+        //         constants.minAngle(),
+        //         constants.maxAngle(),
+        //         constants.maxAngularVelocity(),
+        //         constants.maxAngularAcceleration());
         this.feedforward = new SimpleMotorFeedforward(
                 constants.ks().baseUnitMagnitude(),
                 constants.kv().baseUnitMagnitude(),
@@ -186,7 +186,7 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void updateTelemetry() {
-        telemetry.telemeterize(state);
+        // telemetry.telemeterize(state);
     }
 
     @Override
