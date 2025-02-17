@@ -19,7 +19,7 @@ public class DigiMath {
         return Math.round(value * scale) / scale;
     }
 
-    public static double standardDeviation(double mean, List<Double> data) throws ExecutionControl.NotImplementedException {
-        throw new ExecutionControl.NotImplementedException("not Yet implemented");
+    public static double standardDeviation(double mean, List<Double> data) {
+        return 0.0; // TODO:
     }
 }

@@ -1,6 +1,7 @@
 package digilib.intakeWheel;
 
 import edu.wpi.first.units.measure.*;
+
 import static edu.wpi.first.units.Units.*;
 
 public class IntakeWheelState {
@@ -9,6 +10,7 @@ public class IntakeWheelState {
     private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutLinearVelocity linearVelocity = MetersPerSecond.mutable(0.0);
     private final MutVoltage voltage = Volts.mutable(0.0);
+    private final MutCurrent current = Amps.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
 
     public IntakeWheelState(Distance wheelRadius) {
@@ -27,6 +29,10 @@ public class IntakeWheelState {
         return voltage;
     }
 
+    public Current getCurrent() {
+        return current;
+    }
+
     public Time getTimestamp() {
         return timestamp;
     }
@@ -39,6 +45,11 @@ public class IntakeWheelState {
 
     public IntakeWheelState withVoltage(double volts) {
         this.voltage.mut_setBaseUnitMagnitude(volts);
+        return this;
+    }
+
+    public IntakeWheelState withCurrent(double amps) {
+        this.current.mut_setBaseUnitMagnitude(amps);
         return this;
     }
 

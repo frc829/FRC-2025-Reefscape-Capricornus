@@ -23,7 +23,7 @@ import static edu.wpi.first.units.Units.*;
 public class NEO550IntakeWheel implements IntakeWheel {
     private final IntakeWheelState state;
     private final AngularVelocity maxVelocity;
-    // private final IntakeWheelTelemetry telemetry;
+    private final IntakeWheelTelemetry telemetry;
     private final SparkMax motor;
     private final SlewRateLimiter profile;
     private final SimpleMotorFeedforward feedforward;
@@ -41,10 +41,10 @@ public class NEO550IntakeWheel implements IntakeWheel {
         this.maxVelocity = constants.maxVelocity();
         this.feedforward = new SimpleMotorFeedforward(constants.ks().baseUnitMagnitude(), constants.kv().baseUnitMagnitude(), constants.ka().baseUnitMagnitude(), updatePeriod.baseUnitMagnitude());
         this.profile = new SlewRateLimiter(constants.maxAcceleration().baseUnitMagnitude());
-        // this.telemetry = new IntakeWheelTelemetry(
-        //         constants.name(),
-        //         constants.maxVelocity(),
-        //         constants.maxAcceleration());
+        this.telemetry = new IntakeWheelTelemetry(
+                constants.name(),
+                constants.maxVelocity(),
+                constants.maxAcceleration());
 
         if (RobotBase.isSimulation()) {
             DCMotor dcMotor = DCMotor.getNeo550(1);
@@ -111,12 +111,13 @@ public class NEO550IntakeWheel implements IntakeWheel {
     public void updateState() {
         state.withAngularVelocity(motor.getEncoder().getVelocity())
                 .withVoltage(motor.getAppliedOutput() * motor.getBusVoltage())
-                .withTimestamp(Timer.getFPGATimestamp());
+                .withTimestamp(Timer.getFPGATimestamp())
+                .withCurrent(motor.getOutputCurrent());
     }
 
     @Override
     public void updateTelemetry() {
-        // telemetry.telemeterize(state);
+        telemetry.telemeterize(state);
     }
 
     @Override

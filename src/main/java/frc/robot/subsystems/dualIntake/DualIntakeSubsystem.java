@@ -31,6 +31,7 @@ public class DualIntakeSubsystem implements Subsystem {
     private final Time wheel0SimLoopPeriod;
     private final Time wheel1SimLoopPeriod;
     public final Trigger hasCoral;
+    public final Trigger hasAlgae;
 
     public DualIntakeSubsystem(
             IntakeWheel wheel0,
@@ -44,6 +45,7 @@ public class DualIntakeSubsystem implements Subsystem {
         this.wheel0SimLoopPeriod = wheel0SimLoopPeriod;
         this.wheel1SimLoopPeriod = wheel1SimLoopPeriod;
         hasCoral = new Trigger(objectDetector.getState()::isInRange);
+        hasAlgae = new Trigger(() -> wheel0.getState().getCurrent().lte(Amps.of(35.0)) && wheel0.getState().getCurrent().gte(Amps.of(25.0)));
 
         SysIdRoutine.Config wheel0Config = new SysIdRoutine.Config(
                 Volts.per(Second).of(1.0),
@@ -135,7 +137,7 @@ public class DualIntakeSubsystem implements Subsystem {
     }
 
     public Command idle() {
-        IntakeWheelRequest.Idle request0 = new IntakeWheelRequest.Idle();
+        IntakeWheelRequest.VoltageRequest request0 = new IntakeWheelRequest.VoltageRequest().withVoltage(Volts.of(-0.5));
         IntakeWheelRequest.Idle request1 = new IntakeWheelRequest.Idle();
         Pair<IntakeWheelRequest, IntakeWheelRequest> request = new Pair<>(request0, request1);
         return applyRequest(() -> request)

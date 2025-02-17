@@ -72,6 +72,7 @@ public class ManualRoutines {
         controller.algaeIn().whileTrue(factories.dualIntake.moveAtVelocity(
                         () -> -0.25,
                         () -> -0.25)
+                .until(factories.dualIntake.hasAlgae)
                 .withName("Manual: ALGAE IN"));
     }
 

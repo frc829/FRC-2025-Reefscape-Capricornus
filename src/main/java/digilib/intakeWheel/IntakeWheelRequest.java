@@ -1,6 +1,7 @@
 package digilib.intakeWheel;
 
 import edu.wpi.first.units.measure.*;
+
 import static edu.wpi.first.units.Units.*;
 
 public interface IntakeWheelRequest {
@@ -43,4 +44,5 @@ public interface IntakeWheelRequest {
             intakeWheel.setIdle();
         }
     }
+
 }
