@@ -2,7 +2,7 @@ package digilib.cameras;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -13,7 +13,7 @@ import static org.photonvision.PhotonPoseEstimator.*;
 
 public class CameraTelemetry {
     private final DoublePublisher timestampPublisher;
-    private final StructPublisher<Pose3d> robotPosePublisher;
+    private final StructPublisher<Pose2d> robotPosePublisher;
     private final StructPublisher<Matrix<N3, N1>> robotPoseStdDevPublisher;
     private final StringPublisher cameraModePublisher;
 
@@ -26,7 +26,7 @@ public class CameraTelemetry {
         table.getStringTopic("Primary Pose Strategy").publish().set(primaryStrategy.toString());
         table.getStringTopic("Fall Back Pose Strategy").publish().set(fallBackPoseStrategy.toString());
         timestampPublisher = table.getDoubleTopic("Timestamp").publish();
-        robotPosePublisher = table.getStructTopic("Robot Pose", Pose3d.struct).publish();
+        robotPosePublisher = table.getStructTopic("Robot Pose", Pose2d.struct).publish();
         robotPoseStdDevPublisher = table.getStructTopic("Robot Pose Std Dev", Matrix.getStruct(Nat.N3(), Nat.N1())).publish();
         cameraModePublisher = table.getStringTopic("Camera mode").publish();
     }

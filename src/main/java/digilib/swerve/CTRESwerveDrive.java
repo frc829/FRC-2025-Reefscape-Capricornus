@@ -223,7 +223,7 @@ public class CTRESwerveDrive implements SwerveDrive {
             CameraState state = camera.getState();
             if (Double.isFinite(camera.getState().getRobotPose().getX())) {
                 addVisionMeasurement(
-                        state.getRobotPose().toPose2d(),
+                        state.getRobotPose(),
                         state.getTimestamp().in(Seconds),
                         state.getRobotPoseStdDev());
             }
