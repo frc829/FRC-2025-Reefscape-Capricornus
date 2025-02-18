@@ -39,11 +39,9 @@ public class ArmSubsystemConstants {
     static final class Mechanism {
         static final String name = "Arm";
         static final double reduction = 5.0 * 5.0 * 4.0 * 72.0 / 22.0;
-        static final Distance armLength = Inches.of(31.0);
         static final ArmConstants constants = new ArmConstants(
                 name,
                 reduction,
-                armLength,
                 maxAngle,
                 minAngle,
                 startingAngle,

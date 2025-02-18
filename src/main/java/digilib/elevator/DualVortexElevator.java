@@ -35,7 +35,7 @@ public class DualVortexElevator implements Elevator {
     private final ElevatorFeedforward feedforward;
     private final Time profilePeriod;
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private ElevatorSim simElevator = null;
+    private SimulatedElevator simElevator = null;
     private SparkFlexSim sparkFlexSim = null;
     private SparkFlexSim followerSparkFlexSim = null;
 
@@ -76,13 +76,15 @@ public class DualVortexElevator implements Elevator {
             LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
                     constants.kv().baseUnitMagnitude(),
                     constants.ka().baseUnitMagnitude());
-            simElevator = new ElevatorSim(
-                    plant,
+            simElevator = SimulatedElevator.createFromSysId(
+                    constants.kg().baseUnitMagnitude(),
+                    constants.kv().baseUnitMagnitude(),
+                    constants.ka().baseUnitMagnitude(),
                     dcMotor,
+                    constants.reduction(),
+                    constants.startingHeight().baseUnitMagnitude(),
                     minHeight.baseUnitMagnitude(),
-                    maxHeight.baseUnitMagnitude(),
-                    true,
-                    constants.startingHeight().baseUnitMagnitude());
+                    maxHeight.baseUnitMagnitude());
             sparkFlexSim.setPosition(constants.startingHeight().baseUnitMagnitude());
             followerSparkFlexSim.setPosition(constants.startingHeight().baseUnitMagnitude());
         }

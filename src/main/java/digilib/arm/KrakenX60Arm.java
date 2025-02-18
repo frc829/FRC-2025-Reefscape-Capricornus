@@ -10,15 +10,10 @@ import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import digilib.MotorControllerType;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static digilib.MotorControllerType.*;
@@ -37,7 +32,7 @@ public class KrakenX60Arm implements Arm {
     private final MotionMagicVelocityVoltage velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(1).withEnableFOC(true);
     private final VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true);
     private ArmRequest armRequest;
-    private SingleJointedArmSim simArm = null;
+    private SimulatedArm simArm = null;
     private TalonFXSimState talonFXSimState = null;
     private CANcoderSimState canCoderSimState = null;
 
@@ -62,16 +57,15 @@ public class KrakenX60Arm implements Arm {
         if (RobotBase.isSimulation()) {
             canCoderSimState = new CANcoderSimState(cancoder);
             talonFXSimState = new TalonFXSimState(talonFX);
-            LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(constants.kv().baseUnitMagnitude(), constants.ka().baseUnitMagnitude());
-            simArm = new SingleJointedArmSim(
-                    plant,
+            simArm = SimulatedArm.createFromSysId(
+                    constants.kg().baseUnitMagnitude(),
+                    constants.kv().baseUnitMagnitude(),
+                    constants.ka().baseUnitMagnitude(),
                     DCMotor.getKrakenX60Foc(1),
                     constants.reduction(),
-                    constants.armLength().baseUnitMagnitude(),
+                    constants.startingAngle().baseUnitMagnitude(),
                     constants.minAngle().baseUnitMagnitude(),
-                    constants.maxAngle().baseUnitMagnitude(),
-                    true,
-                    constants.startingAngle().baseUnitMagnitude());
+                    constants.maxAngle().baseUnitMagnitude());
             canCoderSimState.setRawPosition(simArm.getAngleRads() / 2 / Math.PI);
             talonFXSimState.setRawRotorPosition(simArm.getAngleRads() * reduction / 2 / Math.PI);
         }
