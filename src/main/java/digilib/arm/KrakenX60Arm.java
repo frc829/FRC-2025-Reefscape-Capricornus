@@ -13,7 +13,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static digilib.MotorControllerType.*;
 import static edu.wpi.first.units.Units.*;
@@ -133,15 +132,13 @@ public class KrakenX60Arm implements Arm {
     }
 
     public void updateState() {
-        state.withPosition(talonFX.getPosition().getValue().in(Radians))
-                .withAbsolutePosition(cancoder.getAbsolutePosition().getValue().in(Radians))
-                .withVelocity(talonFX.getVelocity().getValue().in(RadiansPerSecond))
-                .withAbsoluteVelocity(cancoder.getVelocity().getValue().in(RadiansPerSecond))
-                .withVoltage(talonFX.getMotorVoltage().getValueAsDouble())
-                .withTimestamp(Timer.getFPGATimestamp())
-                .withAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
-        SmartDashboard.putNumber("Kg contrib", 0.22122 * Math.cos(cancoder.getAbsolutePosition().getValue().in(Radians)));
-        SmartDashboard.putNumber("FF output", talonFX.getClosedLoopFeedForward().getValueAsDouble());
+        state.setPosition(talonFX.getPosition().getValue());
+        state.setAbsolutePosition(cancoder.getAbsolutePosition().getValue());
+        state.setVelocity(talonFX.getVelocity().getValue());
+        state.setAbsoluteVelocity(cancoder.getVelocity().getValue());
+        state.setVoltage(talonFX.getMotorVoltage().getValue());
+        state.setTimestamp(Timer.getFPGATimestamp());
+        state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
     }
 
     @Override

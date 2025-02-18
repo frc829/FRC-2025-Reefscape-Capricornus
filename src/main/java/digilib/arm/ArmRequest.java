@@ -9,24 +9,21 @@ public interface ArmRequest {
     void apply(Arm arm);
 
     class Position implements ArmRequest {
-        private final MutAngle position = Radians.mutable(0.0);
+        private final MutAngle angle = Radians.mutable(0.0);
 
         @Override
         public void apply(Arm arm) {
-            ArmState armState = arm.getState();
-            if (position.lte(arm.getMaxAngle()) && position.gte(arm.getMinAngle())) {
-                arm.setPosition(position);
-            } else if (armState.getAngle().gte(arm.getMaxAngle()) && position.lte(arm.getMaxAngle())) {
-                arm.setPosition(position);
-            } else if (armState.getAngle().lte(arm.getMinAngle()) && position.gte(arm.getMinAngle())) {
-                arm.setPosition(position);
-            } else {
-                arm.setPosition(armState.getAngle());
+            ArmState state = arm.getState();
+            if (angle.gt(arm.getMaxAngle())) {
+                angle.mut_replace(state.getAngle());
+            } else if (angle.lt(arm.getMinAngle())) {
+                angle.mut_replace(state.getAngle());
             }
+            arm.setPosition(angle);
         }
 
         public Position withPosition(Angle angle) {
-            this.position.mut_replace(angle);
+            this.angle.mut_replace(angle);
             return this;
         }
     }

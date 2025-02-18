@@ -9,17 +9,15 @@ public interface IntakeWheelRequest {
     void apply(IntakeWheel intakeWheel);
 
     class Velocity implements IntakeWheelRequest {
-        private final MutDimensionless maxVelocityValue = Value.mutable(0.0);
-        private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
+        private final MutDimensionless maxPercent = Value.mutable(0.0);
 
         @Override
         public void apply(IntakeWheel intakeWheel) {
-            velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * intakeWheel.getMaxVelocity().baseUnitMagnitude());
-            intakeWheel.setVelocity(velocity);
+            intakeWheel.setVelocity(maxPercent);
         }
 
-        public Velocity withVelocity(double value) {
-            this.maxVelocityValue.mut_setMagnitude(value);
+        public IntakeWheelRequest.Velocity withVelocity(Dimensionless maxPercent) {
+            this.maxPercent.mut_replace(maxPercent);
             return this;
         }
     }
@@ -37,12 +35,4 @@ public interface IntakeWheelRequest {
             return this;
         }
     }
-
-    class Idle implements IntakeWheelRequest {
-        @Override
-        public void apply(IntakeWheel intakeWheel) {
-            intakeWheel.setIdle();
-        }
-    }
-
 }

@@ -16,7 +16,6 @@ import digilib.intakeWheel.IntakeWheelRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static digilib.intakeWheel.IntakeWheelRequest.*;
@@ -125,7 +124,7 @@ public class DualIntakeSubsystem implements Subsystem {
 
     Command idle() {
         IntakeWheelRequest.VoltageRequest request0 = new IntakeWheelRequest.VoltageRequest().withVoltage(Volts.of(-0.5));
-        IntakeWheelRequest.Idle request1 = new IntakeWheelRequest.Idle();
+        IntakeWheelRequest.VoltageRequest request1 = new IntakeWheelRequest.VoltageRequest().withVoltage(Volts.of(0.0));
         Pair<IntakeWheelRequest, IntakeWheelRequest> request = new Pair<>(request0, request1);
         return applyRequest(() -> request)
                 .withName(String.format("%s: IDLE", getName()));

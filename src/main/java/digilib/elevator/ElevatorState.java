@@ -6,13 +6,13 @@ import static edu.wpi.first.units.Units.*;
 
 public class ElevatorState {
 
-    private final MutDistance position = Meters.mutable(0.0);
+    private final MutDistance height = Meters.mutable(0.0);
     private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
     private final MutVoltage voltage = Volts.mutable(0.0);
 
-    public Distance getPosition() {
-        return position;
+    public Distance getHeight() {
+        return height;
     }
 
     public LinearVelocity getVelocity() {
@@ -27,23 +27,31 @@ public class ElevatorState {
         return timestamp;
     }
 
-    public ElevatorState withPosition(double meters){
-        this.position.mut_setBaseUnitMagnitude(meters);
-        return this;
+    public void setHeight(double heightMeters) {
+        this.height.mut_setBaseUnitMagnitude(heightMeters);
     }
 
-    public ElevatorState withVelocity(double metersPerSecond){
-        this.velocity.mut_setBaseUnitMagnitude(metersPerSecond);
-        return this;
+    public void setHeight(Distance height) {
+        this.height.mut_replace(height);
     }
 
-    public ElevatorState withVoltage(double voltage){
-        this.voltage.mut_setBaseUnitMagnitude(voltage);
-        return this;
+    public void setVelocity(double velocityMetersPerSecond) {
+        this.velocity.mut_setBaseUnitMagnitude(velocityMetersPerSecond);
     }
 
-    public ElevatorState withTimestamp(double seconds){
+    public void setVelocity(LinearVelocity velocity) {
+        this.velocity.mut_replace(velocity);
+    }
+
+    public void setVoltage(double volts) {
+        this.voltage.mut_setBaseUnitMagnitude(volts);
+    }
+
+    public void setVoltage(Voltage voltage) {
+        this.voltage.mut_replace(voltage);
+    }
+
+    public void setTimestamp(double seconds) {
         this.timestamp.mut_setBaseUnitMagnitude(seconds);
-        return this;
     }
 }

@@ -14,7 +14,7 @@ public class WristState {
     private final MutVoltage voltage = Volts.mutable(0.0);
     private String status = "";
 
-    public Angle getPosition() {
+    public Angle getAngle() {
         return position;
     }
 
@@ -42,39 +42,31 @@ public class WristState {
         return status;
     }
 
-    public WristState withPosition(double radians) {
+    public void setPosition(double radians) {
         this.position.mut_setBaseUnitMagnitude(radians);
-        return this;
     }
 
-    public WristState withAbsolutePosition(double radians) {
+    public void setAbsolutePosition(double radians) {
         this.absolutePosition.mut_setBaseUnitMagnitude(radians);
-        return this;
     }
 
-    public WristState withVelocity(double radiansPerSecond) {
+    public void setVelocity(double radiansPerSecond) {
         this.velocity.mut_setBaseUnitMagnitude(radiansPerSecond);
-        return this;
     }
 
-    public WristState withAbsoluteVelocity(double radiansPerSecond) {
+    public void setAbsoluteVelocity(double radiansPerSecond) {
         this.absoluteVelocity.mut_setBaseUnitMagnitude(radiansPerSecond);
-        return this;
     }
 
-    public WristState withTimestamp(double seconds) {
+    public void setTimestamp(double seconds) {
         this.timestamp.mut_setBaseUnitMagnitude(seconds);
-        return this;
     }
 
-    public WristState withVoltage(double voltage) {
+    public void setVoltage(double voltage) {
         this.voltage.mut_setBaseUnitMagnitude(voltage);
-        return this;
     }
 
-    public WristState withAbsoluteEncoderStatus(String status) {
+    public void setAbsoluteEncoderStatus(String status) {
         this.status = status;
-        return this;
     }
-
 }

@@ -15,7 +15,6 @@ import digilib.elevator.ElevatorRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
@@ -39,7 +38,7 @@ public class ElevatorSubsystem implements Subsystem {
                 log -> log
                         .motor("elevator")
                         .linearVelocity(elevator.getState().getVelocity())
-                        .linearPosition(elevator.getState().getPosition())
+                        .linearPosition(elevator.getState().getHeight())
                         .voltage(elevator.getState().getVoltage()),
                 this,
                 "elevator-sysIdRoutine");
@@ -67,32 +66,18 @@ public class ElevatorSubsystem implements Subsystem {
     }
 
     public Trigger atPosition(Distance position, Distance tolerance) {
-        return new Trigger(() -> elevator.getState().getPosition().isNear(position, tolerance));
+        return new Trigger(() -> elevator.getState().getHeight().isNear(position, tolerance));
     }
 
     public Command applyRequest(Supplier<ElevatorRequest> requestSupplier) {
         return run(() -> elevator.setControl(requestSupplier.get()));
     }
 
-    public Command hold() {
+    Command hold() {
         ElevatorRequest.Position request = new ElevatorRequest.Position();
-        return Commands.runOnce(() -> request.withPosition(elevator.getState().getPosition().in(Meters)))
+        return Commands.runOnce(() -> request.withPosition(elevator.getState().getHeight()))
                 .andThen(applyRequest(() -> request))
                 .withName(String.format("%s: HOLD", getName()));
-    }
-
-    public Command goToPosition(Distance position, Distance tolerance) {
-        ElevatorRequest.Position request = new ElevatorRequest.Position();
-        request.withPosition(position.in(Meters));
-        return applyRequest(() -> request)
-                .until(atPosition(position, tolerance))
-                .withName(String.format(String.format("%s: %s meters, %s meters tolerance", getName(), position.in(Meters), tolerance.in(Meters))));
-    }
-
-    public Command moveAtVelocity(DoubleSupplier value) {
-        ElevatorRequest.Velocity request = new ElevatorRequest.Velocity();
-        return applyRequest(() -> request.withVelocity(value.getAsDouble()))
-                .withName(String.format("%s: VELOCITY", getName()));
     }
 
     @Override

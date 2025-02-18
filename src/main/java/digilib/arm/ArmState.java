@@ -42,31 +42,31 @@ public class ArmState {
         return status;
     }
 
-    public void setPosition(Angle radians) {
-        this.position.mut_setBaseUnitMagnitude(radians);
+    public void setPosition(Angle angle) {
+        this.position.mut_replace(angle);
     }
 
-    public void setAbsolutePosition(double radians) {
-        this.absolutePosition.mut_setBaseUnitMagnitude(radians);
+    public void setAbsolutePosition(Angle angle) {
+        this.position.mut_replace(angle);
     }
 
-    public void setVelocity(double radians) {
-        this.velocity.mut_setBaseUnitMagnitude(radians);
+    public void setVelocity(AngularVelocity angularVelocity) {
+        this.velocity.mut_replace(angularVelocity);
     }
 
-    public void setAbsoluteVelocity(double radiansPerSecond) {
-        this.absoluteVelocity.mut_setBaseUnitMagnitude(radiansPerSecond);
+    public void setAbsoluteVelocity(AngularVelocity angularVelocity) {
+        this.absoluteVelocity.mut_replace(angularVelocity);
     }
 
-    public void setVoltage(double volts) {
-        this.voltage.mut_setBaseUnitMagnitude(volts);
-    }
-
-    public void setTimestamp(double seconds) {
-        this.timestamp.mut_setBaseUnitMagnitude(seconds);
+    public void setVoltage(Voltage volts) {
+        this.voltage.mut_replace(volts);
     }
 
     public void setAbsoluteEncoderStatus(String status) {
         this.status = status;
+    }
+
+    public void setTimestamp(double seconds) {
+        this.timestamp.mut_setBaseUnitMagnitude(seconds);
     }
 }

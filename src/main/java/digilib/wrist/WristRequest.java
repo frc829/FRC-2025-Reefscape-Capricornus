@@ -9,49 +9,41 @@ public interface WristRequest {
     void apply(Wrist wrist);
 
     class Position implements WristRequest {
-        private final MutAngle position = Radians.mutable(0.0);
+        private final MutAngle angle = Radians.mutable(0.0);
 
         @Override
         public void apply(Wrist wrist) {
-            WristState wristState = wrist.getState();
-            if (position.lte(wrist.getMaxAngle()) && position.gte(wrist.getMinAngle())) {
-                wrist.setPosition(position);
-            } else if(wristState.getPosition().gte(wrist.getMaxAngle()) && position.lte(wrist.getMaxAngle())){
-                wrist.setPosition(position);
-            } else if(wristState.getPosition().lte(wrist.getMinAngle()) && position.gte(wrist.getMinAngle())){
-                wrist.setPosition(position);
-            }else {
-                wrist.setVelocity(RadiansPerSecond.of(0.0));
+            WristState state = wrist.getState();
+            if (angle.gt(wrist.getMaxAngle())) {
+                angle.mut_replace(state.getAngle());
+            } else if (angle.lt(wrist.getMinAngle())) {
+                angle.mut_replace(state.getAngle());
             }
+            wrist.setPosition(angle);
         }
 
-        public Position withPosition(double radians) {
-            this.position.mut_setBaseUnitMagnitude(radians);
+        public WristRequest.Position withAngle(Angle angle) {
+            this.angle.mut_replace(angle);
             return this;
         }
     }
 
     class Velocity implements WristRequest {
-        private final MutDimensionless maxVelocityValue = Value.mutable(0.0);
-        private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
+        private final MutDimensionless maxPercent = Value.mutable(0.0);
 
         @Override
         public void apply(Wrist wrist) {
             WristState state = wrist.getState();
-            if (state.getPosition().lte(wrist.getMaxAngle()) && state.getPosition().gte(wrist.getMinAngle())) {
-                velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * wrist.getMaxAngle().baseUnitMagnitude());
-            } else if (state.getPosition().gte(wrist.getMaxAngle()) && maxVelocityValue.baseUnitMagnitude() < 0.0) {
-                velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * wrist.getMaxAngle().baseUnitMagnitude());
-            } else if (state.getPosition().lte(wrist.getMinAngle()) && maxVelocityValue.baseUnitMagnitude() > 0.0) {
-                velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * wrist.getMaxAngle().baseUnitMagnitude());
-            } else {
-                velocity.mut_setBaseUnitMagnitude(0.0);
+            if (state.getAngle().gte(wrist.getMaxAngle()) && maxPercent.gte(Value.of(0.0))) {
+                maxPercent.mut_setBaseUnitMagnitude(0.0);
+            } else if (state.getAngle().lte(wrist.getMinAngle()) && maxPercent.lte(Value.of(0.0))) {
+                maxPercent.mut_setBaseUnitMagnitude(0.0);
             }
-            wrist.setVelocity(velocity);
+            wrist.setVelocity(maxPercent);
         }
 
-        public Velocity withVelocity(double value) {
-            this.maxVelocityValue.mut_setBaseUnitMagnitude(value);
+        public WristRequest.Velocity withVelocity(Dimensionless maxPercent) {
+            this.maxPercent.mut_replace(maxPercent);
             return this;
         }
     }

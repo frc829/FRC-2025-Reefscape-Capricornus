@@ -96,12 +96,12 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
-    public Distance getMaxPosition() {
+    public Distance getMaxHeight() {
         return maxHeight;
     }
 
     @Override
-    public Distance getMinPosition() {
+    public Distance getMinHeight() {
         return minHeight;
     }
 
@@ -124,8 +124,8 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
-    public void setPosition(Distance position) {
-        goalState.position = position.baseUnitMagnitude();
+    public void setHeight(Distance height) {
+        goalState.position = height.baseUnitMagnitude();
         goalState.velocity = 0.0;
         double lastVelocitySetpoint = lastState.velocity;
         lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
@@ -137,8 +137,8 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
-    public void setVelocity(LinearVelocity velocity) {
-        goalState.velocity = velocity.baseUnitMagnitude();
+    public void setVelocity(Dimensionless maxPercent) {
+        goalState.velocity = maxPercent.baseUnitMagnitude() * maxVelocity.baseUnitMagnitude();
         double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
         double lastVelocitySetPoint = lastState.velocity;
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
@@ -170,10 +170,10 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void updateState() {
-        state.withPosition(motor.getEncoder().getPosition())
-                .withVelocity(motor.getEncoder().getVelocity())
-                .withVoltage(motor.getAppliedOutput() * motor.getBusVoltage())
-                .withTimestamp(Timer.getFPGATimestamp());
+        state.setHeight(motor.getEncoder().getPosition());
+        state.setVelocity(motor.getEncoder().getVelocity());
+        state.setVoltage(motor.getAppliedOutput() * motor.getBusVoltage());
+        state.setTimestamp(Timer.getFPGATimestamp());
     }
 
     @Override

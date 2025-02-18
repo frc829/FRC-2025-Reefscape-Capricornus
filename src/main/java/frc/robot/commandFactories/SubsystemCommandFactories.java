@@ -1,9 +1,12 @@
 package frc.robot.commandFactories;
 
 import digilib.arm.ArmRequest;
+import digilib.elevator.ElevatorRequest;
 import digilib.intakeWheel.IntakeWheelRequest;
+import digilib.wrist.WristRequest;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,33 +71,61 @@ public class SubsystemCommandFactories {
     }
 
     public Command elevatorTo(Distance height, Distance tolerance) {
-        return elevator.goToPosition(height, tolerance).asProxy();
+        ElevatorRequest.Position request = new ElevatorRequest.Position();
+        request.withPosition(height);
+        return elevator.applyRequest(() -> request)
+                .until(elevator.atPosition(height, tolerance))
+                .asProxy()
+                .withName(String.format(String.format("%s: %s meters, %s meters tolerance", elevator.getName(), height.in(Meters), tolerance.in(Meters))));
     }
 
     public Command armTo(Angle angle, Angle tolerance) {
         ArmRequest.Position request = new ArmRequest.Position();
-        request.withPosition(angle.in(Radians));
+        request.withPosition(angle);
         return arm.applyRequest(() -> request)
                 .until(arm.atPosition(angle, tolerance))
+                .asProxy()
                 .withName(String.format("%s: %s deg, %s deg tolerance", arm.getName(), angle.in(Degrees), tolerance.in(Degrees)));
     }
 
-    public Command armAtSpeed(DoubleSupplier value) {
+    public Command wristTo(Angle position, Angle tolerance) {
+        WristRequest.Position request = new WristRequest.Position();
+        request.withAngle(position);
+        return wrist.applyRequest(() -> request)
+                .until(wrist.atPosition(position, tolerance))
+                .asProxy()
+                .withName(String.format("%s: %s deg, %s deg tolerance", wrist.getName(), position.in(Degrees), tolerance.in(Degrees)));
+    }
+
+    public Command armToSpeed(Dimensionless maxPercent) {
         ArmRequest.Velocity request = new ArmRequest.Velocity();
-        return arm.applyRequest(() -> request.withVelocity(value.getAsDouble()))
+        return arm.applyRequest(() -> request.withVelocity(maxPercent))
                 .withName(String.format("%s: VELOCITY", arm.getName()));
     }
 
-    public Command intakeSpin(DoubleSupplier algaeSpeed, DoubleSupplier coralSpeed) {
+    public Command elevatorToSpeed(Dimensionless maxPercent) {
+        ElevatorRequest.Velocity request = new ElevatorRequest.Velocity();
+        return elevator.applyRequest(() -> request.withVelocity(maxPercent))
+                .withName(String.format("%s: VELOCITY", elevator.getName()));
+    }
+
+    public Command wristToSpeed(Dimensionless maxPercent) {
+        WristRequest.Velocity request = new WristRequest.Velocity();
+        return wrist.applyRequest(() -> request.withVelocity(maxPercent))
+                .withName(String.format("%s: VELOCITY", wrist.getName()));
+    }
+
+    public Command intakeToSpeed(Dimensionless wheel0MaxPercent, Dimensionless wheel1MaxPercent) {
         IntakeWheelRequest.Velocity request0 = new IntakeWheelRequest.Velocity();
         IntakeWheelRequest.Velocity request1 = new IntakeWheelRequest.Velocity();
         Pair<IntakeWheelRequest, IntakeWheelRequest> intakeRequests = new Pair<>(request0, request1);
 
         return dualIntake.applyRequest(() -> {
-                    request0.withVelocity(algaeSpeed.getAsDouble());
-                    request1.withVelocity(coralSpeed.getAsDouble());
+                    request0.withVelocity(wheel0MaxPercent);
+                    request1.withVelocity(wheel1MaxPercent);
                     return intakeRequests;
-                }).asProxy()
+                })
+                .asProxy()
                 .withName(String.format("%s: VELOCITY", dualIntake.getName()));
     }
 

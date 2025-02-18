@@ -140,8 +140,8 @@ public class NEO550Wrist implements Wrist {
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity) {
-        goalState.velocity = velocity.baseUnitMagnitude();
+    public void setVelocity(Dimensionless maxPercent) {
+        goalState.velocity = maxPercent.baseUnitMagnitude() * maxVelocity.baseUnitMagnitude();
         double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
         double lastVelocitySetPoint = lastState.velocity;
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
@@ -174,13 +174,13 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void updateState() {
-        state.withPosition(motor.getEncoder().getPosition())
-                .withAbsolutePosition(cancoder.getAbsolutePosition().getValue().in(Radians))
-                .withVelocity(motor.getEncoder().getVelocity())
-                .withAbsoluteVelocity(cancoder.getVelocity().getValue().in(RadiansPerSecond))
-                .withVoltage(motor.getAppliedOutput() * motor.getBusVoltage())
-                .withTimestamp(Timer.getFPGATimestamp())
-                .withAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
+        state.setPosition(motor.getEncoder().getPosition());
+        state.setAbsolutePosition(cancoder.getAbsolutePosition().getValue().in(Radians));
+        state.setVelocity(motor.getEncoder().getVelocity());
+        state.setAbsoluteVelocity(cancoder.getVelocity().getValue().in(RadiansPerSecond));
+        state.setVoltage(motor.getAppliedOutput() * motor.getBusVoltage());
+        state.setTimestamp(Timer.getFPGATimestamp());
+        state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
     }
 
     @Override
