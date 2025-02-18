@@ -1,6 +1,5 @@
 package digilib.arm;
 
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -39,8 +38,7 @@ public class KrakenX60Arm implements Arm {
     public KrakenX60Arm(
             ArmConstants constants,
             TalonFX talonFX,
-            CANcoder cancoder,
-            FeedbackConfigs feedbackConfigs) {
+            CANcoder cancoder) {
         minAngle = constants.minAngle();
         maxAngle = constants.maxAngle();
         maxAngularVelocity = constants.maxAngularVelocity();
@@ -110,7 +108,8 @@ public class KrakenX60Arm implements Arm {
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity) {
+    public void setVelocity(Dimensionless maxPercent) {
+        double velocity = maxPercent.baseUnitMagnitude() * maxAngularVelocity.in(RotationsPerSecond);
         talonFX.setControl(velocityControl.withVelocity(velocity));
     }
 

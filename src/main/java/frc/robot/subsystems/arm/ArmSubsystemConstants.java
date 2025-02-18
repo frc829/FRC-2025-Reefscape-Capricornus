@@ -123,7 +123,7 @@ public class ArmSubsystemConstants {
     public static ArmSubsystem create() {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         talonFX.getConfigurator().apply(Motor.config);
-        Arm arm = new KrakenX60Arm(constants, talonFX, cancoder, feedbackConfigs);
+        Arm arm = new KrakenX60Arm(constants, talonFX, cancoder);
         ArmSubsystem armSubsystem = new ArmSubsystem(arm, simLoopPeriod);
         armSubsystem.setDefaultCommand(armSubsystem.hold());
         return armSubsystem;

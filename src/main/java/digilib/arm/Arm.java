@@ -3,6 +3,7 @@ package digilib.arm;
 import digilib.MotorControllerType;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Voltage;
 
 public interface Arm {
@@ -21,7 +22,7 @@ public interface Arm {
 
     void setPosition(Angle position);
 
-    void setVelocity(AngularVelocity velocity);
+    void setVelocity(Dimensionless maxPercent);
 
     void setVoltage(Voltage voltage);
 

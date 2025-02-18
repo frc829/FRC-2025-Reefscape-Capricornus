@@ -51,13 +51,13 @@ public class ArmTelemetry {
     }
 
     public void telemeterize(ArmState state) {
-        angle.set(roundToDecimal(state.getPosition().in(Degrees), 2));
+        angle.set(roundToDecimal(state.getAngle().in(Degrees), 2));
         absoluteAngle.set(roundToDecimal(state.getAbsolutePosition().in(Degrees), 2));
         angularVelocity.set(roundToDecimal(state.getVelocity().in(DegreesPerSecond), 2));
         absoluteVelocity.set(roundToDecimal(state.getAbsoluteVelocity().in(DegreesPerSecond), 2));
         voltage.set(roundToDecimal(state.getVoltage().baseUnitMagnitude(), 2));
         timestamp.set(roundToDecimal(state.getTimestamp().baseUnitMagnitude(), 2));
         absoluteEncoderStatus.set(state.getAbsoluteEncoderStatus());
-        ligament.setAngle(roundToDecimal(state.getPosition().in(Degrees), 2));
+        ligament.setAngle(roundToDecimal(state.getAngle().in(Degrees), 2));
     }
 }

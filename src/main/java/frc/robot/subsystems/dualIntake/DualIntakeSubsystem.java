@@ -123,20 +123,7 @@ public class DualIntakeSubsystem implements Subsystem {
         });
     }
 
-    public Command moveAtVelocity(DoubleSupplier maxIntake0VelocityValue, DoubleSupplier maxIntake1VelocityValue) {
-        IntakeWheelRequest.Velocity request0 = new IntakeWheelRequest.Velocity();
-        IntakeWheelRequest.Velocity request1 = new IntakeWheelRequest.Velocity();
-        Pair<IntakeWheelRequest, IntakeWheelRequest> intakeRequests = new Pair<>(request0, request1);
-
-        return applyRequest(() -> {
-            request0.withVelocity(maxIntake0VelocityValue.getAsDouble());
-            request1.withVelocity(maxIntake1VelocityValue.getAsDouble());
-            return intakeRequests;
-        })
-                .withName(String.format("%s: VELOCITY", getName()));
-    }
-
-    public Command idle() {
+    Command idle() {
         IntakeWheelRequest.VoltageRequest request0 = new IntakeWheelRequest.VoltageRequest().withVoltage(Volts.of(-0.5));
         IntakeWheelRequest.Idle request1 = new IntakeWheelRequest.Idle();
         Pair<IntakeWheelRequest, IntakeWheelRequest> request = new Pair<>(request0, request1);

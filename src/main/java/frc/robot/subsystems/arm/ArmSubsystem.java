@@ -15,7 +15,6 @@ import digilib.arm.ArmRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
@@ -63,32 +62,18 @@ public class ArmSubsystem implements Subsystem {
     }
 
     public Trigger atPosition(Angle position, Angle tolerance) {
-        return new Trigger(() -> arm.getState().getPosition().isNear(position, tolerance));
+        return new Trigger(() -> arm.getState().getAngle().isNear(position, tolerance));
     }
 
-    private Command applyRequest(Supplier<ArmRequest> requestSupplier) {
+    public Command applyRequest(Supplier<ArmRequest> requestSupplier) {
         return run(() -> arm.setControl(requestSupplier.get()));
     }
 
-    public Command hold() {
+    Command hold() {
         ArmRequest.Position request = new ArmRequest.Position();
-        return Commands.runOnce(() -> request.withPosition(arm.getState().getPosition().in(Radians)))
+        return Commands.runOnce(() -> request.withPosition(arm.getState().getAngle()))
                 .andThen(applyRequest(() -> request))
                 .withName(String.format("%s: HOLD", getName()));
-    }
-
-    public Command goToAngle(Angle position, Angle tolerance) {
-        ArmRequest.Position request = new ArmRequest.Position();
-        request.withPosition(position.in(Radians));
-        return applyRequest(() -> request)
-                .until(atPosition(position, tolerance))
-                .withName(String.format("%s: %s deg, %s deg tolerance", getName(), position.in(Degrees), tolerance.in(Degrees)));
-    }
-
-    public Command moveAtVelocity(DoubleSupplier value) {
-        ArmRequest.Velocity request = new ArmRequest.Velocity();
-        return applyRequest(() -> request.withVelocity(value.getAsDouble()))
-                .withName(String.format("%s: VELOCITY", getName()));
     }
 
     @Override

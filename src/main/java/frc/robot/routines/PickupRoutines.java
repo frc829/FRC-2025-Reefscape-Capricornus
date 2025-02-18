@@ -30,7 +30,7 @@ public class PickupRoutines {
         //         .whileTrue(factories.coralFloor())
         //         .onFalse(resetFactories.coral());
         controller.coralStationFront()
-                .whileTrue(factories.coralStationFront());
+                .whileTrue(factories.coralStation());
         // controller.coralStationBack()
         //         .whileTrue(factories.coralStationBack())
         //         .onFalse(resetFactories.coral());

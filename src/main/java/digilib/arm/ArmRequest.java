@@ -16,42 +16,37 @@ public interface ArmRequest {
             ArmState armState = arm.getState();
             if (position.lte(arm.getMaxAngle()) && position.gte(arm.getMinAngle())) {
                 arm.setPosition(position);
-            } else if (armState.getPosition().gte(arm.getMaxAngle()) && position.lte(arm.getMaxAngle())) {
+            } else if (armState.getAngle().gte(arm.getMaxAngle()) && position.lte(arm.getMaxAngle())) {
                 arm.setPosition(position);
-            } else if (armState.getPosition().lte(arm.getMinAngle()) && position.gte(arm.getMinAngle())) {
+            } else if (armState.getAngle().lte(arm.getMinAngle()) && position.gte(arm.getMinAngle())) {
                 arm.setPosition(position);
             } else {
-                arm.setVelocity(DegreesPerSecond.of(0.0));
+                arm.setPosition(armState.getAngle());
             }
         }
 
-        public Position withPosition(double radians) {
-            this.position.mut_setBaseUnitMagnitude(radians);
+        public Position withPosition(Angle angle) {
+            this.position.mut_replace(angle);
             return this;
         }
     }
 
     class Velocity implements ArmRequest {
-        private final MutDimensionless maxVelocityValue = Value.mutable(0.0);
-        private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
+        private final MutDimensionless maxPercent = Value.mutable(0.0);
 
         @Override
         public void apply(Arm arm) {
             ArmState state = arm.getState();
-            if (state.getPosition().lte(arm.getMaxAngle()) && state.getPosition().gte(arm.getMinAngle())) {
-                velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * arm.getMaxAngle().baseUnitMagnitude());
-            } else if (state.getPosition().gte(arm.getMaxAngle()) && maxVelocityValue.baseUnitMagnitude() < 0.0) {
-                velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * arm.getMaxAngle().baseUnitMagnitude());
-            } else if (state.getPosition().lte(arm.getMinAngle()) && maxVelocityValue.baseUnitMagnitude() > 0.0) {
-                velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * arm.getMaxAngle().baseUnitMagnitude());
-            } else {
-                velocity.mut_setBaseUnitMagnitude(0.0);
+            if (state.getAngle().gte(arm.getMaxAngle()) && maxPercent.gte(Value.of(0.0))) {
+                maxPercent.mut_setBaseUnitMagnitude(0.0);
+            } else if (state.getAngle().lte(arm.getMinAngle()) && maxPercent.lte(Value.of(0.0))) {
+                maxPercent.mut_setBaseUnitMagnitude(0.0);
             }
-            arm.setVelocity(velocity);
+            arm.setVelocity(maxPercent);
         }
 
-        public Velocity withVelocity(double value) {
-            this.maxVelocityValue.mut_setBaseUnitMagnitude(value);
+        public Velocity withVelocity(Dimensionless maxPercent) {
+            this.maxPercent.mut_replace(maxPercent);
             return this;
         }
     }

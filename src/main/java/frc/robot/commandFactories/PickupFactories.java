@@ -1,22 +1,68 @@
 package frc.robot.commandFactories;
 
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class PickupFactories {
-    public final SubsystemCommandFactories subs;
-    private final Trigger wristAtZero;
-    private final Trigger wristAt90;
+
+    private static final double wristSafeDeg = 0.0;
+    private static final double wristPickupDeg = 90.0;
+    private static final double wristToleranceDegrees = 2.0;
+
+    private static final double elevatorCoralFloorCentimeters = 0.0;
+    private static final double elevatorCoralStationCentimeters = 0.0;
+    private static final double elevatorAlgaeFloorCentimeters = 0.0;
+    private static final double elevatorAlgaeL2Centimeters = 0.0;
+    private static final double elevatorAlgaeL3Centimeters = 0.0;
+    private static final double elevatorToleranceCentimeters = 1.0;
+
+    private static final double armCoralFloorDegrees = 0.0;
+    private static final double armCoralStationDegrees = 0.0;
+    private static final double armAlgaeFloorDegrees = 0.0;
+    private static final double armAlgaeL2Degrees = 0.0;
+    private static final double armAlgaeL3Degrees = 0.0;
+    private static final double armToleranceDegrees = 2.0;
+
+
+    private final SubsystemCommandFactories subs;
+    private final Trigger hasCoral;
+    private final Trigger hasAlgae;
+    private final Trigger isWristSafe;
+    private final Trigger isWristPickup;
+    private final Trigger isArmAtCoralStation;
+    private final Trigger isElevatorAtCoralStation;
+    private final Trigger isArmAtCoralFloor;
+    private final Trigger isElevatorAtCoralFloor;
+    private final Trigger isArmAtAlgaeFloor;
+    private final Trigger isElevatorAtAlgaeFloor;
+    private final Trigger isArmAtAlgaeL2;
+    private final Trigger isElevatorAtAlgaeL2;
+    private final Trigger isArmAtAlgaeL3;
+    private final Trigger isElevatorAtAlgaeL3;
+
 
     public PickupFactories(SubsystemCommandFactories subs) {
         this.subs = subs;
-        wristAtZero = subs.wrist.atPosition(Degrees.of(0.0), Degrees.of(2.0));
-        wristAt90 = subs.wrist.atPosition(Degrees.of(90.0), Degrees.of(2.0));
+        this.hasAlgae = subs.hasAlgae;
+        this.hasCoral = subs.hasCoral;
+        this.isWristSafe = subs.wristAtAngle(wristSafeDeg, wristToleranceDegrees);
+        this.isWristPickup = subs.wristAtAngle(wristPickupDeg, wristToleranceDegrees);
+        this.isArmAtCoralStation = subs.armAtAngle(armCoralStationDegrees, armToleranceDegrees);
+        this.isElevatorAtCoralStation = subs.elevatorAtHeight(elevatorCoralStationCentimeters, elevatorToleranceCentimeters);
+        this.isArmAtCoralFloor = subs.armAtAngle(armCoralFloorDegrees, armToleranceDegrees);
+        this.isElevatorAtCoralFloor= subs.elevatorAtHeight(ar, elevatorToleranceCentimeters);
+        this.isArmAtAlgaeFloor = subs.armAtAngle(0.0, armToleranceDegrees);
+        this.isElevatorAtAlgaeFloor = subs.elevatorAtHeight(0.0, elevatorToleranceCentimeters);
+        this.isArmAtAlgaeL2 = subs.armAtAngle(0.0, armToleranceDegrees);
+        this.isElevatorAtAlgaeL2 = subs.elevatorAtHeight(0.0, elevatorToleranceCentimeters);
+        this.isArmAtAlgaeL3 = subs.armAtAngle(0.0, armToleranceDegrees);
+        this.isElevatorAtAlgaeL3 = subs.elevatorAtHeight(0.0, elevatorToleranceCentimeters);
     }
 
     public Command algaeFloor() {
@@ -35,16 +81,20 @@ public class PickupFactories {
     }
 
     public Command coralFloor() {
-        return Commands.none();
+        return sequence(
+                clawsForCoralPickup(),
+                parallel(elevatorCoralFloor(), wristSafe()).until(isWristSafe),
+                parallel(elevatorCoralFloor(), armCoralFloor()).until()
+        ).withName("Pickup: Coral Floor");
 
     }
 
-    public Command coralStationFront() {
+    public Command coralStation() {
         return
                 closeClaws()
-                        .andThen(wristToZero()
+                        .andThen(subs.wristToZero()
                                 .alongWith(elevatorTo(Centimeters.of(20.0), Centimeters.of(2.0)))
-                                .until(wristAtZero))
+                                .until(subs.wristAt0Deg))
                         .andThen(subs.dualIntake.moveAtVelocity(
                                         () -> 0.0,
                                         () -> 0.25)
@@ -55,8 +105,8 @@ public class PickupFactories {
                         .andThen(subs.dualIntake.moveAtVelocity(
                                         () -> 0.0,
                                         () -> 0.25)
-                                .alongWith(wristTo90())
-                                .until(wristAt90))
+                                .alongWith(subs.wristTo90())
+                                .until(isWristPickup))
                         .andThen(subs.dualIntake.moveAtVelocity(
                                         () -> 0.0,
                                         () -> 0.25)
@@ -65,23 +115,67 @@ public class PickupFactories {
 
     }
 
-    public Command coralStationBack() {
+    private Command clawsForCoralPickup() {
         return Commands.none();
     }
 
-    private Command closeClaws() {
-        return subs.algae.close().alongWith(subs.coral.close());
+    private Command clawsForAlgaePickup() {
+        return Commands.none();
     }
 
-    private Command wristToZero() {
-        return subs.wrist.goToAngle(Degrees.of(0.0), Degrees.of(2.0)).asProxy();
+    private Command elevatorCoralFloor() {
+        return Commands.none();
     }
 
-    private Command wristTo90() {
-        return subs.wrist.goToAngle(Degrees.of(90.0), Degrees.of(2.0)).asProxy();
+    private Command elevatorAlgaeFloor() {
+        return Commands.none();
     }
 
-    private Command elevatorTo(Distance position, Distance tolerance) {
-        return subs.elevator.goToPosition(position, tolerance).asProxy();
+    private Command elevatorCoralStation() {
+        return Commands.none();
+    }
+
+    private Command elevatorAlgaeL2() {
+        return Commands.none();
+    }
+
+    private Command elevatorAlgaeL3() {
+        return Commands.none();
+    }
+
+    private Command armCoralFloor() {
+        return Commands.none();
+    }
+
+    private Command armAlgaeFloor() {
+        return Commands.none();
+    }
+
+    private Command armCoralStation() {
+        return Commands.none();
+    }
+
+    private Command armAlgaeL2() {
+        return Commands.none();
+    }
+
+    private Command armAlgaeL3() {
+        return Commands.none();
+    }
+
+    private Command wristPickup() {
+        return Commands.none();
+    }
+
+    private Command wristSafe() {
+        return Commands.none();
+    }
+
+    private Command intakeAlgae() {
+        return Commands.none();
+    }
+
+    private Command intakeCoral() {
+        return Commands.none();
     }
 }
