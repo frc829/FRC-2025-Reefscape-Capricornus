@@ -39,7 +39,6 @@ public class NEO550Wrist implements Wrist {
     private final SimpleMotorFeedforward feedforward;
     private final Time profilePeriod;
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private boolean hold = false;
     private DCMotorSim simWrist = null;
     private SparkMaxSim sparkMaxSim = null;
     private CANcoderSimState canCoderSimState = null;

@@ -8,7 +8,6 @@ import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.pneumatics.PneumaticSubsystem;
 import frc.robot.subsystems.power.PowerSubsystem;
 import frc.robot.subsystems.swerveDrive.CommandSwerveDriveFactory;
-import frc.robot.subsystems.winch.WinchSubsystem;
 import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class SubsystemCommandFactories {

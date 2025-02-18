@@ -17,6 +17,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import java.util.List;
 import java.util.Optional;
 
+import static digilib.DigiMath.standardDeviation;
 import static digilib.cameras.CameraState.*;
 import static digilib.cameras.CameraState.CameraMode.*;
 
@@ -27,7 +28,7 @@ public class PhotonVisionCamera implements Camera {
     private final AprilTagFieldLayout fieldTags;
     private final Matrix<N3, N1> singleTagStdDev;
     private CameraRequest cameraRequest;
-    // private final CameraTelemetry telemetry;
+    private final CameraTelemetry telemetry;
     private final PhotonCamera photonCamera;
     private final PhotonPoseEstimator photonPoseEstimator;
 
@@ -41,11 +42,11 @@ public class PhotonVisionCamera implements Camera {
                 constants.primaryStrategy(),
                 constants.robotToCamera());
         photonPoseEstimator.setMultiTagFallbackStrategy(constants.fallBackPoseStrategy());
-        // telemetry = new CameraTelemetry(
-        //         constants.name(),
-        //         constants.robotToCamera(),
-        //         constants.primaryStrategy(),
-        //         constants.fallBackPoseStrategy());
+        telemetry = new CameraTelemetry(
+                constants.name(),
+                constants.robotToCamera(),
+                constants.primaryStrategy(),
+                constants.fallBackPoseStrategy());
     }
 
     @Override
@@ -102,26 +103,22 @@ public class PhotonVisionCamera implements Camera {
                         .plus(cameraToRobot)
                         .toPose2d()).toList();
 
-        double xStdDev = targetPose2ds
-                .stream()
-                .map(targetPose -> Math.pow(targetPose.getX() - pose2d.getX(), 2))
-                .reduce(0.0, Double::sum)
-                / targetPose2ds.size();
-        xStdDev = Math.sqrt(xStdDev);
+        double xStdDev = standardDeviation(
+                pose2d.getX(),
+                targetPose2ds
+                        .stream()
+                        .map(Pose2d::getX).toList());
 
-        double yStdDev = targetPose2ds
-                .stream()
-                .map(targetPose -> Math.pow(targetPose.getY() - pose2d.getY(), 2))
-                .reduce(0.0, Double::sum)
-                / targetPose2ds.size();
-        yStdDev = Math.sqrt(yStdDev);
+        double yStdDev = standardDeviation(
+                pose2d.getY(),
+                targetPose2ds.stream()
+                        .map(Pose2d::getY).toList());
 
-        double thetaStdDevRadians = targetPose2ds
-                .stream()
-                .map(targetPose -> targetPose.getRotation().minus(pose2d.getRotation()))
-                .map(rotation2d -> Math.pow(rotation2d.getRadians(), 2))
-                .reduce(0.0, Double::sum)
-                / targetPose2ds.size();
+        double thetaStdDevRadians = standardDeviation(
+                pose2d.getRotation(),
+                targetPose2ds.stream()
+                        .map(Pose2d::getRotation).toList());
+
         state.withRobotPoseStdDev(xStdDev, yStdDev, thetaStdDevRadians);
     }
 
@@ -145,6 +142,6 @@ public class PhotonVisionCamera implements Camera {
 
     @Override
     public void updateTelemetry() {
-        // telemetry.telemeterize(state);
+        telemetry.telemeterize(state);
     }
 }

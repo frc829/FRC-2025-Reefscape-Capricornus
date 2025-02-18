@@ -8,9 +8,9 @@ import static edu.wpi.first.units.Units.*;
 
 public interface SwerveDriveRequest {
 
-    public void apply(CTRESwerveDrive CTRESwerveDrive);
+    void apply(CTRESwerveDrive CTRESwerveDrive);
 
-    public class FieldCentric implements SwerveDriveRequest {
+    class FieldCentric implements SwerveDriveRequest {
         private final MutDimensionless maxVelocityPercent = Value.mutable(0.0);
         private final MutDimensionless maxAngularVelocityPercent = Value.mutable(0.0);
         private final MutAngle heading = Radians.mutable(0.0);
@@ -44,7 +44,7 @@ public interface SwerveDriveRequest {
         }
     }
 
-    public class RobotCentric implements SwerveDriveRequest {
+    class RobotCentric implements SwerveDriveRequest {
         private final MutDimensionless maxVelocityPercent = Value.mutable(0.0);
         private final MutDimensionless maxAngularVelocityPercent = Value.mutable(0.0);
         private final MutAngle heading = Radians.mutable(0.0);
@@ -78,7 +78,7 @@ public interface SwerveDriveRequest {
         }
     }
 
-    public class Brake implements SwerveDriveRequest {
+    class Brake implements SwerveDriveRequest {
 
         @Override
         public void apply(CTRESwerveDrive CTRESwerveDrive) {
@@ -86,7 +86,7 @@ public interface SwerveDriveRequest {
         }
     }
 
-    public class PointWheels implements SwerveDriveRequest {
+    class PointWheels implements SwerveDriveRequest {
         private final MutAngle direction = Radians.mutable(0.0);
 
         @Override
@@ -100,13 +100,13 @@ public interface SwerveDriveRequest {
         }
     }
 
-    public class SeedFieldCentric implements SwerveDriveRequest {
+    class SeedFieldCentric implements SwerveDriveRequest {
         public void apply(CTRESwerveDrive CTRESwerveDrive) {
             CTRESwerveDrive.setFieldCentricSeed();
         }
     }
 
-    public class ApplyRobotSpeeds implements SwerveDriveRequest {
+    class ApplyRobotSpeeds implements SwerveDriveRequest {
         private ChassisSpeeds speeds = new ChassisSpeeds();
         private DriveFeedforwards driveFeedforwards = null;
 
@@ -126,7 +126,7 @@ public interface SwerveDriveRequest {
         }
     }
 
-    public class ClockDrive implements SwerveDriveRequest {
+    class ClockDrive implements SwerveDriveRequest {
         private final MutDimensionless maxVelocityPercent = Value.mutable(0.0);
         private final MutAngle heading = Radians.mutable(0.0);
         private final MutAngle rotation = Radians.mutable(0.0);
@@ -158,7 +158,7 @@ public interface SwerveDriveRequest {
         }
     }
 
-    public class Idle implements SwerveDriveRequest {
+    class Idle implements SwerveDriveRequest {
         @Override
         public void apply(CTRESwerveDrive CTRESwerveDrive) {
             CTRESwerveDrive.setIdle();
