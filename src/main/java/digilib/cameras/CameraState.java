@@ -10,39 +10,67 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static edu.wpi.first.units.Units.Seconds;
 
-public class CameraState implements Cloneable {
+public class CameraState {
 
     public enum CameraMode {
-        ROBOT_POSE
+        ROBOT_POSE(0);
+
+        private final int pipelineIndex;
+
+        CameraMode(int pipelineIndex) {
+            this.pipelineIndex = pipelineIndex;
+        }
+
+        private static Map<Integer, CameraMode> map = Map.of(
+                0, ROBOT_POSE);
+
+
+        public int getPipelineIndex() {
+            return pipelineIndex;
+        }
+
+        public static CameraMode get(int pipelineIndex) {
+            return map.get(pipelineIndex);
+        }
     }
 
-    private CameraMode mode;
-    private Pose3d robotPose = null;
-    private Matrix<N3, N1> robotPoseStdDev = null;
+    private CameraMode cameraMode = null;
+    private Pose3d robotPose = new Pose3d(
+            Double.NaN,
+            Double.NaN,
+            Double.NaN,
+            new Rotation3d(Double.NaN, Double.NaN, Double.NaN));
+    private Matrix<N3, N1> robotPoseStdDev = MatBuilder.fill(
+            Nat.N3(),
+            Nat.N1(),
+            Double.NaN,
+            Double.NaN,
+            Double.NaN);
     private final MutTime timestamp = Seconds.mutable(0.0);
 
-    public CameraMode getMode() {
-        return mode;
+    public CameraMode getCameraMode() {
+        return cameraMode;
     }
 
-    public Optional<Pose3d> getRobotPose() {
-        return Optional.ofNullable(robotPose);
+    public Pose3d getRobotPose() {
+        return robotPose;
     }
 
-    public Optional<Matrix<N3, N1>> getRobotPoseStdDev() {
-        return Optional.ofNullable(robotPoseStdDev);
+    public Matrix<N3, N1> getRobotPoseStdDev() {
+        return robotPoseStdDev;
     }
 
     public Time getTimestamp() {
         return timestamp;
     }
 
-    public CameraState withCameraMode(CameraMode mode) {
-        this.mode = mode;
+    public CameraState withCameraMode(CameraMode cameraMode) {
+        this.cameraMode = cameraMode;
         return this;
     }
 
@@ -51,37 +79,8 @@ public class CameraState implements Cloneable {
         return this;
     }
 
-    public CameraState withRobotPoseStdDev(Matrix<N3, N1> robotPoseStdDev) {
-        this.robotPoseStdDev.assignBlock(0, 0, robotPoseStdDev);
+    public CameraState withTimestamp(double seconds) {
+        timestamp.mut_setBaseUnitMagnitude(seconds);
         return this;
     }
-
-    public CameraState withTimestamp(Time timestamp) {
-        this.timestamp.mut_replace(timestamp);
-        return this;
-    }
-
-    public CameraState withCameraState(CameraState cameraState) {
-        this.mode = cameraState.getMode();
-        this.robotPose = cameraState.getRobotPose().orElse(null);
-        this.robotPoseStdDev = cameraState.getRobotPoseStdDev().orElse(null);
-        this.timestamp.mut_replace(cameraState.getTimestamp());
-        return this;
-    }
-
-    @Override
-    public CameraState clone() {
-        try {
-            CameraState toReturn = (CameraState) super.clone();
-            toReturn.mode = mode;
-            toReturn.robotPose = robotPose;
-            toReturn.robotPoseStdDev = robotPoseStdDev;
-            toReturn.timestamp.mut_replace(timestamp);
-            return toReturn;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
-
-
 }

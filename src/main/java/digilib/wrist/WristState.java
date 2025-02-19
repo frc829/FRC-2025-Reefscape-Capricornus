@@ -4,62 +4,77 @@ import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.*;
 
-public class WristState implements Cloneable {
+public class WristState {
 
     private final MutAngle position = Radians.mutable(0.0);
+    private final MutAngle absolutePosition = Radians.mutable(0.0);
     private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
+    private final MutAngularVelocity absoluteVelocity = RadiansPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
     private final MutVoltage voltage = Volts.mutable(0.0);
+    private String status = "";
 
     public Angle getPosition() {
         return position;
+    }
+
+    public Angle getAbsolutePosition() {
+        return absolutePosition;
     }
 
     public AngularVelocity getVelocity() {
         return velocity;
     }
 
-    public WristState withPosition(Angle position) {
-        this.position.mut_replace(position);
-        return this;
+    public AngularVelocity getAbsoluteVelocity() {
+        return absoluteVelocity;
     }
 
-    public WristState withVelocity(AngularVelocity velocity) {
-        this.velocity.mut_replace(velocity);
-        return this;
-    }
-
-    public MutVoltage getVoltage() {
+    public Voltage getVoltage() {
         return voltage;
     }
 
-    public WristState withTimestamp(Time timestamp) {
-        this.timestamp.mut_replace(timestamp);
+    public Time getTimestamp() {
+        return timestamp;
+    }
+
+    public String getAbsoluteEncoderStatus() {
+        return status;
+    }
+
+    public WristState withPosition(double radians) {
+        this.position.mut_setBaseUnitMagnitude(radians);
+        return this;
+    }
+
+    public WristState withAbsolutePosition(double radians) {
+        this.absolutePosition.mut_setBaseUnitMagnitude(radians);
+        return this;
+    }
+
+    public WristState withVelocity(double radiansPerSecond) {
+        this.velocity.mut_setBaseUnitMagnitude(radiansPerSecond);
+        return this;
+    }
+
+    public WristState withAbsoluteVelocity(double radiansPerSecond) {
+        this.absoluteVelocity.mut_setBaseUnitMagnitude(radiansPerSecond);
+        return this;
+    }
+
+    public WristState withTimestamp(double seconds) {
+        this.timestamp.mut_setBaseUnitMagnitude(seconds);
         return this;
     }
 
     public WristState withVoltage(double voltage) {
-        this.voltage.mut_setMagnitude(voltage);
+        this.voltage.mut_setBaseUnitMagnitude(voltage);
         return this;
     }
 
-    public WristState withWristState(WristState wristState) {
-        this.position.mut_replace(wristState.position);
-        this.velocity.mut_replace(wristState.velocity);
-        this.timestamp.mut_replace(wristState.timestamp);
+    public WristState withAbsoluteEncoderStatus(String status) {
+        this.status = status;
         return this;
     }
 
-    @Override
-    public WristState clone() {
-        try {
-            WristState toReturn = (WristState) super.clone();
-            toReturn.position.mut_replace(position);
-            toReturn.velocity.mut_replace(velocity);
-            toReturn.timestamp.mut_replace(timestamp);
-            return toReturn;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
 }

@@ -1,90 +1,117 @@
 package frc.robot.subsystems.wrist;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.*;
-import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.*;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 import digilib.wrist.NEO550Wrist;
 import digilib.wrist.Wrist;
 import digilib.wrist.WristConstants;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants;
 
+import static com.revrobotics.spark.SparkBase.PersistMode.*;
+import static com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters;
+import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
+import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder;
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.wrist.CommandWristConstants.AbsoluteEncoder.cancoder;
+import static frc.robot.subsystems.wrist.CommandWristConstants.Control.*;
+import static frc.robot.subsystems.wrist.CommandWristConstants.Mechanism.*;
+import static frc.robot.subsystems.wrist.CommandWristConstants.Motor.motor;
+import static frc.robot.subsystems.wrist.CommandWristConstants.Simulation.*;
 
 public class CommandWristConstants {
-    private static final Angle startingAngle = Degrees.of(0);
-    private static final Angle minAngle = Degrees.of(0.0);
-    private static final Angle maxAngle = Degrees.of(90.0);
-    private static final int motorDeviceId = 17;
-    private static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kBrake;
-    private static final boolean inverted = false;
-    private static final double reduction = 10.0 * 7.0 * 32.0 / 18.0;
-    private static final Voltage ks = Volts.of(0.0);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of( 1.2782399036744865);
-    private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of( 9.941089837997054E-4);
-    private static final double positionKp = 23.790020451150006;
-    private static final double positionKd = 0.010130792769467259;
-    private static final double velocityKp = 2.3496718293473E-13;
-    private static final Time updatePeriod = Seconds.of(0.020);
-    private static final Time simLoopPeriod = Seconds.of(0.001);
 
-    private static final int cancoderDeviceNumber = 37;
-    private static final double magnetDirection = 0.460938;
+    static final class Control {
+        static final Voltage ks = Volts.of(0.14461);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(1.1894);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.026599);
+        static final double positionKp = 0.77955;
+        static final double positionKd = 0.0073908;
+        static final double velocityKp = 6.8211E-05;
+        static final Time updatePeriod = Seconds.of(0.020);
+        static final AngularVelocity maxAngularVelocity = RadiansPerSecond.of(
+                (12.0 - ks.baseUnitMagnitude()) / kv.baseUnitMagnitude());
+        static final AngularAcceleration maxAngularAcceleration = RadiansPerSecondPerSecond.of(
+                (12.0 - ks.baseUnitMagnitude()) / ka.baseUnitMagnitude());
+    }
 
-    private static final AngularVelocity maxAngularVelocity = RadiansPerSecond.of(
-            (12.0 - ks.baseUnitMagnitude()) / kv.baseUnitMagnitude());
-    private static final AngularAcceleration maxAngularAcceleration = RadiansPerSecondPerSecond.of(
-            (12.0 - ks.baseUnitMagnitude()) / ka.baseUnitMagnitude());
-
-
-
-    public static CommandWrist createCommandWrist() {
-        SparkMax motor = new SparkMax (motorDeviceId, SparkLowLevel.MotorType.kBrushless);
-
-        CANcoderConfiguration cancoderConfig = new CANcoderConfiguration();
-        cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-        cancoderConfig.MagnetSensor.MagnetOffset = magnetDirection;
-        CANcoder cancoder = new CANcoder(cancoderDeviceNumber, Constants.rio);
-        cancoder.getConfigurator().apply(cancoderConfig);
-
-        SparkBaseConfig config = new SparkMaxConfig()
-                .idleMode(idleMode)
-                .inverted(inverted);
-        config.encoder.positionConversionFactor(2 * Math.PI  / reduction);
-        config.encoder.velocityConversionFactor(2 * Math.PI / reduction / 60.0);
-        config.encoder.uvwAverageDepth(2);
-        config.encoder.uvwMeasurementPeriod(16);
-        config.closedLoop.pid(positionKp, 0, positionKd).feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
-        config.closedLoop.pid(velocityKp, 0, 0, ClosedLoopSlot.kSlot1).feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
-
-        motor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-
-        WristConstants wristConstants = new WristConstants(
+    static final class Mechanism {
+        static final String name = "Wrist";
+        static final double reduction = 10.0 * 7.0 * 32.0 / 18.0;
+        static final WristConstants constants = new WristConstants(
+                name,
+                reduction,
                 maxAngle,
                 minAngle,
-                maxAngularVelocity,
-                maxAngularAcceleration,
                 ks,
                 kv,
                 ka,
-                reduction,
-                startingAngle,
-                Radians.of(0.0),
-                RadiansPerSecond.of(0.0));
-        Wrist wrist = new NEO550Wrist(
-                wristConstants,
-                motor,
-                config,
-                cancoder,
-                updatePeriod);
-        return new CommandWrist(wrist, simLoopPeriod);
-
-
+                maxAngularVelocity,
+                maxAngularAcceleration,
+                positionStdDev,
+                velocityStdDev);
     }
 
+    static final class Simulation {
+        static final Angle minAngle = Degrees.of(0.0);
+        static final Angle maxAngle = Degrees.of(90.0);
+        static final Angle positionStdDev = Degrees.of(0.0);
+        static final AngularVelocity velocityStdDev = DegreesPerSecond.of(0.0);
+        static final Time simLoopPeriod = Seconds.of(0.001);
+    }
+
+    static final class AbsoluteEncoder {
+        static final int cancoderDeviceNumber = 37;
+        static final SensorDirectionValue sensorDirectionValue = RobotBase.isReal() ? SensorDirectionValue.CounterClockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
+        static final double magnetOffset = RobotBase.isReal() ? -0.202637 : 0.0;
+        static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
+                .withSensorDirection(sensorDirectionValue)
+                .withMagnetOffset(magnetOffset);
+        static final CANcoderConfiguration config = new CANcoderConfiguration()
+                .withMagnetSensor(magnetSensorConfigs);
+        static final CANcoder cancoder = new CANcoder(cancoderDeviceNumber, Constants.rio);
+    }
+
+    static final class Motor {
+        static final int deviceId = 17;
+        static final SparkBaseConfig.IdleMode idleMode = SparkBaseConfig.IdleMode.kCoast;
+        static final boolean inverted = true;
+        static final int depth = 2;
+        static final int periodMs = 16;
+        static final EncoderConfig encoderConfig = new EncoderConfig()
+                .positionConversionFactor(2 * Math.PI / reduction)
+                .velocityConversionFactor(2 * Math.PI / reduction / 60.0)
+                .uvwAverageDepth(depth)
+                .uvwMeasurementPeriod(periodMs);
+        static final ClosedLoopConfig closedLoopConfig = new ClosedLoopConfig()
+                .pidf(positionKp, 0.0, positionKd, 0.0)
+                .pidf(velocityKp, 0.0, 0.0, 0.0, ClosedLoopSlot.kSlot1)
+                .feedbackSensor(kPrimaryEncoder)
+                .positionWrappingEnabled(false);
+        static final SparkBaseConfig config = new SparkFlexConfig()
+                .idleMode(idleMode)
+                .inverted(inverted)
+                .apply(encoderConfig)
+                .apply(closedLoopConfig);
+        static final SparkMax motor = new SparkMax(deviceId, kBrushless);
+    }
+
+    public static CommandWrist create() {
+        cancoder.getConfigurator().apply(AbsoluteEncoder.config);
+        motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
+        Wrist wrist = new NEO550Wrist(
+                constants,
+                motor,
+                cancoder,
+                updatePeriod);
+        CommandWrist commandWrist = new CommandWrist(wrist, simLoopPeriod);
+        commandWrist.setDefaultCommand(commandWrist.hold());
+        return commandWrist;
+    }
 }

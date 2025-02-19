@@ -1,7 +1,6 @@
 package frc.robot.subsystems.coralClaw;
 
 import digilib.claws.ClawRequest;
-import digilib.claws.ClawState;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class CommandCoralClawFactory {
@@ -9,11 +8,23 @@ public class CommandCoralClawFactory {
 
     public CommandCoralClawFactory(CommandCoralClaw commandCoralClaw) {
         this.commandCoralClaw = commandCoralClaw;
+        commandCoralClaw.register();
+
     }
 
-    public Command setClawValue(ClawState.ClawValue clawValue){
-        ClawRequest.SetClaw request = new ClawRequest.SetClaw(clawValue);
-        return commandCoralClaw.applyRequest(() -> request).withName(clawValue.name());
+    public Command open(){
+        ClawRequest.Open request = new ClawRequest.Open();
+        return commandCoralClaw.applyRequestOnce(() -> request).withName("Coral: Open");
+    }
+
+    public Command close(){
+        ClawRequest.Close request = new ClawRequest.Close();
+        return commandCoralClaw.applyRequestOnce(() -> request).withName("Coral: Close");
+    }
+
+    public Command toggle(){
+        ClawRequest.Toggle request = new ClawRequest.Toggle();
+        return commandCoralClaw.applyRequestOnce(() -> request).withName("Coral: Toggle");
     }
 
 

@@ -1,27 +1,16 @@
 package digilib.cameras;
 
-import static digilib.cameras.CameraState.*;
-
 public interface Camera {
 
-    public void setControl(CameraRequest request);
+    CameraState getState();
 
-    public CameraState getState();
+    void setControl(CameraRequest request);
 
-    public CameraState getStateCopy();
+    void setRobotPoseMode();
 
-    public CameraState getLastState();
+    void update();
 
-    public void updateTelemetry();
+    void updateState();
 
-    public void setMode(CameraMode mode);
-
-    public void update();
-
-
-
-
-
-
-
+    void updateTelemetry();
 }

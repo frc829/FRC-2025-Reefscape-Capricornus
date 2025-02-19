@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.MutTime;
+import edu.wpi.first.wpilibj.Timer;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -18,16 +19,18 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import java.util.List;
 import java.util.Optional;
 
+import static digilib.cameras.CameraState.*;
+import static digilib.cameras.CameraState.CameraMode.*;
 import static edu.wpi.first.units.Units.Seconds;
 
 public class PhotonVisionCamera implements Camera {
 
     private final CameraState state = new CameraState();
-    private final CameraState lastState = new CameraState();
     private final Transform3d robotToCamera;
     private final Transform3d cameraToRobot;
     private final AprilTagFieldLayout fieldTags;
     private CameraRequest cameraRequest;
+    private final CameraTelemetry telemetry;
     private final PhotonCamera photonCamera;
     private final PhotonPoseEstimator photonPoseEstimator;
     private final Matrix<N3, N1> poseStdDev = MatBuilder.fill(Nat.N3(), Nat.N1(), Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
@@ -35,23 +38,19 @@ public class PhotonVisionCamera implements Camera {
 
     public PhotonVisionCamera(CameraConstants cameraConstants, PhotonCamera photonCamera) {
         this.photonCamera = photonCamera;
-        this.robotToCamera = cameraConstants.getRobotToCamera();
+        this.robotToCamera = cameraConstants.robotToCamera();
         this.cameraToRobot = robotToCamera.inverse();
-        this.fieldTags = cameraConstants.getAprilTagFieldLayout();
+        this.fieldTags = cameraConstants.aprilTagFieldLayout();
         photonPoseEstimator = new PhotonPoseEstimator(
                 fieldTags,
-                cameraConstants.getPrimaryStrategy(),
+                cameraConstants.primaryStrategy(),
                 robotToCamera);
-        photonPoseEstimator.setMultiTagFallbackStrategy(cameraConstants.getFallBackPoseStrategy());
-    }
-
-    @Override
-    public void setControl(CameraRequest request) {
-        if (cameraRequest != request) {
-            cameraRequest = request;
-        }
-        request.apply(this);
-
+        photonPoseEstimator.setMultiTagFallbackStrategy(cameraConstants.fallBackPoseStrategy());
+        telemetry = new CameraTelemetry(
+                cameraConstants.name(),
+                cameraConstants.robotToCamera(),
+                cameraConstants.primaryStrategy(),
+                cameraConstants.fallBackPoseStrategy());
     }
 
     @Override
@@ -60,25 +59,17 @@ public class PhotonVisionCamera implements Camera {
     }
 
     @Override
-    public CameraState getStateCopy() {
-        return state.clone();
+    public void setControl(CameraRequest request) {
+        if (cameraRequest != request) {
+            cameraRequest = request;
+        }
+        request.apply(this);
     }
 
     @Override
-    public CameraState getLastState() {
-        return lastState;
+    public void setRobotPoseMode() {
+        photonCamera.setPipelineIndex(ROBOT_POSE.getPipelineIndex());
     }
-
-    @Override
-    public void updateTelemetry() {
-        // TODO: will do later.
-    }
-
-    @Override
-    public void setMode(CameraState.CameraMode mode) {
-        // TODO: will do later.
-    }
-
 
     @Override
     public void update() {
@@ -87,7 +78,6 @@ public class PhotonVisionCamera implements Camera {
     }
 
     public void updateState() {
-        lastState.withCameraState(state);
         Pose3d pose3d = null;
         MutTime timestamp = Seconds.mutable(Double.NaN);
         for (var change : photonCamera.getAllUnreadResults()) {
@@ -100,9 +90,19 @@ public class PhotonVisionCamera implements Camera {
                     est -> timestamp.mut_setMagnitude(est.timestampSeconds),
                     () -> timestamp.mut_setMagnitude(Double.NaN));
         }
-        state.withRobotPose(pose3d)
-                .withRobotPoseStdDev(poseStdDev)
-                .withTimestamp(timestamp);
+        state.withCameraMode(getCameraMode())
+                .withRobotPose(null)
+                .withTimestamp(Timer.getFPGATimestamp());
+    }
+
+
+    @Override
+    public void updateTelemetry() {
+        telemetry.telemeterize(state);
+    }
+
+    private CameraMode getCameraMode() {
+        return CameraMode.get(photonCamera.getPipelineIndex());
     }
 
     private void updateEstimationStdDevs(

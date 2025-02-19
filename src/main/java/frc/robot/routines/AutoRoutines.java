@@ -18,14 +18,12 @@ public class AutoRoutines {
         final AutoRoutine routine = factory.newRoutine("The Love Boat Auto");
         final AutoTrajectory S3toG = routine.trajectory("S3toG");
         final AutoTrajectory GtoTopStation = routine.trajectory("GtoTopStation");
-
         routine.active().onTrue(
                 S3toG.resetOdometry()
                         .andThen(S3toG.cmd())
                         .andThen(Commands.print("SCORE L4"))
                         .andThen(Commands.waitSeconds(2))
-                        .andThen(GtoTopStation.cmd())
-        );
+                        .andThen(GtoTopStation.cmd()));
         return routine;
     }
 }
