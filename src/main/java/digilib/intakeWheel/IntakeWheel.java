@@ -1,28 +1,30 @@
 package digilib.intakeWheel;
 
-import edu.wpi.first.units.measure.LinearVelocity;
+import digilib.MotorControllerType;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public interface IntakeWheel {
 
-    public void updateSimState(double dtSeconds, double supplyVoltage);
+    MotorControllerType getMotorControllerType();
 
-    public void setControl(IntakeWheelRequest request);
+    AngularVelocity getMaxVelocity();
 
-    public IntakeWheelState getState();
+    IntakeWheelState getState();
 
-    public IntakeWheelState getStateCopy();
+    void setControl(IntakeWheelRequest request);
 
-    public IntakeWheelState getLastIntakeState();
+    void setVelocity(AngularVelocity velocity);
 
-    public void updateTelemetry();
+    void setIdle();
 
-    public boolean setNeutralModeToBrake();
+    void setVoltage(Voltage voltage);
 
-    public boolean setNeutralModeToCoast();
+    void update();
 
-    public void setVelocity(LinearVelocity velocity);
+    void updateState();
 
-    public void update();
+    void updateTelemetry();
 
-    public LinearVelocity getMaxVelocity();
+    void updateSimState(double dtSeconds, double supplyVoltage);
 }

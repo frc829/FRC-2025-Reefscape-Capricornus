@@ -1,45 +1,43 @@
 package digilib.elevator;
 
-import edu.wpi.first.units.measure.AngularVelocity;
+import digilib.MotorControllerType;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public interface Elevator {
 
-    public void updateSimState(double dt, double supplyVoltage);
+    MotorControllerType getMotorControllerType();
 
-    public void setControl(ElevatorRequest request);
+    Distance getMaxPosition();
 
-    public ElevatorState getState();
+    Distance getMinPosition();
 
-    public ElevatorState getStateCopy();
+    LinearVelocity getMaxVelocity();
 
-    public ElevatorState getLastArmState();
+    ElevatorState getState();
 
-    public void enableHold();
+    boolean isHoldEnabled();
 
-    public void disableHold();
+    void setControl(ElevatorRequest request);
 
-    public boolean isHoldEnabled();
+    void setPosition(Distance position);
 
-    public void updateTelemetry();
+    void setVelocity(LinearVelocity velocity);
 
-    public boolean setNeutralModeToBrake();
+    void setVoltage(Voltage voltage);
 
-    public boolean setNeutralModeToCoast();
+    void resetPosition();
 
-    public void setVelocity(LinearVelocity velocity);
+    void enableHold();
 
-    public void setPosition(Distance position);
+    void disableHold();
 
-    public void resetPosition();
+    void update();
 
-    public void update();
+    void updateState();
 
-    public Distance getMaxPosition();
+    void updateTelemetry();
 
-    public Distance getMinPosition();
-
-    public LinearVelocity getMaxVelocity();
-
+    void updateSimState(double dt, double supplyVoltage);
 }

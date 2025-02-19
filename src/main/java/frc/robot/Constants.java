@@ -1,10 +1,10 @@
 package frc.robot;
 
 import com.ctre.phoenix6.CANBus;
+import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 
-import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.derive;
+import static edu.wpi.first.units.Units.*;
 
 public class Constants {
 
@@ -17,6 +17,7 @@ public class Constants {
     private static final DistanceUnit Corbin = Corbins;
     private static final DistanceUnit Adams = Corbins;
     private static final DistanceUnit Adam = Adams;
+    private static final AngleUnit Angel = derive(Degrees).aggregate(90).named("Angel").symbol("al").make();
     public static final CANBus rio = new CANBus("rio");
     public static final CANBus canivore = new CANBus("canivore", "./logs/example.hoot");
 

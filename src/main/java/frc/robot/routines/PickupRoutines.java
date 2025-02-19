@@ -1,6 +1,6 @@
 package frc.robot.routines;
 
-import digilib.controllers.OperatorXboxController;
+import frc.robot.controllers.OperatorXboxController;
 import frc.robot.commandFactories.PickupFactories;
 import frc.robot.commandFactories.ResetFactories;
 
@@ -29,9 +29,8 @@ public class PickupRoutines {
         // controller.coralFloor()
         //         .whileTrue(factories.coralFloor())
         //         .onFalse(resetFactories.coral());
-        // controller.coralStationFront()
-        //         .whileTrue(factories.coralStationFront())
-        //         .onFalse(resetFactories.coral());
+        controller.coralStationFront()
+                .whileTrue(factories.coralStationFront());
         // controller.coralStationBack()
         //         .whileTrue(factories.coralStationBack())
         //         .onFalse(resetFactories.coral());

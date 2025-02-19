@@ -15,6 +15,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.*;
 
 import digilib.cameras.CameraConstants;
@@ -29,7 +30,7 @@ import org.photonvision.PhotonCamera;
 public class CommandSwerveDriveConstants {
 
     public static final class OurCameraConstants {
-        private static final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+        private static final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
         private static final PoseStrategy primaryStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
         private static final PoseStrategy fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
 
@@ -38,9 +39,16 @@ public class CommandSwerveDriveConstants {
             private static final Distance cameraX = Meter.of(0.0);
             private static final Distance cameraY = Meter.of(0.0);
             private static final Distance cameraZ = Meter.of(0.0);
-            private static final Rotation3d cameraAngle = new Rotation3d();
-            private static final CameraConstants constants = new CameraConstants(
-                    cameraX, cameraY, cameraZ, cameraAngle, layout, primaryStrategy, fallbackPoseStrategy);
+            private static final Angle roll = Degrees.of(0.0);
+            private static final Angle pitch = Degrees.of(0.0);
+            private static final Angle yaw = Degrees.of(0.0);
+            private static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
+            private static final Transform3d robotToCamera = new Transform3d(
+                    cameraX,
+                    cameraY,
+                    cameraZ,
+                    cameraAngle);
+            private static final CameraConstants constants = new CameraConstants(name, robotToCamera, layout, primaryStrategy, fallbackPoseStrategy);
         }
 
         public static final class Camera1 {
@@ -48,9 +56,16 @@ public class CommandSwerveDriveConstants {
             private static final Distance cameraX = Meter.of(0.0);
             private static final Distance cameraY = Meter.of(0.0);
             private static final Distance cameraZ = Meter.of(0.0);
-            private static final Rotation3d cameraAngle = new Rotation3d();
-            private static final CameraConstants constants = new CameraConstants(
-                    cameraX, cameraY, cameraZ, cameraAngle, layout, primaryStrategy, fallbackPoseStrategy);
+            private static final Angle roll = Degrees.of(0.0);
+            private static final Angle pitch = Degrees.of(0.0);
+            private static final Angle yaw = Degrees.of(0.0);
+            private static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
+            private static final Transform3d robotToCamera = new Transform3d(
+                    cameraX,
+                    cameraY,
+                    cameraZ,
+                    cameraAngle);
+            private static final CameraConstants constants = new CameraConstants(name, robotToCamera, layout, primaryStrategy, fallbackPoseStrategy);
         }
 
         public static final class Camera2 {
@@ -58,10 +73,16 @@ public class CommandSwerveDriveConstants {
             private static final Distance cameraX = Meter.of(0.0);
             private static final Distance cameraY = Meter.of(0.0);
             private static final Distance cameraZ = Meter.of(0.0);
-            private static final Rotation3d cameraAngle = new Rotation3d();
-            private static final CameraConstants constants = new CameraConstants(
-                    cameraX, cameraY, cameraZ, cameraAngle, layout, primaryStrategy, fallbackPoseStrategy);
-
+            private static final Angle roll = Degrees.of(0.0);
+            private static final Angle pitch = Degrees.of(0.0);
+            private static final Angle yaw = Degrees.of(0.0);
+            private static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
+            private static final Transform3d robotToCamera = new Transform3d(
+                    cameraX,
+                    cameraY,
+                    cameraZ,
+                    cameraAngle);
+            private static final CameraConstants constants = new CameraConstants(name, robotToCamera, layout, primaryStrategy, fallbackPoseStrategy);
         }
     }
 

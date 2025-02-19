@@ -1,32 +1,46 @@
 package digilib.intakeWheel;
 
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.units.measure.MutDimensionless;
-import edu.wpi.first.units.measure.MutLinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Percent;
+import edu.wpi.first.units.measure.*;
+import static edu.wpi.first.units.Units.*;
 
 public interface IntakeWheelRequest {
 
-    public void apply(IntakeWheel intakeWheel);
+    void apply(IntakeWheel intakeWheel);
 
-    public class Velocity implements IntakeWheelRequest {
-        private final MutDimensionless maxVelocityPercent = Percent.mutable(0.0);
-        private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
+    class Velocity implements IntakeWheelRequest {
+        private final MutDimensionless maxVelocityValue = Value.mutable(0.0);
+        private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
 
         @Override
         public void apply(IntakeWheel intakeWheel) {
-            velocity.mut_setMagnitude(maxVelocityPercent.baseUnitMagnitude() * intakeWheel.getMaxVelocity().baseUnitMagnitude());
+            velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * intakeWheel.getMaxVelocity().baseUnitMagnitude());
             intakeWheel.setVelocity(velocity);
         }
 
-        public Velocity withVelocity(Dimensionless maxVelocityPercent) {
-            this.maxVelocityPercent.mut_replace(maxVelocityPercent);
+        public Velocity withVelocity(double value) {
+            this.maxVelocityValue.mut_setMagnitude(value);
             return this;
         }
     }
 
+    class VoltageRequest implements IntakeWheelRequest {
+        private final MutVoltage voltage = Volts.mutable(0.0);
 
+        @Override
+        public void apply(IntakeWheel intakeWheel) {
+            intakeWheel.setVoltage(voltage);
+        }
+
+        public VoltageRequest withVoltage(Voltage voltage) {
+            this.voltage.mut_replace(voltage);
+            return this;
+        }
+    }
+
+    class Idle implements IntakeWheelRequest {
+        @Override
+        public void apply(IntakeWheel intakeWheel) {
+            intakeWheel.setIdle();
+        }
+    }
 }

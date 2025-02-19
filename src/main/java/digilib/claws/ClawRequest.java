@@ -1,20 +1,37 @@
 package digilib.claws;
 
+import static digilib.claws.ClawValue.CLOSED;
+import static digilib.claws.ClawValue.OPEN;
+
 public interface ClawRequest {
 
-    public void apply(Claw claw);
+    void apply(Claw claw);
 
-    public class SetClaw implements ClawRequest {
-
-        private final ClawState.ClawValue clawValue;
-
-        public SetClaw(ClawState.ClawValue clawValue) {
-            this.clawValue = clawValue;
-        }
+    class Open implements ClawRequest {
 
         @Override
         public void apply(Claw claw) {
-            claw.setValue(clawValue);
+            claw.setValue(OPEN);
+        }
+    }
+
+    class Close implements ClawRequest {
+
+        @Override
+        public void apply(Claw claw) {
+            claw.setValue(CLOSED);
+        }
+    }
+
+    class Toggle implements ClawRequest {
+
+        public void apply(Claw claw) {
+            ClawValue clawValue = claw.getState().getClawValue();
+            if (clawValue != null) {
+                claw.setValue(clawValue.opposite());
+            } else {
+                claw.setValue(CLOSED);
+            }
         }
     }
 }

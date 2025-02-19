@@ -1,7 +1,5 @@
 package digilib.power;
 
-import edu.wpi.first.hal.PowerDistributionFaults;
-import edu.wpi.first.hal.PowerDistributionStickyFaults;
 import edu.wpi.first.units.measure.*;
 
 import java.util.List;
@@ -16,8 +14,8 @@ public class PowerState {
     private final MutCurrent totalCurrent = Amps.mutable(0.0);
     private final MutPower totalPower = Watts.mutable(0.0);
     private final MutEnergy totalEnergy = Joules.mutable(0.0);
-    private PowerDistributionFaults faults = new PowerDistributionFaults(0);
-    private PowerDistributionStickyFaults stickyFaults = new PowerDistributionStickyFaults(0);
+    private final MutTime timestamp = Seconds.mutable(0.0);
+
 
     public PowerState(int channels) {
         currents = IntStream.range(0, channels)
@@ -49,12 +47,8 @@ public class PowerState {
         return totalEnergy;
     }
 
-    public PowerDistributionFaults getFaults() {
-        return faults;
-    }
-
-    public PowerDistributionStickyFaults getStickyFaults() {
-        return stickyFaults;
+    public Time getTimestamp() {
+        return timestamp;
     }
 
     public PowerState withVoltage(double voltageVolts) {
@@ -68,8 +62,9 @@ public class PowerState {
     }
 
     public PowerState withCurrents(double... currentsInAmps) {
-        IntStream.range(0, currents.size())
-                .forEachOrdered(i -> this.currents.get(i).mut_setMagnitude(currentsInAmps[i]));
+        for(int i = 0; i < currentsInAmps.length; i++) {
+            currents.get(i).mut_setBaseUnitMagnitude(currentsInAmps[i]);
+        }
         return this;
     }
 
@@ -88,47 +83,7 @@ public class PowerState {
         return this;
     }
 
-    public PowerState withFaults(PowerDistributionFaults faults) {
-        this.faults = faults;
-        return this;
+    public void withTimeStamp(double seconds){
+        timestamp.mut_setMagnitude(seconds);
     }
-
-    public PowerState withStickyFaults(PowerDistributionStickyFaults stickyFaults) {
-        this.stickyFaults = stickyFaults;
-        return this;
-    }
-
-    public PowerState withState(PowerState state) {
-        voltage.mut_replace(state.getVoltage());
-        temperature.mut_replace(state.getTemperature());
-        IntStream.range(0, currents.size())
-                .forEachOrdered(i -> currents.get(i).mut_replace(state.getCurrents().get(i)));
-        totalCurrent.mut_replace(state.getTotalCurrent());
-        totalPower.mut_replace(state.getTotalPower());
-        totalEnergy.mut_replace(state.getTotalEnergy());
-        faults = state.getFaults();
-        stickyFaults = state.getStickyFaults();
-        return this;
-    }
-
-
-    @Override
-    public PowerState clone() {
-        try {
-            PowerState toReturn = (PowerState) super.clone();
-            toReturn.voltage.mut_replace(voltage);
-            toReturn.temperature.mut_replace(temperature);
-            toReturn.currents.replaceAll(i -> i.mutableCopy());
-            toReturn.totalCurrent.mut_replace(totalCurrent);
-            toReturn.totalPower.mut_replace(totalPower);
-            toReturn.totalEnergy.mut_replace(totalEnergy);
-            toReturn.faults = faults;
-            toReturn.stickyFaults = stickyFaults;
-
-            return toReturn;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
-
 }

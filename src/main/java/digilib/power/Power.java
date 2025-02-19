@@ -2,20 +2,14 @@ package digilib.power;
 
 public interface Power {
 
-    public PowerState getState();
+    PowerState getState();
 
-    public PowerState getStateCopy();
+    void setControl(PowerRequest request);
 
-    public PowerState getLastState();
+    void clearStickyFaults();
 
-    public void setControl();
+    void update();
 
-    public void clearStickyFaults();
-
-    public void update();
-
-    public void updateSimState();
-
-    public void updateTelemetry();
+    void updateTelemetry();
 
 }
