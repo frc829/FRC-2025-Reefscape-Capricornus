@@ -3,7 +3,9 @@ package digilib.objectDetectors;
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class LaserCanObjectDetector implements ObjectDetector {
     private final ObjectDetectorState state;
@@ -13,6 +15,7 @@ public class LaserCanObjectDetector implements ObjectDetector {
     private final Distance maxTrueDistance;
     private final Distance minTrueDistance;
     private final Alert alert = new Alert("Error", Alert.AlertType.kError);
+    private final CommandXboxController simulated;
 
     public LaserCanObjectDetector(
             String name,
@@ -24,6 +27,11 @@ public class LaserCanObjectDetector implements ObjectDetector {
         this.minTrueDistance = minTrueDistance;
         this.state = new ObjectDetectorState();
         this.telemetry = new ObjectDetectorTelemetry(name, maxTrueDistance, minTrueDistance);
+        if(RobotBase.isReal()){
+            simulated = null;
+        }else{
+            simulated = new CommandXboxController(4);
+        }
     }
 
     @Override
@@ -47,16 +55,25 @@ public class LaserCanObjectDetector implements ObjectDetector {
 
     @Override
     public void updateState() {
-        try {
-            double meters = laserCan.getMeasurement().distance_mm / 1000.0;
-            state.withDistance(meters)
-                    .withInRange(meters <= maxTrueDistance.baseUnitMagnitude() && meters >= minTrueDistance.baseUnitMagnitude())
-                    .withTimestamp(Timer.getFPGATimestamp());
-            alert.set(false);
-        } catch (Exception e) {
-            alert.setText("Error: " + e.getMessage());
-            alert.set(true);
+        if(RobotBase.isReal()){
+            try {
+                double meters = laserCan.getMeasurement().distance_mm / 1000.0;
+                state.withDistance(meters)
+                        .withInRange(meters <= maxTrueDistance.baseUnitMagnitude() && meters >= minTrueDistance.baseUnitMagnitude())
+                        .withTimestamp(Timer.getFPGATimestamp());
+                alert.set(false);
+            } catch (Exception e) {
+                alert.setText("Error: " + e.getMessage());
+                alert.set(true);
+            }
+        }else{
+            if(simulated.a().getAsBoolean()){
+                state.withInRange(true);
+            }else{
+                state.withInRange(false);
+            }
         }
+
     }
 
     @Override

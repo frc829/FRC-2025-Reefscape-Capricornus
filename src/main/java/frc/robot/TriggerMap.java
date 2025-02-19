@@ -1,18 +1,25 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.FrequencyUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDimensionless;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commandFactories.*;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj.GenericHID.RumbleType.*;
 import static edu.wpi.first.wpilibj.Joystick.AxisType.*;
 import static edu.wpi.first.wpilibj.XboxController.Axis.*;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class TriggerMap {
     private static final double deadband = 0.1;
@@ -44,6 +51,7 @@ public class TriggerMap {
         this.manual = manual;
 
         bindClockDrive();
+        bindFieldCentricDrive();
         bindRobotCentricDrive();
         bindAlgaeFloorPickup();
         bindAlgaeL2Pickup();
@@ -67,27 +75,41 @@ public class TriggerMap {
         bindManualCoralOut();
         bindManualAlgaeIn();
         bindManualAlgaeOut();
-
     }
 
     private void bindClockDrive() {
         new Trigger(() -> {
-                    double x = -MathUtil.applyDeadband(driver.getRightY(), deadband);
-                    double y = -MathUtil.applyDeadband(driver.getRightX(), deadband);
-                    return Math.hypot(x, y) != 0.0;
-                }).whileTrue(driving.clockDrive(
+            double x = -MathUtil.applyDeadband(driver.getRightY(), deadband);
+            double y = -MathUtil.applyDeadband(driver.getRightX(), deadband);
+            return Math.hypot(x, y) != 0.0;
+        }).whileTrue(driving.clockDrive(
+                this::getMaxVelocityPercent,
+                this::getHeading,
+                this::getRotation));
+    }
+
+    private void bindFieldCentricDrive() {
+        new Trigger(() -> getMaxVelocityPercentValue() != 0.0)
+                .and(() -> {
+                    double x = MathUtil.applyDeadband(driver.getRightY(), deadband);
+                    double y = MathUtil.applyDeadband(driver.getRightX(), deadband);
+                    return Math.hypot(x, y) == 0.0;
+                })
+                .whileTrue(driving.fieldCentricDrive(
                         this::getMaxVelocityPercent,
                         this::getHeading,
-                        this::getRotation));
+                        this::getMaxRotationalVelocityPercent));
     }
 
     private void bindRobotCentricDrive() {
         new Trigger(() -> getMaxVelocityPercentValue() != 0.0)
                 .and(() -> {
-                    double x = MathUtil.applyDeadband(driver.getRightX(), deadband);
-                    double y = MathUtil.applyDeadband(driver.getRightY(), deadband);
+                    double x = MathUtil.applyDeadband(driver.getRightY(), deadband);
+                    double y = MathUtil.applyDeadband(driver.getRightX(), deadband);
                     return Math.hypot(x, y) == 0.0;
-                }).whileTrue(driving.robotCentricDrive(
+                })
+                .and(driver.rightBumper())
+                .whileTrue(driving.robotCentricDrive(
                         this::getMaxVelocityPercent,
                         this::getHeading,
                         this::getMaxRotationalVelocityPercent));
@@ -113,14 +135,17 @@ public class TriggerMap {
 
     private void bindCoralFloorPickup() {
         operator.rightBumper()
-                .whileTrue(pickup.coralFloor())
-                .onFalse(pickup.holdAfterCoral());
+                .whileTrue(sequence(pickup.coralFloor(),
+                        parallel(giveKeithCarpelTunnel(), pickup.coralStore()))
+                        .withName("Pickup: Coral Floor"))
+                .onFalse(pickup.coralStore());
     }
 
     private void bindCoralStationPickup() {
         operator.povUp()
-                .whileTrue(pickup.coralStation())
-                .onFalse(pickup.holdAfterCoral());
+                .whileTrue(sequence(pickup.coralStation(),
+                        parallel(giveKeithCarpelTunnel(), pickup.coralStore())))
+                .onFalse(pickup.coralStore());
     }
 
     private void bindBargeScore() {
@@ -275,4 +300,11 @@ public class TriggerMap {
     private double getMaxArmVelocityPercentValue() {
         return -MathUtil.applyDeadband(backup.getRightY(), deadband);
     }
+
+    private Command giveKeithCarpelTunnel() {
+        return sequence(
+                race(waitSeconds(2), run(() -> operator.setRumble(kBothRumble, 1))),
+                runOnce(() -> operator.setRumble(kBothRumble, 0)));
+    }
+
 }

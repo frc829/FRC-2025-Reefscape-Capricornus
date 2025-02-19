@@ -10,8 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static digilib.claws.ClawValue.*;
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class PickupFactories {
 
@@ -24,16 +23,16 @@ public class PickupFactories {
     private static final Angle wristPickup = Degrees.of(90.0);
     private static final Angle wristTolerance = Degrees.of(2.0);
 
-    private static final Distance elevatorCoralFloor = Centimeters.of(0.0);
+    private static final Distance elevatorCoralFloor = Centimeters.of(20.0);
     private static final Distance elevatorCoralStation = Centimeters.of(0.0);
     private static final Distance elevatorAlgaeFloor = Centimeters.of(0.0);
     private static final Distance elevatorAlgaeL2 = Centimeters.of(0.0);
     private static final Distance elevatorAlgaeL3 = Centimeters.of(0.0);
-    private static final Distance elevatorAlgaeFloorHold = Centimeters.of(0.0);
-    private static final Distance elevatorCoralFloorHold = Centimeters.of(0.0);
+    private static final Distance elevatorAlgaeHold = Centimeters.of(0.0);
+    private static final Distance elevatorCoralHold = Centimeters.of(0.0);
     private static final Distance elevatorTolerance = Centimeters.of(1.0);
 
-    private static final Angle armCoralFloor = Degrees.of(0.0);
+    private static final Angle armCoralFloor = Degrees.of(-30.0);
     private static final Angle armCoralStation = Degrees.of(0.0);
     private static final Angle armAlgaeFloor = Degrees.of(0.0);
     private static final Angle armAlgaeL2 = Degrees.of(0.0);
@@ -51,7 +50,10 @@ public class PickupFactories {
     private final ManipulatorFactories manip;
     private final Trigger hasCoral;
     private final Trigger hasAlgae;
+    private final Trigger isCoralClawClosed;
+    private final Trigger isAlgaeClawClosed;
     private final Trigger isWristSafe;
+    private final Trigger isWristPickup;
     private final Trigger isArmAtCoralStation;
     private final Trigger isElevatorAtCoralStation;
     private final Trigger isArmAtCoralFloor;
@@ -62,13 +64,20 @@ public class PickupFactories {
     private final Trigger isElevatorAtAlgaeL2;
     private final Trigger isArmAtAlgaeL3;
     private final Trigger isElevatorAtAlgaeL3;
+    private final Trigger isArmAtAlgaeStore;
+    private final Trigger isArmAtCoralStore;
+    private final Trigger isElevatorAtAlgaeStore;
+    private final Trigger isElevatorAtCoralStore;
 
 
     public PickupFactories(ManipulatorFactories manip) {
         this.manip = manip;
         this.hasAlgae = manip.hasAlgae;
         this.hasCoral = manip.hasCoral;
+        this.isCoralClawClosed = manip.isCoralClawClosed;
+        this.isAlgaeClawClosed = manip.isAlgaeClawClosed;
         this.isWristSafe = manip.wristAtAngle(wristSafe, wristTolerance);
+        this.isWristPickup = manip.wristAtAngle(wristPickup, wristTolerance);
         this.isArmAtCoralStation = manip.armAtAngle(armCoralStation, armTolerance);
         this.isElevatorAtCoralStation = manip.elevatorAtHeight(elevatorCoralStation, elevatorTolerance);
         this.isArmAtCoralFloor = manip.armAtAngle(armCoralFloor, armTolerance);
@@ -79,6 +88,10 @@ public class PickupFactories {
         this.isElevatorAtAlgaeL2 = manip.elevatorAtHeight(elevatorAlgaeL2, elevatorTolerance);
         this.isArmAtAlgaeL3 = manip.armAtAngle(armAlgaeL3, armTolerance);
         this.isElevatorAtAlgaeL3 = manip.elevatorAtHeight(elevatorAlgaeL3, elevatorTolerance);
+        this.isArmAtAlgaeStore = manip.armAtAngle(armAlgaeHold, armTolerance);
+        this.isArmAtCoralStore = manip.armAtAngle(armCoralHold, armTolerance);
+        this.isElevatorAtAlgaeStore = manip.elevatorAtHeight(elevatorAlgaeHold, elevatorTolerance);
+        this.isElevatorAtCoralStore = manip.elevatorAtHeight(elevatorCoralHold, elevatorTolerance);
     }
 
     public Command algaeFloor() {
@@ -112,14 +125,27 @@ public class PickupFactories {
     }
 
     public Command coralFloor() {
-        return sequence(
-                clawsForCoral(),
-                parallel(elevatorCoralFloor(), wristSafe()).until(isWristSafe),
-                parallel(elevatorCoralFloor(), armCoralFloor()).until(isElevatorAtCoralFloor.and(isArmAtCoralFloor).and(isWristSafe)),
-                wristPickup(),
-                intakeCoral().until(hasCoral))
+        return either(
+                sequence(
+                        intakeCoral().until(hasCoral)),
+                sequence(
+                        clawsForCoral(),
+                        parallel(elevatorCoralFloor(), wristSafe()).until(isWristSafe),
+                        parallel(elevatorCoralFloor(), armCoralFloor()).until(isElevatorAtCoralFloor.and(isArmAtCoralFloor).and(isWristSafe)),
+                        wristPickup(),
+                        intakeCoral().until(hasCoral)),
+                isWristPickup.and(isArmAtCoralFloor).and(isElevatorAtCoralFloor).and(isAlgaeClawClosed).and(isCoralClawClosed))
                 .withName("Pickup: Coral Floor");
     }
+
+    public Command coralStore() {
+        return sequence(
+                arm45Degrees(),
+                wristSafe(),
+                parallel(elevatorCoralHold(), armCoralHold()))
+                .withName("Store: Coral Floor");
+    }
+
 
     public Command coralStation() {
         return sequence(
@@ -131,20 +157,25 @@ public class PickupFactories {
                 .withName("Pickup: Coral Station");
     }
 
-    public Command holdAfterCoral(){
-        return Commands.none();
-    }
 
-    public Command holdAfterAlgae(){
+    public Command holdAfterAlgae() {
         return Commands.none();
     }
 
     private Command clawsForAlgae() {
-        return Commands.parallel(manip.setAlgaeClaw(algaeClawAlgaeIntake), manip.setCoralClaw(coralClawAlgaeIntake));
+        return parallel(manip.setAlgaeClaw(algaeClawAlgaeIntake), manip.setCoralClaw(coralClawAlgaeIntake));
     }
 
     private Command clawsForCoral() {
-        return Commands.parallel(manip.setAlgaeClaw(algaeClawCoralIntake), manip.setCoralClaw(coralClawCoralIntake));
+        return parallel(manip.setAlgaeClaw(algaeClawCoralIntake), manip.setCoralClaw(coralClawCoralIntake));
+    }
+
+    private Command elevatorCoralHold() {
+        return manip.elevatorTo(elevatorCoralHold, elevatorTolerance);
+    }
+
+    private Command armCoralHold() {
+        return manip.armTo(armCoralHold, armTolerance);
     }
 
     private Command elevatorCoralFloor() {
@@ -185,6 +216,10 @@ public class PickupFactories {
 
     private Command armAlgaeL3() {
         return manip.armTo(armAlgaeL3, armTolerance);
+    }
+
+    private Command arm45Degrees() {
+        return manip.armTo(Degrees.of(45), Degrees.of(2));
     }
 
     private Command wristPickup() {
