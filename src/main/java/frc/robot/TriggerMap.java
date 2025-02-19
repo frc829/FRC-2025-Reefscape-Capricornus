@@ -71,10 +71,9 @@ public class TriggerMap {
     }
 
     private void bindClockDrive() {
-        new Trigger(() -> getMaxVelocityPercentValue() != 0.0)
-                .and(() -> {
-                    double x = MathUtil.applyDeadband(driver.getRightX(), deadband);
-                    double y = MathUtil.applyDeadband(driver.getRightY(), deadband);
+        new Trigger(() -> {
+                    double x = -MathUtil.applyDeadband(driver.getRightY(), deadband);
+                    double y = -MathUtil.applyDeadband(driver.getRightX(), deadband);
                     return Math.hypot(x, y) != 0.0;
                 }).whileTrue(driving.clockDrive(
                         this::getMaxVelocityPercent,
@@ -215,8 +214,8 @@ public class TriggerMap {
     }
 
     private double getMaxVelocityPercentValue() {
-        double x = -MathUtil.applyDeadband(driver.getLeftX(), deadband);
-        double y = -MathUtil.applyDeadband(driver.getLeftY(), deadband);
+        double x = -MathUtil.applyDeadband(driver.getLeftY(), deadband);
+        double y = -MathUtil.applyDeadband(driver.getLeftX(), deadband);
         double velocity = Math.hypot(x, y);
         return Math.min(velocity, 1);
     }
@@ -236,8 +235,8 @@ public class TriggerMap {
     }
 
     private double getHeadingRadians() {
-        double x = -MathUtil.applyDeadband(driver.getLeftX(), deadband);
-        double y = -MathUtil.applyDeadband(driver.getLeftY(), deadband);
+        double x = -MathUtil.applyDeadband(driver.getLeftY(), deadband);
+        double y = -MathUtil.applyDeadband(driver.getLeftX(), deadband);
         return Math.atan2(y, x);
     }
 
@@ -246,8 +245,8 @@ public class TriggerMap {
     }
 
     private double getRotationRadians() {
-        double x = -MathUtil.applyDeadband(driver.getRightX(), deadband);
-        double y = -MathUtil.applyDeadband(driver.getRightY(), deadband);
+        double x = -MathUtil.applyDeadband(driver.getRightY(), deadband);
+        double y = -MathUtil.applyDeadband(driver.getRightX(), deadband);
         return Math.atan2(y, x);
     }
 
