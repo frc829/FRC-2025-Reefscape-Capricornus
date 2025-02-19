@@ -45,13 +45,9 @@ public class Robit extends TimedRobot {
         ScoringFactories scoringFactories = new ScoringFactories(manipulator);
         ManualFactories manualFactories = new ManualFactories(manipulator);
         new TriggerMap(driving, pickupFactories, scoringFactories, manualFactories);
-
-        AutoChooser autoChooser = new AutoChooser();
         AutoFactory autoFactory = swerveDriveSubsystem.createAutoFactory();
-        new AutoRoutines(autoFactory, autoChooser);
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        new AutoRoutines(autoFactory, pickupFactories, scoringFactories);
         SmartDashboard.putData(CommandScheduler.getInstance());
-        RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
         DataLogManager.start();
         addPeriodic(CommandScheduler.getInstance()::run, 0.020);
     }
