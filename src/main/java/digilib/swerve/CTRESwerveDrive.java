@@ -8,7 +8,6 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
-import com.pathplanner.lib.util.DriveFeedforwards;
 import digilib.cameras.CameraState;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -91,12 +90,6 @@ public class CTRESwerveDrive implements SwerveDrive {
         swerveDriveTrain.setControl(robotCentric.withVelocityX(vx)
                 .withVelocityY(vy)
                 .withRotationalRate(omega));
-    }
-
-    public void setApplyRobotSpeeds(ChassisSpeeds speeds, DriveFeedforwards driveFeedforwards) {
-        swerveDriveTrain.setControl(applyRobotSpeeds.withSpeeds(speeds)
-                .withWheelForceFeedforwardsX(driveFeedforwards.robotRelativeForcesYNewtons())
-                .withWheelForceFeedforwardsY(driveFeedforwards.robotRelativeForcesYNewtons()));
     }
 
     public void setBrake() {

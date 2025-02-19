@@ -1,6 +1,5 @@
 package digilib.swerve;
 
-import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.*;
 
@@ -103,26 +102,6 @@ public interface SwerveDriveRequest {
     class SeedFieldCentric implements SwerveDriveRequest {
         public void apply(CTRESwerveDrive CTRESwerveDrive) {
             CTRESwerveDrive.setFieldCentricSeed();
-        }
-    }
-
-    class ApplyRobotSpeeds implements SwerveDriveRequest {
-        private ChassisSpeeds speeds = new ChassisSpeeds();
-        private DriveFeedforwards driveFeedforwards = null;
-
-        @Override
-        public void apply(CTRESwerveDrive CTRESwerveDrive) {
-            CTRESwerveDrive.setApplyRobotSpeeds(speeds, driveFeedforwards);
-        }
-
-        public ApplyRobotSpeeds withSpeeds(ChassisSpeeds speeds) {
-            this.speeds = speeds;
-            return this;
-        }
-
-        public ApplyRobotSpeeds withDriveFeedforwards(DriveFeedforwards driveFeedforwards) {
-            this.driveFeedforwards = driveFeedforwards;
-            return this;
         }
     }
 

@@ -30,7 +30,6 @@ public class Robit extends TimedRobot {
         PortForwarder.add(5800, "orangepi50.local", 5800);
         CanBridge.runTCP();
         SwerveDriveSubsystem swerveDriveSubsystem = SwerveDriveSubsystemConstants.create();
-        swerveDriveSubsystem.configureAutoBuilder();
         DrivingFactories driving = new DrivingFactories(swerveDriveSubsystem);
         ManipulatorFactories manipulator = new ManipulatorFactories(
                 PneumaticsSubsystemConstants.createAlgaeClaw(),

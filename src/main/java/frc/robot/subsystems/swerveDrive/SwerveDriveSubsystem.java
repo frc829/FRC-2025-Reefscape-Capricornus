@@ -10,10 +10,6 @@ import com.ctre.phoenix6.Utils;
 
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import digilib.swerve.SwerveDriveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.MutAngularVelocity;
@@ -222,34 +218,6 @@ public class SwerveDriveSubsystem implements Subsystem {
                 this,
                 trajLogger
         );
-    }
-
-    public void configureAutoBuilder() {
-        try {
-            SwerveDriveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds = new SwerveDriveRequest.ApplyRobotSpeeds();
-            RobotConfig config = RobotConfig.fromGUISettings();
-            AutoBuilder.configure(
-                    CTRESwerveDrive::getPose,   // Supplier of current robot pose
-                    CTRESwerveDrive::resetPose,         // Consumer for seeding pose against auto
-                    CTRESwerveDrive::getRobotRelativeSpeeds, // Supplier of current robot speeds
-                    // Consumer of ChassisSpeeds and feedforwards to drive the robot
-                    (speeds, driveFeedforwards) -> CTRESwerveDrive.setControl(pathApplyRobotSpeeds
-                            .withSpeeds(speeds)
-                            .withDriveFeedforwards(driveFeedforwards)),
-                    new PPHolonomicDriveController(
-                            // PID constants for translation
-                            new PIDConstants(10, 0, 0),
-                            // PID constants for rotation
-                            new PIDConstants(5.9918340044856690519902612191937, 0, 0)
-                    ),
-                    config,
-                    // Assume the path needs to be flipped for Red vs Blue, this is normally the case
-                    () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-                    this // Subsystem for requirements
-            );
-        } catch (Exception ex) {
-            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
-        }
     }
 
     private void startSimThread() {
