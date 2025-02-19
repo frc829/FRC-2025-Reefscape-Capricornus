@@ -1,21 +1,21 @@
-package frc.robot.subsystems.swerveDrive;
+package frc.robot.commandFactories;
 
 import digilib.swerve.SwerveDriveRequest;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-public class CommandSwerveDriveFactory {
+public class DrivingFactories {
 
-    private final CommandSwerveDrive commandSwerveDrive;
+    private final SwerveDriveSubsystem swerve;
 
-    public CommandSwerveDriveFactory(CommandSwerveDrive commandSwerveDrive) {
-        this.commandSwerveDrive = commandSwerveDrive;
-        commandSwerveDrive.setDefaultCommand(idle());
+    public DrivingFactories(SwerveDriveSubsystem swerve) {
+        this.swerve = swerve;
     }
 
     public Command fieldCentricDrive(
@@ -23,23 +23,23 @@ public class CommandSwerveDriveFactory {
             Supplier<Dimensionless> maxAngularVelocityPercent,
             Supplier<Angle> headingAngleRadians) {
         SwerveDriveRequest.FieldCentric request = new SwerveDriveRequest.FieldCentric();
-        return commandSwerveDrive.applyRequest(() -> request
+        return swerve.applyRequest(() -> request
                         .withVelocity(maxVelocityPercent.get())
                         .withRotationalVelocity(maxAngularVelocityPercent.get())
                         .withHeadingAngle(headingAngleRadians.get()))
-                .withName("Field Centric Drive");
+                .withName(String.format("%s: Field Centric", swerve.getName()));
     }
 
     public Command robotCentricDrive(
             Supplier<Dimensionless> maxVelocityPercent,
-            Supplier<Dimensionless> maxAngularVelocityPercent,
-            Supplier<Angle> headingAngleRadians) {
+            Supplier<Angle> headingAngleRadians,
+            Supplier<Dimensionless> maxAngularVelocityPercent) {
         SwerveDriveRequest.RobotCentric request = new SwerveDriveRequest.RobotCentric();
-        return commandSwerveDrive.applyRequest(() -> request
+        return swerve.applyRequest(() -> request
                         .withVelocity(maxVelocityPercent.get())
                         .withRotationalVelocity(maxAngularVelocityPercent.get())
                         .withHeadingAngle(headingAngleRadians.get()))
-                .withName("Robot Centric Drive");
+                .withName(String.format("%s: Robot Centric", swerve.getName()));
     }
 
     public Command clockDrive(
@@ -47,38 +47,34 @@ public class CommandSwerveDriveFactory {
             Supplier<Angle> heading,
             Supplier<Angle> rotation) {
         SwerveDriveRequest.ClockDrive request = new SwerveDriveRequest.ClockDrive();
-        return commandSwerveDrive.applyRequest(() -> request
+        return swerve.applyRequest(() -> request
                         .withVelocity(maxVelocityPercent.get())
                         .withHeadingAngle(heading.get())
                         .withRotation(rotation.get()))
-                .withName("Clock Drive");
+                .withName(String.format("%s: Clock", swerve.getName()));
     }
 
     public Command brake() {
         SwerveDriveRequest.Brake brake = new SwerveDriveRequest.Brake();
-        return commandSwerveDrive.applyRequest(() -> brake).withName("Brake");
+        return swerve.applyRequest(() -> brake)
+                .withName(String.format("%s: Brake", swerve.getName()));
     }
 
     public Command pointModuleWheels(Supplier<Angle> angle) {
         SwerveDriveRequest.PointWheels point = new SwerveDriveRequest.PointWheels();
-        return commandSwerveDrive.applyRequest(() -> point.withDirection(angle.get()))
-                .withName("Point wheels");
+        return swerve.applyRequest(() -> point.withDirection(angle.get()))
+                .withName(String.format("%s: Point Wheels", swerve.getName()));
     }
 
     public Command zeroWheels() {
         SwerveDriveRequest.PointWheels point = new SwerveDriveRequest.PointWheels();
-        return commandSwerveDrive.applyRequest(() -> point.withDirection(Degrees.of(0.0)))
-                .withName("Zero Wheels");
+        return swerve.applyRequest(() -> point.withDirection(Degrees.of(0.0)))
+                .withName(String.format("%s: Zero Wheels", swerve.getName()));
     }
 
     public Command seedFieldCentric() {
         SwerveDriveRequest.SeedFieldCentric seedFieldCentric = new SwerveDriveRequest.SeedFieldCentric();
-        return commandSwerveDrive.applyRequestOnce(() -> seedFieldCentric)
-                .withName("Seed Field Centric");
-    }
-
-    public Command idle(){
-        SwerveDriveRequest.Idle idle = new SwerveDriveRequest.Idle();
-        return commandSwerveDrive.applyRequest(() -> idle).withName("SWERVE:IDLE");
+        return swerve.applyRequestOnce(() -> seedFieldCentric)
+                .withName(String.format("%s: Seed Field Centric", swerve.getName()));
     }
 }

@@ -1,6 +1,8 @@
 package frc.robot.commandFactories;
 
 import digilib.arm.ArmRequest;
+import digilib.claws.ClawRequest;
+import digilib.claws.ClawValue;
 import digilib.elevator.ElevatorRequest;
 import digilib.intakeWheel.IntakeWheelRequest;
 import digilib.wrist.WristRequest;
@@ -17,14 +19,13 @@ import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.pneumatics.PneumaticSubsystem;
 import frc.robot.subsystems.power.PowerSubsystem;
-import frc.robot.subsystems.swerveDrive.CommandSwerveDriveFactory;
 import frc.robot.subsystems.wrist.WristSubsystem;
 
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
 
-public class SubsystemCommandFactories {
+public class ManipulatorFactories {
     private final ClawSubsystem algae;
     private final ArmSubsystem arm;
     private final ClawSubsystem coral;
@@ -32,15 +33,21 @@ public class SubsystemCommandFactories {
     private final ElevatorSubsystem elevator;
     private final PneumaticSubsystem pneumatics;
     private final PowerSubsystem power;
-    private final CommandSwerveDriveFactory swerve;
     // public final WinchSubsystem winch;
     private final WristSubsystem wrist;
     public final Trigger hasAlgae;
     public final Trigger hasCoral;
 
-    public SubsystemCommandFactories(ClawSubsystem algae, ArmSubsystem arm, ClawSubsystem coral, DualIntakeSubsystem dualIntake, ElevatorSubsystem elevator, PneumaticSubsystem pneumatics, PowerSubsystem power, CommandSwerveDriveFactory commandSwerveDriveFactory,
-                                     // WinchSubsystem winch){
-                                     WristSubsystem wrist) {
+    public ManipulatorFactories(
+            ClawSubsystem algae,
+            ArmSubsystem arm,
+            ClawSubsystem coral,
+            DualIntakeSubsystem dualIntake,
+            ElevatorSubsystem elevator,
+            PneumaticSubsystem pneumatics,
+            PowerSubsystem power,
+            // WinchSubsystem winch){
+            WristSubsystem wrist) {
         this.algae = algae;
         this.arm = arm;
         this.coral = coral;
@@ -48,7 +55,6 @@ public class SubsystemCommandFactories {
         this.elevator = elevator;
         this.pneumatics = pneumatics;
         this.power = power;
-        this.swerve = commandSwerveDriveFactory;
         // this.winch = winch;
         this.wrist = wrist;
         this.hasAlgae = dualIntake.hasAlgae;
@@ -97,15 +103,15 @@ public class SubsystemCommandFactories {
                 .withName(String.format("%s: %s deg, %s deg tolerance", wrist.getName(), position.in(Degrees), tolerance.in(Degrees)));
     }
 
-    public Command armToSpeed(Dimensionless maxPercent) {
+    public Command armToSpeed(Supplier<Dimensionless> maxPercent) {
         ArmRequest.Velocity request = new ArmRequest.Velocity();
-        return arm.applyRequest(() -> request.withVelocity(maxPercent))
+        return arm.applyRequest(() -> request.withVelocity(maxPercent.get()))
                 .withName(String.format("%s: VELOCITY", arm.getName()));
     }
 
-    public Command elevatorToSpeed(Dimensionless maxPercent) {
+    public Command elevatorToSpeed(Supplier<Dimensionless> maxPercent) {
         ElevatorRequest.Velocity request = new ElevatorRequest.Velocity();
-        return elevator.applyRequest(() -> request.withVelocity(maxPercent))
+        return elevator.applyRequest(() -> request.withVelocity(maxPercent.get()))
                 .withName(String.format("%s: VELOCITY", elevator.getName()));
     }
 
@@ -129,19 +135,27 @@ public class SubsystemCommandFactories {
                 .withName(String.format("%s: VELOCITY", dualIntake.getName()));
     }
 
-    public Command closeAlgaeClaw() {
-        return algae.close().asProxy();
+    public Command setAlgaeClaw(ClawValue value) {
+        ClawRequest.SetValue request = new ClawRequest.SetValue();
+        return algae.applyRequestOnce(() -> request)
+                .withName(String.format("%s: %s", algae.getName(), value.toString().toUpperCase()));
     }
 
-    public Command closeCoralClaw() {
-        return coral.close().asProxy();
+    public Command setCoralClaw(ClawValue value) {
+        ClawRequest.SetValue request = new ClawRequest.SetValue();
+        return coral.applyRequestOnce(() -> request)
+                .withName(String.format("%s: %s", coral.getName(), value.toString().toUpperCase()));
     }
 
-    public Command openAlgaeClaw() {
-        return algae.open().asProxy();
+    public Command toggleAlgaeClaw() {
+        ClawRequest.Toggle request = new ClawRequest.Toggle();
+        return algae.applyRequestOnce(() -> request)
+                .withName(String.format("%s: TOGGLE", algae.getName()));
     }
 
-    public Command openCoralClaw() {
-        return coral.open().asProxy();
+    public Command toggleCoralClaw() {
+        ClawRequest.Toggle request = new ClawRequest.Toggle();
+        return coral.applyRequestOnce(() -> request)
+                .withName(String.format("%s: TOGGLE", coral.getName()));
     }
 }

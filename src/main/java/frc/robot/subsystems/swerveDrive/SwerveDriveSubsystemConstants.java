@@ -1,7 +1,7 @@
 package frc.robot.subsystems.swerveDrive;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.swerveDrive.CommandSwerveDriveConstants.Simulation.*;
+import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Simulation.*;
 import static org.photonvision.PhotonPoseEstimator.*;
 
 import com.ctre.phoenix6.configs.*;
@@ -30,7 +30,7 @@ import digilib.swerve.SwerveDriveTelemetry;
 import frc.robot.Constants;
 import org.photonvision.PhotonCamera;
 
-public class CommandSwerveDriveConstants {
+public class SwerveDriveSubsystemConstants {
 
     static final class Simulation {
         static final Time simLoopPeriod = Seconds.of(0.001);
@@ -383,7 +383,7 @@ public class CommandSwerveDriveConstants {
                     kBackRightXPos, kBackRightYPos, INVERT_RIGHT_SIDE, kBackRightSteerMotorInverted, kBackRightEncoderInverted
             );
 
-    public static final LinearVelocity maxVelocity = CommandSwerveDriveConstants.SPEED_AT_12_VOLTS; // SPEED_AT_12_VOLTS desired top speed
+    public static final LinearVelocity maxVelocity = SwerveDriveSubsystemConstants.SPEED_AT_12_VOLTS; // SPEED_AT_12_VOLTS desired top speed
     public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.75); // 3/4 of a rotation per second max angular velocity
 
     private static final PhoenixPIDController pathXController = new PhoenixPIDController(10, 0, 0);
@@ -422,10 +422,12 @@ public class CommandSwerveDriveConstants {
      * Creates a CommandSwerveDrivetrain instance.
      * This should only be called once in your robot program,
      */
-    public static CommandSwerveDrive createCommandSwerve() {
-        return new CommandSwerveDrive(
+    public static SwerveDriveSubsystem create() {
+        SwerveDriveSubsystem swerveDriveSubsystem = new SwerveDriveSubsystem(
                 CTRE_SWERVE_DRIVE,
                 simLoopPeriod);
+        swerveDriveSubsystem.setDefaultCommand(swerveDriveSubsystem.idle());
+        return swerveDriveSubsystem;
     }
 
     static {

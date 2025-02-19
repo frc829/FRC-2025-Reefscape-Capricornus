@@ -24,24 +24,6 @@ public class ClawSubsystem implements Subsystem {
         return runOnce(() -> claw.setControl(requestSupplier.get()));
     }
 
-    public Command open() {
-        ClawRequest.Open request = new ClawRequest.Open();
-        return applyRequestOnce(() -> request)
-                .withName(String.format("%s: OPEN", getName()));
-    }
-
-    public Command close() {
-        ClawRequest.Close request = new ClawRequest.Close();
-        return applyRequestOnce(() -> request)
-                .withName(String.format("%s: CLOSE", getName()));
-    }
-
-    public Command toggle() {
-        ClawRequest.Toggle request = new ClawRequest.Toggle();
-        return applyRequestOnce(() -> request)
-                .withName(String.format("%s: TOGGLE", getName()));
-    }
-
     @Override
     public void periodic() {
         claw.update();

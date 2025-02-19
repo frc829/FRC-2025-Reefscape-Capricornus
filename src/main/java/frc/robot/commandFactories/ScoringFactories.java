@@ -9,14 +9,11 @@ import static edu.wpi.first.units.Units.Degrees;
 
 public class ScoringFactories {
 
-    private final SubsystemCommandFactories factories;
-    private final ResetFactories reset;
+    private final ManipulatorFactories factories;
     private final Angle safeArmAngleForWrist = Degrees.of(10.0);
 
-    public ScoringFactories(SubsystemCommandFactories factories,
-                            ResetFactories reset) {
+    public ScoringFactories(ManipulatorFactories factories) {
         this.factories = factories;
-        this.reset = reset;
     }
 
     public Command l1Align() {

@@ -1,25 +1,23 @@
 package digilib.claws;
 
 import static digilib.claws.ClawValue.CLOSED;
-import static digilib.claws.ClawValue.OPEN;
 
 public interface ClawRequest {
 
     void apply(Claw claw);
 
-    class Open implements ClawRequest {
+    class SetValue implements ClawRequest {
+
+        private ClawValue value = null;
 
         @Override
         public void apply(Claw claw) {
-            claw.setValue(OPEN);
+            claw.setValue(value);
         }
-    }
 
-    class Close implements ClawRequest {
-
-        @Override
-        public void apply(Claw claw) {
-            claw.setValue(CLOSED);
+        public ClawValue withClawValue(ClawValue value) {
+            this.value = value;
+            return value;
         }
     }
 

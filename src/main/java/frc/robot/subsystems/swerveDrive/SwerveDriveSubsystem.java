@@ -33,7 +33,7 @@ import digilib.swerve.CTRESwerveDrive;
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
  * Subsystem so it can easily be used in command-based projects.
  */
-public class CommandSwerveDrive implements Subsystem {
+public class SwerveDriveSubsystem implements Subsystem {
     private static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
     private static final Rotation2d RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.k180deg;
     private final CTRESwerveDrive CTRESwerveDrive;
@@ -56,7 +56,7 @@ public class CommandSwerveDrive implements Subsystem {
     private final SysIdRoutine sysIdRoutineTranslation;
 
 
-    public CommandSwerveDrive(
+    public SwerveDriveSubsystem(
             CTRESwerveDrive CTRESwerveDrive,
             Time simLoopPeriod) {
         this.CTRESwerveDrive = CTRESwerveDrive;
@@ -145,6 +145,12 @@ public class CommandSwerveDrive implements Subsystem {
 
     public Command applyRequestOnce(Supplier<SwerveDriveRequest> request) {
         return runOnce(() -> CTRESwerveDrive.setControl(request.get()));
+    }
+
+    Command idle(){
+        SwerveDriveRequest.Idle idle = new SwerveDriveRequest.Idle();
+        return applyRequest(() -> idle)
+                .withName(String.format("%s: IDLE", getName()));
     }
 
     public Command sysIdQuasistaticSteer(SysIdRoutine.Direction direction) {
