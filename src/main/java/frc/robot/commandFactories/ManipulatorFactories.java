@@ -37,6 +37,8 @@ public class ManipulatorFactories {
     private final WristSubsystem wrist;
     public final Trigger hasAlgae;
     public final Trigger hasCoral;
+    public final Trigger isCoralClawClosed;
+    public final Trigger isAlgaeClawClosed;
 
     public ManipulatorFactories(
             ClawSubsystem algae,
@@ -59,6 +61,8 @@ public class ManipulatorFactories {
         this.wrist = wrist;
         this.hasAlgae = dualIntake.hasAlgae;
         this.hasCoral = dualIntake.hasCoral;
+        this.isCoralClawClosed = coral.isClosed;
+        this.isAlgaeClawClosed = algae.isClosed;
 
         SmartDashboard.putData("Power: Clear Sticky Faults", power.clearFaults());
         SmartDashboard.putData("Pneumatics: Clear Sticky Faults", pneumatics.clearFaults());
@@ -99,8 +103,8 @@ public class ManipulatorFactories {
         request.withAngle(position);
         return wrist.applyRequest(() -> request)
                 .until(wrist.atPosition(position, tolerance))
-                .asProxy()
-                .withName(String.format("%s: %s deg, %s deg tolerance", wrist.getName(), position.in(Degrees), tolerance.in(Degrees)));
+                .withName(String.format("%s: %s deg, %s deg tolerance", wrist.getName(), position.in(Degrees), tolerance.in(Degrees)))
+                .asProxy();
     }
 
     public Command armToSpeed(Supplier<Dimensionless> maxPercent) {
@@ -115,9 +119,9 @@ public class ManipulatorFactories {
                 .withName(String.format("%s: VELOCITY", elevator.getName()));
     }
 
-    public Command wristToSpeed(Dimensionless maxPercent) {
+    public Command wristToSpeed(Supplier<Dimensionless> maxPercent) {
         WristRequest.Velocity request = new WristRequest.Velocity();
-        return wrist.applyRequest(() -> request.withVelocity(maxPercent))
+        return wrist.applyRequest(() -> request.withVelocity(maxPercent.get()))
                 .withName(String.format("%s: VELOCITY", wrist.getName()));
     }
 

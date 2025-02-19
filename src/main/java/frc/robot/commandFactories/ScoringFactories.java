@@ -10,7 +10,6 @@ import static edu.wpi.first.units.Units.Degrees;
 public class ScoringFactories {
 
     private final ManipulatorFactories factories;
-    private final Angle safeArmAngleForWrist = Degrees.of(10.0);
 
     public ScoringFactories(ManipulatorFactories factories) {
         this.factories = factories;

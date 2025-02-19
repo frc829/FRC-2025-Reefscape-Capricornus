@@ -20,13 +20,13 @@ public class DrivingFactories {
 
     public Command fieldCentricDrive(
             Supplier<Dimensionless> maxVelocityPercent,
-            Supplier<Dimensionless> maxAngularVelocityPercent,
-            Supplier<Angle> headingAngleRadians) {
+            Supplier<Angle> headingAngle,
+            Supplier<Dimensionless> maxAngularVelocityPercent) {
         SwerveDriveRequest.FieldCentric request = new SwerveDriveRequest.FieldCentric();
         return swerve.applyRequest(() -> request
                         .withVelocity(maxVelocityPercent.get())
                         .withRotationalVelocity(maxAngularVelocityPercent.get())
-                        .withHeadingAngle(headingAngleRadians.get()))
+                        .withHeadingAngle(headingAngle.get()))
                 .withName(String.format("%s: Field Centric", swerve.getName()));
     }
 

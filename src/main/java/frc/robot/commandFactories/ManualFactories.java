@@ -28,11 +28,12 @@ public class ManualFactories {
         return either(
                 manip.wristTo(Degrees.of(90.0), Degrees.of(2.0)),
                 manip.wristTo(Degrees.of(0.0), Degrees.of(2.0)),
-                manip.wristAtAngle(Degrees.of(90), Degrees.of(2.0)));
+                manip.wristAtAngle(Degrees.of(0.0), Degrees.of(2.0)))
+                .withName("Manual Wrist Toggle");
     }
 
     public Command manualWrist(Supplier<Dimensionless> maxPercent) {
-        return manip.wristToSpeed(maxPercent.get());
+        return manip.wristToSpeed(maxPercent);
     }
 
     public Command manualIntake(
