@@ -70,7 +70,6 @@ public class TriggerMap {
 
     }
 
-
     private void bindClockDrive() {
         new Trigger(() -> getMaxVelocityPercentValue() != 0.0)
                 .and(() -> {
