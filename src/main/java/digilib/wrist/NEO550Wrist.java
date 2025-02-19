@@ -19,7 +19,6 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot0;
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
@@ -40,7 +39,6 @@ public class NEO550Wrist implements Wrist {
     private final SimpleMotorFeedforward feedforward;
     private final Time profilePeriod;
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private boolean hold = false;
     private DCMotorSim simWrist = null;
     private SparkMaxSim sparkMaxSim = null;
     private CANcoderSimState canCoderSimState = null;
@@ -56,7 +54,7 @@ public class NEO550Wrist implements Wrist {
         this.motor = motor;
         this.cancoder = cancoder;
         this.telemetry = new WristTelemetry(
-                "Wrist",
+                constants.name(),
                 constants.minAngle(),
                 constants.maxAngle(),
                 constants.maxAngularVelocity(),
@@ -121,11 +119,6 @@ public class NEO550Wrist implements Wrist {
     }
 
     @Override
-    public boolean isHoldEnabled() {
-        return hold;
-    }
-
-    @Override
     public void setControl(WristRequest request) {
         if (wristRequest != request) {
             wristRequest = request;
@@ -147,8 +140,8 @@ public class NEO550Wrist implements Wrist {
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity) {
-        goalState.velocity = velocity.baseUnitMagnitude();
+    public void setVelocity(Dimensionless maxPercent) {
+        goalState.velocity = maxPercent.baseUnitMagnitude() * maxVelocity.baseUnitMagnitude();
         double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
         double lastVelocitySetPoint = lastState.velocity;
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
@@ -163,16 +156,6 @@ public class NEO550Wrist implements Wrist {
         velocityProfile.reset(motor.getEncoder().getVelocity());
         lastState.position = motor.getEncoder().getPosition();
         lastState.velocity = motor.getEncoder().getVelocity();
-    }
-
-    @Override
-    public void enableHold() {
-        hold = true;
-    }
-
-    @Override
-    public void disableHold() {
-        hold = false;
     }
 
     @Override
@@ -191,13 +174,13 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void updateState() {
-        state.withPosition(motor.getEncoder().getPosition())
-                .withAbsolutePosition(cancoder.getAbsolutePosition().getValue().in(Radians))
-                .withVelocity(motor.getEncoder().getVelocity())
-                .withAbsoluteVelocity(cancoder.getVelocity().getValue().in(RadiansPerSecond))
-                .withVoltage(motor.getAppliedOutput() * motor.getBusVoltage())
-                .withTimestamp(Timer.getFPGATimestamp())
-                .withAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
+        state.setPosition(motor.getEncoder().getPosition());
+        state.setAbsolutePosition(cancoder.getAbsolutePosition().getValue().in(Radians));
+        state.setVelocity(motor.getEncoder().getVelocity());
+        state.setAbsoluteVelocity(cancoder.getVelocity().getValue().in(RadiansPerSecond));
+        state.setVoltage(motor.getAppliedOutput() * motor.getBusVoltage());
+        state.setTimestamp(Timer.getFPGATimestamp());
+        state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
     }
 
     @Override

@@ -11,7 +11,7 @@ public class AutoRoutines {
 
     public AutoRoutines(AutoFactory factory, AutoChooser autoChooser) {
         this.factory = factory;
-        autoChooser.addRoutine("The Love Boat", this::theLoveBoatAuto);
+//        autoChooser.addRoutine("The Love Boat", this::theLoveBoatAuto);
     }
 
     private AutoRoutine theLoveBoatAuto() {

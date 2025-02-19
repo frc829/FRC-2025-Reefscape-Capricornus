@@ -14,7 +14,7 @@ public class ArmState {
     private final MutTime timestamp = Seconds.mutable(0.0);
     private String status = "";
 
-    public Angle getPosition() {
+    public Angle getAngle() {
         return position;
     }
 
@@ -42,38 +42,31 @@ public class ArmState {
         return status;
     }
 
-    public ArmState withPosition(double radians) {
-        this.position.mut_setBaseUnitMagnitude(radians);
-        return this;
+    public void setPosition(Angle angle) {
+        this.position.mut_replace(angle);
     }
 
-    public ArmState withAbsolutePosition(double radians) {
-        this.absolutePosition.mut_setBaseUnitMagnitude(radians);
-        return this;
+    public void setAbsolutePosition(Angle angle) {
+        this.position.mut_replace(angle);
     }
 
-    public ArmState withVelocity(double radians) {
-        this.velocity.mut_setBaseUnitMagnitude(radians);
-        return this;
+    public void setVelocity(AngularVelocity angularVelocity) {
+        this.velocity.mut_replace(angularVelocity);
     }
 
-    public ArmState withAbsoluteVelocity(double radiansPerSecond) {
-        this.absoluteVelocity.mut_setBaseUnitMagnitude(radiansPerSecond);
-        return this;
+    public void setAbsoluteVelocity(AngularVelocity angularVelocity) {
+        this.absoluteVelocity.mut_replace(angularVelocity);
     }
 
-    public ArmState withVoltage(double volts) {
-        this.voltage.mut_setBaseUnitMagnitude(volts);
-        return this;
+    public void setVoltage(Voltage volts) {
+        this.voltage.mut_replace(volts);
     }
 
-    public ArmState withTimestamp(double seconds) {
-        this.timestamp.mut_setBaseUnitMagnitude(seconds);
-        return this;
-    }
-
-    public ArmState withAbsoluteEncoderStatus(String status) {
+    public void setAbsoluteEncoderStatus(String status) {
         this.status = status;
-        return this;
+    }
+
+    public void setTimestamp(double seconds) {
+        this.timestamp.mut_setBaseUnitMagnitude(seconds);
     }
 }

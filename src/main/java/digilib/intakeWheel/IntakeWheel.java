@@ -2,6 +2,7 @@ package digilib.intakeWheel;
 
 import digilib.MotorControllerType;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Voltage;
 
 public interface IntakeWheel {
@@ -14,9 +15,7 @@ public interface IntakeWheel {
 
     void setControl(IntakeWheelRequest request);
 
-    void setVelocity(AngularVelocity velocity);
-
-    void setIdle();
+    void setVelocity(Dimensionless maxPercent);
 
     void setVoltage(Voltage voltage);
 

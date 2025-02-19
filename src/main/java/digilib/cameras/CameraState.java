@@ -1,17 +1,14 @@
 package digilib.cameras;
 
-import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -26,7 +23,7 @@ public class CameraState {
             this.pipelineIndex = pipelineIndex;
         }
 
-        private static Map<Integer, CameraMode> map = Map.of(
+        private static final Map<Integer, CameraMode> map = Map.of(
                 0, ROBOT_POSE);
 
 
@@ -40,24 +37,15 @@ public class CameraState {
     }
 
     private CameraMode cameraMode = null;
-    private Pose3d robotPose = new Pose3d(
-            Double.NaN,
-            Double.NaN,
-            Double.NaN,
-            new Rotation3d(Double.NaN, Double.NaN, Double.NaN));
-    private Matrix<N3, N1> robotPoseStdDev = MatBuilder.fill(
-            Nat.N3(),
-            Nat.N1(),
-            Double.NaN,
-            Double.NaN,
-            Double.NaN);
+    private Pose2d robotPose = null;
+    private final Matrix<N3, N1> robotPoseStdDev = new Matrix<>(Nat.N3(), Nat.N1());
     private final MutTime timestamp = Seconds.mutable(0.0);
 
     public CameraMode getCameraMode() {
         return cameraMode;
     }
 
-    public Pose3d getRobotPose() {
+    public Pose2d getRobotPose() {
         return robotPose;
     }
 
@@ -74,8 +62,15 @@ public class CameraState {
         return this;
     }
 
-    public CameraState withRobotPose(Pose3d robotPose) {
+    public CameraState withRobotPose(Pose2d robotPose) {
         this.robotPose = robotPose;
+        return this;
+    }
+
+    public CameraState withRobotPoseStdDev(double xStdDev, double yStdDev, double thetaStdDev) {
+        this.robotPoseStdDev.set(0, 0, xStdDev);
+        this.robotPoseStdDev.set(1, 0, yStdDev);
+        this.robotPoseStdDev.set(2, 0, thetaStdDev);
         return this;
     }
 

@@ -42,10 +42,10 @@ public class ElevatorTelemetry {
     }
 
     public void telemeterize(ElevatorState state) {
-        position.set(roundToDecimal(state.getPosition().in(Meters), 2));
+        position.set(roundToDecimal(state.getHeight().in(Meters), 2));
         velocity.set(roundToDecimal(state.getVelocity().in(MetersPerSecond), 2));
         voltage.set(roundToDecimal(state.getVoltage().in(Volts), 2));
         timestamp.set(roundToDecimal(state.getTimestamp().in(Seconds), 2));
-        ligament.setLength(roundToDecimal(state.getPosition().in(Meters), 2));
+        ligament.setLength(roundToDecimal(state.getHeight().in(Meters), 2));
     }
 }

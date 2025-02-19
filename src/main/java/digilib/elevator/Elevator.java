@@ -1,6 +1,7 @@
 package digilib.elevator;
 
 import digilib.MotorControllerType;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -9,29 +10,23 @@ public interface Elevator {
 
     MotorControllerType getMotorControllerType();
 
-    Distance getMaxPosition();
+    Distance getMaxHeight();
 
-    Distance getMinPosition();
+    Distance getMinHeight();
 
     LinearVelocity getMaxVelocity();
 
     ElevatorState getState();
 
-    boolean isHoldEnabled();
-
     void setControl(ElevatorRequest request);
 
-    void setPosition(Distance position);
+    void setHeight(Distance height);
 
-    void setVelocity(LinearVelocity velocity);
+    void setVelocity(Dimensionless maxPercent);
 
     void setVoltage(Voltage voltage);
 
     void resetPosition();
-
-    void enableHold();
-
-    void disableHold();
 
     void update();
 

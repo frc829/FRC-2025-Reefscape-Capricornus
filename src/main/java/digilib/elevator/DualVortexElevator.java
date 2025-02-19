@@ -17,7 +17,6 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.*;
 
@@ -36,8 +35,7 @@ public class DualVortexElevator implements Elevator {
     private final ElevatorFeedforward feedforward;
     private final Time profilePeriod;
     private ExponentialProfile.State lastState = new ExponentialProfile.State();
-    private boolean hold = false;
-    private ElevatorSim simElevator = null;
+    private SimulatedElevator simElevator = null;
     private SparkFlexSim sparkFlexSim = null;
     private SparkFlexSim followerSparkFlexSim = null;
 
@@ -78,13 +76,15 @@ public class DualVortexElevator implements Elevator {
             LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
                     constants.kv().baseUnitMagnitude(),
                     constants.ka().baseUnitMagnitude());
-            simElevator = new ElevatorSim(
-                    plant,
+            simElevator = SimulatedElevator.createFromSysId(
+                    constants.kg().baseUnitMagnitude(),
+                    constants.kv().baseUnitMagnitude(),
+                    constants.ka().baseUnitMagnitude(),
                     dcMotor,
+                    constants.reduction(),
+                    constants.startingHeight().baseUnitMagnitude(),
                     minHeight.baseUnitMagnitude(),
-                    maxHeight.baseUnitMagnitude(),
-                    true,
-                    constants.startingHeight().baseUnitMagnitude());
+                    maxHeight.baseUnitMagnitude());
             sparkFlexSim.setPosition(constants.startingHeight().baseUnitMagnitude());
             followerSparkFlexSim.setPosition(constants.startingHeight().baseUnitMagnitude());
         }
@@ -96,12 +96,12 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
-    public Distance getMaxPosition() {
+    public Distance getMaxHeight() {
         return maxHeight;
     }
 
     @Override
-    public Distance getMinPosition() {
+    public Distance getMinHeight() {
         return minHeight;
     }
 
@@ -116,11 +116,6 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
-    public boolean isHoldEnabled() {
-        return hold;
-    }
-
-    @Override
     public void setControl(ElevatorRequest request) {
         if (elevatorRequest != request) {
             elevatorRequest = request;
@@ -129,8 +124,8 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
-    public void setPosition(Distance position) {
-        goalState.position = position.baseUnitMagnitude();
+    public void setHeight(Distance height) {
+        goalState.position = height.baseUnitMagnitude();
         goalState.velocity = 0.0;
         double lastVelocitySetpoint = lastState.velocity;
         lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
@@ -142,8 +137,8 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
-    public void setVelocity(LinearVelocity velocity) {
-        goalState.velocity = velocity.baseUnitMagnitude();
+    public void setVelocity(Dimensionless maxPercent) {
+        goalState.velocity = maxPercent.baseUnitMagnitude() * maxVelocity.baseUnitMagnitude();
         double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
         double lastVelocitySetPoint = lastState.velocity;
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
@@ -161,16 +156,6 @@ public class DualVortexElevator implements Elevator {
     }
 
     @Override
-    public void enableHold() {
-        hold = true;
-    }
-
-    @Override
-    public void disableHold() {
-        hold = false;
-    }
-
-    @Override
     public void resetPosition() {
         motor.getEncoder().setPosition(0.0);
         follower.getEncoder().setPosition(0.0);
@@ -185,10 +170,10 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void updateState() {
-        state.withPosition(motor.getEncoder().getPosition())
-                .withVelocity(motor.getEncoder().getVelocity())
-                .withVoltage(motor.getAppliedOutput() * motor.getBusVoltage())
-                .withTimestamp(Timer.getFPGATimestamp());
+        state.setHeight(motor.getEncoder().getPosition());
+        state.setVelocity(motor.getEncoder().getVelocity());
+        state.setVoltage(motor.getAppliedOutput() * motor.getBusVoltage());
+        state.setTimestamp(Timer.getFPGATimestamp());
     }
 
     @Override

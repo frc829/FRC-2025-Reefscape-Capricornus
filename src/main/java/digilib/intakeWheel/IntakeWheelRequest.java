@@ -1,6 +1,7 @@
 package digilib.intakeWheel;
 
 import edu.wpi.first.units.measure.*;
+
 import static edu.wpi.first.units.Units.*;
 
 public interface IntakeWheelRequest {
@@ -8,17 +9,15 @@ public interface IntakeWheelRequest {
     void apply(IntakeWheel intakeWheel);
 
     class Velocity implements IntakeWheelRequest {
-        private final MutDimensionless maxVelocityValue = Value.mutable(0.0);
-        private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
+        private final MutDimensionless maxPercent = Value.mutable(0.0);
 
         @Override
         public void apply(IntakeWheel intakeWheel) {
-            velocity.mut_setBaseUnitMagnitude(maxVelocityValue.baseUnitMagnitude() * intakeWheel.getMaxVelocity().baseUnitMagnitude());
-            intakeWheel.setVelocity(velocity);
+            intakeWheel.setVelocity(maxPercent);
         }
 
-        public Velocity withVelocity(double value) {
-            this.maxVelocityValue.mut_setMagnitude(value);
+        public IntakeWheelRequest.Velocity withVelocity(Dimensionless maxPercent) {
+            this.maxPercent.mut_replace(maxPercent);
             return this;
         }
     }
@@ -34,13 +33,6 @@ public interface IntakeWheelRequest {
         public VoltageRequest withVoltage(Voltage voltage) {
             this.voltage.mut_replace(voltage);
             return this;
-        }
-    }
-
-    class Idle implements IntakeWheelRequest {
-        @Override
-        public void apply(IntakeWheel intakeWheel) {
-            intakeWheel.setIdle();
         }
     }
 }

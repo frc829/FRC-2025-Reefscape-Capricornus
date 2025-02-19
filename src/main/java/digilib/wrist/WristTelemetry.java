@@ -55,14 +55,14 @@ public class WristTelemetry {
     }
 
     public void telemeterize(WristState state) {
-        angle.set(roundToDecimal(state.getPosition().in(Degrees), 2));
+        angle.set(roundToDecimal(state.getAngle().in(Degrees), 2));
         absoluteAngle.set(roundToDecimal(state.getAbsolutePosition().in(Degrees), 2));
         angularVelocity.set(roundToDecimal(state.getVelocity().in(DegreesPerSecond), 2));
         absoluteVelocity.set(roundToDecimal(state.getAbsoluteVelocity().in(DegreesPerSecond), 2));
         voltage.set(roundToDecimal(state.getVoltage().baseUnitMagnitude(), 2));
         timestamp.set(roundToDecimal(state.getTimestamp().baseUnitMagnitude(), 2));
         absoluteEncoderStatus.set(state.getAbsoluteEncoderStatus());
-        wristLigamentRight.setAngle(roundToDecimal(90 - state.getPosition().in(Degrees), 2));
-        wristLigamentLeft.setAngle(roundToDecimal(270.0 - state.getPosition().in(Degrees), 2));
+        wristLigamentRight.setAngle(roundToDecimal(90 - state.getAngle().in(Degrees), 2));
+        wristLigamentLeft.setAngle(roundToDecimal(270.0 - state.getAngle().in(Degrees), 2));
     }
 }

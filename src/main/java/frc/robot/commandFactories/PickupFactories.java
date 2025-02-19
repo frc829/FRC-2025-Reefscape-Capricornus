@@ -1,46 +1,207 @@
 package frc.robot.commandFactories;
 
+import digilib.claws.ClawValue;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
+import static digilib.claws.ClawValue.*;
+import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class PickupFactories {
-    public final SubsystemCommandFactories factories;
 
-    public PickupFactories(SubsystemCommandFactories factories) {
-        this.factories = factories;
+    private static final ClawValue algaeClawCoralIntake = CLOSED;
+    private static final ClawValue algaeClawAlgaeIntake = CLOSED;
+    private static final ClawValue coralClawCoralIntake = CLOSED;
+    private static final ClawValue coralClawAlgaeIntake = CLOSED;
+
+    private static final Angle wristSafe = Degrees.of(0.0);
+    private static final Angle wristPickup = Degrees.of(90.0);
+    private static final Angle wristTolerance = Degrees.of(2.0);
+
+    private static final Distance elevatorCoralFloor = Centimeters.of(0.0);
+    private static final Distance elevatorCoralStation = Centimeters.of(0.0);
+    private static final Distance elevatorAlgaeFloor = Centimeters.of(0.0);
+    private static final Distance elevatorAlgaeL2 = Centimeters.of(0.0);
+    private static final Distance elevatorAlgaeL3 = Centimeters.of(0.0);
+    private static final Distance elevatorAlgaeHold = Centimeters.of(0.0);
+    private static final Distance elevatorCoralHold = Centimeters.of(0.0);
+    private static final Distance elevatorTolerance = Centimeters.of(1.0);
+
+    private static final Angle armCoralFloor = Degrees.of(0.0);
+    private static final Angle armCoralStation = Degrees.of(0.0);
+    private static final Angle armAlgaeFloor = Degrees.of(0.0);
+    private static final Angle armAlgaeL2 = Degrees.of(0.0);
+    private static final Angle armAlgaeL3 = Degrees.of(0.0);
+    private static final Angle armAlgaeHold = Degrees.of(0.0);
+    private static final Angle armCoralHold = Degrees.of(90.0);
+    private static final Angle armTolerance = Degrees.of(2.0);
+
+    private static final Dimensionless intakeWheel0AlgaeSpeed = Percent.of(25);
+    private static final Dimensionless intakeWheel1AlgaeSpeed = Percent.of(25);
+    private static final Dimensionless intakeWheel0CoralSpeed = Percent.of(0);
+    private static final Dimensionless intakeWheel1CoralSpeed = Percent.of(25);
+
+
+    private final ManipulatorFactories manip;
+    private final Trigger hasCoral;
+    private final Trigger hasAlgae;
+    private final Trigger isWristSafe;
+    private final Trigger isArmAtCoralStation;
+    private final Trigger isElevatorAtCoralStation;
+    private final Trigger isArmAtCoralFloor;
+    private final Trigger isElevatorAtCoralFloor;
+    private final Trigger isArmAtAlgaeFloor;
+    private final Trigger isElevatorAtAlgaeFloor;
+    private final Trigger isArmAtAlgaeL2;
+    private final Trigger isElevatorAtAlgaeL2;
+    private final Trigger isArmAtAlgaeL3;
+    private final Trigger isElevatorAtAlgaeL3;
+
+
+    public PickupFactories(ManipulatorFactories manip) {
+        this.manip = manip;
+        this.hasAlgae = manip.hasAlgae;
+        this.hasCoral = manip.hasCoral;
+        this.isWristSafe = manip.wristAtAngle(wristSafe, wristTolerance);
+        this.isArmAtCoralStation = manip.armAtAngle(armCoralStation, armTolerance);
+        this.isElevatorAtCoralStation = manip.elevatorAtHeight(elevatorCoralStation, elevatorTolerance);
+        this.isArmAtCoralFloor = manip.armAtAngle(armCoralFloor, armTolerance);
+        this.isElevatorAtCoralFloor = manip.elevatorAtHeight(elevatorCoralFloor, elevatorTolerance);
+        this.isArmAtAlgaeFloor = manip.armAtAngle(armAlgaeFloor, armTolerance);
+        this.isElevatorAtAlgaeFloor = manip.elevatorAtHeight(elevatorAlgaeFloor, elevatorTolerance);
+        this.isArmAtAlgaeL2 = manip.armAtAngle(armAlgaeL2, armTolerance);
+        this.isElevatorAtAlgaeL2 = manip.elevatorAtHeight(elevatorAlgaeL2, elevatorTolerance);
+        this.isArmAtAlgaeL3 = manip.armAtAngle(armAlgaeL3, armTolerance);
+        this.isElevatorAtAlgaeL3 = manip.elevatorAtHeight(elevatorAlgaeL3, elevatorTolerance);
     }
 
     public Command algaeFloor() {
-        return Commands.none();
-
+        return sequence(
+                clawsForAlgae(),
+                parallel(elevatorAlgaeFloor(), wristSafe()).until(isWristSafe),
+                parallel(elevatorAlgaeFloor(), armAlgaeFloor()).until(isElevatorAtAlgaeFloor.and(isArmAtAlgaeFloor).and(isWristSafe)),
+                wristPickup(),
+                intakeAlgae().until(hasAlgae))
+                .withName("Pickup: Algae Floor");
     }
 
     public Command algaeL2() {
-        return Commands.none();
-
+        return sequence(
+                clawsForAlgae(),
+                parallel(elevatorAlgaeL2(), wristSafe()).until(isWristSafe),
+                parallel(elevatorAlgaeL2(), armAlgaeL2()).until(isElevatorAtAlgaeL2.and(isArmAtAlgaeL2).and(isWristSafe)),
+                wristPickup(),
+                intakeAlgae().until(hasAlgae))
+                .withName("Pickup: Algae L2");
     }
 
     public Command algaeL3() {
-        return Commands.none();
-
+        return sequence(
+                clawsForAlgae(),
+                parallel(elevatorAlgaeL3(), wristSafe()).until(isWristSafe),
+                parallel(elevatorAlgaeL3(), armAlgaeL3()).until(isElevatorAtAlgaeL3.and(isArmAtAlgaeL3).and(isWristSafe)),
+                wristPickup(),
+                intakeAlgae().until(hasAlgae))
+                .withName("Pickup: Algae L3");
     }
 
     public Command coralFloor() {
+        return sequence(
+                clawsForCoral(),
+                parallel(elevatorCoralFloor(), wristSafe()).until(isWristSafe),
+                parallel(elevatorCoralFloor(), armCoralFloor()).until(isElevatorAtCoralFloor.and(isArmAtCoralFloor).and(isWristSafe)),
+                wristPickup(),
+                intakeCoral().until(hasCoral))
+                .withName("Pickup: Coral Floor");
+    }
+
+    public Command coralStation() {
+        return sequence(
+                clawsForCoral(),
+                parallel(elevatorCoralStation(), wristSafe()).until(isWristSafe),
+                parallel(elevatorCoralStation(), armCoralStation()).until(isElevatorAtCoralStation.and(isArmAtCoralStation).and(isWristSafe)),
+                wristPickup(),
+                intakeCoral().until(hasCoral))
+                .withName("Pickup: Coral Station");
+    }
+
+    public Command holdAfterCoral(){
         return Commands.none();
-
     }
 
-    public Command coralStationFront() {
-        return factories.wrist.goToAngle(Degrees.of(90.0))
-                .until(factories.wrist.atPosition(Degrees.of(90), Degrees.of(1))).asProxy()
-                .withName("Coral Station Front");
-
-    }
-
-    public Command coralStationBack() {
+    public Command holdAfterAlgae(){
         return Commands.none();
     }
+
+    private Command clawsForAlgae() {
+        return Commands.parallel(manip.setAlgaeClaw(algaeClawAlgaeIntake), manip.setCoralClaw(coralClawAlgaeIntake));
+    }
+
+    private Command clawsForCoral() {
+        return Commands.parallel(manip.setAlgaeClaw(algaeClawCoralIntake), manip.setCoralClaw(coralClawCoralIntake));
+    }
+
+    private Command elevatorCoralFloor() {
+        return manip.elevatorTo(elevatorCoralFloor, elevatorTolerance);
+    }
+
+    private Command elevatorAlgaeFloor() {
+        return manip.elevatorTo(elevatorAlgaeFloor, elevatorTolerance);
+    }
+
+    private Command elevatorCoralStation() {
+        return manip.elevatorTo(elevatorCoralStation, elevatorTolerance);
+    }
+
+    private Command elevatorAlgaeL2() {
+        return manip.elevatorTo(elevatorAlgaeL2, elevatorTolerance);
+    }
+
+    private Command elevatorAlgaeL3() {
+        return manip.elevatorTo(elevatorAlgaeL3, elevatorTolerance);
+    }
+
+    private Command armCoralFloor() {
+        return manip.armTo(armCoralFloor, armTolerance);
+    }
+
+    private Command armAlgaeFloor() {
+        return manip.armTo(armCoralFloor, armTolerance);
+    }
+
+    private Command armCoralStation() {
+        return manip.armTo(armCoralStation, armTolerance);
+    }
+
+    private Command armAlgaeL2() {
+        return manip.armTo(armAlgaeL2, armTolerance);
+    }
+
+    private Command armAlgaeL3() {
+        return manip.armTo(armAlgaeL3, armTolerance);
+    }
+
+    private Command wristPickup() {
+        return manip.wristTo(wristPickup, wristTolerance);
+    }
+
+    private Command wristSafe() {
+        return manip.wristTo(wristSafe, wristTolerance);
+    }
+
+    private Command intakeAlgae() {
+        return manip.intakeToSpeed(intakeWheel0AlgaeSpeed, intakeWheel1AlgaeSpeed);
+    }
+
+    private Command intakeCoral() {
+        return manip.intakeToSpeed(intakeWheel0CoralSpeed, intakeWheel1CoralSpeed);
+    }
+
+
 }

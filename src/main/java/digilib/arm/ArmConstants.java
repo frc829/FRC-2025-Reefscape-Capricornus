@@ -5,7 +5,6 @@ import edu.wpi.first.units.measure.*;
 
 public record ArmConstants(String name,
                            double reduction,
-                           Distance armLength,
                            Angle maxAngle,
                            Angle minAngle,
                            Angle startingAngle,

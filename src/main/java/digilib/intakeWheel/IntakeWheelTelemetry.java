@@ -14,10 +14,10 @@ import static digilib.DigiMath.roundToDecimal;
 
 public class IntakeWheelTelemetry {
     private final DoublePublisher velocity;
-    private final DoublePublisher linearVelocity;
     private final DoublePublisher voltage;
     private final DoublePublisher timestamp;
     private final MechanismLigament2d ligament;
+    private final DoublePublisher current;
 
 
     public IntakeWheelTelemetry(
@@ -28,8 +28,8 @@ public class IntakeWheelTelemetry {
         table.getDoubleTopic("Max Velocity").publish().set(maxVelocity.baseUnitMagnitude());
         table.getDoubleTopic("Max Acceleration").publish().set(maxAcceleration.baseUnitMagnitude());
         velocity = table.getDoubleTopic("Velocity").publish();
-        linearVelocity = table.getDoubleTopic("Linear Velocity").publish();
         voltage = table.getDoubleTopic("Voltage").publish();
+        current = table.getDoubleTopic("Current").publish();
         timestamp = table.getDoubleTopic("Timestamp").publish();
 
         Mechanism2d mechanism = new Mechanism2d(2, 4);
@@ -41,9 +41,9 @@ public class IntakeWheelTelemetry {
 
     public void telemeterize(IntakeWheelState state) {
         velocity.set(roundToDecimal(state.getAngularVelocity().baseUnitMagnitude(), 2));
-        linearVelocity.set(roundToDecimal(state.getVelocity().baseUnitMagnitude(), 2));
         voltage.set(roundToDecimal(state.getVoltage().baseUnitMagnitude(), 2));
         timestamp.set(roundToDecimal(state.getTimestamp().baseUnitMagnitude(), 2));
-        ligament.setLength(roundToDecimal(state.getVelocity().baseUnitMagnitude(), 2));
+        ligament.setLength(roundToDecimal(state.getAngularVelocity().baseUnitMagnitude(), 2));
+        current.set(roundToDecimal(state.getCurrent().baseUnitMagnitude(), 2));
     }
 }

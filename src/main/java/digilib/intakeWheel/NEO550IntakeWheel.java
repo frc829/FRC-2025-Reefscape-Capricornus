@@ -21,7 +21,7 @@ import static digilib.MotorControllerType.*;
 import static edu.wpi.first.units.Units.*;
 
 public class NEO550IntakeWheel implements IntakeWheel {
-    private final IntakeWheelState state;
+    private final IntakeWheelState state = new IntakeWheelState();
     private final AngularVelocity maxVelocity;
     private final IntakeWheelTelemetry telemetry;
     private final SparkMax motor;
@@ -36,7 +36,6 @@ public class NEO550IntakeWheel implements IntakeWheel {
             IntakeWheelConstants constants,
             SparkMax motor,
             Time updatePeriod) {
-        state = new IntakeWheelState(constants.wheelRadius());
         this.motor = motor;
         this.maxVelocity = constants.maxVelocity();
         this.feedforward = new SimpleMotorFeedforward(constants.ks().baseUnitMagnitude(), constants.kv().baseUnitMagnitude(), constants.ka().baseUnitMagnitude(), updatePeriod.baseUnitMagnitude());
@@ -82,17 +81,12 @@ public class NEO550IntakeWheel implements IntakeWheel {
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity) {
-        double nextVelocitySetpoint = profile.calculate(velocity.baseUnitMagnitude());
+    public void setVelocity(Dimensionless maxPercent) {
+        double nextVelocitySetpoint = maxPercent.baseUnitMagnitude() * maxVelocity.baseUnitMagnitude();
+        nextVelocitySetpoint = profile.calculate(nextVelocitySetpoint);
         double arbFeedforward = feedforward.calculateWithVelocities(lastVelocity.baseUnitMagnitude(), nextVelocitySetpoint);
         motor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, ClosedLoopSlot.kSlot1, arbFeedforward, SparkClosedLoopController.ArbFFUnits.kVoltage);
         lastVelocity.mut_setMagnitude(nextVelocitySetpoint);
-    }
-
-    @Override
-    public void setIdle() {
-        lastVelocity.mut_setMagnitude(motor.getEncoder().getVelocity());
-        motor.getClosedLoopController().setReference(0.0, SparkBase.ControlType.kVoltage);
     }
 
     @Override
@@ -109,9 +103,10 @@ public class NEO550IntakeWheel implements IntakeWheel {
 
     @Override
     public void updateState() {
-        state.withAngularVelocity(motor.getEncoder().getVelocity())
-                .withVoltage(motor.getAppliedOutput() * motor.getBusVoltage())
-                .withTimestamp(Timer.getFPGATimestamp());
+        state.setAngularVelocity(motor.getEncoder().getVelocity());
+        state.setVoltage(motor.getAppliedOutput() * motor.getBusVoltage());
+        state.setTimestamp(Timer.getFPGATimestamp());
+        state.setCurrent(motor.getOutputCurrent());
     }
 
     @Override
