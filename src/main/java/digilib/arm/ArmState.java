@@ -47,7 +47,7 @@ public class ArmState {
     }
 
     public void setAbsolutePosition(Angle angle) {
-        this.position.mut_replace(angle);
+        this.absolutePosition.mut_replace(angle);
     }
 
     public void setVelocity(AngularVelocity angularVelocity) {

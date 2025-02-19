@@ -1,6 +1,5 @@
 package digilib.elevator;
 
-import digilib.arm.ArmRequest;
 import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.*;

@@ -63,7 +63,7 @@ public class ElevatorSubsystemConstants {
 
     static final class Simulation {
         static final Distance startingHeight = Meters.of(0.0);
-        static final Distance minHeight = Meters.of(0.0);
+        static final Distance minHeight = Meters.of(0.05);
         static final Distance maxHeight = Meters.of(0.65);
         static final Distance positionStdDev = Meters.of(0.0);
         static final LinearVelocity velocityStdDev = MetersPerSecond.of(0.0);
@@ -111,7 +111,7 @@ public class ElevatorSubsystemConstants {
                 Motor.motor,
                 Follower.motor,
                 updatePeriod);
-        ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(elevator, simLoopPeriod);
+        ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(elevator, kg, simLoopPeriod);
         elevatorSubsystem.setDefaultCommand(elevatorSubsystem.hold());
         return elevatorSubsystem;
     }

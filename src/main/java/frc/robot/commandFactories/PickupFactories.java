@@ -23,7 +23,7 @@ public class PickupFactories {
     private static final Angle wristPickup = Degrees.of(90.0);
     private static final Angle wristTolerance = Degrees.of(2.0);
 
-    private static final Distance elevatorCoralFloor = Centimeters.of(20.0);
+    private static final Distance elevatorCoralFloor = Centimeters.of(17.0);
     private static final Distance elevatorCoralStation = Centimeters.of(0.0);
     private static final Distance elevatorAlgaeFloor = Centimeters.of(0.0);
     private static final Distance elevatorAlgaeL2 = Centimeters.of(0.0);
@@ -32,7 +32,7 @@ public class PickupFactories {
     private static final Distance elevatorCoralHold = Centimeters.of(0.0);
     private static final Distance elevatorTolerance = Centimeters.of(1.0);
 
-    private static final Angle armCoralFloor = Degrees.of(-30.0);
+    private static final Angle armCoralFloor = Degrees.of(-48.9);
     private static final Angle armCoralStation = Degrees.of(0.0);
     private static final Angle armAlgaeFloor = Degrees.of(0.0);
     private static final Angle armAlgaeL2 = Degrees.of(0.0);

@@ -4,6 +4,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,10 +23,12 @@ import static edu.wpi.first.units.Units.*;
 public class ElevatorSubsystem implements Subsystem {
     private final Elevator elevator;
     private double lastSimTime;
+    private final Voltage holdVoltage;
     private final Time simLoopPeriod;
 
-    public ElevatorSubsystem(Elevator elevator, Time simLoopPeriod) {
+    public ElevatorSubsystem(Elevator elevator, Voltage holdVoltage, Time simLoopPeriod) {
         this.elevator = elevator;
+        this.holdVoltage = holdVoltage;
         this.simLoopPeriod = simLoopPeriod;
 
         SysIdRoutine.Config config = new SysIdRoutine.Config(
@@ -79,6 +82,13 @@ public class ElevatorSubsystem implements Subsystem {
                 .andThen(applyRequest(() -> request))
                 .withName(String.format("%s: HOLD", getName()));
     }
+
+    // Command hold() {
+    //     ElevatorRequest.VoltageRequest request = new ElevatorRequest.VoltageRequest();
+    //     request.withVoltage(this.holdVoltage);
+    //     return applyRequest(() -> request)
+    //             .withName(String.format("%s: HOLD", getName()));
+    // }
 
     @Override
     public void periodic() {
