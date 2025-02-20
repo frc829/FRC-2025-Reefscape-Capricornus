@@ -76,6 +76,12 @@ public class PhotonVisionCamera implements Camera {
     public void updateState() {
         List<PhotonPipelineResult> photonPipelineResults = photonCamera.getAllUnreadResults();
         for (PhotonPipelineResult result : photonPipelineResults) {
+            state.setBestFiducialId(result.getBestTarget().fiducialId);
+            Transform3d bestTransformToFiducial = cameraToRobot.inverse().plus(result.getBestTarget().bestCameraToTarget);
+            state.setBestTransformFiducialX(bestTransformToFiducial.getX());
+            state.setBestTransformFiducialY(bestTransformToFiducial.getY());
+            state.setBestTransformFiducialThetaRadians(bestTransformToFiducial.getRotation().getZ());
+
             Optional<EstimatedRobotPose> optionalEstimatedRobotPose = photonPoseEstimator.update(result);
             optionalEstimatedRobotPose.ifPresentOrElse(
                     estimatedRobotPose -> {
@@ -89,9 +95,9 @@ public class PhotonVisionCamera implements Camera {
     }
 
     private void updateEstimatedPoseFromMultiTag(EstimatedRobotPose estimatedRobotPose) {
-        state.withCameraMode(CameraMode.get(photonCamera.getPipelineIndex()))
-                .withRobotPose(estimatedRobotPose.estimatedPose.toPose2d())
-                .withTimestamp(estimatedRobotPose.timestampSeconds);
+        state.setCameraMode(CameraMode.get(photonCamera.getPipelineIndex()));
+        state.setRobotPose(estimatedRobotPose.estimatedPose.toPose2d());
+        state.setTimestamp(estimatedRobotPose.timestampSeconds);
         updateRobotPoseStdDevFromMultiTag(estimatedRobotPose.estimatedPose.toPose2d(), estimatedRobotPose.targetsUsed);
     }
 
@@ -119,25 +125,25 @@ public class PhotonVisionCamera implements Camera {
                 targetPose2ds.stream()
                         .map(Pose2d::getRotation).toList());
 
-        state.withRobotPoseStdDev(xStdDev, yStdDev, thetaStdDevRadians);
+        state.setRobotPoseStdDev(xStdDev, yStdDev, thetaStdDevRadians);
     }
 
     private void updateEstimatedPoseFromLowestAmbiguity(EstimatedRobotPose estimatedRobotPose) {
         if (estimatedRobotPose.targetsUsed.get(0).poseAmbiguity <= 0.2) {
-            state.withCameraMode(CameraMode.get(photonCamera.getPipelineIndex()))
-                    .withRobotPose(estimatedRobotPose.estimatedPose.toPose2d())
-                    .withRobotPoseStdDev(singleTagStdDev.get(0, 0), singleTagStdDev.get(1, 0), singleTagStdDev.get(2, 0))
-                    .withTimestamp(estimatedRobotPose.timestampSeconds);
+            state.setCameraMode(CameraMode.get(photonCamera.getPipelineIndex()));
+            state.setRobotPose(estimatedRobotPose.estimatedPose.toPose2d());
+            state.setRobotPoseStdDev(singleTagStdDev.get(0, 0), singleTagStdDev.get(1, 0), singleTagStdDev.get(2, 0));
+            state.setTimestamp(estimatedRobotPose.timestampSeconds);
         } else {
             updateEstimatedPoseDefault();
         }
     }
 
     private void updateEstimatedPoseDefault() {
-        state.withCameraMode(CameraMode.get(photonCamera.getPipelineIndex()))
-                .withRobotPose(null)
-                .withRobotPoseStdDev(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
-                .withTimestamp(Timer.getFPGATimestamp());
+        state.setCameraMode(CameraMode.get(photonCamera.getPipelineIndex()));
+        state.setRobotPose(null);
+        state.setRobotPoseStdDev(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+        state.setTimestamp(Timer.getFPGATimestamp());
     }
 
     @Override
