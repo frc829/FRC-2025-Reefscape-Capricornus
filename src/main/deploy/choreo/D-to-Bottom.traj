@@ -1,5 +1,5 @@
 {
- "name":"DtoStationBottom",
+ "name":"D-to-Bottom",
  "version":1,
  "snapshot":{
   "waypoints":[
@@ -13,8 +13,8 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"4.099473476409912 m", "val":4.099473476409912}, "y":{"exp":"2.811063051223755 m", "val":2.811063051223755}, "heading":{"exp":"-2.0636328953104104 rad", "val":-2.0636328953104104}, "intervals":26, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"1.470759391784668 m", "val":1.470759391784668}, "y":{"exp":"0.635575532913208 m", "val":0.635575532913208}, "heading":{"exp":"-2.2455372356058945 rad", "val":-2.2455372356058945}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"D.x", "val":4.099473476409912}, "y":{"exp":"D.y", "val":2.811063051223755}, "heading":{"exp":"D.heading", "val":-2.0636328953104104}, "intervals":26, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"Bottom.x", "val":1.470759391784668}, "y":{"exp":"Bottom.y", "val":0.635575532913208}, "heading":{"exp":"Bottom.heading", "val":-2.2455372356058945}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
