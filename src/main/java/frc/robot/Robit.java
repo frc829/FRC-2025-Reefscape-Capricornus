@@ -30,7 +30,8 @@ public class Robit extends TimedRobot {
         PortForwarder.add(5800, "orangepi50.local", 5800);
         CanBridge.runTCP();
         SwerveDriveSubsystem swerveDriveSubsystem = SwerveDriveSubsystemConstants.create();
-        DrivingFactories driving = new DrivingFactories(swerveDriveSubsystem);
+        AutoFactory autoFactory = swerveDriveSubsystem.createAutoFactory();
+        DrivingFactories driving = new DrivingFactories(swerveDriveSubsystem, autoFactory);
         ManipulatorFactories manipulator = new ManipulatorFactories(
                 PneumaticsSubsystemConstants.createAlgaeClaw(),
                 ArmSubsystemConstants.create(),
@@ -45,7 +46,6 @@ public class Robit extends TimedRobot {
         ScoringFactories scoringFactories = new ScoringFactories(manipulator);
         ManualFactories manualFactories = new ManualFactories(manipulator);
         new TriggerMap(driving, pickupFactories, scoringFactories, manualFactories);
-        AutoFactory autoFactory = swerveDriveSubsystem.createAutoFactory();
         new AutoRoutines(autoFactory, pickupFactories, scoringFactories);
         SmartDashboard.putData(CommandScheduler.getInstance());
         DataLogManager.start();

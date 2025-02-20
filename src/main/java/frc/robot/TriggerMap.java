@@ -53,11 +53,15 @@ public class TriggerMap {
         bindClockDrive();
         bindFieldCentricDrive();
         bindRobotCentricDrive();
+
+        bindGoToG();
+
         bindAlgaeFloorPickup();
         bindAlgaeL2Pickup();
         bindAlgaeL3Pickup();
         bindCoralFloorPickup();
         bindCoralStationPickup();
+
         bindBargeScore();
         bindProcessorScore();
         bindL1Score();
@@ -65,6 +69,7 @@ public class TriggerMap {
         bindL3Score();
         bindL4Score();
         bindClimbScore();
+
         bindManualWristToggle();
         bindManualWrist();
         bindManualElevator();
@@ -113,6 +118,10 @@ public class TriggerMap {
                         this::getMaxVelocityPercent,
                         this::getHeading,
                         this::getMaxRotationalVelocityPercent));
+    }
+
+    private void bindGoToG() {
+        driver.a().onTrue(driving.goToG());
     }
 
     private void bindAlgaeFloorPickup() {
