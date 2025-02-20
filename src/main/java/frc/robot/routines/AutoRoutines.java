@@ -17,27 +17,24 @@ public class AutoRoutines {
             AutoFactory factory,
             PickupFactories pickup,
             ScoringFactories score) {
-        factory
-                .bind("coralFloor", pickup.coralFloor());
 
         AutoChooser autoChooser = new AutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
         this.factory = factory;
-//        autoChooser.addRoutine("The Love Boat", this::theLoveBoatAuto);
+        autoChooser.addRoutine("The Noob Spot", this::theNoobSpot);
     }
 
-    private AutoRoutine theLoveBoatAuto() {
-        final AutoRoutine routine = factory.newRoutine("The Love Boat Auto");
-        final AutoTrajectory S3toG = routine.trajectory("S3toG");
-        final AutoTrajectory GtoTopStation = routine.trajectory("GtoTopStation");
+    private AutoRoutine theNoobSpot() {
+        final AutoRoutine routine = factory.newRoutine("The Noob Spot");
+        final AutoTrajectory S2toG = routine.trajectory("S2-to-G");
 
         routine.active().onTrue(
-                S3toG.resetOdometry()
-                        .andThen(S3toG.cmd())
+                S2toG.resetOdometry()
+                        .andThen(S2toG.cmd())
                         .andThen(Commands.print("SCORE L4"))
                         .andThen(Commands.waitSeconds(2))
-                        .andThen(GtoTopStation.cmd()));
+                        .withName("The Noob Spot"));
         return routine;
     }
 }

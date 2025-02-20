@@ -54,7 +54,8 @@ public class TriggerMap {
         bindFieldCentricDrive();
         bindRobotCentricDrive();
 
-        bindGoToG();
+
+
 
         bindAlgaeFloorPickup();
         bindAlgaeL2Pickup();
@@ -118,10 +119,6 @@ public class TriggerMap {
                         this::getMaxVelocityPercent,
                         this::getHeading,
                         this::getMaxRotationalVelocityPercent));
-    }
-
-    private void bindGoToG() {
-        driver.a().onTrue(driving.goToG());
     }
 
     private void bindAlgaeFloorPickup() {

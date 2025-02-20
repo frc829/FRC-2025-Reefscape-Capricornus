@@ -5,14 +5,12 @@
 package frc.robot;
 
 import au.grapplerobotics.CanBridge;
-import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commandFactories.*;
 import frc.robot.routines.*;
 import frc.robot.subsystems.dualIntake.DualIntakeSubsystemConstants;
@@ -31,7 +29,7 @@ public class Robit extends TimedRobot {
         CanBridge.runTCP();
         SwerveDriveSubsystem swerveDriveSubsystem = SwerveDriveSubsystemConstants.create();
         AutoFactory autoFactory = swerveDriveSubsystem.createAutoFactory();
-        DrivingFactories driving = new DrivingFactories(swerveDriveSubsystem, autoFactory);
+        DrivingFactories driving = new DrivingFactories(swerveDriveSubsystem);
         ManipulatorFactories manipulator = new ManipulatorFactories(
                 PneumaticsSubsystemConstants.createAlgaeClaw(),
                 ArmSubsystemConstants.create(),

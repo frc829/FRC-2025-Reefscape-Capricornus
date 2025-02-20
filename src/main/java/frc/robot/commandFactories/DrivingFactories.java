@@ -1,8 +1,5 @@
 package frc.robot.commandFactories;
 
-import choreo.auto.AutoFactory;
-import choreo.auto.AutoRoutine;
-import choreo.auto.AutoTrajectory;
 import digilib.swerve.SwerveDriveRequest;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
@@ -16,11 +13,9 @@ import static edu.wpi.first.units.Units.Degrees;
 public class DrivingFactories {
 
     private final SwerveDriveSubsystem swerve;
-    private final AutoFactory autoFactory;
 
-    public DrivingFactories(SwerveDriveSubsystem swerve, AutoFactory autoFactory) {
+    public DrivingFactories(SwerveDriveSubsystem swerve) {
         this.swerve = swerve;
-        this.autoFactory = autoFactory;
     }
 
     public Command fieldCentricDrive(
@@ -81,9 +76,5 @@ public class DrivingFactories {
         SwerveDriveRequest.SeedFieldCentric seedFieldCentric = new SwerveDriveRequest.SeedFieldCentric();
         return swerve.applyRequestOnce(() -> seedFieldCentric)
                 .withName(String.format("%s: Seed Field Centric", swerve.getName()));
-    }
-
-    public Command goToG() {
-        return autoFactory.trajectoryCmd("S2-to-G").withName("Go to G");
     }
 }
