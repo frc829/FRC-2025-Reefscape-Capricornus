@@ -288,7 +288,7 @@ public class TriggerMap {
     private double getMaxWristVelocityPercentValue() {
         double leftTrigger = MathUtil.applyDeadband(backup.getLeftTriggerAxis(), deadband);
         double rightTrigger = MathUtil.applyDeadband(backup.getRightTriggerAxis(), deadband);
-        return 0.1 * (leftTrigger - rightTrigger);
+        return 0.2 * (leftTrigger - rightTrigger);
     }
 
     private Dimensionless getMaxElevatorVelocityPercent() {
@@ -296,7 +296,7 @@ public class TriggerMap {
     }
 
     private double getMaxElevatorVelocityPercentValue() {
-        return -0.1 * MathUtil.applyDeadband(backup.getLeftY(), deadband);
+        return -0.2 * MathUtil.applyDeadband(backup.getLeftY(), deadband);
     }
 
     private Dimensionless getMaxArmVelocityPercent() {
@@ -304,7 +304,7 @@ public class TriggerMap {
     }
 
     private double getMaxArmVelocityPercentValue() {
-        return -0.1 * MathUtil.applyDeadband(backup.getRightY(), deadband);
+        return -0.2 * MathUtil.applyDeadband(backup.getRightY(), deadband);
     }
 
     private Command giveKeithCarpelTunnel() {
