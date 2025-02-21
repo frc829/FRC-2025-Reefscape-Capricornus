@@ -6,6 +6,7 @@ import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.*;
 import digilib.MotorControllerType;
+import digilib.elevator.DualVortexElevator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -25,6 +26,13 @@ import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
 import static edu.wpi.first.units.Units.*;
 
 public class NEO550Wrist implements Wrist {
+
+    public enum ControlState{
+        POSITION,
+        VELOCITY,
+        VOLTAGE
+    }
+
     private final WristState state = new WristState();
     private final Angle minAngle;
     private final Angle maxAngle;
@@ -42,6 +50,8 @@ public class NEO550Wrist implements Wrist {
     private DCMotorSim simWrist = null;
     private SparkMaxSim sparkMaxSim = null;
     private CANcoderSimState canCoderSimState = null;
+    private ControlState controlState = null;
+
 
     public NEO550Wrist(
             WristConstants constants,
@@ -128,6 +138,11 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void setPosition(Angle position) {
+        if(controlState != ControlState.POSITION) {
+            lastState.position = motor.getEncoder().getPosition();
+            lastState.velocity = motor.getEncoder().getVelocity();
+            controlState = ControlState.POSITION;
+        }
         goalState.position = position.baseUnitMagnitude();
         goalState.velocity = 0.0;
         double lastVelocitySetpoint = lastState.velocity;
@@ -136,26 +151,27 @@ public class NEO550Wrist implements Wrist {
         double nextPositionSetpoint = lastState.position;
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
         motor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        velocityProfile.reset(motor.getEncoder().getVelocity());
     }
 
     @Override
     public void setVelocity(Dimensionless maxPercent) {
-        goalState.velocity = maxPercent.baseUnitMagnitude() * maxVelocity.baseUnitMagnitude();
-        double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
-        double lastVelocitySetPoint = lastState.velocity;
+        if(controlState != ControlState.VELOCITY) {
+            velocityProfile.reset(motor.getEncoder().getVelocity());
+            controlState = ControlState.VELOCITY;
+        }
+        double goalVelocity = maxPercent.baseUnitMagnitude() * maxVelocity.baseUnitMagnitude();
+        double nextVelocitySetpoint = velocityProfile.calculate(goalVelocity);
+        double lastVelocitySetPoint = motor.getEncoder().getVelocity();
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
         motor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, kSlot1, arbFeedfoward);
-        lastState.position = motor.getEncoder().getPosition();
-        lastState.velocity = nextVelocitySetpoint;
     }
 
     @Override
     public void setVoltage(Voltage voltage) {
+        if(controlState != ControlState.VOLTAGE) {
+            controlState = ControlState.VOLTAGE;
+        }
         motor.setVoltage(voltage.baseUnitMagnitude());
-        velocityProfile.reset(motor.getEncoder().getVelocity());
-        lastState.position = motor.getEncoder().getPosition();
-        lastState.velocity = motor.getEncoder().getVelocity();
     }
 
     @Override

@@ -21,6 +21,13 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import static com.revrobotics.spark.ClosedLoopSlot.*;
 
 public class DualVortexElevator implements Elevator {
+
+    public enum ControlState{
+        POSITION,
+        VELOCITY,
+        VOLTAGE
+    }
+
     private final ElevatorState state = new ElevatorState();
     private final Distance minHeight;
     private final Distance maxHeight;
@@ -32,12 +39,13 @@ public class DualVortexElevator implements Elevator {
     private final ExponentialProfile positionProfile;
     private final SlewRateLimiter velocityProfile;
     private final ExponentialProfile.State goalState = new ExponentialProfile.State();
+    private ExponentialProfile.State lastState = new ExponentialProfile.State();
     private final ElevatorFeedforward feedforward;
     private final Time profilePeriod;
-    private ExponentialProfile.State lastState = new ExponentialProfile.State();
     private SimulatedElevator simElevator = null;
     private SparkFlexSim sparkFlexSim = null;
     private SparkFlexSim followerSparkFlexSim = null;
+    private ControlState controlState = null;
 
     public DualVortexElevator(
             ElevatorConstants constants,
@@ -125,6 +133,11 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void setHeight(Distance height) {
+        if(controlState != ControlState.POSITION) {
+            lastState.position = motor.getEncoder().getPosition();
+            lastState.velocity = motor.getEncoder().getVelocity();
+            controlState = ControlState.POSITION;
+        }
         goalState.position = height.baseUnitMagnitude();
         goalState.velocity = 0.0;
         double lastVelocitySetpoint = lastState.velocity;
@@ -133,26 +146,27 @@ public class DualVortexElevator implements Elevator {
         double nextPositionSetpoint = lastState.position;
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
         motor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        velocityProfile.reset(motor.getEncoder().getVelocity());
     }
 
     @Override
     public void setVelocity(Dimensionless maxPercent) {
-        goalState.velocity = maxPercent.baseUnitMagnitude() * maxVelocity.baseUnitMagnitude();
-        double nextVelocitySetpoint = velocityProfile.calculate(goalState.velocity);
-        double lastVelocitySetPoint = lastState.velocity;
+        if(controlState != ControlState.VELOCITY) {
+            velocityProfile.reset(motor.getEncoder().getVelocity());
+            controlState = ControlState.VELOCITY;
+        }
+        double goalVelocity = maxPercent.baseUnitMagnitude() * maxVelocity.baseUnitMagnitude();
+        double nextVelocitySetpoint = velocityProfile.calculate(goalVelocity);
+        double lastVelocitySetPoint = motor.getEncoder().getVelocity();
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
         motor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, kSlot1, arbFeedfoward);
-        lastState.position = motor.getEncoder().getPosition();
-        lastState.velocity = nextVelocitySetpoint;
     }
 
     @Override
     public void setVoltage(Voltage voltage) {
+        if(controlState != ControlState.VOLTAGE) {
+            controlState = ControlState.VOLTAGE;
+        }
         motor.setVoltage(voltage.baseUnitMagnitude());
-        velocityProfile.reset(motor.getEncoder().getVelocity());
-        lastState.position = motor.getEncoder().getPosition();
-        lastState.velocity = motor.getEncoder().getVelocity();
     }
 
     @Override
