@@ -28,8 +28,8 @@ public class PickupFactories {
     private static final Distance elevatorAlgaeFloor = Centimeters.of(5.0);
     private static final Distance elevatorAlgaeL2 = Centimeters.of(0.0);
     private static final Distance elevatorAlgaeL3 = Centimeters.of(0.0);
-    private static final Distance elevatorAlgaeHold = Centimeters.of(0.0);
-    private static final Distance elevatorCoralHold = Centimeters.of(0.0);
+    private static final Distance elevatorAlgaeHold = Centimeters.of(5.0);
+    private static final Distance elevatorCoralHold = Centimeters.of(5.0);
     private static final Distance elevatorTolerance = Centimeters.of(1.0);
 
     private static final Angle armCoralFloor = Degrees.of(-48.9);

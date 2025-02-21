@@ -14,12 +14,13 @@ public interface ElevatorRequest {
         @Override
         public void apply(Elevator elevator) {
             ElevatorState state = elevator.getState();
-            if (height.gt(elevator.getMaxHeight())) {
-                height.mut_replace(state.getHeight());
-            } else if (height.lt(elevator.getMinHeight())) {
-                height.mut_replace(state.getHeight());
+            if (state.getHeight().gte(elevator.getMaxHeight()) && height.gte(elevator.getMaxHeight())) {
+                elevator.setVelocity(Percent.of(0.0));
+            } else if (state.getHeight().lte(elevator.getMinHeight()) && height.lte(elevator.getMinHeight())) {
+                elevator.setVelocity(Percent.of(0.0));
+            } else {
+                elevator.setHeight(height);
             }
-            elevator.setHeight(height);
         }
 
         public ElevatorRequest.Position withPosition(Distance height) {
@@ -34,9 +35,9 @@ public interface ElevatorRequest {
         @Override
         public void apply(Elevator elevator) {
             ElevatorState state = elevator.getState();
-            if (state.getHeight().gte(elevator.getMaxHeight()) && maxPercent.gte(Value.of(0.0))) {
+            if (state.getHeight().gte(elevator.getMaxHeight()) && maxPercent.gt(Value.of(0.0))) {
                 maxPercent.mut_setBaseUnitMagnitude(0.0);
-            } else if (state.getHeight().lte(elevator.getMinHeight()) && maxPercent.lte(Value.of(0.0))) {
+            } else if (state.getHeight().lte(elevator.getMinHeight()) && maxPercent.lt(Value.of(0.0))) {
                 maxPercent.mut_setBaseUnitMagnitude(0.0);
             }
             elevator.setVelocity(maxPercent);

@@ -19,6 +19,14 @@ public class DigiMath {
         return Math.round(value * scale) / scale;
     }
 
+    public static double keithProofPosition(double value, double min, double max){
+        return 0.0;
+    }
+
+    public static double keithProofVelocity(double value, double min, double max){
+        return 0.0;
+    }
+
     public static double standardDeviation(double mean, List<Double> data) {
         return Math.sqrt(data
                 .stream()

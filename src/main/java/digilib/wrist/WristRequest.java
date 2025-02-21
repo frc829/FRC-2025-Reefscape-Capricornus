@@ -1,5 +1,6 @@
 package digilib.wrist;
 
+import digilib.elevator.ElevatorState;
 import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.*;
@@ -14,12 +15,13 @@ public interface WristRequest {
         @Override
         public void apply(Wrist wrist) {
             WristState state = wrist.getState();
-            if (angle.gt(wrist.getMaxAngle())) {
-                angle.mut_replace(state.getAngle());
-            } else if (angle.lt(wrist.getMinAngle())) {
-                angle.mut_replace(state.getAngle());
+            if (state.getAngle().gte(wrist.getMaxAngle()) && angle.gte(wrist.getMaxAngle())) {
+                wrist.setVelocity(Percent.of(0.0));
+            } else if (state.getAngle().lte(wrist.getMinAngle()) && angle.lte(wrist.getMinAngle())) {
+                wrist.setVelocity(Percent.of(0.0));
+            } else {
+                wrist.setPosition(angle);
             }
-            wrist.setPosition(angle);
         }
 
         public WristRequest.Position withAngle(Angle angle) {
@@ -34,9 +36,9 @@ public interface WristRequest {
         @Override
         public void apply(Wrist wrist) {
             WristState state = wrist.getState();
-            if (state.getAngle().gte(wrist.getMaxAngle()) && maxPercent.gte(Value.of(0.0))) {
+            if (state.getAngle().gte(wrist.getMaxAngle()) && maxPercent.gt(Value.of(0.0))) {
                 maxPercent.mut_setBaseUnitMagnitude(0.0);
-            } else if (state.getAngle().lte(wrist.getMinAngle()) && maxPercent.lte(Value.of(0.0))) {
+            } else if (state.getAngle().lte(wrist.getMinAngle()) && maxPercent.lt(Value.of(0.0))) {
                 maxPercent.mut_setBaseUnitMagnitude(0.0);
             }
             wrist.setVelocity(maxPercent);

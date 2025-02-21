@@ -1,5 +1,6 @@
 package digilib.arm;
 
+import digilib.wrist.WristState;
 import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.*;
@@ -14,12 +15,13 @@ public interface ArmRequest {
         @Override
         public void apply(Arm arm) {
             ArmState state = arm.getState();
-            if (angle.gt(arm.getMaxAngle())) {
-                angle.mut_replace(state.getAngle());
-            } else if (angle.lt(arm.getMinAngle())) {
-                angle.mut_replace(state.getAngle());
+            if (state.getAngle().gte(arm.getMaxAngle()) && angle.gte(arm.getMaxAngle())) {
+                arm.setVelocity(Percent.of(0.0));
+            } else if (state.getAngle().lte(arm.getMinAngle()) && angle.lte(arm.getMinAngle())) {
+                arm.setVelocity(Percent.of(0.0));
+            } else {
+                arm.setPosition(angle);
             }
-            arm.setPosition(angle);
         }
 
         public Position withPosition(Angle angle) {
@@ -34,9 +36,9 @@ public interface ArmRequest {
         @Override
         public void apply(Arm arm) {
             ArmState state = arm.getState();
-            if (state.getAngle().gte(arm.getMaxAngle()) && maxPercent.gte(Value.of(0.0))) {
+            if (state.getAngle().gte(arm.getMaxAngle()) && maxPercent.gt(Value.of(0.0))) {
                 maxPercent.mut_setBaseUnitMagnitude(0.0);
-            } else if (state.getAngle().lte(arm.getMinAngle()) && maxPercent.lte(Value.of(0.0))) {
+            } else if (state.getAngle().lte(arm.getMinAngle()) && maxPercent.lt(Value.of(0.0))) {
                 maxPercent.mut_setBaseUnitMagnitude(0.0);
             }
             arm.setVelocity(maxPercent);

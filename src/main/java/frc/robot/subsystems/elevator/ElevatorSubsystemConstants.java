@@ -62,9 +62,9 @@ public class ElevatorSubsystemConstants {
     }
 
     static final class Simulation {
-        static final Distance startingHeight = Meters.of(0.0);
-        static final Distance minHeight = Meters.of(0.05);
-        static final Distance maxHeight = Meters.of(0.65);
+        static final Distance startingHeight = Centimeters.of(0.0);
+        static final Distance minHeight = Centimeters.of(5);
+        static final Distance maxHeight = Centimeters.of(65);
         static final Distance positionStdDev = Meters.of(0.0);
         static final LinearVelocity velocityStdDev = MetersPerSecond.of(0.0);
         static final Time simLoopPeriod = Seconds.of(0.001);
