@@ -1,9 +1,12 @@
 package frc.robot.commandFactories;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+
+import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Degrees;
 
@@ -51,19 +54,8 @@ public class ScoringFactories {
         return Commands.none();
     }
 
-    private Command createCoralAlignSafe(
-            Distance elevatorHeight,
-            Angle armAngle,
-            Angle wristAngle) {
-        return Commands.none();
-
+    public Command climb(Supplier<Dimensionless> dutyCycle) {
+        return factories.climbAtDutyCycle(dutyCycle);
     }
 
-    private Command createCoralAlignUnSafe(
-            Distance elevatorHeight,
-            Angle armAngle,
-            Angle wristAngle) {
-        return Commands.none();
-
-    }
 }

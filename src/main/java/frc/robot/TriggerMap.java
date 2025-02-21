@@ -1,15 +1,11 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.FrequencyUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDimensionless;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -33,6 +29,7 @@ public class TriggerMap {
     private final MutDimensionless maxManualWristVelocityPercent = Value.mutable(0.0);
     private final MutDimensionless maxManualElevatorVelocityPercent = Value.mutable(0.0);
     private final MutDimensionless maxManualArmVelocityPercent = Value.mutable(0.0);
+    private final MutDimensionless climbDutyCyclePercent = Value.mutable(0.0);
     private final MutAngle heading = Radians.mutable(0.0);
     private final MutAngle rotation = Radians.mutable(0.0);
 
@@ -53,8 +50,6 @@ public class TriggerMap {
         bindClockDrive();
         bindFieldCentricDrive();
         bindRobotCentricDrive();
-
-
 
 
         bindAlgaeFloorPickup();
@@ -179,7 +174,8 @@ public class TriggerMap {
     }
 
     private void bindClimbScore() {
-        climb.axisMagnitudeGreaterThan(kY.value, deadband);
+        climb.axisMagnitudeGreaterThan(kY.value, deadband)
+                .whileTrue(scoring.climb(this::getClimbDutyCycle));
     }
 
     private void bindManualWristToggle() {
@@ -238,7 +234,6 @@ public class TriggerMap {
                         Percent.of(25),
                         Percent.of(25)));
     }
-
 
     private Dimensionless getMaxVelocityPercent() {
         return maxVelocityPercent.mut_setBaseUnitMagnitude(getMaxVelocityPercentValue());
@@ -307,10 +302,19 @@ public class TriggerMap {
         return -0.2 * MathUtil.applyDeadband(backup.getRightY(), deadband);
     }
 
+    private Dimensionless getClimbDutyCycle() {
+        return climbDutyCyclePercent.mut_setBaseUnitMagnitude(getClimbDutyCycleValue());
+    }
+
+    private double getClimbDutyCycleValue() {
+        return -MathUtil.applyDeadband(climb.getY(), deadband);
+    }
+
     private Command giveKeithCarpelTunnel() {
         return sequence(
                 race(waitSeconds(2), run(() -> operator.setRumble(kBothRumble, 1))),
                 runOnce(() -> operator.setRumble(kBothRumble, 0)));
     }
+
 
 }

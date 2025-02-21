@@ -5,6 +5,7 @@ import digilib.claws.ClawRequest;
 import digilib.claws.ClawValue;
 import digilib.elevator.ElevatorRequest;
 import digilib.intakeWheel.IntakeWheelRequest;
+import digilib.winch.WinchRequest;
 import digilib.wrist.WristRequest;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.units.measure.Angle;
@@ -12,6 +13,7 @@ import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.dualIntake.DualIntakeSubsystem;
 import frc.robot.subsystems.pneumatics.ClawSubsystem;
@@ -19,6 +21,7 @@ import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.pneumatics.PneumaticSubsystem;
 import frc.robot.subsystems.power.PowerSubsystem;
+import frc.robot.subsystems.winch.WinchSubsystem;
 import frc.robot.subsystems.wrist.WristSubsystem;
 
 import java.util.function.Supplier;
@@ -33,7 +36,7 @@ public class ManipulatorFactories {
     private final ElevatorSubsystem elevator;
     private final PneumaticSubsystem pneumatics;
     private final PowerSubsystem power;
-    // public final WinchSubsystem winch;
+    public final WinchSubsystem winch;
     private final WristSubsystem wrist;
     public final Trigger hasAlgae;
     public final Trigger hasCoral;
@@ -48,7 +51,7 @@ public class ManipulatorFactories {
             ElevatorSubsystem elevator,
             PneumaticSubsystem pneumatics,
             PowerSubsystem power,
-            // WinchSubsystem winch){
+            WinchSubsystem winch,
             WristSubsystem wrist) {
         this.algae = algae;
         this.arm = arm;
@@ -57,7 +60,7 @@ public class ManipulatorFactories {
         this.elevator = elevator;
         this.pneumatics = pneumatics;
         this.power = power;
-        // this.winch = winch;
+        this.winch = winch;
         this.wrist = wrist;
         this.hasAlgae = dualIntake.hasAlgae;
         this.hasCoral = dualIntake.hasCoral;
@@ -161,5 +164,15 @@ public class ManipulatorFactories {
         ClawRequest.Toggle request = new ClawRequest.Toggle();
         return coral.applyRequestOnce(() -> request)
                 .withName(String.format("%s: TOGGLE", coral.getName()));
+    }
+
+    public Command climbAtDutyCycle(Supplier<Dimensionless> dutyCycle) {
+        if (winch != null) {
+            WinchRequest request = new WinchRequest.DutyCycle();
+            return winch.applyRequest(() -> request)
+                    .withName(String.format("%s: Duty Cycle", winch.getName()));
+        } else {
+            return Commands.none();
+        }
     }
 }

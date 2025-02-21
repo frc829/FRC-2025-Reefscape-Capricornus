@@ -39,6 +39,7 @@ public class Robit extends TimedRobot {
                 PneumaticsSubsystemConstants.create(),
                 PowerSubsystemConstants.create(),
                 // WinchSubsystemConstants.create(),
+                null,
                 WristSubsystemConstants.create());
         PickupFactories pickupFactories = new PickupFactories(manipulator);
         ScoringFactories scoringFactories = new ScoringFactories(manipulator);

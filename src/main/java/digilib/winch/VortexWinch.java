@@ -1,29 +1,26 @@
 package digilib.winch;
 
-import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.spark.SparkFlex;
 import digilib.MotorControllerType;
-import edu.wpi.first.units.measure.*;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.Timer;
 
 import static digilib.MotorControllerType.*;
-import static edu.wpi.first.units.Units.Volts;
 
-public class KrakenX60Winch implements Winch {
+public class VortexWinch implements Winch {
     private final WinchState state = new WinchState();
-    private final TalonFX talonFX;
+    private final SparkFlex sparkFlex;
     private final WinchTelemetry telemetry;
-    private WinchRequest winchRequest;
-    private final DutyCycleOut dutyCycleOut = new DutyCycleOut(0.0);
+    private WinchRequest request;
 
-    public KrakenX60Winch(WinchConstants constants, TalonFX talonFX) {
-        this.talonFX = talonFX;
+    public VortexWinch(WinchConstants constants, SparkFlex sparkFlex) {
+        this.sparkFlex = sparkFlex;
         this.telemetry = new WinchTelemetry(constants.name());
     }
 
     @Override
     public MotorControllerType getMotorControllerType() {
-        return TALONFX;
+        return REV_SPARK_FLEX;
     }
 
     @Override
@@ -33,20 +30,20 @@ public class KrakenX60Winch implements Winch {
 
     @Override
     public void setControl(WinchRequest request) {
-        if (winchRequest != request) {
-            winchRequest = request;
+        if (this.request != request) {
+            this.request = request;
         }
         request.apply(this);
     }
 
     @Override
     public void setDutyCycle(Dimensionless dutyCycle) {
-        talonFX.setControl(dutyCycleOut.withOutput(dutyCycle.baseUnitMagnitude()));
+        sparkFlex.set(dutyCycle.baseUnitMagnitude());
     }
 
     @Override
     public void setIdle() {
-        talonFX.setControl(dutyCycleOut.withOutput(0.0));
+        sparkFlex.set(0);
     }
 
     @Override
@@ -57,8 +54,8 @@ public class KrakenX60Winch implements Winch {
 
     @Override
     public void updateState() {
-        state.withDutyCycle(talonFX.getDutyCycle().getValue())
-                .withVoltage(talonFX.getMotorVoltage().getValue().in(Volts))
+        state.withDutyCycle(sparkFlex.get())
+                .withVoltage(sparkFlex.getAppliedOutput() * sparkFlex.getBusVoltage())
                 .withTimestamp(Timer.getFPGATimestamp());
     }
 
