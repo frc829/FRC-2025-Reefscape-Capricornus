@@ -67,11 +67,7 @@ public class LaserCanObjectDetector implements ObjectDetector {
                 alert.set(true);
             }
         }else{
-            if(simulated.a().getAsBoolean()){
-                state.withInRange(true);
-            }else{
-                state.withInRange(false);
-            }
+            state.withInRange(simulated.a().getAsBoolean());
         }
 
     }
