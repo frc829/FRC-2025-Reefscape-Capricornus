@@ -1,6 +1,7 @@
 package digilib.elevator;
 
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -14,13 +15,14 @@ public interface ElevatorRequest {
         @Override
         public void apply(Elevator elevator) {
             ElevatorState state = elevator.getState();
-            if (state.getHeight().gte(elevator.getMaxHeight()) && height.gte(elevator.getMaxHeight())) {
-                elevator.setVelocity(Percent.of(0.0));
-            } else if (state.getHeight().lte(elevator.getMinHeight()) && height.lte(elevator.getMinHeight())) {
-                elevator.setVelocity(Percent.of(0.0));
+            if (state.getHeight().gte(elevator.getMaxHeight()) && height.gt(elevator.getMaxHeight())) {
+                elevator.setHeight(height.mut_replace(elevator.getMaxHeight()));
+            } else if (state.getHeight().lte(elevator.getMinHeight()) && height.lt(elevator.getMinHeight())) {
+                elevator.setHeight(height.mut_replace(elevator.getMinHeight()));
             } else {
                 elevator.setHeight(height);
             }
+            SmartDashboard.putNumber("Elevator Setpoint", height.in(Meters));
         }
 
         public ElevatorRequest.Position withPosition(Distance height) {

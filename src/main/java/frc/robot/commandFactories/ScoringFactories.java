@@ -17,9 +17,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class ScoringFactories {
 
-    private static final ClawValue coralClawScore = OPEN;
-
-    private static final Angle wristSafe = Degrees.of(0.0);
     private static final Angle wristPickup = Degrees.of(90.0);
     private static final Angle wristTolerance = Degrees.of(4.0);
 
@@ -33,14 +30,16 @@ public class ScoringFactories {
     private static final Angle armL3 = Degrees.of(42.6);
     private static final Angle armL4 = Degrees.of(48.0);
 
-    private static final Dimensionless intakeWheel0L1Speed = Percent.of(0.0);
-    private static final Dimensionless intakeWheel1L1Speed = Percent.of(-5.0);
 
     private final ManipulatorFactories factories;
     private final Trigger armAtL1;
     private final Trigger elevatorAtL1;
     private final Trigger elevatorAtL2;
     private final Trigger armAtL2;
+    private final Trigger armAtL3;
+    private final Trigger elevatorAtL3;
+    private final Trigger armAtL4;
+    private final Trigger elevatorAtL4;
 
     public ScoringFactories(ManipulatorFactories factories) {
         this.factories = factories;
@@ -48,6 +47,10 @@ public class ScoringFactories {
         this.elevatorAtL1 = factories.elevatorAtHeight(elevatorL1, Centimeters.of(1.0));
         this.armAtL2 = factories.armAtAngle(armL2, Degrees.of(2.0));
         this.elevatorAtL2 = factories.elevatorAtHeight(elevatorL2, Centimeters.of(1.0));
+        this.armAtL3 = factories.armAtAngle(armL3, Degrees.of(2.0));
+        this.elevatorAtL3 = factories.elevatorAtHeight(elevatorL3, Centimeters.of(1.0));
+        this.armAtL4 = factories.armAtAngle(armL3, Degrees.of(2.0));
+        this.elevatorAtL4 = factories.elevatorAtHeight(elevatorL3, Centimeters.of(1.0));
     }
 
     public Command l1Align() {
@@ -57,33 +60,30 @@ public class ScoringFactories {
                 wristPickup());
     }
 
-    public Command l1Score() {
-        return factories.intakeToSpeed(Percent.of(0.0), Percent.of(-50.0));
-    }
-
     public Command l2Align() {
         return parallel(factories.elevatorTo(elevatorL2, Centimeters.of(1.0)), factories.armTo(armL2, Degrees.of(2.0)))
                 .until(elevatorAtL2.and(armAtL2));
+    }
+
+    public Command l3Align() {
+        return parallel(factories.elevatorTo(elevatorL3, Centimeters.of(1.0)), factories.armTo(armL3, Degrees.of(2.0)))
+                .until(elevatorAtL3.and(armAtL3));
+    }
+
+    public Command l4Align() {
+        return parallel(factories.elevatorTo(elevatorL4, Centimeters.of(1.0)), factories.armTo(armL4, Degrees.of(2.0)))
+                .until(elevatorAtL4.and(armAtL4));    }
+
+    public Command l1Score() {
+        return factories.intakeToSpeed(Percent.of(0.0), Percent.of(-50.0));
     }
 
     public Command l2Score() {
         return factories.setCoralClaw(OPEN);
     }
 
-    public Command L2ScoreReset(){
+    public Command L234ScoreReset() {
         return factories.setCoralClaw(CLOSED);
-    }
-
-    public Command l3Align() {
-        return none();
-    }
-
-    public Command l4Align() {
-        return none();
-    }
-
-    public Command coralScore() {
-        return none();
     }
 
     public Command bargeAlign() {

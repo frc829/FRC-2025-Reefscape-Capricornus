@@ -12,6 +12,7 @@ import digilib.wrist.NEO550Wrist;
 import digilib.wrist.Wrist;
 import digilib.wrist.WristConstants;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 import static com.revrobotics.spark.SparkBase.PersistMode.*;
@@ -22,6 +23,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.AbsoluteEncoder.cancoder;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Control.*;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.*;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Motor.closedLoopConfig;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Motor.motor;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.*;
 

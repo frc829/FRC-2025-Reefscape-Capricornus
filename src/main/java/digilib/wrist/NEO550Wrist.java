@@ -6,7 +6,6 @@ import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.*;
 import digilib.MotorControllerType;
-import digilib.elevator.DualVortexElevator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -20,6 +19,7 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot0;
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
@@ -145,6 +145,7 @@ public class NEO550Wrist implements Wrist {
         }
         goalState.position = position.baseUnitMagnitude();
         goalState.velocity = 0.0;
+        SmartDashboard.putNumber("Goal", goalState.position);
         double lastVelocitySetpoint = lastState.velocity;
         lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
         double nextVelocitySetpoint = lastState.velocity;

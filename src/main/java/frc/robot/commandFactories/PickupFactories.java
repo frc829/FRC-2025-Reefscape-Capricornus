@@ -132,10 +132,8 @@ public class PickupFactories {
 
     public Command coralFloor() {
         return either(
-                sequence(
-                        intakeCoral().until(hasCoral)),
-                sequence(
-                        clawsForCoral(),
+                sequence(intakeCoral().until(hasCoral)),
+                sequence(clawsForCoral(),
                         parallel(elevatorCoralFloor(), wristSafe(), intakeCoral()).until(isWristSafe),
                         parallel(elevatorCoralFloor(), armCoralFloor(), intakeCoral()).until(armSafeForWrist),
                         parallel(elevatorCoralFloor(), armCoralFloor(), wristPickup(), intakeCoral().until(hasCoral))
@@ -176,7 +174,7 @@ public class PickupFactories {
     }
 
     private Command clawsForCoral() {
-        return parallel(manip.setAlgaeClaw(algaeClawCoralIntake), manip.setCoralClaw(coralClawCoralIntake)).asProxy();
+        return parallel(manip.setAlgaeClaw(algaeClawCoralIntake), manip.setCoralClaw(coralClawCoralIntake));
     }
 
     private Command elevatorCoralHold() {

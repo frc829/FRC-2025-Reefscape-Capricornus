@@ -2,6 +2,7 @@ package digilib.wrist;
 
 import digilib.elevator.ElevatorState;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -15,13 +16,14 @@ public interface WristRequest {
         @Override
         public void apply(Wrist wrist) {
             WristState state = wrist.getState();
-            if (state.getAngle().gte(wrist.getMaxAngle()) && angle.gte(wrist.getMaxAngle())) {
-                wrist.setVelocity(Percent.of(0.0));
-            } else if (state.getAngle().lte(wrist.getMinAngle()) && angle.lte(wrist.getMinAngle())) {
-                wrist.setVelocity(Percent.of(0.0));
+            if (state.getAngle().gte(wrist.getMaxAngle()) && angle.gt(wrist.getMaxAngle())) {
+                wrist.setPosition(angle.mut_replace(wrist.getMaxAngle()));
+            } else if (state.getAngle().lte(wrist.getMinAngle()) && angle.lt(wrist.getMinAngle())) {
+                wrist.setPosition(angle.mut_replace(wrist.getMinAngle()));
             } else {
                 wrist.setPosition(angle);
             }
+            SmartDashboard.putNumber("Wrist Setpoint", angle.in(Degrees));
         }
 
         public WristRequest.Position withAngle(Angle angle) {

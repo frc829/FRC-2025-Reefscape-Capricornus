@@ -85,8 +85,7 @@ public class ManipulatorFactories {
 
     public Command elevatorTo(Distance height, Distance tolerance) {
         ElevatorRequest.Position request = new ElevatorRequest.Position();
-        request.withPosition(height);
-        return elevator.applyRequest(() -> request)
+        return elevator.applyRequest(() -> request.withPosition(height))
                 .until(elevator.atPosition(height, tolerance))
                 .asProxy()
                 .withName(String.format(String.format("%s: %s meters, %s meters tolerance", elevator.getName(), height.in(Meters), tolerance.in(Meters))));
@@ -94,8 +93,7 @@ public class ManipulatorFactories {
 
     public Command armTo(Angle angle, Angle tolerance) {
         ArmRequest.Position request = new ArmRequest.Position();
-        request.withPosition(angle);
-        return arm.applyRequest(() -> request)
+        return arm.applyRequest(() -> request.withPosition(angle))
                 .until(arm.atPosition(angle, tolerance))
                 .asProxy()
                 .withName(String.format("%s: %s deg, %s deg tolerance", arm.getName(), angle.in(Degrees), tolerance.in(Degrees)));
@@ -103,11 +101,10 @@ public class ManipulatorFactories {
 
     public Command wristTo(Angle position, Angle tolerance) {
         WristRequest.Position request = new WristRequest.Position();
-        request.withAngle(position);
-        return wrist.applyRequest(() -> request)
+        return wrist.applyRequest(() -> request.withAngle(position))
                 .until(wrist.atPosition(position, tolerance))
-                .withName(String.format("%s: %s deg, %s deg tolerance", wrist.getName(), position.in(Degrees), tolerance.in(Degrees)))
-                .asProxy();
+                .asProxy()
+                .withName(String.format("%s: %s deg, %s deg tolerance", wrist.getName(), position.in(Degrees), tolerance.in(Degrees)));
     }
 
     public Command armToSpeed(Supplier<Dimensionless> maxPercent) {
@@ -145,24 +142,28 @@ public class ManipulatorFactories {
     public Command setAlgaeClaw(ClawValue value) {
         ClawRequest.SetValue request = new ClawRequest.SetValue();
         return algae.applyRequestOnce(() -> request)
+                .asProxy()
                 .withName(String.format("%s: %s", algae.getName(), value.toString().toUpperCase()));
     }
 
     public Command setCoralClaw(ClawValue value) {
         ClawRequest.SetValue request = new ClawRequest.SetValue();
         return coral.applyRequestOnce(() -> request.withClawValue(value))
+                .asProxy()
                 .withName(String.format("%s: %s", coral.getName(), value.toString().toUpperCase()));
     }
 
     public Command toggleAlgaeClaw() {
         ClawRequest.Toggle request = new ClawRequest.Toggle();
         return algae.applyRequestOnce(() -> request)
+                .asProxy()
                 .withName(String.format("%s: TOGGLE", algae.getName()));
     }
 
     public Command toggleCoralClaw() {
         ClawRequest.Toggle request = new ClawRequest.Toggle();
         return coral.applyRequestOnce(() -> request)
+                .asProxy()
                 .withName(String.format("%s: TOGGLE", coral.getName()));
     }
 

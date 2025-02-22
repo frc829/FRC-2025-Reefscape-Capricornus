@@ -2,6 +2,7 @@ package digilib.arm;
 
 import digilib.wrist.WristState;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -15,13 +16,14 @@ public interface ArmRequest {
         @Override
         public void apply(Arm arm) {
             ArmState state = arm.getState();
-            if (state.getAngle().gte(arm.getMaxAngle()) && angle.gte(arm.getMaxAngle())) {
-                arm.setVelocity(Percent.of(0.0));
-            } else if (state.getAngle().lte(arm.getMinAngle()) && angle.lte(arm.getMinAngle())) {
-                arm.setVelocity(Percent.of(0.0));
+            if (state.getAngle().gte(arm.getMaxAngle()) && angle.gt(arm.getMaxAngle())) {
+                arm.setPosition(angle.mut_replace(arm.getMaxAngle()));
+            } else if (state.getAngle().lte(arm.getMinAngle()) && angle.lt(arm.getMinAngle())) {
+                arm.setPosition(angle.mut_replace(arm.getMinAngle()));
             } else {
                 arm.setPosition(angle);
             }
+            SmartDashboard.putNumber("Arm Setpoint", angle.in(Degrees));
         }
 
         public Position withPosition(Angle angle) {

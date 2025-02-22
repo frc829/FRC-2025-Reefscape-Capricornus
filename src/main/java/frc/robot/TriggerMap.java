@@ -48,6 +48,7 @@ public class TriggerMap {
         bindClockDrive();
         bindFieldCentricDrive();
         bindRobotCentricDrive();
+        bindRotationSpeedDrive();
         bindZeroWheel();
         bindSeedFieldCentric();
 
@@ -61,11 +62,12 @@ public class TriggerMap {
         // bindBargeScore();
         // bindProcessorScore();
         bindL1Align();
-        bindL1Score();
         bindL2Align();
-        bindL2Score();
-        // bindL3Score();
-        // bindL4Score();
+        bindL3Score();
+        bindL4Score();
+        bindL1Score();
+        bindL234Score();
+
         bindClimbScore();
 
         bindManualWristToggle();
@@ -113,6 +115,19 @@ public class TriggerMap {
                     return Math.hypot(x, y) == 0.0;
                 })
                 .and(driver.rightBumper())
+                .whileTrue(driving.robotCentricDrive(
+                        this::getMaxVelocityPercent,
+                        this::getHeading,
+                        this::getMaxRotationalVelocityPercent));
+    }
+
+    private void bindRotationSpeedDrive(){
+        new Trigger(() -> getMaxVelocityPercentValue() == 0.0)
+                .and(() -> {
+                    double x = MathUtil.applyDeadband(driver.getRightY(), deadband);
+                    double y = MathUtil.applyDeadband(driver.getRightX(), deadband);
+                    return Math.hypot(x, y) == 0.0;
+                })
                 .whileTrue(driving.robotCentricDrive(
                         this::getMaxVelocityPercent,
                         this::getHeading,
@@ -176,30 +191,35 @@ public class TriggerMap {
                 .onFalse(pickup.coralStore());
     }
 
-    private void bindL1Score() {
-        driver.a()
-                .whileTrue(scoring.l1Score());
-    }
-
     private void bindL2Align() {
         operator.x()
                 .whileTrue(scoring.l2Align())
                 .onFalse(pickup.coralStore());
     }
 
-    private void bindL2Score() {
-        driver.leftBumper()
-                .onTrue(scoring.l2Score());
-                // .onFalse(scoring.L2ScoreReset());
-    }
-
     private void bindL3Score() {
-        driver.b();
+        driver.b()
+                .whileTrue(scoring.l3Align())
+                .onFalse(pickup.coralStore());
     }
 
     private void bindL4Score() {
-        driver.y();
+        driver.y()
+                .whileTrue(scoring.l4Align())
+                .onFalse(pickup.coralStore());
     }
+
+    private void bindL1Score() {
+        driver.a()
+                .whileTrue(scoring.l1Score());
+    }
+
+    private void bindL234Score() {
+        driver.leftBumper()
+                .whileTrue(scoring.l2Score())
+                .onFalse(scoring.L234ScoreReset());
+    }
+
 
     private void bindClimbScore() {
         climb.axisMagnitudeGreaterThan(kY.value, deadband)
