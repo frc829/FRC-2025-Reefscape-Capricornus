@@ -47,7 +47,7 @@ public class PneumaticsSubsystemConstants {
         }
 
         static final class SolenoidConstants {
-            static final int channel = 8;
+            static final int channel = 9;
         }
 
     }
@@ -68,7 +68,7 @@ public class PneumaticsSubsystemConstants {
         }
 
         static final class SolenoidConstants {
-            static final int channel = 9;
+            static final int channel = 8;
         }
 
     }

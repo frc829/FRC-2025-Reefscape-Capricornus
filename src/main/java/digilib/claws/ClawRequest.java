@@ -15,9 +15,9 @@ public interface ClawRequest {
             claw.setValue(value);
         }
 
-        public ClawValue withClawValue(ClawValue value) {
+        public SetValue withClawValue(ClawValue value) {
             this.value = value;
-            return value;
+            return this;
         }
     }
 

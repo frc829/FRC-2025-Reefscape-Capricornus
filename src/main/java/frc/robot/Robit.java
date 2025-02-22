@@ -8,6 +8,7 @@ import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -48,6 +49,7 @@ public class Robit extends TimedRobot {
         new AutoRoutines(autoFactory, pickupFactories, scoringFactories);
         SmartDashboard.putData(CommandScheduler.getInstance());
         DataLogManager.start();
+        DriverStation.startDataLog(DataLogManager.getLog(), true);
         addPeriodic(CommandScheduler.getInstance()::run, 0.020);
     }
 }

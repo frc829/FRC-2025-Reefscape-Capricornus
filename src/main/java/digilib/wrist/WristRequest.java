@@ -37,11 +37,12 @@ public interface WristRequest {
         public void apply(Wrist wrist) {
             WristState state = wrist.getState();
             if (state.getAngle().gte(wrist.getMaxAngle()) && maxPercent.gt(Value.of(0.0))) {
-                maxPercent.mut_setBaseUnitMagnitude(0.0);
+                wrist.setPosition(state.getAngle());
             } else if (state.getAngle().lte(wrist.getMinAngle()) && maxPercent.lt(Value.of(0.0))) {
-                maxPercent.mut_setBaseUnitMagnitude(0.0);
+                wrist.setPosition(state.getAngle());
+            } else{
+                wrist.setVelocity(maxPercent);
             }
-            wrist.setVelocity(maxPercent);
         }
 
         public WristRequest.Velocity withVelocity(Dimensionless maxPercent) {

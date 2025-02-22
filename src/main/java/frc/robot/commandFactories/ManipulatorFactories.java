@@ -150,7 +150,7 @@ public class ManipulatorFactories {
 
     public Command setCoralClaw(ClawValue value) {
         ClawRequest.SetValue request = new ClawRequest.SetValue();
-        return coral.applyRequestOnce(() -> request)
+        return coral.applyRequestOnce(() -> request.withClawValue(value))
                 .withName(String.format("%s: %s", coral.getName(), value.toString().toUpperCase()));
     }
 

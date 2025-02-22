@@ -37,11 +37,12 @@ public interface ArmRequest {
         public void apply(Arm arm) {
             ArmState state = arm.getState();
             if (state.getAngle().gte(arm.getMaxAngle()) && maxPercent.gt(Value.of(0.0))) {
-                maxPercent.mut_setBaseUnitMagnitude(0.0);
+                arm.setPosition(state.getAngle());
             } else if (state.getAngle().lte(arm.getMinAngle()) && maxPercent.lt(Value.of(0.0))) {
-                maxPercent.mut_setBaseUnitMagnitude(0.0);
+                arm.setPosition(state.getAngle());
+            } else {
+                arm.setVelocity(maxPercent);
             }
-            arm.setVelocity(maxPercent);
         }
 
         public Velocity withVelocity(Dimensionless maxPercent) {

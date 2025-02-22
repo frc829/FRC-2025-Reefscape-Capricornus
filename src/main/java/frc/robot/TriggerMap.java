@@ -5,14 +5,12 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDimensionless;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commandFactories.*;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj.GenericHID.RumbleType.*;
 import static edu.wpi.first.wpilibj.Joystick.AxisType.*;
 import static edu.wpi.first.wpilibj.XboxController.Axis.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -50,20 +48,24 @@ public class TriggerMap {
         bindClockDrive();
         bindFieldCentricDrive();
         bindRobotCentricDrive();
+        bindZeroWheel();
+        bindSeedFieldCentric();
 
 
-        bindAlgaeFloorPickup();
-        bindAlgaeL2Pickup();
-        bindAlgaeL3Pickup();
+        // bindAlgaeFloorPickup();
+        // bindAlgaeL2Pickup();
+        // bindAlgaeL3Pickup();
         bindCoralFloorPickup();
         bindCoralStationPickup();
 
-        bindBargeScore();
-        bindProcessorScore();
+        // bindBargeScore();
+        // bindProcessorScore();
+        bindL1Align();
         bindL1Score();
+        bindL2Align();
         bindL2Score();
-        bindL3Score();
-        bindL4Score();
+        // bindL3Score();
+        // bindL4Score();
         bindClimbScore();
 
         bindManualWristToggle();
@@ -77,6 +79,7 @@ public class TriggerMap {
         bindManualAlgaeIn();
         bindManualAlgaeOut();
     }
+
 
     private void bindClockDrive() {
         new Trigger(() -> {
@@ -116,6 +119,16 @@ public class TriggerMap {
                         this::getMaxRotationalVelocityPercent));
     }
 
+    private void bindZeroWheel() {
+        driver.back()
+                .whileTrue(driving.zeroWheels());
+    }
+
+    private void bindSeedFieldCentric() {
+        driver.start()
+                .onTrue(driving.seedFieldCentric());
+    }
+
     private void bindAlgaeFloorPickup() {
         operator.axisMagnitudeGreaterThan(kLeftTrigger.value, deadband)
                 .whileTrue(pickup.algaeFloor())
@@ -137,7 +150,7 @@ public class TriggerMap {
     private void bindCoralFloorPickup() {
         operator.rightBumper()
                 .whileTrue(sequence(pickup.coralFloor(),
-                        parallel(giveKeithCarpelTunnel(), pickup.coralStore()))
+                        parallel(pickup.coralStore()))
                         .withName("Pickup: Coral Floor"))
                 .onFalse(pickup.coralStore());
     }
@@ -145,7 +158,7 @@ public class TriggerMap {
     private void bindCoralStationPickup() {
         operator.povUp()
                 .whileTrue(sequence(pickup.coralStation(),
-                        parallel(giveKeithCarpelTunnel(), pickup.coralStore())))
+                        parallel(pickup.coralStore())))
                 .onFalse(pickup.coralStore());
     }
 
@@ -157,12 +170,27 @@ public class TriggerMap {
         operator.povDown();
     }
 
+    private void bindL1Align() {
+        operator.a()
+                .whileTrue(scoring.l1Align())
+                .onFalse(pickup.coralStore());
+    }
+
     private void bindL1Score() {
-        driver.a();
+        driver.a()
+                .whileTrue(scoring.l1Score());
+    }
+
+    private void bindL2Align() {
+        operator.x()
+                .whileTrue(scoring.l2Align())
+                .onFalse(pickup.coralStore());
     }
 
     private void bindL2Score() {
-        driver.x();
+        driver.leftBumper()
+                .onTrue(scoring.l2Score());
+                // .onFalse(scoring.L2ScoreReset());
     }
 
     private void bindL3Score() {
@@ -179,7 +207,7 @@ public class TriggerMap {
     }
 
     private void bindManualWristToggle() {
-        backup.y().onTrue(manual.manualWristToggle());
+        backup.y().whileTrue(manual.manualWristToggle());
     }
 
     private void bindManualWrist() {
@@ -211,7 +239,7 @@ public class TriggerMap {
         backup.povDown()
                 .whileTrue(manual.manualIntake(
                         Percent.of(0),
-                        Percent.of(50)));
+                        Percent.of(50)).until(manual.hasCoral));
     }
 
     private void bindManualCoralOut() {
@@ -224,8 +252,8 @@ public class TriggerMap {
     private void bindManualAlgaeIn() {
         backup.povLeft()
                 .whileTrue(manual.manualIntake(
-                        Percent.of(-25),
-                        Percent.of(-25)));
+                        Percent.of(-100),
+                        Percent.of(-100)));
     }
 
     private void bindManualAlgaeOut() {
@@ -236,7 +264,7 @@ public class TriggerMap {
     }
 
     private Dimensionless getMaxVelocityPercent() {
-        return maxVelocityPercent.mut_setBaseUnitMagnitude(getMaxVelocityPercentValue());
+        return maxVelocityPercent.mut_setBaseUnitMagnitude(getMaxVelocityPercentSqValue());
     }
 
     private double getMaxVelocityPercentValue() {
@@ -244,6 +272,13 @@ public class TriggerMap {
         double y = -MathUtil.applyDeadband(driver.getLeftX(), deadband);
         double velocity = Math.hypot(x, y);
         return Math.min(velocity, 1);
+    }
+
+    private double getMaxVelocityPercentSqValue() {
+        double x = -MathUtil.applyDeadband(driver.getLeftY(), deadband);
+        double y = -MathUtil.applyDeadband(driver.getLeftX(), deadband);
+        double velocity = Math.hypot(x, y);
+        return Math.pow(Math.min(velocity, 1), 2);
     }
 
     private Dimensionless getMaxRotationalVelocityPercent() {
@@ -310,11 +345,11 @@ public class TriggerMap {
         return -MathUtil.applyDeadband(climb.getY(), deadband);
     }
 
-    private Command giveKeithCarpelTunnel() {
-        return sequence(
-                race(waitSeconds(2), run(() -> operator.setRumble(kBothRumble, 1))),
-                runOnce(() -> operator.setRumble(kBothRumble, 0)));
-    }
+    // private Command giveKeithCarpelTunnel() {
+    //     return sequence(
+    //             race(waitSeconds(2), run(() -> operator.setRumble(kBothRumble, 1))),
+    //             runOnce(() -> operator.setRumble(kBothRumble, 0)));
+    // }
 
 
 }

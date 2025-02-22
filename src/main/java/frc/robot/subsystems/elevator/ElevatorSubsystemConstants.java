@@ -2,10 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.EncoderConfig;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.*;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 import digilib.elevator.DualVortexElevator;
@@ -63,7 +60,7 @@ public class ElevatorSubsystemConstants {
 
     static final class Simulation {
         static final Distance startingHeight = Centimeters.of(0.0);
-        static final Distance minHeight = Centimeters.of(5);
+        static final Distance minHeight = Centimeters.of(1.0);
         static final Distance maxHeight = Centimeters.of(65);
         static final Distance positionStdDev = Meters.of(0.0);
         static final LinearVelocity velocityStdDev = MetersPerSecond.of(0.0);
