@@ -53,13 +53,14 @@ public class TriggerMap {
         bindSeedFieldCentric();
 
 
-        // bindAlgaeFloorPickup();
-        // bindAlgaeL2Pickup();
-        // bindAlgaeL3Pickup();
+        bindAlgaeFloorPickup();
+        bindAlgaeL2Pickup();
+        bindAlgaeL3Pickup();
         bindCoralFloorPickup();
         bindCoralStationPickup();
 
-        // bindBargeScore();
+        bindBargeAlign();
+        bindBargeScore();
         // bindProcessorScore();
         bindL1Align();
         bindL2Align();
@@ -121,7 +122,7 @@ public class TriggerMap {
                         this::getMaxRotationalVelocityPercent));
     }
 
-    private void bindRotationSpeedDrive(){
+    private void bindRotationSpeedDrive() {
         new Trigger(() -> getMaxVelocityPercentValue() == 0.0)
                 .and(() -> {
                     double x = MathUtil.applyDeadband(driver.getRightY(), deadband);
@@ -145,7 +146,7 @@ public class TriggerMap {
     }
 
     private void bindAlgaeFloorPickup() {
-        operator.axisMagnitudeGreaterThan(kLeftTrigger.value, deadband)
+        operator.axisMagnitudeGreaterThan(kRightTrigger.value, deadband)
                 .whileTrue(pickup.algaeFloor())
                 .onFalse(pickup.holdAfterAlgae());
     }
@@ -164,22 +165,31 @@ public class TriggerMap {
 
     private void bindCoralFloorPickup() {
         operator.rightBumper()
-                .whileTrue(sequence(pickup.coralFloor(),
-                        parallel(pickup.coralStore()))
-                        .withName("Pickup: Coral Floor"))
+                .whileTrue(
+                        sequence(pickup.coralFloor(), idle())
+                                .withName("Pickup: Coral Floor"))
                 .onFalse(pickup.coralStore());
     }
 
     private void bindCoralStationPickup() {
         operator.povUp()
-                .whileTrue(sequence(pickup.coralStation(),
-                        parallel(pickup.coralStore())))
+                .whileTrue(
+                        sequence(pickup.coralStation(), idle())
+                                .withName("Pickup: Coral Station"))
                 .onFalse(pickup.coralStore());
     }
 
-    private void bindBargeScore() {
-        operator.povLeft();
+    private void bindBargeAlign() {
+        operator.povLeft()
+                .whileTrue(scoring.bargeAlign());
     }
+
+    private void bindBargeScore() {
+        operator.axisMagnitudeGreaterThan(kLeftTrigger.value, deadband)
+                .whileTrue(scoring.bargeScore())
+                .onFalse(scoring.bargeScoreReset());
+    }
+
 
     private void bindProcessorScore() {
         operator.povDown();
@@ -198,24 +208,24 @@ public class TriggerMap {
     }
 
     private void bindL3Score() {
-        driver.b()
+        operator.b()
                 .whileTrue(scoring.l3Align())
                 .onFalse(pickup.coralStore());
     }
 
     private void bindL4Score() {
-        driver.y()
+        operator.y()
                 .whileTrue(scoring.l4Align())
                 .onFalse(pickup.coralStore());
     }
 
     private void bindL1Score() {
-        driver.a()
+        driver.leftBumper().and(operator.a())
                 .whileTrue(scoring.l1Score());
     }
 
     private void bindL234Score() {
-        driver.leftBumper()
+        driver.leftBumper().and(operator.a().negate())
                 .whileTrue(scoring.l2Score())
                 .onFalse(scoring.L234ScoreReset());
     }
@@ -271,16 +281,17 @@ public class TriggerMap {
 
     private void bindManualAlgaeIn() {
         backup.povLeft()
-                .whileTrue(manual.manualIntake(
-                        Percent.of(-100),
-                        Percent.of(-100)));
+                .whileTrue(
+                        sequence(
+                                race(manual.manualIntake(Percent.of(-100), Percent.of(-100)), waitSeconds(0.5)),
+                                manual.manualIntake(Percent.of(-100), Percent.of(-100)).until(manual.hasAlgae)));
     }
 
     private void bindManualAlgaeOut() {
         backup.povRight()
                 .whileTrue(manual.manualIntake(
-                        Percent.of(25),
-                        Percent.of(25)));
+                        Percent.of(100),
+                        Percent.of(100)));
     }
 
     private Dimensionless getMaxVelocityPercent() {
@@ -364,12 +375,4 @@ public class TriggerMap {
     private double getClimbDutyCycleValue() {
         return -MathUtil.applyDeadband(climb.getY(), deadband);
     }
-
-    // private Command giveKeithCarpelTunnel() {
-    //     return sequence(
-    //             race(waitSeconds(2), run(() -> operator.setRumble(kBothRumble, 1))),
-    //             runOnce(() -> operator.setRumble(kBothRumble, 0)));
-    // }
-
-
 }

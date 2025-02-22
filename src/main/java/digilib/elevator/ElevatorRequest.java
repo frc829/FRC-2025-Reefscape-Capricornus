@@ -38,9 +38,11 @@ public interface ElevatorRequest {
         public void apply(Elevator elevator) {
             ElevatorState state = elevator.getState();
             if (state.getHeight().gte(elevator.getMaxHeight()) && maxPercent.gt(Value.of(0.0))) {
-                elevator.setHeight(state.getHeight());
+                elevator.setHeight(elevator.getMaxHeight());
+                maxPercent.mut_setBaseUnitMagnitude(0.0);
             } else if (state.getHeight().lte(elevator.getMinHeight()) && maxPercent.lt(Value.of(0.0))) {
-                elevator.setHeight(state.getHeight());
+                elevator.setHeight(elevator.getMinHeight());
+                maxPercent.mut_setBaseUnitMagnitude(0.0);
             } else{
                 elevator.setVelocity(maxPercent);
             }
