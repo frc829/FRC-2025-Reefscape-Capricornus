@@ -1,6 +1,9 @@
 package frc.robot.subsystems.swerveDrive;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Cameras.*;
+import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.*;
+import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.Modules.*;
 import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Simulation.*;
 import static org.photonvision.PhotonPoseEstimator.*;
 
@@ -21,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 
 import digilib.cameras.CameraConstants;
@@ -32,153 +36,405 @@ import org.photonvision.PhotonCamera;
 
 public class SwerveDriveSubsystemConstants {
 
+    static final class Cameras {
+
+        static final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+        static final PoseStrategy primaryStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
+        static final PoseStrategy fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
+        static final Matrix<N3, N1> singleTagStdDev = MatBuilder.fill(Nat.N3(), Nat.N1(), 0.0, 0.0, 0.0);
+
+        static final class Camera0 {
+            static final String name = "Thrifty_Cam_2025";
+            static final Distance cameraX = Meter.of(0.0);
+            static final Distance cameraY = Meter.of(0.0);
+            static final Distance cameraZ = Meter.of(0.0);
+            static final Angle roll = Degrees.of(0.0);
+            static final Angle pitch = Degrees.of(0.0);
+            static final Angle yaw = Degrees.of(0.0);
+            static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
+            static final Transform3d robotToCamera = new Transform3d(
+                    cameraX,
+                    cameraY,
+                    cameraZ,
+                    cameraAngle);
+            static final CameraConstants constants = new CameraConstants(
+                    name,
+                    robotToCamera,
+                    layout,
+                    primaryStrategy,
+                    fallbackPoseStrategy,
+                    singleTagStdDev);
+            static final PhotonCamera photonCamera = new PhotonCamera(name);
+            static final PhotonVisionCamera camera = new PhotonVisionCamera(constants, photonCamera);
+        }
+
+        static final class Camera1 {
+            static final String name = "OV9782-07";
+            static final Distance cameraX = Meter.of(0.0);
+            static final Distance cameraY = Meter.of(0.0);
+            static final Distance cameraZ = Meter.of(0.0);
+            static final Angle roll = Degrees.of(0.0);
+            static final Angle pitch = Degrees.of(0.0);
+            static final Angle yaw = Degrees.of(0.0);
+            static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
+            static final Transform3d robotToCamera = new Transform3d(
+                    cameraX,
+                    cameraY,
+                    cameraZ,
+                    cameraAngle);
+            static final CameraConstants constants = new CameraConstants(
+                    name,
+                    robotToCamera,
+                    layout,
+                    primaryStrategy,
+                    fallbackPoseStrategy,
+                    singleTagStdDev);
+            static final PhotonCamera photonCamera = new PhotonCamera(name);
+            static final PhotonVisionCamera camera = new PhotonVisionCamera(constants, photonCamera);
+        }
+
+        static final class Camera2 {
+            static final String name = "OV9782-08";
+            static final Distance cameraX = Meter.of(0.0);
+            static final Distance cameraY = Meter.of(0.0);
+            static final Distance cameraZ = Meter.of(0.0);
+            static final Angle roll = Degrees.of(0.0);
+            static final Angle pitch = Degrees.of(0.0);
+            static final Angle yaw = Degrees.of(0.0);
+            static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
+            static final Transform3d robotToCamera = new Transform3d(
+                    cameraX,
+                    cameraY,
+                    cameraZ,
+                    cameraAngle);
+            static final CameraConstants constants = new CameraConstants(
+                    name,
+                    robotToCamera,
+                    layout,
+                    primaryStrategy,
+                    fallbackPoseStrategy,
+                    singleTagStdDev);
+            static final PhotonCamera photonCamera = new PhotonCamera(name);
+            static final PhotonVisionCamera camera = new PhotonVisionCamera(constants, photonCamera);
+        }
+
+    }
+
+    static final class Drive {
+
+        static final LinearVelocity SPEED_AT_12_VOLTS = MetersPerSecond.of(4.73);
+        static final double COUPLE_RATIO = 4.1666666666666666666666666666667;
+        static final double DRIVE_GEAR_RATIO = 6.75;
+        static final double STEER_GEAR_RATIO = 25;
+        static final Distance WHEEL_RADIUS = Inches.of(2);
+        static final boolean INVERT_LEFT_SIDE = false;
+        static final boolean INVERT_RIGHT_SIDE = true;
+
+        static final class Modules {
+            static final ClosedLoopOutputType STEER_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.Voltage;
+            static final ClosedLoopOutputType DRIVE_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.Voltage;
+            static final SteerMotorArrangement STEER_MOTOR_TYPE = SteerMotorArrangement.TalonFX_Integrated;
+            static final DriveMotorArrangement DRIVE_MOTOR_TYPE = DriveMotorArrangement.TalonFX_Integrated;
+            static final SteerFeedbackType STEER_FEEDBACK_TYPE = SteerFeedbackType.FusedCANcoder;
+            static final Current SLIP_CURRENT = Amps.of(120.0);
+            static final Current steerStatorCurrentLimit = Amps.of(60.0);
+            static final boolean steerStatorCurrentLimitEnabled = true;
+
+
+            static final class Module0 {
+                static final Distance xPos = Inches.of(10.5);
+                static final Distance yPos = Inches.of(13.45);
+
+                static final class Steer {
+
+                    static final class Control {
+                        static final Voltage ks = Volts.of(0.09556);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
+                                Volts.per(RotationsPerSecond).of(3.0882);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
+                                Volts.per(RotationsPerSecondPerSecond).of(0.18325);
+                        static final StaticFeedforwardSignValue staticFeedforwardSignValue =
+                                StaticFeedforwardSignValue.UseClosedLoopSign;
+                        static final double kp = 81.49;
+                        static final double ki = 0.0;
+                        static final double kd = 0.5;
+                        static final Slot0Configs slot0Configs = new Slot0Configs()
+                                .withKS(ks.baseUnitMagnitude())
+                                .withKV(kv.magnitude())
+                                .withKA(ka.magnitude())
+                                .withStaticFeedforwardSign(staticFeedforwardSignValue)
+                                .withKP(kp)
+                                .withKI(ki)
+                                .withKD(kd);
+                    }
+
+                    static final class Motor {
+                        static final int motorId = 10;
+                        static final boolean inverted = false;
+                    }
+                }
+
+                static final class DriveWheel {
+
+                    static final class Control {
+                        static final Voltage ks = Volts.of(0.38569);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
+                                Volts.per(RotationsPerSecond).of(0.12431);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
+                                Volts.per(RotationsPerSecondPerSecond).of(0.010011);
+                        static final StaticFeedforwardSignValue staticFeedforwardSignValue =
+                                StaticFeedforwardSignValue.UseVelocitySign;
+                        static final double kp = 0.1;
+                        static final double ki = 0.0;
+                        static final double kd = 0.0;
+                        static final Slot0Configs slot0Configs = new Slot0Configs()
+                                .withKS(ks.baseUnitMagnitude())
+                                .withKV(kv.magnitude())
+                                .withKA(ka.magnitude())
+                                .withStaticFeedforwardSign(staticFeedforwardSignValue)
+                                .withKP(kp)
+                                .withKI(ki)
+                                .withKD(kd);
+                    }
+
+                    static final class Motor{
+                        private static final int motorId = 20;
+                    }
+
+                }
+
+                static final class Encoder{
+                    static final int encoderId = 30;
+                    static final Angle offset = Rotations.of(0.435546875);
+                    static final boolean inverted = false;
+                }
+            }
+
+            static final class Module1 {
+                static final Distance xPos = Inches.of(10.5);
+                static final Distance yPos = Inches.of(-13.45);
+
+                static final class Steer {
+
+                    static final class Control {
+                        static final Voltage ks = Volts.of(0.093716);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
+                                Volts.per(RotationsPerSecond).of(3.0941);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
+                                Volts.per(RotationsPerSecondPerSecond).of(0.21437);
+                        static final StaticFeedforwardSignValue staticFeedforwardSignValue =
+                                StaticFeedforwardSignValue.UseClosedLoopSign;
+                        static final double kp = 63.667;
+                        static final double ki = 0.0;
+                        static final double kd = 0.5;
+                        static final Slot0Configs slot0Configs = new Slot0Configs()
+                                .withKS(ks.baseUnitMagnitude())
+                                .withKV(kv.magnitude())
+                                .withKA(ka.magnitude())
+                                .withStaticFeedforwardSign(staticFeedforwardSignValue)
+                                .withKP(kp)
+                                .withKI(ki)
+                                .withKD(kd);
+                    }
+
+                    static final class Motor{
+                        static final int motorId = 11;
+                        static final boolean inverted = false;
+                    }
+                }
+
+                static final class DriveWheel {
+
+                    static final class Control {
+                        static final Voltage ks = Volts.of(0.22567);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
+                                Volts.per(RotationsPerSecond).of(0.12133);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
+                                Volts.per(RotationsPerSecondPerSecond).of(0.0067662);
+                        static final StaticFeedforwardSignValue staticFeedforwardSignValue =
+                                StaticFeedforwardSignValue.UseVelocitySign;
+                        static final double kp = 0.37357;
+                        static final double ki = 0.0;
+                        static final double kd = 0.0;
+                        static final Slot0Configs slot0Configs = new Slot0Configs()
+                                .withKS(ks.baseUnitMagnitude())
+                                .withKV(kv.magnitude())
+                                .withKA(ka.magnitude())
+                                .withStaticFeedforwardSign(staticFeedforwardSignValue)
+                                .withKP(kp)
+                                .withKI(ki)
+                                .withKD(kd);
+                    }
+
+                    static final class Motor{
+                        private static final int motorId = 21;
+                    }
+
+                }
+
+                static final class Encoder{
+                    static final int encoderId = 31;
+                    static final Angle offset = Rotations.of(-0.293701171875);
+                    static final boolean inverted = false;
+                }
+            }
+
+            static final class Module2 {
+                static final Distance xPos = Inches.of(-10.5);
+                static final Distance yPos = Inches.of(13.45);
+
+                static final class Steer {
+
+                    static final class Control {
+                        static final Voltage ks = Volts.of(0.032676);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
+                                Volts.per(RotationsPerSecond).of(3.1058);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
+                                Volts.per(RotationsPerSecondPerSecond).of(0.20666);
+                        static final StaticFeedforwardSignValue staticFeedforwardSignValue =
+                                StaticFeedforwardSignValue.UseClosedLoopSign;
+                        static final double kp = 93.829;
+                        static final double ki = 0.0;
+                        static final double kd = 0.5;
+                        static final Slot0Configs slot0Configs = new Slot0Configs()
+                                .withKS(ks.baseUnitMagnitude())
+                                .withKV(kv.magnitude())
+                                .withKA(ka.magnitude())
+                                .withStaticFeedforwardSign(staticFeedforwardSignValue)
+                                .withKP(kp)
+                                .withKI(ki)
+                                .withKD(kd);
+                    }
+
+                    static final class Motor{
+                        static final int motorId = 12;
+                        static final boolean inverted = false;
+                    }
+
+                }
+
+                static final class DriveWheel {
+
+                    static final class Control {
+                        static final Voltage ks = Volts.of(0.19595);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
+                                Volts.per(RotationsPerSecond).of(0.11845);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
+                                Volts.per(RotationsPerSecondPerSecond).of(0.002047);
+                        static final StaticFeedforwardSignValue staticFeedforwardSignValue =
+                                StaticFeedforwardSignValue.UseVelocitySign;
+                        static final double kp = 0.19223;
+                        static final double ki = 0.0;
+                        static final double kd = 0.0;
+                        static final Slot0Configs slot0Configs = new Slot0Configs()
+                                .withKS(ks.baseUnitMagnitude())
+                                .withKV(kv.magnitude())
+                                .withKA(ka.magnitude())
+                                .withStaticFeedforwardSign(staticFeedforwardSignValue)
+                                .withKP(kp)
+                                .withKI(ki)
+                                .withKD(kd);
+                    }
+
+                    static final class Motor{
+                        private static final int motorId = 22;
+                    }
+
+                }
+
+                static final class Encoder{
+                    static final int encoderId = 32;
+                    static final Angle offset = Rotations.of(0.226318359375);
+                    static final boolean inverted = false;
+
+                }
+            }
+
+            static final class Module3 {
+                static final Distance xPos = Inches.of(-10.5);
+                static final Distance yPos = Inches.of(-13.45);
+
+                static final class Steer {
+
+                    static final class Control {
+                        static final Voltage ks = Volts.of(0.056407);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
+                                Volts.per(RotationsPerSecond).of(3.1383);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
+                                Volts.per(RotationsPerSecondPerSecond).of(0.29554);
+                        static final StaticFeedforwardSignValue staticFeedforwardSignValue =
+                                StaticFeedforwardSignValue.UseClosedLoopSign;
+                        static final double kp = 84.86;
+                        static final double ki = 0.0;
+                        static final double kd = 0.5;
+                        static final Slot0Configs slot0Configs = new Slot0Configs()
+                                .withKS(ks.baseUnitMagnitude())
+                                .withKV(kv.magnitude())
+                                .withKA(ka.magnitude())
+                                .withStaticFeedforwardSign(staticFeedforwardSignValue)
+                                .withKP(kp)
+                                .withKI(ki)
+                                .withKD(kd);
+                    }
+
+                    static final class Motor{
+                        static final int motorId = 13;
+                        static final boolean inverted = false;
+                    }
+
+                }
+
+                static final class DriveWheel {
+
+                    static final class Control {
+                        static final Voltage ks = Volts.of(0.2072);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
+                                Volts.per(RotationsPerSecond).of(0.12913);
+                        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
+                                Volts.per(RotationsPerSecondPerSecond).of(0.010622);
+                        static final StaticFeedforwardSignValue staticFeedforwardSignValue =
+                                StaticFeedforwardSignValue.UseVelocitySign;
+                        static final double kp = 0.35523;
+                        static final double ki = 0.0;
+                        static final double kd = 0.0;
+                        static final Slot0Configs slot0Configs = new Slot0Configs()
+                                .withKS(ks.baseUnitMagnitude())
+                                .withKV(kv.magnitude())
+                                .withKA(ka.magnitude())
+                                .withStaticFeedforwardSign(staticFeedforwardSignValue)
+                                .withKP(kp)
+                                .withKI(ki)
+                                .withKD(kd);
+                    }
+
+                    static final class Motor{
+                        static final int motorId = 23;
+                    }
+
+                }
+
+                static final class Encoder{
+                    static final int encoderId = 33;
+                    static final Angle offset = Rotations.of(-0.199951171875);
+                    static final boolean inverted = false;
+                }
+            }
+        }
+
+        static final class Gyroscope {
+
+            static final class Control {
+
+            }
+        }
+    }
+
     static final class Simulation {
         static final Time simLoopPeriod = Seconds.of(0.001);
     }
 
-    public static final class OurCameraConstants {
-        private static final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-        private static final PoseStrategy primaryStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
-        private static final PoseStrategy fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-        private static final Matrix<N3, N1> singleTagStdDev = MatBuilder.fill(Nat.N3(), Nat.N1(), 0.0, 0.0, 0.0);
-
-        public static final class Camera0 {
-            private static final String name = "Thrifty_Cam_2025";
-            private static final Distance cameraX = Meter.of(0.0);
-            private static final Distance cameraY = Meter.of(0.0);
-            private static final Distance cameraZ = Meter.of(0.0);
-            private static final Angle roll = Degrees.of(0.0);
-            private static final Angle pitch = Degrees.of(0.0);
-            private static final Angle yaw = Degrees.of(0.0);
-            private static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
-            private static final Transform3d robotToCamera = new Transform3d(
-                    cameraX,
-                    cameraY,
-                    cameraZ,
-                    cameraAngle);
-            private static final CameraConstants constants = new CameraConstants(
-                    name,
-                    robotToCamera,
-                    layout,
-                    primaryStrategy,
-                    fallbackPoseStrategy,
-                    singleTagStdDev);
-        }
-
-        public static final class Camera1 {
-            private static final String name = "OV9782-07";
-            private static final Distance cameraX = Meter.of(0.0);
-            private static final Distance cameraY = Meter.of(0.0);
-            private static final Distance cameraZ = Meter.of(0.0);
-            private static final Angle roll = Degrees.of(0.0);
-            private static final Angle pitch = Degrees.of(0.0);
-            private static final Angle yaw = Degrees.of(0.0);
-            private static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
-            private static final Transform3d robotToCamera = new Transform3d(
-                    cameraX,
-                    cameraY,
-                    cameraZ,
-                    cameraAngle);
-            private static final CameraConstants constants = new CameraConstants(
-                    name,
-                    robotToCamera,
-                    layout,
-                    primaryStrategy,
-                    fallbackPoseStrategy,
-                    singleTagStdDev);
-        }
-
-        public static final class Camera2 {
-            private static final String name = "OV9782-08";
-            private static final Distance cameraX = Meter.of(0.0);
-            private static final Distance cameraY = Meter.of(0.0);
-            private static final Distance cameraZ = Meter.of(0.0);
-            private static final Angle roll = Degrees.of(0.0);
-            private static final Angle pitch = Degrees.of(0.0);
-            private static final Angle yaw = Degrees.of(0.0);
-            private static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
-            private static final Transform3d robotToCamera = new Transform3d(
-                    cameraX,
-                    cameraY,
-                    cameraZ,
-                    cameraAngle);
-            private static final CameraConstants constants = new CameraConstants(
-                    name,
-                    robotToCamera,
-                    layout,
-                    primaryStrategy,
-                    fallbackPoseStrategy,
-                    singleTagStdDev);
-        }
-    }
-
-
-
-    /* Keep track if we've ever applied the operator perspective before or not */
-
-    // Both sets of gains need to be tuned to your individual robot.
-
-    // The steer motor uses any SwerveModule.SteerRequestType control request with the
-    // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
-    private static final Slot0Configs module0SteerGains = new Slot0Configs()
-            .withKP(81.49).withKI(0).withKD(0.5)
-            .withKS(0.09556).withKV(3.0882).withKA(0.18325)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
-    // When using closed-loop control, the drive motor uses the control
-    // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
-    private static final Slot0Configs module0DriveGains = new Slot0Configs()
-            .withKP(0.1).withKI(0).withKD(0)
-            .withKS(0.38569).withKV(0.12431).withKA(0.010011);
-
-    private static final Slot0Configs module1SteerGains = new Slot0Configs()
-            .withKP(63.667).withKI(0).withKD(0.5)
-            .withKS(0.093716).withKV(3.0941).withKA(0.21437)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
-    // When using closed-loop control, the drive motor uses the control
-    // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
-    private static final Slot0Configs module1DriveGains = new Slot0Configs()
-            .withKP(0.37357).withKI(0).withKD(0)
-            .withKS(0.22567).withKV(0.12133).withKA(0.0067662);
-
-    private static final Slot0Configs module2SteerGains = new Slot0Configs()
-            .withKP(93.829).withKI(0).withKD(0.5)
-            .withKS(0.032676).withKV(3.1058).withKA(0.20666)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
-    // When using closed-loop control, the drive motor uses the control
-    // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
-    private static final Slot0Configs module2DriveGains = new Slot0Configs()
-            .withKP(0.19223).withKI(0).withKD(0)
-            .withKS(0.19595).withKV(0.11845).withKA(0.002047);
-
-    private static final Slot0Configs module3SteerGains = new Slot0Configs()
-            .withKP(84.86).withKI(0).withKD(0.5)
-            .withKS(0.056407).withKV(3.1383).withKA(0.29554)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
-    // When using closed-loop control, the drive motor uses the control
-    // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
-    private static final Slot0Configs module3DriveGains = new Slot0Configs()
-            .withKP(0.35523).withKI(0).withKD(0)
-            .withKS(0.2072).withKV(0.12913).withKA(0.010622);
-
-    // The closed-loop output type to use for the steer motors;
-    // This affects the PID/FF gains for the steer motors
-    private static final ClosedLoopOutputType STEER_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.Voltage;
-    // The closed-loop output type to use for the drive motors;
-    // This affects the PID/FF gains for the drive motors
-    private static final ClosedLoopOutputType DRIVE_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.Voltage;
-
-    // The type of motor used for the drive motor
-    private static final DriveMotorArrangement DRIVE_MOTOR_TYPE = DriveMotorArrangement.TalonFX_Integrated;
-    // The type of motor used for the drive motor
-    private static final SteerMotorArrangement STEER_MOTOR_TYPE = SteerMotorArrangement.TalonFX_Integrated;
-
-    // The remote sensor feedback type to use for the steer motors;
-    // When not Pro-licensed, FusedCANcoder/SyncCANcoder automatically fall back to RemoteCANcoder
-    private static final SteerFeedbackType STEER_FEEDBACK_TYPE = SteerFeedbackType.FusedCANcoder;
-
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
-    private static final Current SLIP_CURRENT = Amps.of(120.0);
 
     // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
@@ -197,18 +453,13 @@ public class SwerveDriveSubsystemConstants {
 
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot
-    public static final LinearVelocity SPEED_AT_12_VOLTS = MetersPerSecond.of(4.73);
 
     // Every 1 rotation of the azimuth results in COUPLE_RATIO drive motor turns;
     // This may need to be tuned to your individual robot
-    private static final double COUPLE_RATIO = 4.1666666666666666666666666666667;
 
-    private static final double DRIVE_GEAR_RATIO = 6.75;
-    private static final double STEER_GEAR_RATIO = 25;
-    private static final Distance WHEEL_RADIUS = Inches.of(2);
 
-    private static final boolean INVERT_LEFT_SIDE = false;
-    private static final boolean INVERT_RIGHT_SIDE = true;
+
+
 
     private static final int PIGEON_ID = 40;
 
@@ -227,15 +478,15 @@ public class SwerveDriveSubsystemConstants {
     private static final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule0 =
             new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
                     .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
-                    .withSteerMotorGearRatio(STEER_GEAR_RATIO)
-                    .withCouplingGearRatio(COUPLE_RATIO)
+                    .withSteerMotorGearRatio(Drive.STEER_GEAR_RATIO)
+                    .withCouplingGearRatio(Drive.COUPLE_RATIO)
                     .withWheelRadius(WHEEL_RADIUS)
-                    .withSteerMotorGains(module0SteerGains)
-                    .withDriveMotorGains(module0DriveGains)
+                    .withSteerMotorGains(Module0.Steer.Control.slot0Configs)
+                    .withDriveMotorGains(Module0.DriveWheel.Control.slot0Configs)
                     .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
                     .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
                     .withSlipCurrent(SLIP_CURRENT)
-                    .withSpeedAt12Volts(SPEED_AT_12_VOLTS)
+                    .withSpeedAt12Volts(Drive.SPEED_AT_12_VOLTS)
                     .withDriveMotorType(DRIVE_MOTOR_TYPE)
                     .withSteerMotorType(STEER_MOTOR_TYPE)
                     .withFeedbackSource(STEER_FEEDBACK_TYPE)
@@ -253,8 +504,8 @@ public class SwerveDriveSubsystemConstants {
                     .withSteerMotorGearRatio(STEER_GEAR_RATIO)
                     .withCouplingGearRatio(COUPLE_RATIO)
                     .withWheelRadius(WHEEL_RADIUS)
-                    .withSteerMotorGains(module1SteerGains)
-                    .withDriveMotorGains(module1DriveGains)
+                    .withSteerMotorGains(Module1.Steer.Control.slot0Configs)
+                    .withDriveMotorGains(Module1.DriveWheel.Control.slot0Configs)
                     .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
                     .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
                     .withSlipCurrent(SLIP_CURRENT)
@@ -276,8 +527,8 @@ public class SwerveDriveSubsystemConstants {
                     .withSteerMotorGearRatio(STEER_GEAR_RATIO)
                     .withCouplingGearRatio(COUPLE_RATIO)
                     .withWheelRadius(WHEEL_RADIUS)
-                    .withSteerMotorGains(module2SteerGains)
-                    .withDriveMotorGains(module2DriveGains)
+                    .withSteerMotorGains(Module2.Steer.Control.slot0Configs)
+                    .withDriveMotorGains(Module2.DriveWheel.Control.slot0Configs)
                     .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
                     .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
                     .withSlipCurrent(SLIP_CURRENT)
@@ -299,8 +550,8 @@ public class SwerveDriveSubsystemConstants {
                     .withSteerMotorGearRatio(STEER_GEAR_RATIO)
                     .withCouplingGearRatio(COUPLE_RATIO)
                     .withWheelRadius(WHEEL_RADIUS)
-                    .withSteerMotorGains(module3SteerGains)
-                    .withDriveMotorGains(module3DriveGains)
+                    .withSteerMotorGains(Module3.Steer.Control.slot0Configs)
+                    .withDriveMotorGains(Module3.DriveWheel.Control.slot0Configs)
                     .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
                     .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
                     .withSlipCurrent(SLIP_CURRENT)
@@ -316,74 +567,56 @@ public class SwerveDriveSubsystemConstants {
                     .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
                     .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE);
 
-
-    // Front Left
-    private static final int FRONT_LEFT_DRIVE_MOTOR_ID = 20;
-    private static final int FRONT_LEFT_STEER_MOTOR_ID = 10;
-    private static final int FRONT_LEFT_ENCODER_ID = 30;
-    private static final Angle FRONT_LEFT_ENCODER_OFFSET = Rotations.of(0.435546875);
-    private static final boolean FRONT_LEFT_STEER_MOTOR_INVERTED = false;
-    private static final boolean FRONT_LEFT_ENCODER_INVERTED = false;
-
-    private static final Distance FRONT_LEFT_X_POS = Inches.of(10.5);
-    private static final Distance FRONT_LEFT_Y_POS = Inches.of(13.45);
-
-    // Front Right
-    private static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 21;
-    private static final int FRONT_RIGHT_STEER_MOTOR_ID = 11;
-    private static final int FRONT_RIGHT_ENCODER_ID = 31;
-    private static final Angle FRONT_RIGHT_ENCODER_OFFSET = Rotations.of(-0.293701171875);
-    private static final boolean FRONT_RIGHT_STEER_MOTOR_INVERTED = false;
-    private static final boolean FRONT_RIGHT_ENCODER_INVERTED = false;
-
-    private static final Distance FRONT_RIGHT_X_POS = Inches.of(10.5);
-    private static final Distance FRONT_RIGHT_Y_POS = Inches.of(-13.45);
-
-    // Back Left
-    private static final int BACK_LEFT_DRIVE_MOTOR_ID = 22;
-    private static final int BACK_LEFT_STEER_MOTOR_ID = 12;
-    private static final int BACK_LEFT_ENCODER_ID = 32;
-    private static final Angle BACK_LEFT_ENCODER_OFFSET = Rotations.of(0.226318359375);
-    private static final boolean BACK_LEFT_STEER_MOTOR_INVERTED = false;
-    private static final boolean BACK_LEFT_ENCODER_INVERTED = false;
-
-    private static final Distance BACK_LEFT_X_POS = Inches.of(-10.5);
-    private static final Distance BACK_LEFT_Y_POS = Inches.of(13.45);
-
-    // Back Right
-    private static final int BACK_RIGHT_DRIVE_MOTOR_ID = 23;
-    private static final int BACK_RIGHT_STEER_MOTOR_ID = 13;
-    private static final int BACK_RIGHT_ENCODER_ID = 33;
-    private static final Angle BACK_RIGHT_ENCODER_OFFSET = Rotations.of(-0.199951171875);
-    private static final boolean BACK_RIGHT_STEER_MOTOR_INVERTED = false;
-    private static final boolean BACK_RIGHT_ENCODER_INVERTED = false;
-
-    private static final Distance BACK_RIGHT_X_POS = Inches.of(-10.5);
-    private static final Distance BACK_RIGHT_Y_POS = Inches.of(-13.45);
-
-
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft =
             ConstantCreatorModule0.createModuleConstants(
-                    FRONT_LEFT_STEER_MOTOR_ID, FRONT_LEFT_DRIVE_MOTOR_ID, FRONT_LEFT_ENCODER_ID, FRONT_LEFT_ENCODER_OFFSET,
-                    FRONT_LEFT_X_POS, FRONT_LEFT_Y_POS, INVERT_LEFT_SIDE, FRONT_LEFT_STEER_MOTOR_INVERTED, FRONT_LEFT_ENCODER_INVERTED
+                    Module0.Steer.Motor.motorId,
+                    Module0.DriveWheel.Motor.motorId,
+                    Module0.Encoder.encoderId,
+                    Module0.Encoder.offset,
+                    Module0.xPos,
+                    Module0.yPos,
+                    INVERT_LEFT_SIDE,
+                    Module0.Steer.Motor.inverted,
+                    Module0.Encoder.inverted
             );
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontRight =
             ConstantCreatorModule1.createModuleConstants(
-                    FRONT_RIGHT_STEER_MOTOR_ID, FRONT_RIGHT_DRIVE_MOTOR_ID, FRONT_RIGHT_ENCODER_ID, FRONT_RIGHT_ENCODER_OFFSET,
-                    FRONT_RIGHT_X_POS, FRONT_RIGHT_Y_POS, INVERT_RIGHT_SIDE, FRONT_RIGHT_STEER_MOTOR_INVERTED, FRONT_RIGHT_ENCODER_INVERTED
+                    Module1.Steer.Motor.motorId,
+                    Module1.DriveWheel.Motor.motorId,
+                    Module1.Encoder.encoderId,
+                    Module1.Encoder.offset,
+                    Module1.xPos,
+                    Module1.yPos,
+                    INVERT_RIGHT_SIDE,
+                    Module1.Steer.Motor.inverted,
+                    Module1.Encoder.inverted
             );
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackLeft =
             ConstantCreatorModule2.createModuleConstants(
-                    BACK_LEFT_STEER_MOTOR_ID, BACK_LEFT_DRIVE_MOTOR_ID, BACK_LEFT_ENCODER_ID, BACK_LEFT_ENCODER_OFFSET,
-                    BACK_LEFT_X_POS, BACK_LEFT_Y_POS, INVERT_LEFT_SIDE, BACK_LEFT_STEER_MOTOR_INVERTED, BACK_LEFT_ENCODER_INVERTED
+                    Module2.Steer.Motor.motorId,
+                    Module2.DriveWheel.Motor.motorId,
+                    Module2.Encoder.encoderId,
+                    Module2.Encoder.offset,
+                    Module2.xPos,
+                    Module2.yPos,
+                    INVERT_LEFT_SIDE,
+                    Module2.Steer.Motor.inverted,
+                    Module2.Encoder.inverted
             );
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackRight =
             ConstantCreatorModule3.createModuleConstants(
-                    BACK_RIGHT_STEER_MOTOR_ID, BACK_RIGHT_DRIVE_MOTOR_ID, BACK_RIGHT_ENCODER_ID, BACK_RIGHT_ENCODER_OFFSET,
-                    BACK_RIGHT_X_POS, BACK_RIGHT_Y_POS, INVERT_RIGHT_SIDE, BACK_RIGHT_STEER_MOTOR_INVERTED, BACK_RIGHT_ENCODER_INVERTED
+                    Module3.Steer.Motor.motorId,
+                    Module3.DriveWheel.Motor.motorId,
+                    Module3.Encoder.encoderId,
+                    Module3.Encoder.offset,
+                    Module3.xPos,
+                    Module3.yPos,
+                    INVERT_RIGHT_SIDE,
+                    Module3.Steer.Motor.inverted,
+                    Module3.Encoder.inverted
             );
 
-    public static final LinearVelocity maxVelocity = SwerveDriveSubsystemConstants.SPEED_AT_12_VOLTS; // SPEED_AT_12_VOLTS desired top speed
+    public static final LinearVelocity maxVelocity = SPEED_AT_12_VOLTS; // SPEED_AT_12_VOLTS desired top speed
     public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.75); // 3/4 of a rotation per second max angular velocity
 
     private static final PhoenixPIDController pathXController = new PhoenixPIDController(10, 0, 0);
@@ -398,13 +631,6 @@ public class SwerveDriveSubsystemConstants {
             CANcoder::new,
             DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
 
-    private static final PhotonCamera photonCamera0 = new PhotonCamera(OurCameraConstants.Camera0.name);
-    private static final PhotonCamera photonCamera1 = new PhotonCamera(OurCameraConstants.Camera1.name);
-    private static final PhotonCamera photonCamera2 = new PhotonCamera(OurCameraConstants.Camera2.name);
-    private static final PhotonVisionCamera camera0 = new PhotonVisionCamera(OurCameraConstants.Camera0.constants, photonCamera0);
-    private static final PhotonVisionCamera camera1 = new PhotonVisionCamera(OurCameraConstants.Camera1.constants, photonCamera1);
-    private static final PhotonVisionCamera camera2 = new PhotonVisionCamera(OurCameraConstants.Camera2.constants, photonCamera2);
-
 
     private static final CTRESwerveDrive CTRE_SWERVE_DRIVE = new CTRESwerveDrive(
             swerveDriveTrain,
@@ -414,9 +640,9 @@ public class SwerveDriveSubsystemConstants {
             swerveDriveTelemetry,
             maxVelocity,
             MaxAngularRate,
-            camera0,
-            camera1,
-            camera2);
+            Camera0.camera,
+            Camera1.camera,
+            Camera2.camera);
 
     /**
      * Creates a CommandSwerveDrivetrain instance.
