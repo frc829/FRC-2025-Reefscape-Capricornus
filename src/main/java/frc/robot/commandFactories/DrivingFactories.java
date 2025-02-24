@@ -1,8 +1,8 @@
 package frc.robot.commandFactories;
 
 import choreo.auto.AutoFactory;
-import choreo.auto.AutoRoutine;
-import choreo.auto.AutoTrajectory;
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
 import digilib.swerve.SwerveDriveRequest;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -14,17 +14,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.wpilibj2.command.Commands.*;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class DrivingFactories {
+
+    public enum ReefPosition{
+        LEFT, RIGHT, CENTER
+    }
 
     private final SwerveDriveSubsystem swerve;
     private final AutoFactory autoFactory;
@@ -86,12 +86,14 @@ public class DrivingFactories {
     }
 
 
-    public AutoRoutine goToTag(int tagId) {
-        AutoRoutine routine = autoFactory.newRoutine(String.format("%s", tagId));
-        AutoTrajectory trajectory = routine.trajectory(String.format("%s", tagId));
-
-        routine.active().onTrue(sequence(trajectory.cmd()));
-        return routine;
+    public Command goToTag(int tagId, ReefPosition reefPosition) {
+        if(reefPosition == ReefPosition.LEFT){
+            return autoFactory.trajectoryCmd(String.format("%sL", tagId));
+        }else if(reefPosition == ReefPosition.RIGHT){
+            return autoFactory.trajectoryCmd(String.format("%sR", tagId));
+        }else{
+            return autoFactory.trajectoryCmd(String.format("%s", tagId));
+        }
     }
 
     public Trigger isNearestTag(int tagId) {

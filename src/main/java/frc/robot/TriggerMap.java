@@ -14,6 +14,7 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj.Joystick.AxisType.*;
 import static edu.wpi.first.wpilibj.XboxController.Axis.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
+import static frc.robot.commandFactories.DrivingFactories.ReefPosition.*;
 
 public class TriggerMap {
     private static final double deadband = 0.05;
@@ -52,7 +53,9 @@ public class TriggerMap {
         bindZeroWheel();
         bindSeedFieldCentric();
 
-        bindGoToNearestReef();
+        bindGoToNearestLeftReef();
+        bindGoToNearestRightReef();
+        bindGoToNearestAlgae();
 
 
         bindAlgaeFloorPickup();
@@ -148,19 +151,49 @@ public class TriggerMap {
                 .onTrue(driving.seedFieldCentric());
     }
 
-    private void bindGoToNearestReef() {
+    private void bindGoToNearestLeftReef() {
         driver.povLeft().and(driving.isNearestTag(17).or(driving.isNearestTag(8)))
-                .whileTrue(driving.goToTag(17).cmd());
+                .whileTrue(driving.goToTag(17, LEFT));
         driver.povLeft().and(driving.isNearestTag(18).or(driving.isNearestTag(7)))
-                .whileTrue(driving.goToTag(18).cmd());
+                .whileTrue(driving.goToTag(18, LEFT));
         driver.povLeft().and(driving.isNearestTag(19).or(driving.isNearestTag(6)))
-                .whileTrue(driving.goToTag(19).cmd());
+                .whileTrue(driving.goToTag(19, LEFT));
         driver.povLeft().and(driving.isNearestTag(20).or(driving.isNearestTag(11)))
-                .whileTrue(driving.goToTag(20).cmd());
+                .whileTrue(driving.goToTag(20, LEFT));
         driver.povLeft().and(driving.isNearestTag(21).or(driving.isNearestTag(10)))
-                .whileTrue(driving.goToTag(21).cmd());
+                .whileTrue(driving.goToTag(21, LEFT));
         driver.povLeft().and(driving.isNearestTag(22).or(driving.isNearestTag(9)))
-                .whileTrue(driving.goToTag(22).cmd());
+                .whileTrue(driving.goToTag(22, LEFT));
+    }
+
+    private void bindGoToNearestRightReef() {
+        driver.povRight().and(driving.isNearestTag(17).or(driving.isNearestTag(8)))
+                .whileTrue(driving.goToTag(17, RIGHT));
+        driver.povRight().and(driving.isNearestTag(18).or(driving.isNearestTag(7)))
+                .whileTrue(driving.goToTag(18, RIGHT));
+        driver.povRight().and(driving.isNearestTag(19).or(driving.isNearestTag(6)))
+                .whileTrue(driving.goToTag(19, RIGHT));
+        driver.povRight().and(driving.isNearestTag(20).or(driving.isNearestTag(11)))
+                .whileTrue(driving.goToTag(20, RIGHT));
+        driver.povRight().and(driving.isNearestTag(21).or(driving.isNearestTag(10)))
+                .whileTrue(driving.goToTag(21, RIGHT));
+        driver.povRight().and(driving.isNearestTag(22).or(driving.isNearestTag(9)))
+                .whileTrue(driving.goToTag(22, RIGHT));
+    }
+
+    private void bindGoToNearestAlgae() {
+        driver.povUp().and(driving.isNearestTag(17).or(driving.isNearestTag(8)))
+                .whileTrue(driving.goToTag(17, CENTER));
+        driver.povUp().and(driving.isNearestTag(18).or(driving.isNearestTag(7)))
+                .whileTrue(driving.goToTag(18, CENTER));
+        driver.povUp().and(driving.isNearestTag(19).or(driving.isNearestTag(6)))
+                .whileTrue(driving.goToTag(19, CENTER));
+        driver.povUp().and(driving.isNearestTag(20).or(driving.isNearestTag(11)))
+                .whileTrue(driving.goToTag(20, CENTER));
+        driver.povUp().and(driving.isNearestTag(21).or(driving.isNearestTag(10)))
+                .whileTrue(driving.goToTag(21, CENTER));
+        driver.povUp().and(driving.isNearestTag(22).or(driving.isNearestTag(9)))
+                .whileTrue(driving.goToTag(22, CENTER));
     }
 
     private void bindAlgaeFloorPickup() {
