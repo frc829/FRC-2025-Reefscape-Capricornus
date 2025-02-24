@@ -44,7 +44,7 @@ public class PickupFactories {
     private static final Dimensionless intakeWheel0AlgaeSpeed = Percent.of(-100);
     private static final Dimensionless intakeWheel1AlgaeSpeed = Percent.of(-100);
     private static final Dimensionless intakeWheel0CoralSpeed = Percent.of(0);
-    private static final Dimensionless intakeWheel1CoralSpeed = Percent.of(-75);
+    private static final Dimensionless intakeWheel1CoralSpeed = Percent.of(75);
 
 
     private final ManipulatorFactories manip;

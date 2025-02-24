@@ -16,7 +16,7 @@ import static edu.wpi.first.wpilibj.XboxController.Axis.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class TriggerMap {
-    private static final double deadband = 0.1;
+    private static final double deadband = 0.05;
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
     private final CommandJoystick climb = new CommandJoystick(2);
@@ -52,6 +52,8 @@ public class TriggerMap {
         bindZeroWheel();
         bindSeedFieldCentric();
 
+        bindGoToNearestReef();
+
 
         bindAlgaeFloorPickup();
         bindAlgaeL2Pickup();
@@ -61,7 +63,8 @@ public class TriggerMap {
 
         bindBargeAlign();
         bindBargeScore();
-        // bindProcessorScore();
+        bindProcessorAlign();
+        bindProcessorScore();
         bindL1Align();
         bindL2Align();
         bindL3Score();
@@ -145,6 +148,10 @@ public class TriggerMap {
                 .onTrue(driving.seedFieldCentric());
     }
 
+    private void bindGoToNearestReef() {
+        driver.povLeft().whileTrue(driving.goToNearestTag().cmd());
+    }
+
     private void bindAlgaeFloorPickup() {
         operator.axisMagnitudeGreaterThan(kRightTrigger.value, deadband)
                 .whileTrue(pickup.algaeFloor())
@@ -190,9 +197,14 @@ public class TriggerMap {
                 .onFalse(scoring.bargeScoreReset());
     }
 
+    private void bindProcessorAlign() {
+        operator.povDown().whileTrue(scoring.processorAlign())
+                .onFalse(pickup.coralStore());
+    }
+
 
     private void bindProcessorScore() {
-        operator.povDown();
+        driver.rightBumper().whileTrue(scoring.processorScore());
     }
 
     private void bindL1Align() {

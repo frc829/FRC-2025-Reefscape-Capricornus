@@ -30,7 +30,7 @@ public class Robit extends TimedRobot {
         CanBridge.runTCP();
         SwerveDriveSubsystem swerveDriveSubsystem = SwerveDriveSubsystemConstants.create();
         AutoFactory autoFactory = swerveDriveSubsystem.createAutoFactory();
-        DrivingFactories driving = new DrivingFactories(swerveDriveSubsystem);
+        DrivingFactories driving = new DrivingFactories(swerveDriveSubsystem, autoFactory);
         ManipulatorFactories manipulator = new ManipulatorFactories(
                 PneumaticsSubsystemConstants.createAlgaeClaw(),
                 ArmSubsystemConstants.create(),

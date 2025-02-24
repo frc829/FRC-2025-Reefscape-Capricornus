@@ -37,7 +37,7 @@ public class ScoringFactories {
     private static final Angle armBargeTravel = Degrees.of(30.0);
     private static final Angle armBarge = Degrees.of(48.0);
 
-    private static final Angle armAlgaeProc = Degrees.of(146.0);
+    private static final Angle armAlgaeProc = Degrees.of(-20.0);
 
 
     private final ManipulatorFactories factories;
@@ -52,6 +52,8 @@ public class ScoringFactories {
     private final Trigger elevatorAtBargeTravel;
     private final Trigger armAtBargeTravel;
     private final Trigger armAtBarge;
+    private final Trigger elevatorAtProc;
+    private final Trigger armAtProc;
     private final Trigger elevatorAtBarge;
     private final Trigger isWristSafe;
 
@@ -71,6 +73,8 @@ public class ScoringFactories {
         this.elevatorAtBarge = factories.elevatorAtHeight(elevatorBarge, Centimeters.of(1.0));
         this.armAtBarge = factories.armAtAngle(armBarge, Degrees.of(2.0));
         this.isWristSafe = factories.wristAtAngle(wristSafe, Degrees.of(2.0));
+        this.elevatorAtProc = factories.elevatorAtHeight(elevatorAlgaeProc, Centimeters.of(1.0));
+        this.armAtProc = factories.armAtAngle(armAlgaeProc, Degrees.of(2.0));
     }
 
     public Command l1Align() {
@@ -128,12 +132,13 @@ public class ScoringFactories {
     }
 
     public Command processorAlign() {
-        return none();
+        return parallel(factories.elevatorTo(elevatorAlgaeProc, Centimeters.of(1.0)), factories.armTo(armAlgaeProc, Degrees.of(2.0)))
+                .until(elevatorAtProc.and(armAtProc));
     }
 
 
     public Command processorScore() {
-        return none();
+        return factories.intakeToSpeed(Percent.of(100.0), Percent.of(100.0));
     }
 
     public Command climb(Supplier<Dimensionless> dutyCycle) {

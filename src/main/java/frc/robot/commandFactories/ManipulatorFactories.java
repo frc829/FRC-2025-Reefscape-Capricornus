@@ -141,7 +141,7 @@ public class ManipulatorFactories {
 
     public Command setAlgaeClaw(ClawValue value) {
         ClawRequest.SetValue request = new ClawRequest.SetValue();
-        return algae.applyRequestOnce(() -> request)
+        return algae.applyRequestOnce(() -> request.withClawValue(value))
                 .asProxy()
                 .withName(String.format("%s: %s", algae.getName(), value.toString().toUpperCase()));
     }

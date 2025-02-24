@@ -111,5 +111,5 @@
   "splits":[0]
  },
  "events":[
-   {"name":"CoralStationPickup", "from":{"target":1, "targetTimestamp":0.91768, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
+   {"name":"Pickup", "from":{"target":1, "targetTimestamp":0.91768, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
 }

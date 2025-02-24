@@ -100,5 +100,5 @@
   "splits":[0]
  },
  "events":[
-   {"name":"L1Align", "from":{"target":1, "targetTimestamp":0.78427, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
+   {"name":"Align", "from":{"target":1, "targetTimestamp":0.78427, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
 }

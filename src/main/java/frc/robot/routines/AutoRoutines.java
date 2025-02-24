@@ -11,8 +11,6 @@ import frc.robot.commandFactories.PickupFactories;
 import frc.robot.commandFactories.ScoringFactories;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
-import static frc.robot.routines.AutoRoutines.Points.GH;
-import static frc.robot.routines.AutoRoutines.Points.S2;
 
 public class AutoRoutines {
 
@@ -22,7 +20,6 @@ public class AutoRoutines {
         S3,
         EF,
         GH,
-
     }
 
     private final AutoFactory factory;
@@ -51,7 +48,7 @@ public class AutoRoutines {
         AutoTrajectory S2toG = routine.trajectory("S2-to-G");
         Command routineCommand = sequence(S2toG.resetOdometry(), S2toG.cmd());
         routine.active().onTrue(routineCommand);
-        S2toG.atTime("L1Align").onTrue(score.l1Align());
+        S2toG.atTime("Align").onTrue(score.l1Align());
         S2toG.done().onTrue(scoreL1());
         return routine;
     }
@@ -61,7 +58,7 @@ public class AutoRoutines {
         AutoTrajectory S2toEF = routine.trajectory("S1-to-EF");
         Command routineCommand = sequence(S2toEF.resetOdometry(), S2toEF.cmd());
         routine.active().onTrue(routineCommand);
-        S2toEF.atTime("L1Align").onTrue(score.l1Align());
+        S2toEF.atTime("Align").onTrue(score.l1Align());
         S2toEF.done().onTrue(scoreL1());
         return routine;
     }
@@ -71,7 +68,7 @@ public class AutoRoutines {
         AutoTrajectory S3toIJ = routine.trajectory("S3-to-IJ");
         Command routineCommand = sequence(S3toIJ.resetOdometry(), S3toIJ.cmd());
         routine.active().onTrue(routineCommand);
-        S3toIJ.atTime("L1Align").onTrue(score.l1Align());
+        S3toIJ.atTime("Align").onTrue(score.l1Align());
         S3toIJ.done().onTrue(scoreL1());
         return routine;
     }
@@ -87,13 +84,13 @@ public class AutoRoutines {
                 S3toIJ.cmd());
 
         routine.active().onTrue(routineCommand);
-        S3toIJ.atTime("L1Align").onTrue(score.l1Align());
+        S3toIJ.atTime("Align").onTrue(score.l1Align());
         S3toIJ.done().onTrue(scoreL1().andThen(IJtoStationTop.cmd()));
 
-        IJtoStationTop.atTime("CoralStationPickup").onTrue(pickup.coralStation());
+        IJtoStationTop.atTime("Pickup").onTrue(pickup.coralStation());
         IJtoStationTop.done().onTrue(waitUntil(pickup.hasCoral).andThen(StationToptoLM.cmd()));
 
-        StationToptoLM.atTime("L1Align").onTrue(score.l1Align());
+        StationToptoLM.atTime("Align").onTrue(score.l1Align());
         StationToptoLM.done().onTrue(scoreL1());
         return routine;
     }

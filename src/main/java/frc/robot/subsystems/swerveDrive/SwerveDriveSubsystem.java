@@ -11,6 +11,7 @@ import com.ctre.phoenix6.Utils;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import digilib.swerve.SwerveDriveRequest;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutLinearVelocity;
@@ -32,7 +33,7 @@ import digilib.swerve.CTRESwerveDrive;
 public class SwerveDriveSubsystem implements Subsystem {
     private static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
     private static final Rotation2d RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.k180deg;
-    private final CTRESwerveDrive CTRESwerveDrive;
+    private final CTRESwerveDrive ctreSwerveDrive;
     private double lastSimTime;
     private final Time simLoopPeriod; // 5 ms
     private boolean hasAppliedOperatorPerspective = false;
@@ -53,9 +54,9 @@ public class SwerveDriveSubsystem implements Subsystem {
 
 
     public SwerveDriveSubsystem(
-            CTRESwerveDrive CTRESwerveDrive,
+            CTRESwerveDrive ctreSwerveDrive,
             Time simLoopPeriod) {
-        this.CTRESwerveDrive = CTRESwerveDrive;
+        this.ctreSwerveDrive = ctreSwerveDrive;
         this.simLoopPeriod = simLoopPeriod;
 
 
@@ -69,7 +70,7 @@ public class SwerveDriveSubsystem implements Subsystem {
                         state -> SignalLogger.writeString("SysIdDrive_State", state.toString())
                 ),
                 new SysIdRoutine.Mechanism(
-                        CTRESwerveDrive::setDriveCharacterization,
+                        ctreSwerveDrive::setDriveCharacterization,
                         null,
                         this
                 )
@@ -84,7 +85,7 @@ public class SwerveDriveSubsystem implements Subsystem {
                         state -> SignalLogger.writeString("SysIdSteer_State", state.toString())
                 ),
                 new SysIdRoutine.Mechanism(
-                        CTRESwerveDrive::setSteerCharacterization,
+                        ctreSwerveDrive::setSteerCharacterization,
                         null,
                         this
                 )
@@ -103,7 +104,7 @@ public class SwerveDriveSubsystem implements Subsystem {
                 new SysIdRoutine.Mechanism(
                         output -> {
                             /* output is actually radians per second, but SysId only supports "volts" */
-                            CTRESwerveDrive.setRotationCharacterization(rotationCharacterizationVelocity.mut_setMagnitude(output.in(Volts)));
+                            ctreSwerveDrive.setRotationCharacterization(rotationCharacterizationVelocity.mut_setMagnitude(output.in(Volts)));
                             /* also log the requested output for SysId */
                             SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
                         },
@@ -121,7 +122,7 @@ public class SwerveDriveSubsystem implements Subsystem {
                 ),
                 new SysIdRoutine.Mechanism(
                         output -> {
-                            CTRESwerveDrive.setTranslationCharacterization(translationCharacterizationVelocity
+                            ctreSwerveDrive.setTranslationCharacterization(translationCharacterizationVelocity
                                     .mut_setMagnitude(output.in(Volts)));
                             SignalLogger.writeDouble("Translational_Rate", output.in(Volts));
                         },
@@ -136,11 +137,11 @@ public class SwerveDriveSubsystem implements Subsystem {
     }
 
     public Command applyRequest(Supplier<SwerveDriveRequest> request) {
-        return run(() -> CTRESwerveDrive.setControl(request.get()));
+        return run(() -> ctreSwerveDrive.setControl(request.get()));
     }
 
     public Command applyRequestOnce(Supplier<SwerveDriveRequest> request) {
-        return runOnce(() -> CTRESwerveDrive.setControl(request.get()));
+        return runOnce(() -> ctreSwerveDrive.setControl(request.get()));
     }
 
     Command idle(){
@@ -192,7 +193,7 @@ public class SwerveDriveSubsystem implements Subsystem {
          */
         if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
-                CTRESwerveDrive.setOperatorPerspectiveForward(
+                ctreSwerveDrive.setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red
                                 ? RED_ALLIANCE_PERSPECTIVE_ROTATION
                                 : BLUE_ALLIANCE_PERSPECTIVE_ROTATION
@@ -200,7 +201,7 @@ public class SwerveDriveSubsystem implements Subsystem {
                 hasAppliedOperatorPerspective = true;
             });
         }
-        CTRESwerveDrive.updateTelemetry();
+        ctreSwerveDrive.updateTelemetry();
     }
 
 
@@ -211,9 +212,9 @@ public class SwerveDriveSubsystem implements Subsystem {
 
     public AutoFactory createAutoFactory(Choreo.TrajectoryLogger<SwerveSample> trajLogger) {
         return new AutoFactory(
-                CTRESwerveDrive::getPose,
-                CTRESwerveDrive::resetPose,
-                CTRESwerveDrive::followPath,
+                ctreSwerveDrive::getPose,
+                ctreSwerveDrive::resetPose,
+                ctreSwerveDrive::followPath,
                 true,
                 this,
                 trajLogger
@@ -231,9 +232,13 @@ public class SwerveDriveSubsystem implements Subsystem {
             lastSimTime = currentTime;
 
             /* use the measured time delta, get battery voltage from WPILib */
-            CTRESwerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            ctreSwerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
+    }
+
+    public Pose2d getPose() {
+        return ctreSwerveDrive.getPose();
     }
 
 }
