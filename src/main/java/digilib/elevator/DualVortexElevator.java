@@ -5,7 +5,9 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import digilib.MotorControllerType;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
@@ -46,6 +48,7 @@ public class DualVortexElevator implements Elevator {
     private SparkFlexSim sparkFlexSim = null;
     private SparkFlexSim followerSparkFlexSim = null;
     private ControlState controlState = null;
+    private final PIDController pidController;
 
     public DualVortexElevator(
             ElevatorConstants constants,
@@ -96,6 +99,7 @@ public class DualVortexElevator implements Elevator {
             sparkFlexSim.setPosition(constants.startingHeight().baseUnitMagnitude());
             followerSparkFlexSim.setPosition(constants.startingHeight().baseUnitMagnitude());
         }
+        pidController = new PIDController(27.821, 0.0, 2.1438, 0.020);
     }
 
     @Override
@@ -131,6 +135,23 @@ public class DualVortexElevator implements Elevator {
         request.apply(this);
     }
 
+//    @Override
+//    public void setHeight(Distance height) {
+//        if(controlState != ControlState.POSITION) {
+//            lastState.position = motor.getEncoder().getPosition();
+//            lastState.velocity = motor.getEncoder().getVelocity();
+//            controlState = ControlState.POSITION;
+//        }
+//        goalState.position = height.baseUnitMagnitude();
+//        goalState.velocity = 0.0;
+//        double lastVelocitySetpoint = lastState.velocity;
+//        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
+//        double nextVelocitySetpoint = lastState.velocity;
+//        double nextPositionSetpoint = lastState.position;
+//        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+//        motor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+//    }
+
     @Override
     public void setHeight(Distance height) {
         if(controlState != ControlState.POSITION) {
@@ -145,7 +166,9 @@ public class DualVortexElevator implements Elevator {
         double nextVelocitySetpoint = lastState.velocity;
         double nextPositionSetpoint = lastState.position;
         double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
-        motor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        double feedback = pidController.calculate(nextPositionSetpoint, goalState.position);
+        double voltage = MathUtil.clamp(arbFeedfoward + feedback, -6.0, 6.0);
+        motor.setVoltage(voltage);
     }
 
     @Override

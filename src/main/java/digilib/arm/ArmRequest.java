@@ -1,6 +1,5 @@
 package digilib.arm;
 
-import digilib.wrist.WristState;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
