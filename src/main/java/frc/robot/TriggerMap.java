@@ -149,7 +149,18 @@ public class TriggerMap {
     }
 
     private void bindGoToNearestReef() {
-        driver.povLeft().whileTrue(driving.goToNearestTag().cmd());
+        driver.povLeft().and(driving.isNearestTag(17).or(driving.isNearestTag(8)))
+                .whileTrue(driving.goToTag(17).cmd());
+        driver.povLeft().and(driving.isNearestTag(18).or(driving.isNearestTag(7)))
+                .whileTrue(driving.goToTag(18).cmd());
+        driver.povLeft().and(driving.isNearestTag(19).or(driving.isNearestTag(6)))
+                .whileTrue(driving.goToTag(19).cmd());
+        driver.povLeft().and(driving.isNearestTag(20).or(driving.isNearestTag(11)))
+                .whileTrue(driving.goToTag(20).cmd());
+        driver.povLeft().and(driving.isNearestTag(21).or(driving.isNearestTag(10)))
+                .whileTrue(driving.goToTag(21).cmd());
+        driver.povLeft().and(driving.isNearestTag(22).or(driving.isNearestTag(9)))
+                .whileTrue(driving.goToTag(22).cmd());
     }
 
     private void bindAlgaeFloorPickup() {

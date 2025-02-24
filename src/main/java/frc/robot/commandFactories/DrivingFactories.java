@@ -2,6 +2,7 @@ package frc.robot.commandFactories;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
 import digilib.swerve.SwerveDriveRequest;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -9,8 +10,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 
 import java.util.HashMap;
@@ -21,7 +22,6 @@ import java.util.stream.IntStream;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class DrivingFactories {
@@ -35,7 +35,6 @@ public class DrivingFactories {
         this.autoFactory = autoFactory;
         AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
         aprilTagPoses = fieldLayout.getTags().stream().map(tag -> tag.pose.toPose2d()).toList();
-
     }
 
     public Command fieldCentricDrive(
@@ -86,39 +85,17 @@ public class DrivingFactories {
                 .withName(String.format("%s: Seed Field Centric", swerve.getName()));
     }
 
-    public AutoRoutine goToNearestTag() {
-        Map<Integer, Command> trajCommands = new HashMap<>();
-        AutoRoutine routine = autoFactory.newRoutine("Nearest Tag");
-        trajCommands.put(1, idle());
-        trajCommands.put(2, idle());
-        trajCommands.put(3, idle());
-        trajCommands.put(4, idle());
-        trajCommands.put(5, idle());
-        trajCommands.put(6, idle());
-        trajCommands.put(7, idle());
-        trajCommands.put(8, idle());
-        trajCommands.put(9, idle());
-        trajCommands.put(10, idle());
-        trajCommands.put(11, idle());
-        trajCommands.put(12, idle());
-        trajCommands.put(13, idle());
-        trajCommands.put(14, idle());
-        trajCommands.put(15, idle());
-        trajCommands.put(16, idle());
-        trajCommands.put(17, routine.trajectory("17").cmd());
-        trajCommands.put(18, routine.trajectory("18").cmd());
-        trajCommands.put(19, idle());
-        trajCommands.put(20, idle());
-        trajCommands.put(21, idle());
-        trajCommands.put(22, idle());
-        trajCommands.put(-1, idle());
-        Command[] trajectoryCmd = new Command[]{idle()};
-        routine.active().onTrue(
-                sequence(
-                        runOnce(() -> trajectoryCmd[0] = trajCommands.get(getNearestTagId())),
-                        runOnce(() -> SmartDashboard.putNumber("Nearest", getNearestTagId())),
-                        trajectoryCmd[0]));
+
+    public AutoRoutine goToTag(int tagId) {
+        AutoRoutine routine = autoFactory.newRoutine(String.format("%s", tagId));
+        AutoTrajectory trajectory = routine.trajectory(String.format("%s", tagId));
+
+        routine.active().onTrue(sequence(trajectory.cmd()));
         return routine;
+    }
+
+    public Trigger isNearestTag(int tagId) {
+        return new Trigger(() -> getNearestTagId() == tagId);
     }
 
     private int getNearestTagId() {
