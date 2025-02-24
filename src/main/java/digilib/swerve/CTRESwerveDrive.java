@@ -12,7 +12,6 @@ import digilib.cameras.CameraState;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import digilib.cameras.Camera;
@@ -39,7 +38,6 @@ public class CTRESwerveDrive implements SwerveDrive {
             .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);     // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();   // Use open-loop control for drive motors
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    private final SwerveRequest.ApplyRobotSpeeds applyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
     private final SwerveRequest.FieldCentricFacingAngle clockDrive = new SwerveRequest.FieldCentricFacingAngle()
             .withForwardPerspective(SwerveRequest.ForwardPerspectiveValue.OperatorPerspective);
 
@@ -49,22 +47,18 @@ public class CTRESwerveDrive implements SwerveDrive {
     private final SwerveRequest.FieldCentric translationCharacterization = new SwerveRequest.FieldCentric();
 
     public CTRESwerveDrive(
+            SwerveDriveConstants constants,
             SwerveDrivetrain<TalonFX, TalonFX, CANcoder> swerveDriveTrain,
-            PhoenixPIDController pathXController,
-            PhoenixPIDController pathYController,
-            PhoenixPIDController pathThetaController,
-            SwerveDriveTelemetry swerveDriveTelemetry,
-            LinearVelocity maxVelocity,
-            AngularVelocity maxAngularVelocity,
             Camera... cameras) {
         this.swerveDriveTrain = swerveDriveTrain;
-        this.pathXController = pathXController;
-        this.pathYController = pathYController;
-        this.pathThetaController = pathThetaController;
-        this.swerveDriveTelemetry = swerveDriveTelemetry;
-        this.maxVelocity = maxVelocity;
-        this.maxAngularVelocity = maxAngularVelocity;
         this.cameras = cameras;
+        this.maxVelocity = constants.maxVelocity();
+        this.maxAngularVelocity = constants.maxAngularVelocity();
+        this.pathXController = constants.pathXController();
+        this.pathYController = constants.pathYController();
+        this.pathThetaController = constants.pathThetaController();
+        this.swerveDriveTelemetry = new SwerveDriveTelemetry(constants.maxVelocity());
+        pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
         clockDrive.HeadingController = pathThetaController;
     }
 
@@ -118,12 +112,12 @@ public class CTRESwerveDrive implements SwerveDrive {
         swerveDriveTrain.setControl(idle);
     }
 
-    public void setDriveCharacterization(Voltage voltage) {
-        swerveDriveTrain.setControl(driveCharacterization.withVolts(voltage));
-    }
-
     public void setSteerCharacterization(Voltage voltage) {
         swerveDriveTrain.setControl(steerCharacterization.withVolts(voltage));
+    }
+
+    public void setDriveCharacterization(Voltage voltage) {
+        swerveDriveTrain.setControl(driveCharacterization.withVolts(voltage));
     }
 
     public void setRotationCharacterization(AngularVelocity newRotationalRate) {
@@ -142,27 +136,16 @@ public class CTRESwerveDrive implements SwerveDrive {
         swerveDriveTrain.updateSimState(dtSeconds, supplyVoltage);
     }
 
-    /**
-     * Follows the given field-centric path sample with PID.
-     *
-     * @param sample Sample along the path to follow
-     */
     public void followPath(SwerveSample sample) {
-        pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
-
         var pose = swerveDriveTrain.getState().Pose;
         var currentTimestamp = swerveDriveTrain.getState().Timestamp;
-
         var targetSpeeds = sample.getChassisSpeeds();
         targetSpeeds.vxMetersPerSecond += pathXController.calculate(
-                pose.getX(), sample.x, currentTimestamp
-        );
+                pose.getX(), sample.x, currentTimestamp);
         targetSpeeds.vyMetersPerSecond += pathYController.calculate(
-                pose.getY(), sample.y, currentTimestamp
-        );
+                pose.getY(), sample.y, currentTimestamp);
         targetSpeeds.omegaRadiansPerSecond += pathThetaController.calculate(
-                pose.getRotation().getRadians(), sample.heading, currentTimestamp
-        );
+                pose.getRotation().getRadians(), sample.heading, currentTimestamp);
 
         swerveDriveTrain.setControl(
                 pathApplyFieldSpeeds.withSpeeds(targetSpeeds)
@@ -171,18 +154,6 @@ public class CTRESwerveDrive implements SwerveDrive {
         );
     }
 
-    /**
-     * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
-     * while still accounting for measurement noise.
-     * <p>
-     * Note that the vision measurement standard deviations passed into this method
-     * will continue to apply to future measurements until a subsequent call to this method.
-     *
-     * @param visionRobotPoseMeters    The pose of the robot as measured by the vision camera.
-     * @param timestampSeconds         The timestamp of the vision measurement in seconds.
-     * @param visionMeasurementStdDevs Standard deviations of the vision pose measurement
-     *                                 in the form [x, y, theta]ᵀ, with units in meters and radians.
-     */
     public void addVisionMeasurement(
             Pose2d visionRobotPoseMeters,
             double timestampSeconds,
@@ -199,10 +170,6 @@ public class CTRESwerveDrive implements SwerveDrive {
 
     public Pose2d getPose() {
         return swerveDriveTrain.getState().Pose;
-    }
-
-    public ChassisSpeeds getRobotRelativeSpeeds() {
-        return swerveDriveTrain.getState().Speeds;
     }
 
     public void setOperatorPerspectiveForward(Rotation2d rotation2d) {

@@ -4,7 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Cameras.*;
 import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.*;
 import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.Modules.*;
-import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Simulation.*;
+import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.Simulation.*;
 import static org.photonvision.PhotonPoseEstimator.*;
 
 import com.ctre.phoenix6.configs.*;
@@ -12,9 +12,11 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.DeviceConstructor;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
+import digilib.swerve.SwerveDriveConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
@@ -122,13 +124,16 @@ public class SwerveDriveSubsystemConstants {
 
     static final class Drive {
 
-        static final LinearVelocity SPEED_AT_12_VOLTS = MetersPerSecond.of(4.73);
-        static final double COUPLE_RATIO = 4.1666666666666666666666666666667;
-        static final double DRIVE_GEAR_RATIO = 6.75;
-        static final double STEER_GEAR_RATIO = 25;
-        static final Distance WHEEL_RADIUS = Inches.of(2);
-        static final boolean INVERT_LEFT_SIDE = false;
-        static final boolean INVERT_RIGHT_SIDE = true;
+        static final LinearVelocity maxVelocity = MetersPerSecond.of(4.90);
+        static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(0.75); // 3/4 of a rotation per second max angular velocity
+        static final double pathTranslationKp = 10;
+        static final double pathRotationKp = 5.9918340044856690519902612191937;
+        static final SwerveDriveConstants constants = new SwerveDriveConstants(
+                maxVelocity,
+                maxAngularVelocity,
+                new PhoenixPIDController(pathTranslationKp, 0, 0),
+                new PhoenixPIDController(pathTranslationKp, 0, 0),
+                new PhoenixPIDController(pathRotationKp, 0, 0));
 
         static final class Modules {
             static final ClosedLoopOutputType STEER_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.Voltage;
@@ -139,7 +144,10 @@ public class SwerveDriveSubsystemConstants {
             static final Current SLIP_CURRENT = Amps.of(120.0);
             static final Current steerStatorCurrentLimit = Amps.of(60.0);
             static final boolean steerStatorCurrentLimitEnabled = true;
-
+            static final double COUPLE_RATIO = 4.1666666666666666666666666666667;
+            static final double DRIVE_GEAR_RATIO = 6.75;
+            static final double STEER_GEAR_RATIO = 25;
+            static final Distance WHEEL_RADIUS = Inches.of(2);
 
             static final class Module0 {
                 static final Distance xPos = Inches.of(10.5);
@@ -169,7 +177,7 @@ public class SwerveDriveSubsystemConstants {
                     }
 
                     static final class Motor {
-                        static final int motorId = 10;
+                        static final int id = 10;
                         static final boolean inverted = false;
                     }
                 }
@@ -197,14 +205,16 @@ public class SwerveDriveSubsystemConstants {
                                 .withKD(kd);
                     }
 
-                    static final class Motor{
-                        private static final int motorId = 20;
+                    static final class Motor {
+                        static final int id = 20;
+                        static final boolean inverted = false;
+
                     }
 
                 }
 
-                static final class Encoder{
-                    static final int encoderId = 30;
+                static final class Encoder {
+                    static final int id = 30;
                     static final Angle offset = Rotations.of(0.435546875);
                     static final boolean inverted = false;
                 }
@@ -237,8 +247,8 @@ public class SwerveDriveSubsystemConstants {
                                 .withKD(kd);
                     }
 
-                    static final class Motor{
-                        static final int motorId = 11;
+                    static final class Motor {
+                        static final int id = 11;
                         static final boolean inverted = false;
                     }
                 }
@@ -266,13 +276,14 @@ public class SwerveDriveSubsystemConstants {
                                 .withKD(kd);
                     }
 
-                    static final class Motor{
-                        private static final int motorId = 21;
+                    static final class Motor {
+                        static final int id = 21;
+                        static final boolean inverted = true;
                     }
 
                 }
 
-                static final class Encoder{
+                static final class Encoder {
                     static final int encoderId = 31;
                     static final Angle offset = Rotations.of(-0.293701171875);
                     static final boolean inverted = false;
@@ -306,8 +317,8 @@ public class SwerveDriveSubsystemConstants {
                                 .withKD(kd);
                     }
 
-                    static final class Motor{
-                        static final int motorId = 12;
+                    static final class Motor {
+                        static final int id = 12;
                         static final boolean inverted = false;
                     }
 
@@ -336,14 +347,15 @@ public class SwerveDriveSubsystemConstants {
                                 .withKD(kd);
                     }
 
-                    static final class Motor{
-                        private static final int motorId = 22;
+                    static final class Motor {
+                        static final int id = 22;
+                        static final boolean inverted = false;
                     }
 
                 }
 
-                static final class Encoder{
-                    static final int encoderId = 32;
+                static final class Encoder {
+                    static final int id = 32;
                     static final Angle offset = Rotations.of(0.226318359375);
                     static final boolean inverted = false;
 
@@ -377,8 +389,8 @@ public class SwerveDriveSubsystemConstants {
                                 .withKD(kd);
                     }
 
-                    static final class Motor{
-                        static final int motorId = 13;
+                    static final class Motor {
+                        static final int id = 13;
                         static final boolean inverted = false;
                     }
 
@@ -407,61 +419,32 @@ public class SwerveDriveSubsystemConstants {
                                 .withKD(kd);
                     }
 
-                    static final class Motor{
-                        static final int motorId = 23;
+                    static final class Motor {
+                        static final int id = 23;
+                        static final boolean inverted = true;
                     }
 
                 }
 
-                static final class Encoder{
-                    static final int encoderId = 33;
+                static final class Encoder {
+                    static final int id = 33;
                     static final Angle offset = Rotations.of(-0.199951171875);
                     static final boolean inverted = false;
                 }
             }
         }
 
-        static final class Gyroscope {
-
-            static final class Control {
-
+        static final class IMU {
+            static final class Gyroscope {
+                static final int id = 40;
             }
+        }
+
+        static final class Simulation {
+            static final Time simLoopPeriod = Seconds.of(0.001);
         }
     }
 
-    static final class Simulation {
-        static final Time simLoopPeriod = Seconds.of(0.001);
-    }
-
-    // The stator current at which the wheels start to slip;
-    // This needs to be tuned to your individual robot
-
-    // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
-    // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
-    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
-    private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
-            .withCurrentLimits(
-                    new CurrentLimitsConfigs()
-                            // Swerve azimuth does not require much torque output, so we can set a relatively low
-                            // stator current limit to help avoid brownouts without impacting performance.
-                            .withStatorCurrentLimit(Amps.of(60))
-                            .withStatorCurrentLimitEnable(true)
-            );
-    private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
-    // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
-    private static final Pigeon2Configuration pigeonConfigs = null;
-
-    // Theoretical free speed (m/s) at 12 V applied output;
-    // This needs to be tuned to your individual robot
-
-    // Every 1 rotation of the azimuth results in COUPLE_RATIO drive motor turns;
-    // This may need to be tuned to your individual robot
-
-
-
-
-
-    private static final int PIGEON_ID = 40;
 
     // These are only used for simulation
     private static final MomentOfInertia STEER_INERTIA = KilogramSquareMeters.of(0.01);
@@ -470,186 +453,182 @@ public class SwerveDriveSubsystemConstants {
     private static final Voltage STEER_FRICTION_VOLTAGE = Volts.of(0.2);
     private static final Voltage DRIVE_FRICTION_VOLTAGE = Volts.of(0.2);
 
-    public static final SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
-            .withCANBusName(Constants.canivore.getName())
-            .withPigeon2Id(PIGEON_ID)
-            .withPigeon2Configs(pigeonConfigs);
-
-    private static final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule0 =
-            new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
-                    .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
-                    .withSteerMotorGearRatio(Drive.STEER_GEAR_RATIO)
-                    .withCouplingGearRatio(Drive.COUPLE_RATIO)
-                    .withWheelRadius(WHEEL_RADIUS)
-                    .withSteerMotorGains(Module0.Steer.Control.slot0Configs)
-                    .withDriveMotorGains(Module0.DriveWheel.Control.slot0Configs)
-                    .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
-                    .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
-                    .withSlipCurrent(SLIP_CURRENT)
-                    .withSpeedAt12Volts(Drive.SPEED_AT_12_VOLTS)
-                    .withDriveMotorType(DRIVE_MOTOR_TYPE)
-                    .withSteerMotorType(STEER_MOTOR_TYPE)
-                    .withFeedbackSource(STEER_FEEDBACK_TYPE)
-                    .withDriveMotorInitialConfigs(driveInitialConfigs)
-                    .withSteerMotorInitialConfigs(steerInitialConfigs)
-                    .withEncoderInitialConfigs(encoderInitialConfigs)
-                    .withSteerInertia(STEER_INERTIA)
-                    .withDriveInertia(DRIVE_INERTIA)
-                    .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
-                    .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE);
-
-    private static final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule1 =
-            new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
-                    .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
-                    .withSteerMotorGearRatio(STEER_GEAR_RATIO)
-                    .withCouplingGearRatio(COUPLE_RATIO)
-                    .withWheelRadius(WHEEL_RADIUS)
-                    .withSteerMotorGains(Module1.Steer.Control.slot0Configs)
-                    .withDriveMotorGains(Module1.DriveWheel.Control.slot0Configs)
-                    .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
-                    .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
-                    .withSlipCurrent(SLIP_CURRENT)
-                    .withSpeedAt12Volts(SPEED_AT_12_VOLTS)
-                    .withDriveMotorType(DRIVE_MOTOR_TYPE)
-                    .withSteerMotorType(STEER_MOTOR_TYPE)
-                    .withFeedbackSource(STEER_FEEDBACK_TYPE)
-                    .withDriveMotorInitialConfigs(driveInitialConfigs)
-                    .withSteerMotorInitialConfigs(steerInitialConfigs)
-                    .withEncoderInitialConfigs(encoderInitialConfigs)
-                    .withSteerInertia(STEER_INERTIA)
-                    .withDriveInertia(DRIVE_INERTIA)
-                    .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
-                    .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE);
-
-    private static final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule2 =
-            new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
-                    .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
-                    .withSteerMotorGearRatio(STEER_GEAR_RATIO)
-                    .withCouplingGearRatio(COUPLE_RATIO)
-                    .withWheelRadius(WHEEL_RADIUS)
-                    .withSteerMotorGains(Module2.Steer.Control.slot0Configs)
-                    .withDriveMotorGains(Module2.DriveWheel.Control.slot0Configs)
-                    .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
-                    .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
-                    .withSlipCurrent(SLIP_CURRENT)
-                    .withSpeedAt12Volts(SPEED_AT_12_VOLTS)
-                    .withDriveMotorType(DRIVE_MOTOR_TYPE)
-                    .withSteerMotorType(STEER_MOTOR_TYPE)
-                    .withFeedbackSource(STEER_FEEDBACK_TYPE)
-                    .withDriveMotorInitialConfigs(driveInitialConfigs)
-                    .withSteerMotorInitialConfigs(steerInitialConfigs)
-                    .withEncoderInitialConfigs(encoderInitialConfigs)
-                    .withSteerInertia(STEER_INERTIA)
-                    .withDriveInertia(DRIVE_INERTIA)
-                    .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
-                    .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE);
-
-    private static final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule3 =
-            new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
-                    .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
-                    .withSteerMotorGearRatio(STEER_GEAR_RATIO)
-                    .withCouplingGearRatio(COUPLE_RATIO)
-                    .withWheelRadius(WHEEL_RADIUS)
-                    .withSteerMotorGains(Module3.Steer.Control.slot0Configs)
-                    .withDriveMotorGains(Module3.DriveWheel.Control.slot0Configs)
-                    .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
-                    .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
-                    .withSlipCurrent(SLIP_CURRENT)
-                    .withSpeedAt12Volts(SPEED_AT_12_VOLTS)
-                    .withDriveMotorType(DRIVE_MOTOR_TYPE)
-                    .withSteerMotorType(STEER_MOTOR_TYPE)
-                    .withFeedbackSource(STEER_FEEDBACK_TYPE)
-                    .withDriveMotorInitialConfigs(driveInitialConfigs)
-                    .withSteerMotorInitialConfigs(steerInitialConfigs)
-                    .withEncoderInitialConfigs(encoderInitialConfigs)
-                    .withSteerInertia(STEER_INERTIA)
-                    .withDriveInertia(DRIVE_INERTIA)
-                    .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
-                    .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE);
-
-    public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft =
-            ConstantCreatorModule0.createModuleConstants(
-                    Module0.Steer.Motor.motorId,
-                    Module0.DriveWheel.Motor.motorId,
-                    Module0.Encoder.encoderId,
-                    Module0.Encoder.offset,
-                    Module0.xPos,
-                    Module0.yPos,
-                    INVERT_LEFT_SIDE,
-                    Module0.Steer.Motor.inverted,
-                    Module0.Encoder.inverted
-            );
-    public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontRight =
-            ConstantCreatorModule1.createModuleConstants(
-                    Module1.Steer.Motor.motorId,
-                    Module1.DriveWheel.Motor.motorId,
-                    Module1.Encoder.encoderId,
-                    Module1.Encoder.offset,
-                    Module1.xPos,
-                    Module1.yPos,
-                    INVERT_RIGHT_SIDE,
-                    Module1.Steer.Motor.inverted,
-                    Module1.Encoder.inverted
-            );
-    public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackLeft =
-            ConstantCreatorModule2.createModuleConstants(
-                    Module2.Steer.Motor.motorId,
-                    Module2.DriveWheel.Motor.motorId,
-                    Module2.Encoder.encoderId,
-                    Module2.Encoder.offset,
-                    Module2.xPos,
-                    Module2.yPos,
-                    INVERT_LEFT_SIDE,
-                    Module2.Steer.Motor.inverted,
-                    Module2.Encoder.inverted
-            );
-    public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackRight =
-            ConstantCreatorModule3.createModuleConstants(
-                    Module3.Steer.Motor.motorId,
-                    Module3.DriveWheel.Motor.motorId,
-                    Module3.Encoder.encoderId,
-                    Module3.Encoder.offset,
-                    Module3.xPos,
-                    Module3.yPos,
-                    INVERT_RIGHT_SIDE,
-                    Module3.Steer.Motor.inverted,
-                    Module3.Encoder.inverted
-            );
-
-    public static final LinearVelocity maxVelocity = SPEED_AT_12_VOLTS; // SPEED_AT_12_VOLTS desired top speed
-    public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.75); // 3/4 of a rotation per second max angular velocity
-
-    private static final PhoenixPIDController pathXController = new PhoenixPIDController(10, 0, 0);
-    private static final PhoenixPIDController pathYController = new PhoenixPIDController(10, 0, 0);
-    public static final PhoenixPIDController pathThetaController = new PhoenixPIDController(5.9918340044856690519902612191937, 0, 0);
-
-    private static final SwerveDriveTelemetry swerveDriveTelemetry = new SwerveDriveTelemetry(maxVelocity);
-
-    private static final SwerveDrivetrain<TalonFX, TalonFX, CANcoder> swerveDriveTrain = new SwerveDrivetrain<>(
-            TalonFX::new,
-            TalonFX::new,
-            CANcoder::new,
-            DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
-
-
-    private static final CTRESwerveDrive CTRE_SWERVE_DRIVE = new CTRESwerveDrive(
-            swerveDriveTrain,
-            pathXController,
-            pathYController,
-            pathThetaController,
-            swerveDriveTelemetry,
-            maxVelocity,
-            MaxAngularRate,
-            Camera0.camera,
-            Camera1.camera,
-            Camera2.camera);
-
     /**
      * Creates a CommandSwerveDrivetrain instance.
      * This should only be called once in your robot program,
      */
-    public static SwerveDriveSubsystem create() {
-        pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
+    public static SwerveDriveSubsystem createCTRESwerveDrive() {
+        DeviceConstructor<TalonFX> driveMotorConstructor = TalonFX::new;
+        DeviceConstructor<TalonFX> steerMotorConstructor = TalonFX::new;
+        DeviceConstructor<CANcoder> encoderConstructor = CANcoder::new;
+
+        TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
+        TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
+                .withCurrentLimits(new CurrentLimitsConfigs()
+                        .withStatorCurrentLimit(steerStatorCurrentLimit)
+                        .withStatorCurrentLimitEnable(steerStatorCurrentLimitEnabled));
+        CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
+
+        SwerveDrivetrainConstants drivetrainConstants = new SwerveDrivetrainConstants()
+                .withCANBusName(Constants.canivore.getName())
+                .withPigeon2Id(IMU.Gyroscope.id)
+                .withPigeon2Configs(null);
+
+        SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule0 =
+                new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
+                        .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
+                        .withSteerMotorGearRatio(STEER_GEAR_RATIO)
+                        .withCouplingGearRatio(COUPLE_RATIO)
+                        .withWheelRadius(WHEEL_RADIUS)
+                        .withSteerMotorGains(Module0.Steer.Control.slot0Configs)
+                        .withDriveMotorGains(Module0.DriveWheel.Control.slot0Configs)
+                        .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
+                        .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
+                        .withSlipCurrent(SLIP_CURRENT)
+                        .withSpeedAt12Volts(maxVelocity)
+                        .withDriveMotorType(DRIVE_MOTOR_TYPE)
+                        .withSteerMotorType(STEER_MOTOR_TYPE)
+                        .withFeedbackSource(STEER_FEEDBACK_TYPE)
+                        .withDriveMotorInitialConfigs(driveInitialConfigs)
+                        .withSteerMotorInitialConfigs(steerInitialConfigs)
+                        .withEncoderInitialConfigs(encoderInitialConfigs)
+                        .withSteerInertia(STEER_INERTIA)
+                        .withDriveInertia(DRIVE_INERTIA)
+                        .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
+                        .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE);
+
+        SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule1 =
+                new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
+                        .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
+                        .withSteerMotorGearRatio(STEER_GEAR_RATIO)
+                        .withCouplingGearRatio(COUPLE_RATIO)
+                        .withWheelRadius(WHEEL_RADIUS)
+                        .withSteerMotorGains(Module1.Steer.Control.slot0Configs)
+                        .withDriveMotorGains(Module1.DriveWheel.Control.slot0Configs)
+                        .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
+                        .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
+                        .withSlipCurrent(SLIP_CURRENT)
+                        .withSpeedAt12Volts(maxVelocity)
+                        .withDriveMotorType(DRIVE_MOTOR_TYPE)
+                        .withSteerMotorType(STEER_MOTOR_TYPE)
+                        .withFeedbackSource(STEER_FEEDBACK_TYPE)
+                        .withDriveMotorInitialConfigs(driveInitialConfigs)
+                        .withSteerMotorInitialConfigs(steerInitialConfigs)
+                        .withEncoderInitialConfigs(encoderInitialConfigs)
+                        .withSteerInertia(STEER_INERTIA)
+                        .withDriveInertia(DRIVE_INERTIA)
+                        .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
+                        .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE);
+
+        SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule2 =
+                new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
+                        .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
+                        .withSteerMotorGearRatio(STEER_GEAR_RATIO)
+                        .withCouplingGearRatio(COUPLE_RATIO)
+                        .withWheelRadius(WHEEL_RADIUS)
+                        .withSteerMotorGains(Module2.Steer.Control.slot0Configs)
+                        .withDriveMotorGains(Module2.DriveWheel.Control.slot0Configs)
+                        .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
+                        .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
+                        .withSlipCurrent(SLIP_CURRENT)
+                        .withSpeedAt12Volts(maxVelocity)
+                        .withDriveMotorType(DRIVE_MOTOR_TYPE)
+                        .withSteerMotorType(STEER_MOTOR_TYPE)
+                        .withFeedbackSource(STEER_FEEDBACK_TYPE)
+                        .withDriveMotorInitialConfigs(driveInitialConfigs)
+                        .withSteerMotorInitialConfigs(steerInitialConfigs)
+                        .withEncoderInitialConfigs(encoderInitialConfigs)
+                        .withSteerInertia(STEER_INERTIA)
+                        .withDriveInertia(DRIVE_INERTIA)
+                        .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
+                        .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE);
+
+        final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule3 =
+                new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
+                        .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
+                        .withSteerMotorGearRatio(STEER_GEAR_RATIO)
+                        .withCouplingGearRatio(COUPLE_RATIO)
+                        .withWheelRadius(WHEEL_RADIUS)
+                        .withSteerMotorGains(Module3.Steer.Control.slot0Configs)
+                        .withDriveMotorGains(Module3.DriveWheel.Control.slot0Configs)
+                        .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
+                        .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
+                        .withSlipCurrent(SLIP_CURRENT)
+                        .withSpeedAt12Volts(maxVelocity)
+                        .withDriveMotorType(DRIVE_MOTOR_TYPE)
+                        .withSteerMotorType(STEER_MOTOR_TYPE)
+                        .withFeedbackSource(STEER_FEEDBACK_TYPE)
+                        .withDriveMotorInitialConfigs(driveInitialConfigs)
+                        .withSteerMotorInitialConfigs(steerInitialConfigs)
+                        .withEncoderInitialConfigs(encoderInitialConfigs)
+                        .withSteerInertia(STEER_INERTIA)
+                        .withDriveInertia(DRIVE_INERTIA)
+                        .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
+                        .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE);
+
+        SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> frontLeftConstants =
+                ConstantCreatorModule0.createModuleConstants(
+                        Module0.Steer.Motor.id,
+                        Module0.DriveWheel.Motor.id,
+                        Module0.Encoder.id,
+                        Module0.Encoder.offset,
+                        Module0.xPos,
+                        Module0.yPos,
+                        Module0.DriveWheel.Motor.inverted,
+                        Module0.Steer.Motor.inverted,
+                        Module0.Encoder.inverted);
+        SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> frontRightConstants =
+                ConstantCreatorModule1.createModuleConstants(
+                        Module1.Steer.Motor.id,
+                        Module1.DriveWheel.Motor.id,
+                        Module1.Encoder.encoderId,
+                        Module1.Encoder.offset,
+                        Module1.xPos,
+                        Module1.yPos,
+                        Module1.DriveWheel.Motor.inverted,
+                        Module1.Steer.Motor.inverted,
+                        Module1.Encoder.inverted);
+        SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> backLeftConstants =
+                ConstantCreatorModule2.createModuleConstants(
+                        Module2.Steer.Motor.id,
+                        Module2.DriveWheel.Motor.id,
+                        Module2.Encoder.id,
+                        Module2.Encoder.offset,
+                        Module2.xPos,
+                        Module2.yPos,
+                        Module2.DriveWheel.Motor.inverted,
+                        Module2.Steer.Motor.inverted,
+                        Module2.Encoder.inverted);
+        SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> backRightConstants =
+                ConstantCreatorModule3.createModuleConstants(
+                        Module3.Steer.Motor.id,
+                        Module3.DriveWheel.Motor.id,
+                        Module3.Encoder.id,
+                        Module3.Encoder.offset,
+                        Module3.xPos,
+                        Module3.yPos,
+                        Module3.DriveWheel.Motor.inverted,
+                        Module3.Steer.Motor.inverted,
+                        Module3.Encoder.inverted);
+
+        SwerveDrivetrain<TalonFX, TalonFX, CANcoder> swerveDriveTrain = new SwerveDrivetrain<>(
+                driveMotorConstructor,
+                steerMotorConstructor,
+                encoderConstructor,
+                drivetrainConstants,
+                frontLeftConstants,
+                frontRightConstants,
+                backLeftConstants,
+                backRightConstants);
+
+
+        CTRESwerveDrive CTRE_SWERVE_DRIVE = new CTRESwerveDrive(
+                constants,
+                swerveDriveTrain,
+                Camera0.camera,
+                Camera1.camera,
+                Camera2.camera);
+
         SwerveDriveSubsystem swerveDriveSubsystem = new SwerveDriveSubsystem(
                 CTRE_SWERVE_DRIVE,
                 simLoopPeriod);

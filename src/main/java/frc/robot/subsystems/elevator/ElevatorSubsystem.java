@@ -16,6 +16,8 @@ import digilib.elevator.Elevator;
 import digilib.elevator.ElevatorRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 
 import java.util.function.Supplier;
 
@@ -32,12 +34,53 @@ public class ElevatorSubsystem implements Subsystem {
         this.holdVoltage = holdVoltage;
         this.simLoopPeriod = simLoopPeriod;
 
-        SysIdRoutine.Config config = new SysIdRoutine.Config(
+        sysIdRoutinesOnDashboard();
+
+        if (Utils.isSimulation()) {
+            startSimThread();
+        }
+    }
+
+    public Trigger atPosition(Distance position, Distance tolerance) {
+        return new Trigger(() -> elevator.getState().getHeight().isNear(position, tolerance));
+    }
+
+    public Command applyRequest(Supplier<ElevatorRequest> requestSupplier) {
+        return run(() -> elevator.setControl(requestSupplier.get()));
+    }
+
+    Command hold() {
+        ElevatorRequest.Position request = new ElevatorRequest.Position();
+        return Commands.runOnce(() -> request.withPosition(elevator.getState().getHeight()))
+                .andThen(applyRequest(() -> request))
+                .withName(String.format("%s: HOLD", getName()));
+    }
+
+    @Override
+    public void periodic() {
+        elevator.update();
+    }
+
+    private void startSimThread() {
+        lastSimTime = Utils.getCurrentTimeSeconds();
+
+        Notifier m_simNotifier = new Notifier(() -> {
+            final double currentTime = Utils.getCurrentTimeSeconds();
+            double deltaTime = currentTime - lastSimTime;
+            lastSimTime = currentTime;
+            SmartDashboard.putNumber("ElapsedTime", deltaTime);
+            elevator.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+        });
+        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
+    }
+
+    private void sysIdRoutinesOnDashboard(){
+        ElevatorRequest.VoltageRequest voltageRequest = new ElevatorRequest.VoltageRequest();
+        Config config = new Config(
                 Volts.per(Second).of(1.0),
                 Volts.of(7.0),
                 Seconds.of(10.0));
-        ElevatorRequest.VoltageRequest voltageRequest = new ElevatorRequest.VoltageRequest();
-        SysIdRoutine.Mechanism mechanism = new SysIdRoutine.Mechanism(
+        Mechanism mechanism = new Mechanism(
                 volts -> elevator.setControl(voltageRequest.withVoltage(volts)),
                 log -> log
                         .motor("elevator")
@@ -63,49 +106,5 @@ public class ElevatorSubsystem implements Subsystem {
                 Commands.runOnce(SignalLogger::start)
                         .andThen(routine.dynamic(SysIdRoutine.Direction.kReverse))
                         .andThen(SignalLogger::stop).withName("Elevator Dynamic Reverse"));
-
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-    }
-
-    public Trigger atPosition(Distance position, Distance tolerance) {
-        return new Trigger(() -> elevator.getState().getHeight().isNear(position, tolerance));
-    }
-
-    public Command applyRequest(Supplier<ElevatorRequest> requestSupplier) {
-        return run(() -> elevator.setControl(requestSupplier.get()));
-    }
-
-    Command hold() {
-        ElevatorRequest.Position request = new ElevatorRequest.Position();
-        return Commands.runOnce(() -> request.withPosition(elevator.getState().getHeight()))
-                .andThen(applyRequest(() -> request))
-                .withName(String.format("%s: HOLD", getName()));
-    }
-
-    // Command hold() {
-    //     ElevatorRequest.VoltageRequest request = new ElevatorRequest.VoltageRequest();
-    //     request.withVoltage(this.holdVoltage);
-    //     return applyRequest(() -> request)
-    //             .withName(String.format("%s: HOLD", getName()));
-    // }
-
-    @Override
-    public void periodic() {
-        elevator.update();
-    }
-
-    private void startSimThread() {
-        lastSimTime = Utils.getCurrentTimeSeconds();
-
-        Notifier m_simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - lastSimTime;
-            lastSimTime = currentTime;
-            SmartDashboard.putNumber("ElapsedTime", deltaTime);
-            elevator.updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
 }
