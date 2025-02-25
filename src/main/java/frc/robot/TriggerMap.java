@@ -5,6 +5,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDimensionless;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -20,7 +22,7 @@ public class TriggerMap {
     private static final double deadband = 0.05;
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
-    private final CommandJoystick climb = new CommandJoystick(2);
+    private final CommandXboxController climb = new CommandXboxController(2);
     private final CommandXboxController backup = new CommandXboxController(3);
 
     private final MutDimensionless maxVelocityPercent = Value.mutable(0.0);
@@ -63,6 +65,8 @@ public class TriggerMap {
         bindAlgaeL3Pickup();
         bindCoralFloorPickup();
         bindCoralStationPickup();
+
+        bindCoralStore();
 
         bindBargeAlign();
         bindBargeScore();
@@ -121,7 +125,7 @@ public class TriggerMap {
                     double y = MathUtil.applyDeadband(driver.getRightX(), deadband);
                     return Math.hypot(x, y) == 0.0;
                 })
-                .and(driver.rightBumper())
+                .and(driver.y())
                 .whileTrue(driving.robotCentricDrive(
                         this::getMaxVelocityPercent,
                         this::getHeading,
@@ -230,6 +234,10 @@ public class TriggerMap {
                 .onFalse(pickup.coralStore());
     }
 
+    private void bindCoralStore(){
+        operator.back().onTrue(pickup.coralStore());
+    }
+
     private void bindBargeAlign() {
         operator.povLeft()
                 .whileTrue(scoring.bargeAlign());
@@ -288,7 +296,7 @@ public class TriggerMap {
 
 
     private void bindClimbScore() {
-        climb.axisMagnitudeGreaterThan(kY.value, deadband)
+        climb.axisMagnitudeGreaterThan(kRightY.value, deadband)
                 .whileTrue(scoring.climb(this::getClimbDutyCycle));
     }
 
@@ -429,6 +437,7 @@ public class TriggerMap {
     }
 
     private double getClimbDutyCycleValue() {
-        return -MathUtil.applyDeadband(climb.getY(), deadband);
+        SmartDashboard.putNumber("joy", climb.getRightY());
+        return -MathUtil.applyDeadband(climb.getRightY(), deadband);
     }
 }

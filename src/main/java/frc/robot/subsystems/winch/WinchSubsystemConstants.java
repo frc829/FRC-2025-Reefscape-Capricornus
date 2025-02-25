@@ -21,7 +21,7 @@ import static frc.robot.subsystems.winch.WinchSubsystemConstants.Simulation.simL
 public class WinchSubsystemConstants {
 
     static final class Mechanism {
-        static final String name = "Wrist";
+        static final String name = "Winch";
         static final WinchConstants constants = new WinchConstants(name);
     }
 

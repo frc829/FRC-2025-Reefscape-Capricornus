@@ -135,41 +135,41 @@ public class DualVortexElevator implements Elevator {
         request.apply(this);
     }
 
-//    @Override
-//    public void setHeight(Distance height) {
-//        if(controlState != ControlState.POSITION) {
-//            lastState.position = motor.getEncoder().getPosition();
-//            lastState.velocity = motor.getEncoder().getVelocity();
-//            controlState = ControlState.POSITION;
-//        }
-//        goalState.position = height.baseUnitMagnitude();
-//        goalState.velocity = 0.0;
-//        double lastVelocitySetpoint = lastState.velocity;
-//        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
-//        double nextVelocitySetpoint = lastState.velocity;
-//        double nextPositionSetpoint = lastState.position;
-//        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
-//        motor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-//    }
+   @Override
+   public void setHeight(Distance height) {
+       if(controlState != ControlState.POSITION) {
+           lastState.position = motor.getEncoder().getPosition();
+           lastState.velocity = motor.getEncoder().getVelocity();
+           controlState = ControlState.POSITION;
+       }
+       goalState.position = height.baseUnitMagnitude();
+       goalState.velocity = 0.0;
+       double lastVelocitySetpoint = lastState.velocity;
+       lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
+       double nextVelocitySetpoint = lastState.velocity;
+       double nextPositionSetpoint = lastState.position;
+       double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+       motor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+   }
 
-    @Override
-    public void setHeight(Distance height) {
-        if(controlState != ControlState.POSITION) {
-            lastState.position = motor.getEncoder().getPosition();
-            lastState.velocity = motor.getEncoder().getVelocity();
-            controlState = ControlState.POSITION;
-        }
-        goalState.position = height.baseUnitMagnitude();
-        goalState.velocity = 0.0;
-        double lastVelocitySetpoint = lastState.velocity;
-        lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
-        double nextVelocitySetpoint = lastState.velocity;
-        double nextPositionSetpoint = lastState.position;
-        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
-        double feedback = pidController.calculate(nextPositionSetpoint, goalState.position);
-        double voltage = MathUtil.clamp(arbFeedfoward + feedback, -6.0, 6.0);
-        motor.setVoltage(voltage);
-    }
+    // @Override
+    // public void setHeight(Distance height) {
+    //     if(controlState != ControlState.POSITION) {
+    //         lastState.position = motor.getEncoder().getPosition();
+    //         lastState.velocity = motor.getEncoder().getVelocity();
+    //         controlState = ControlState.POSITION;
+    //     }
+    //     goalState.position = height.baseUnitMagnitude();
+    //     goalState.velocity = 0.0;
+    //     double lastVelocitySetpoint = lastState.velocity;
+    //     lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
+    //     double nextVelocitySetpoint = lastState.velocity;
+    //     double nextPositionSetpoint = lastState.position;
+    //     double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
+    //     double feedback = pidController.calculate(nextPositionSetpoint, goalState.position);
+    //     double voltage = MathUtil.clamp(arbFeedfoward + feedback, -6.0, 6.0);
+    //     motor.setVoltage(voltage);
+    // }
 
     @Override
     public void setVelocity(Dimensionless maxPercent) {

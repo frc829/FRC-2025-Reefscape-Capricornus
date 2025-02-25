@@ -75,6 +75,14 @@ public class ManipulatorFactories {
         return arm.atPosition(angle, tolerance);
     }
 
+    public Trigger armGreaterThan(Angle angle) {
+        return arm.greaterThan(angle);
+    }
+
+    public Trigger armLessThan(Angle angle) {
+        return arm.lessThan(angle);
+    }
+
     public Trigger elevatorAtHeight(Distance height, Distance tolerance) {
         return elevator.atPosition(height, tolerance);
     }
@@ -168,12 +176,8 @@ public class ManipulatorFactories {
     }
 
     public Command climbAtDutyCycle(Supplier<Dimensionless> dutyCycle) {
-        if (winch != null) {
-            WinchRequest request = new WinchRequest.DutyCycle();
-            return winch.applyRequest(() -> request)
-                    .withName(String.format("%s: Duty Cycle", winch.getName()));
-        } else {
-            return Commands.none();
-        }
+        WinchRequest.DutyCycle request = new WinchRequest.DutyCycle();
+        return winch.applyRequest(() -> request.withDutyCycle(dutyCycle.get()));
+
     }
 }

@@ -21,6 +21,7 @@ import frc.robot.subsystems.pneumatics.PneumaticsSubsystemConstants;
 import frc.robot.subsystems.power.PowerSubsystemConstants;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
+import frc.robot.subsystems.winch.WinchSubsystemConstants;
 import frc.robot.subsystems.wrist.WristSubsystemConstants;
 
 public class Robit extends TimedRobot {
@@ -39,8 +40,8 @@ public class Robit extends TimedRobot {
                 ElevatorSubsystemConstants.create(),
                 PneumaticsSubsystemConstants.create(),
                 PowerSubsystemConstants.create(),
-                // WinchSubsystemConstants.create(),
-                null,
+                WinchSubsystemConstants.create(),
+                // null,
                 WristSubsystemConstants.create());
         PickupFactories pickupFactories = new PickupFactories(manipulator);
         ScoringFactories scoringFactories = new ScoringFactories(manipulator);

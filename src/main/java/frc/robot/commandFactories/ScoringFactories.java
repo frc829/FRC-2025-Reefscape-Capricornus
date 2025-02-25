@@ -69,7 +69,7 @@ public class ScoringFactories {
         this.armAtL4 = factories.armAtAngle(armL3, Degrees.of(2.0));
         this.elevatorAtL4 = factories.elevatorAtHeight(elevatorL3, Centimeters.of(1.0));
         this.elevatorAtBargeTravel = factories.elevatorAtHeight(elevatorBargeArmSafe, Centimeters.of(1.0));
-        this.armAtBargeTravel = factories.armAtAngle(armBarge, Degrees.of(2.0));
+        this.armAtBargeTravel = factories.armAtAngle(armBargeTravel, Degrees.of(2.0));
         this.elevatorAtBarge = factories.elevatorAtHeight(elevatorBarge, Centimeters.of(1.0));
         this.armAtBarge = factories.armAtAngle(armBarge, Degrees.of(2.0));
         this.isWristSafe = factories.wristAtAngle(wristSafe, Degrees.of(2.0));
@@ -113,11 +113,11 @@ public class ScoringFactories {
 
     public Command bargeAlign() {
         return sequence(
-                parallel(factories.elevatorTo(elevatorBargeArmSafe, Centimeters.of(1.0)),
-                        factories.armTo(armBargeTravel, Degrees.of(2.0)).until(elevatorAtBargeTravel.and(armAtBargeTravel))),
-                parallel(factories.elevatorTo(elevatorBarge, Centimeters.of(1.0)),
-                        factories.armTo(armBarge, Degrees.of(2.0)).until(elevatorAtBarge.and(armAtBarge))))
-                .withName("Barge Score");
+                parallel(factories.elevatorTo(elevatorBargeArmSafe, Centimeters.of(2.0)),
+                        factories.armTo(armBargeTravel, Degrees.of(2.0))),
+                parallel(factories.elevatorTo(elevatorBarge, Centimeters.of(2.0)),
+                        factories.armTo(armBarge, Degrees.of(2.0))).until(elevatorAtBarge.and(armAtBarge)))
+                .withName("Barge Align");
     }
 
     public Command bargeScore() {

@@ -94,4 +94,12 @@ public class ArmSubsystem implements Subsystem {
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
+
+    public Trigger greaterThan(Angle angle) {
+        return new Trigger (() -> arm.getState().getAngle().gt(angle));
+    }
+
+    public Trigger lessThan(Angle angle) {
+        return new Trigger (() -> arm.getState().getAngle().lt(angle));
+    }
 }

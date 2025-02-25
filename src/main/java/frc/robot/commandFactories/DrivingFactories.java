@@ -96,7 +96,7 @@ public class DrivingFactories {
         }
     }
 
-    public Trigger isNearestTag(int tagId) {
+    public Trigger  isNearestTag(int tagId) {
         return new Trigger(() -> getNearestTagId() == tagId);
     }
 
