@@ -1,14 +1,10 @@
 package digilib.swerve;
 
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
-import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
@@ -23,12 +19,6 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class SwerveDriveTelemetry {
     private final LinearVelocity maxVelocity;
-
-    /**
-     * Construct a telemetry object, with the specified max speed of the robot
-     * 
-     * @param maxVelocity Maximum speed in meters per second
-     */
     public SwerveDriveTelemetry(LinearVelocity maxVelocity) {
         this.maxVelocity = maxVelocity;
     }
@@ -43,8 +33,6 @@ public class SwerveDriveTelemetry {
     private final StructArrayPublisher<SwerveModuleState> driveModuleStates = driveStateTable.getStructArrayTopic("ModuleStates", SwerveModuleState.struct).publish();
     private final StructArrayPublisher<SwerveModuleState> driveModuleTargets = driveStateTable.getStructArrayTopic("ModuleTargets", SwerveModuleState.struct).publish();
     private final StructArrayPublisher<SwerveModulePosition> driveModulePositions = driveStateTable.getStructArrayTopic("ModulePositions", SwerveModulePosition.struct).publish();
-    private final DoublePublisher driveTimestamp = driveStateTable.getDoubleTopic("Timestamp").publish();
-    private final DoublePublisher driveOdometryFrequency = driveStateTable.getDoubleTopic("OdometryFrequency").publish();
 
     /* Robot pose for field positioning */
     private final NetworkTable table = inst.getTable("Pose");
@@ -84,29 +72,22 @@ public class SwerveDriveTelemetry {
     /** Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger. */
     public void telemeterize(SwerveDriveState state) {
         /* Telemeterize the swerve drive state */
-        drivePose.set(state.Pose);
-        driveSpeeds.set(state.Speeds);
-        driveModuleStates.set(state.ModuleStates);
-        driveModuleTargets.set(state.ModuleTargets);
-        driveModulePositions.set(state.ModulePositions);
-        driveTimestamp.set(state.Timestamp);
-        driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
+        drivePose.set(state.getPose());
+        driveSpeeds.set(state.getSpeeds());
+        driveModuleStates.set(state.getModuleStates());
+        driveModuleTargets.set(state.getModuleTargets());
+        driveModulePositions.set(state.getModulePositions());
 
         /* Also write to log file */
-        poseArray[0] = state.Pose.getX();
-        poseArray[1] = state.Pose.getY();
-        poseArray[2] = state.Pose.getRotation().getDegrees();
+        poseArray[0] = state.getPose().getX();
+        poseArray[1] = state.getPose().getY();
+        poseArray[2] = state.getPose().getRotation().getDegrees();
         for (int i = 0; i < 4; ++i) {
-            moduleStatesArray[i*2 + 0] = state.ModuleStates[i].angle.getRadians();
-            moduleStatesArray[i*2 + 1] = state.ModuleStates[i].speedMetersPerSecond;
-            moduleTargetsArray[i*2 + 0] = state.ModuleTargets[i].angle.getRadians();
-            moduleTargetsArray[i*2 + 1] = state.ModuleTargets[i].speedMetersPerSecond;
+            moduleStatesArray[i*2 + 0] = state.getModuleStates()[i].angle.getRadians();
+            moduleStatesArray[i*2 + 1] = state.getModuleStates()[i].speedMetersPerSecond;
+            moduleTargetsArray[i*2 + 0] = state.getModuleTargets()[i].angle.getRadians();
+            moduleTargetsArray[i*2 + 1] = state.getModuleTargets()[i].speedMetersPerSecond;
         }
-
-        SignalLogger.writeDoubleArray("DriveState/Pose", poseArray);
-        SignalLogger.writeDoubleArray("DriveState/ModuleStates", moduleStatesArray);
-        SignalLogger.writeDoubleArray("DriveState/ModuleTargets", moduleTargetsArray);
-        SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
         /* Telemeterize the pose to a Field2d */
         fieldTypePub.set("Field2d");
@@ -114,10 +95,9 @@ public class SwerveDriveTelemetry {
 
         /* Telemeterize the module states to a Mechanism2d */
         for (int i = 0; i < 4; ++i) {
-            moduleSpeeds[i].setAngle(state.ModuleStates[i].angle);
-            moduleDirections[i].setAngle(state.ModuleStates[i].angle);
-            moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * maxVelocity.baseUnitMagnitude()));
-
+            moduleSpeeds[i].setAngle(state.getModuleStates()[i].angle);
+            moduleDirections[i].setAngle(state.getModuleStates()[i].angle);
+            moduleSpeeds[i].setLength(state.getModuleStates()[i].speedMetersPerSecond / (2 * maxVelocity.baseUnitMagnitude()));
             SmartDashboard.putData("Module " + i, moduleMechanisms[i]);
         }
     }

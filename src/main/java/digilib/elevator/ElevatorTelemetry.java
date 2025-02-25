@@ -13,6 +13,7 @@ import static edu.wpi.first.units.Units.*;
 
 public class ElevatorTelemetry {
     private final DoublePublisher position;
+    private final DoublePublisher setpoint;
     private final DoublePublisher velocity;
     private final DoublePublisher voltage;
     private final DoublePublisher timestamp;
@@ -30,6 +31,7 @@ public class ElevatorTelemetry {
         table.getDoubleTopic("MaxVelocity").publish().set(roundToDecimal(maxVelocity.baseUnitMagnitude(), 2));
         table.getDoubleTopic("MaxAcceleration").publish().set(roundToDecimal(maxAcceleration.baseUnitMagnitude(), 2));
         this.position = table.getDoubleTopic("Position").publish();
+        this.setpoint = table.getDoubleTopic("Setpoint").publish();
         this.velocity = table.getDoubleTopic("Velocity").publish();
         this.voltage = table.getDoubleTopic("Voltage").publish();
         this.timestamp = table.getDoubleTopic("Timestamp").publish();
@@ -43,6 +45,7 @@ public class ElevatorTelemetry {
 
     public void telemeterize(ElevatorState state) {
         position.set(roundToDecimal(state.getHeight().in(Meters), 2));
+        setpoint.set(roundToDecimal(state.getSetpoint().in(Meters), 2));
         velocity.set(roundToDecimal(state.getVelocity().in(MetersPerSecond), 2));
         voltage.set(roundToDecimal(state.getVoltage().in(Volts), 2));
         timestamp.set(roundToDecimal(state.getTimestamp().in(Seconds), 2));

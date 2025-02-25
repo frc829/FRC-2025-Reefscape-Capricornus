@@ -56,7 +56,6 @@ public class ArmTelemetry {
         angularVelocity.set(roundToDecimal(state.getVelocity().in(DegreesPerSecond), 2));
         absoluteVelocity.set(roundToDecimal(state.getAbsoluteVelocity().in(DegreesPerSecond), 2));
         voltage.set(roundToDecimal(state.getVoltage().baseUnitMagnitude(), 2));
-        timestamp.set(roundToDecimal(state.getTimestamp().baseUnitMagnitude(), 2));
         absoluteEncoderStatus.set(state.getAbsoluteEncoderStatus());
         ligament.setAngle(roundToDecimal(state.getAngle().in(Degrees), 2));
     }

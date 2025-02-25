@@ -137,7 +137,6 @@ public class KrakenX60Arm implements Arm {
         state.setVelocity(talonFX.getVelocity().getValue());
         state.setAbsoluteVelocity(cancoder.getVelocity().getValue());
         state.setVoltage(talonFX.getMotorVoltage().getValue());
-        state.setTimestamp(Timer.getFPGATimestamp());
         state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
     }
 

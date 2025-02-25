@@ -7,12 +7,17 @@ import static edu.wpi.first.units.Units.*;
 public class ElevatorState {
 
     private final MutDistance height = Meters.mutable(0.0);
+    private final MutDistance setpoint = Meters.mutable(0.0);
     private final MutLinearVelocity velocity = MetersPerSecond.mutable(0.0);
     private final MutTime timestamp = Seconds.mutable(0.0);
     private final MutVoltage voltage = Volts.mutable(0.0);
 
     public Distance getHeight() {
         return height;
+    }
+
+    public MutDistance getSetpoint() {
+        return setpoint;
     }
 
     public LinearVelocity getVelocity() {
@@ -31,8 +36,8 @@ public class ElevatorState {
         this.height.mut_setBaseUnitMagnitude(heightMeters);
     }
 
-    public void setHeight(Distance height) {
-        this.height.mut_replace(height);
+    public void setSetpoint(double setpointMeters) {
+        this.setpoint.mut_setBaseUnitMagnitude(setpointMeters);
     }
 
     public void setVelocity(double velocityMetersPerSecond) {

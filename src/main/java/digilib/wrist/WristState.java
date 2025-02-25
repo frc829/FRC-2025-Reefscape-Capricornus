@@ -7,10 +7,10 @@ import static edu.wpi.first.units.Units.*;
 public class WristState {
 
     private final MutAngle position = Radians.mutable(0.0);
+    private final MutAngle setpoint = Radians.mutable(0.0);
     private final MutAngle absolutePosition = Radians.mutable(0.0);
     private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
     private final MutAngularVelocity absoluteVelocity = RadiansPerSecond.mutable(0.0);
-    private final MutTime timestamp = Seconds.mutable(0.0);
     private final MutVoltage voltage = Volts.mutable(0.0);
     private String status = "";
 
@@ -34,16 +34,16 @@ public class WristState {
         return voltage;
     }
 
-    public Time getTimestamp() {
-        return timestamp;
-    }
-
     public String getAbsoluteEncoderStatus() {
         return status;
     }
 
     public void setPosition(double radians) {
         this.position.mut_setBaseUnitMagnitude(radians);
+    }
+
+    public void setSetpoint(double setpoint) {
+        this.setpoint.mut_setBaseUnitMagnitude(setpoint);
     }
 
     public void setAbsolutePosition(double radians) {
@@ -56,10 +56,6 @@ public class WristState {
 
     public void setAbsoluteVelocity(double radiansPerSecond) {
         this.absoluteVelocity.mut_setBaseUnitMagnitude(radiansPerSecond);
-    }
-
-    public void setTimestamp(double seconds) {
-        this.timestamp.mut_setBaseUnitMagnitude(seconds);
     }
 
     public void setVoltage(double voltage) {

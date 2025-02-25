@@ -11,7 +11,6 @@ public class ArmState {
     private final MutAngle absolutePosition = Radians.mutable(0.0);
     private final MutAngularVelocity absoluteVelocity = RadiansPerSecond.mutable(0.0);
     private final MutVoltage voltage = Volts.mutable(0.0);
-    private final MutTime timestamp = Seconds.mutable(0.0);
     private String status = "";
 
     public Angle getAngle() {
@@ -32,10 +31,6 @@ public class ArmState {
 
     public Voltage getVoltage() {
         return voltage;
-    }
-
-    public Time getTimestamp() {
-        return timestamp;
     }
 
     public String getAbsoluteEncoderStatus() {
@@ -64,9 +59,5 @@ public class ArmState {
 
     public void setAbsoluteEncoderStatus(String status) {
         this.status = status;
-    }
-
-    public void setTimestamp(double seconds) {
-        this.timestamp.mut_setBaseUnitMagnitude(seconds);
     }
 }

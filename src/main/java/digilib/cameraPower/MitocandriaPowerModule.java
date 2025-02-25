@@ -2,7 +2,6 @@ package digilib.cameraPower;
 
 import au.grapplerobotics.MitoCANdria;
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Timer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +69,6 @@ public class MitocandriaPowerModule implements CameraPower {
         }
         state.setVoltages(voltages);
         state.setCurrents(currents);
-        state.setTimeStamp(Timer.getFPGATimestamp());
     }
 
     @Override

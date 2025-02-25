@@ -14,7 +14,6 @@ import static edu.wpi.first.units.Units.Seconds;
 
 public class CameraState {
 
-
     public enum CameraMode {
         ROBOT_POSE(0);
 
@@ -24,10 +23,7 @@ public class CameraState {
             this.pipelineIndex = pipelineIndex;
         }
 
-        private static final Map<Integer, CameraMode> map = Map.of(
-                0, ROBOT_POSE);
-
-
+        private static final Map<Integer, CameraMode> map = Map.of(0, ROBOT_POSE);
         public int getPipelineIndex() {
             return pipelineIndex;
         }

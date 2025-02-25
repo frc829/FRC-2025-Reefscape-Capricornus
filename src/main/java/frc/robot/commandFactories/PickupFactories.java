@@ -247,14 +247,6 @@ public class PickupFactories {
         return manip.armTo(armAlgaeL3, armTolerance);
     }
 
-    private Command arm45Degrees() {
-        return manip.armTo(Degrees.of(45), Degrees.of(2));
-    }
-
-    private Command arm0Degrees() {
-        return manip.armTo(Degrees.of(0.0), Degrees.of(2));
-    }
-
     private Command wristPickup() {
         return manip.wristTo(wristPickup, wristTolerance);
     }

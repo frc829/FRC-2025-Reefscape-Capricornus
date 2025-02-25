@@ -19,7 +19,6 @@ public class CameraPowerTelemetry {
     }
 
     public void telemeterize(CameraPowerState state) {
-        timestamp.set(state.getTimestamp().baseUnitMagnitude());
 //        voltages.set(state.getVoltages().baseUnitMagnitude());
 //        currents.set(state.getCurrents().stream().mapToDouble(MutableMeasureBase::baseUnitMagnitude).toArray());
     }

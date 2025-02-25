@@ -16,11 +16,11 @@ import static edu.wpi.first.units.Units.*;
 
 public class WristTelemetry {
     private final DoublePublisher angle;
+    private final DoublePublisher setpoint;
     private final DoublePublisher absoluteAngle;
     private final DoublePublisher angularVelocity;
     private final DoublePublisher absoluteVelocity;
     private final DoublePublisher voltage;
-    private final DoublePublisher timestamp;
     private final StringPublisher absoluteEncoderStatus;
     private final MechanismLigament2d wristLigamentRight;
     private final MechanismLigament2d wristLigamentLeft;
@@ -37,11 +37,11 @@ public class WristTelemetry {
         table.getDoubleTopic("Max Velocity").publish().set(roundToDecimal(maxVelocity.in(DegreesPerSecond), 2));
         table.getDoubleTopic("Max Acceleration").publish().set(roundToDecimal(maxAcceleration.in(DegreesPerSecondPerSecond), 2));
         angle = table.getDoubleTopic("Angle").publish();
+        setpoint = table.getDoubleTopic("Setpoint").publish();
         absoluteAngle = table.getDoubleTopic("Absolute Angle").publish();
         angularVelocity = table.getDoubleTopic("Velocity").publish();
         absoluteVelocity = table.getDoubleTopic("AbsoluteVelocity").publish();
         voltage = table.getDoubleTopic("Voltage").publish();
-        timestamp = table.getDoubleTopic("Timestamp").publish();
         absoluteEncoderStatus = table.getStringTopic("Absolute Encoder Status").publish();
 
         Mechanism2d mechanism = new Mechanism2d(1, 1);
@@ -56,11 +56,11 @@ public class WristTelemetry {
 
     public void telemeterize(WristState state) {
         angle.set(roundToDecimal(state.getAngle().in(Degrees), 2));
+        setpoint.set(roundToDecimal(state.getAngle().in(Degrees), 2));
         absoluteAngle.set(roundToDecimal(state.getAbsolutePosition().in(Degrees), 2));
         angularVelocity.set(roundToDecimal(state.getVelocity().in(DegreesPerSecond), 2));
         absoluteVelocity.set(roundToDecimal(state.getAbsoluteVelocity().in(DegreesPerSecond), 2));
         voltage.set(roundToDecimal(state.getVoltage().baseUnitMagnitude(), 2));
-        timestamp.set(roundToDecimal(state.getTimestamp().baseUnitMagnitude(), 2));
         absoluteEncoderStatus.set(state.getAbsoluteEncoderStatus());
         wristLigamentRight.setAngle(roundToDecimal(90 - state.getAngle().in(Degrees), 2));
         wristLigamentLeft.setAngle(roundToDecimal(270.0 - state.getAngle().in(Degrees), 2));

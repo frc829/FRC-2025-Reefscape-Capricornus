@@ -21,7 +21,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Seconds;
 
 public class CTRESwerveDrive implements SwerveDrive {
-
+    private final SwerveDriveState state = new SwerveDriveState();
     private final PhoenixPIDController pathXController;
     private final PhoenixPIDController pathYController;
     private final PhoenixPIDController pathThetaController;
@@ -181,22 +181,29 @@ public class CTRESwerveDrive implements SwerveDrive {
     public void update() {
         for (var camera : cameras) {
             CameraState state = camera.getState();
-            if (Double.isFinite(camera.getState().getRobotPose().getX())) {
+            if (camera.getState().getRobotPose() != null) {
                 addVisionMeasurement(
                         state.getRobotPose(),
                         state.getTimestamp().in(Seconds),
                         state.getRobotPoseStdDev());
             }
         }
+        updateState();
+        updateTelemetry();
     }
 
     @Override
     public void updateState() {
-
+        state.setPose(swerveDriveTrain.getState().Pose);
+        state.setSpeeds(swerveDriveTrain.getState().Speeds);
+        state.setModuleStates(swerveDriveTrain.getState().ModuleStates);
+        state.setModuleTargets(swerveDriveTrain.getState().ModuleTargets);
+        state.setModulePositions(swerveDriveTrain.getState().ModulePositions);
+        state.setRawHeading(swerveDriveTrain.getState().RawHeading);
     }
 
     public void updateTelemetry() {
-        swerveDriveTelemetry.telemeterize(swerveDriveTrain.getState());
+        swerveDriveTelemetry.telemeterize(state);
     }
 
     @Override

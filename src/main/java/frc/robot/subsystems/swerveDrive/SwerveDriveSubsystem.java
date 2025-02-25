@@ -80,7 +80,7 @@ public class SwerveDriveSubsystem implements Subsystem {
                 hasAppliedOperatorPerspective = true;
             });
         }
-        ctreSwerveDrive.updateTelemetry();
+        ctreSwerveDrive.update();
     }
 
     public AutoFactory createAutoFactory() {
