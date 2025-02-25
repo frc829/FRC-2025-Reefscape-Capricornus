@@ -9,6 +9,7 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.NumericalIntegration;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 
@@ -19,9 +20,11 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
     private final double minAngle;
     private final double maxAngle;
     private final double unmodeledAccelerationAt0Rad;
+    private final double ks;
 
     public SimulatedArm(
             LinearSystem<N2, N1, N2> plant,
+            double ks,
             DCMotor gearbox,
             double gearing,
             double unmodeledAccelerationAt0Rad,
@@ -30,6 +33,7 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
             double maxAngleRads,
             double... measurementStdDevs) {
         super(plant, measurementStdDevs);
+        this.ks = ks;
         this.gearbox = gearbox;
         this.gearing = gearing;
         minAngle = minAngleRads;
@@ -105,6 +109,7 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
     }
 
     public static SimulatedArm createFromSysId(
+            double ks,
             double kg,
             double kv,
             double ka,
@@ -113,7 +118,9 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
             double startingAngleRadians,
             double minHeightRadians,
             double maxHeightRadians) {
-        return createFromSysId(kg,
+        return createFromSysId(
+                ks,
+                kg,
                 kv,
                 ka,
                 gearbox,
@@ -126,6 +133,7 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
     }
 
     public static SimulatedArm createFromSysId(
+            double ks,
             double kg,
             double kv,
             double ka,
@@ -138,6 +146,7 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
             double velocityStdDevRadiansPerSecond) {
         return new SimulatedArm(
                 LinearSystemId.identifyPositionSystem(kv, ka),
+                ks,
                 gearbox,
                 gearing,
                 -kg / ka,

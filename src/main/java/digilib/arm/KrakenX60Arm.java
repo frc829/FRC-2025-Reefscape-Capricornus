@@ -55,6 +55,7 @@ public class KrakenX60Arm implements Arm {
             canCoderSimState = new CANcoderSimState(cancoder);
             talonFXSimState = new TalonFXSimState(talonFX);
             simArm = SimulatedArm.createFromSysId(
+                    constants.ks().baseUnitMagnitude(),
                     constants.kg().baseUnitMagnitude(),
                     constants.kv().baseUnitMagnitude(),
                     constants.ka().baseUnitMagnitude(),
