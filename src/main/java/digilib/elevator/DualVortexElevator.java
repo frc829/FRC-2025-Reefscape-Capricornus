@@ -23,7 +23,7 @@ import static com.revrobotics.spark.ClosedLoopSlot.*;
 
 public class DualVortexElevator implements Elevator {
 
-    public enum ControlState{
+    public enum ControlState {
         POSITION,
         VELOCITY,
         VOLTAGE
@@ -134,26 +134,9 @@ public class DualVortexElevator implements Elevator {
         request.apply(this);
     }
 
-   // @Override
-   // public void setHeight(Distance height) {
-   //     if(controlState != ControlState.POSITION) {
-   //         lastState.position = motor.getEncoder().getPosition();
-   //         lastState.velocity = motor.getEncoder().getVelocity();
-   //         controlState = ControlState.POSITION;
-   //     }
-   //     goalState.position = height.baseUnitMagnitude();
-   //     goalState.velocity = 0.0;
-   //     double lastVelocitySetpoint = lastState.velocity;
-   //     lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
-   //     double nextVelocitySetpoint = lastState.velocity;
-   //     double nextPositionSetpoint = lastState.position;
-   //     double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
-   //     motor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-   // }
-
     @Override
     public void setHeight(Distance height) {
-        if(controlState != ControlState.POSITION) {
+        if (controlState != ControlState.POSITION) {
             setpoint.position = motor.getEncoder().getPosition();
             setpoint.velocity = motor.getEncoder().getVelocity();
             controlState = ControlState.POSITION;
@@ -161,18 +144,37 @@ public class DualVortexElevator implements Elevator {
         goal.position = height.baseUnitMagnitude();
         goal.velocity = 0.0;
         ExponentialProfile.State next = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), setpoint, goal);
-        double currentPosition = motor.getEncoder().getPosition();
         double currentVelocity = motor.getEncoder().getVelocity();
         double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
-        double feedback = pidController.calculate(currentPosition, setpoint.position);
-        double voltage = arbFeedfoward + feedback;
-        motor.setVoltage(voltage);
+        motor.getClosedLoopController().setReference(next.position, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
         setpoint = next;
     }
 
+//    @Override
+//    public void setHeight(Distance height) {
+//        if(controlState != ControlState.POSITION) {
+//            setpoint.position = motor.getEncoder().getPosition();
+//            setpoint.velocity = motor.getEncoder().getVelocity();
+//            controlState = ControlState.POSITION;
+//        }
+//        goal.position = height.baseUnitMagnitude();
+//        goal.velocity = 0.0;
+//        ExponentialProfile.State next = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), setpoint, goal);
+//        double currentPosition = motor.getEncoder().getPosition();
+//        double currentVelocity = motor.getEncoder().getVelocity();
+//        double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
+//        double feedback = pidController.calculate(currentPosition, setpoint.position);
+//        double voltage = arbFeedfoward + feedback;
+//        if(RobotBase.isSimulation()){
+//            voltage = MathUtil.clamp(voltage, -12.0, 12.0);
+//        }
+//        motor.setVoltage(voltage);
+//        setpoint = next;
+//    }
+
     @Override
     public void setVelocity(Dimensionless maxPercent) {
-        if(controlState != ControlState.VELOCITY) {
+        if (controlState != ControlState.VELOCITY) {
             velocityProfile.reset(motor.getEncoder().getVelocity());
             controlState = ControlState.VELOCITY;
         }
@@ -185,7 +187,7 @@ public class DualVortexElevator implements Elevator {
 
     @Override
     public void setVoltage(Voltage voltage) {
-        if(controlState != ControlState.VOLTAGE) {
+        if (controlState != ControlState.VOLTAGE) {
             controlState = ControlState.VOLTAGE;
         }
         motor.setVoltage(voltage.baseUnitMagnitude());

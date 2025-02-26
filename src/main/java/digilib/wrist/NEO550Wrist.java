@@ -26,7 +26,7 @@ import static edu.wpi.first.units.Units.*;
 
 public class NEO550Wrist implements Wrist {
 
-    public enum ControlState{
+    public enum ControlState {
         POSITION,
         VELOCITY,
         VOLTAGE
@@ -86,22 +86,22 @@ public class NEO550Wrist implements Wrist {
         absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
         double absolutePositionRadians = absolutePositionRotations * 2 * Math.PI;
         motor.getEncoder().setPosition(absolutePositionRadians);
-        // if (RobotBase.isSimulation()) {
-        //     DCMotor dcMotor = DCMotor.getNeo550(1);
-        //     sparkMaxSim = new SparkMaxSim(motor, dcMotor);
-        //     canCoderSimState = cancoder.getSimState();
-        //     LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
-        //             constants.kv().baseUnitMagnitude(),
-        //             constants.ka().baseUnitMagnitude());
-        //     simWrist = new DCMotorSim(
-        //             plant,
-        //             dcMotor,
-        //             constants.positionStdDev().baseUnitMagnitude(),
-        //             constants.velocityStdDev().baseUnitMagnitude());
-        //     simWrist.setState(absolutePositionRadians, 0.0);
-        //     sparkMaxSim.setPosition(absolutePositionRadians);
-        // }
-        pidController = new PIDController(8.1898, 0.0, 0.10532, 0.020);
+        if (RobotBase.isSimulation()) {
+            DCMotor dcMotor = DCMotor.getNeo550(1);
+            sparkMaxSim = new SparkMaxSim(motor, dcMotor);
+            canCoderSimState = cancoder.getSimState();
+            LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
+                    constants.kv().baseUnitMagnitude(),
+                    constants.ka().baseUnitMagnitude());
+            simWrist = new DCMotorSim(
+                    plant,
+                    dcMotor,
+                    constants.positionStdDev().baseUnitMagnitude(),
+                    constants.velocityStdDev().baseUnitMagnitude());
+            simWrist.setState(absolutePositionRadians, 0.0);
+            sparkMaxSim.setPosition(absolutePositionRadians);
+        }
+        pidController = new PIDController(89.778, 0.0, 6.7465, 0.020);
     }
 
     @Override
@@ -137,26 +137,9 @@ public class NEO550Wrist implements Wrist {
         request.apply(this);
     }
 
-    // @Override
-    // public void setPosition(Angle position) {
-    //     if(controlState != ControlState.POSITION) {
-    //         lastState.position = motor.getEncoder().getPosition();
-    //         lastState.velocity = motor.getEncoder().getVelocity();
-    //         controlState = ControlState.POSITION;
-    //     }
-    //     goalState.position = position.baseUnitMagnitude();
-    //     goalState.velocity = 0.0;
-    //     double lastVelocitySetpoint = lastState.velocity;
-    //     lastState = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), lastState, goalState);
-    //     double nextVelocitySetpoint = lastState.velocity;
-    //     double nextPositionSetpoint = lastState.position;
-    //     double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetpoint, nextVelocitySetpoint);
-    //     motor.getClosedLoopController().setReference(nextPositionSetpoint, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-    // }
-
     @Override
     public void setPosition(Angle position) {
-        if(controlState != ControlState.POSITION) {
+        if (controlState != ControlState.POSITION) {
             setpoint.position = motor.getEncoder().getPosition();
             setpoint.velocity = motor.getEncoder().getVelocity();
             controlState = ControlState.POSITION;
@@ -164,18 +147,37 @@ public class NEO550Wrist implements Wrist {
         goal.position = position.baseUnitMagnitude();
         goal.velocity = 0.0;
         ExponentialProfile.State next = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), setpoint, goal);
-        double currentPosition = motor.getEncoder().getPosition();
         double currentVelocity = motor.getEncoder().getVelocity();
         double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
-        double feedback = pidController.calculate(currentPosition, setpoint.position);
-        double voltage = MathUtil.clamp(arbFeedfoward + feedback, -12.0, 12.0);
-        motor.setVoltage(voltage);
+        motor.getClosedLoopController().setReference(next.position, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
         setpoint = next;
     }
 
+//    @Override
+//    public void setPosition(Angle position) {
+//        if (controlState != ControlState.POSITION) {
+//            setpoint.position = motor.getEncoder().getPosition();
+//            setpoint.velocity = motor.getEncoder().getVelocity();
+//            controlState = ControlState.POSITION;
+//        }
+//        goal.position = position.baseUnitMagnitude();
+//        goal.velocity = 0.0;
+//        ExponentialProfile.State next = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), setpoint, goal);
+//        double currentPosition = motor.getEncoder().getPosition();
+//        double currentVelocity = motor.getEncoder().getVelocity();
+//        double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
+//        double feedback = pidController.calculate(currentPosition, setpoint.position);
+//        double voltage = arbFeedfoward + feedback;
+//        if(RobotBase.isSimulation()) {
+//            voltage = MathUtil.clamp(voltage, -12.0, 12.0);
+//        }
+//        motor.setVoltage(voltage);
+//        setpoint = next;
+//    }
+
     @Override
     public void setVelocity(Dimensionless maxPercent) {
-        if(controlState != ControlState.VELOCITY) {
+        if (controlState != ControlState.VELOCITY) {
             velocityProfile.reset(motor.getEncoder().getVelocity());
             controlState = ControlState.VELOCITY;
         }
@@ -188,7 +190,7 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void setVoltage(Voltage voltage) {
-        if(controlState != ControlState.VOLTAGE) {
+        if (controlState != ControlState.VOLTAGE) {
             controlState = ControlState.VOLTAGE;
         }
         motor.setVoltage(voltage.baseUnitMagnitude());
@@ -200,10 +202,10 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void update() {
-        // double absolutePositionRotations = cancoder.getAbsolutePosition().getValueAsDouble();
-        // absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
-        // double absolutePositionRadians = absolutePositionRotations * 2 * Math.PI;
-        // motor.getEncoder().setPosition(absolutePositionRadians);
+        double absolutePositionRotations = cancoder.getAbsolutePosition().getValueAsDouble();
+        absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
+        double absolutePositionRadians = absolutePositionRotations * 2 * Math.PI;
+        motor.getEncoder().setPosition(absolutePositionRadians);
         updateState();
         updateTelemetry();
     }

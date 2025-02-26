@@ -101,11 +101,10 @@ public class WristSubsystem implements Subsystem {
     }
 
     Command hold() {
-        return Commands.idle(this);
-        // WristRequest.Position request = new WristRequest.Position();
-        // return Commands.runOnce(() -> request.withAngle(wrist.getState().getAngle()))
-        //         .andThen(applyRequest(() -> request))
-        //         .withName(String.format("%s: HOLD", getName()));
+        WristRequest.Position request = new WristRequest.Position();
+        return Commands.runOnce(() -> request.withAngle(wrist.getState().getAngle()))
+                .andThen(applyRequest(() -> request))
+                .withName(String.format("%s: HOLD", getName()));
     }
 
     @Override

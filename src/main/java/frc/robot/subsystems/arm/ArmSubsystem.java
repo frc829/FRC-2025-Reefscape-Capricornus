@@ -71,11 +71,10 @@ public class ArmSubsystem implements Subsystem {
     }
 
     Command hold() {
-        return Commands.idle(this);
-        // ArmRequest.Position request = new ArmRequest.Position();
-        // return Commands.runOnce(() -> request.withPosition(arm.getState().getAngle()))
-        //         .andThen(applyRequest(() -> request))
-        //         .withName(String.format("%s: HOLD", getName()));
+         ArmRequest.Position request = new ArmRequest.Position();
+         return Commands.runOnce(() -> request.withPosition(arm.getState().getAngle()))
+                 .andThen(applyRequest(() -> request))
+                 .withName(String.format("%s: HOLD", getName()));
     }
 
     @Override

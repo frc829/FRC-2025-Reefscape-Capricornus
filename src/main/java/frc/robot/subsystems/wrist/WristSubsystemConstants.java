@@ -30,12 +30,12 @@ import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.*;
 public class WristSubsystemConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(0.0);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(0.0);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.0);
-        static final double positionKp = 0.0;
-        static final double positionKd = 0.0;
-        static final double velocityKp = 0.0;
+        static final Voltage ks = Volts.of(0.12793);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(1.0825);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.27814);
+        static final double positionKp = 9.8426;
+        static final double positionKd = 0.66614;
+        static final double velocityKp = 0.21318;
         static final Time updatePeriod = Seconds.of(0.020);
         static final AngularVelocity maxAngularVelocity = RadiansPerSecond.of(
                 (12.0 - ks.baseUnitMagnitude()) / kv.baseUnitMagnitude());
@@ -70,9 +70,9 @@ public class WristSubsystemConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 37;
-        static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.Clockwise_Positive;
+        static final SensorDirectionValue sensorDirectionValue = RobotBase.isReal() ? SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
         static final double magnetOffset = RobotBase.isReal()
-                ? 	0.421143
+                ? 0.421143
                 : 0.0;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)

@@ -22,14 +22,14 @@ import frc.robot.Constants;
 public class ArmSubsystemConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(-0.0091447);
-        static final Voltage kg = Volts.of(0.13175);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(40.722);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(8.6716);
+        static final Voltage ks = Volts.of(0.061269);
+        static final Voltage kg = Volts.of(0.14587);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(40.089);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(4.515);
         static final GravityTypeValue gravityTypeValue = GravityTypeValue.Arm_Cosine;
-        static final double positionKp = 117.2;
-        static final double positionKd = 21.258;
-        static final double velocityKp = 1.6108;
+        static final double positionKp = 119.65;
+        static final double positionKd = 13.118;
+        static final double velocityKp = 1.6701;
         static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(
                 (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.magnitude());
         static final AngularAcceleration maxAngularAcceleration = RadiansPerSecondPerSecond.of(
@@ -68,7 +68,7 @@ public class ArmSubsystemConstants {
         static final int cancoderDeviceNumber = 34;
         static final double magnetDirection = RobotBase.isReal() ? -0.217041 : 0.0;  // 0.088623
         static final FeedbackSensorSourceValue feedbackSensorSourceValue = FeedbackSensorSourceValue.FusedCANcoder;
-        static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive; // POSITIVE
+        static final SensorDirectionValue sensorDirectionValue = RobotBase.isReal() ? SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)
                 .withMagnetOffset(magnetDirection);

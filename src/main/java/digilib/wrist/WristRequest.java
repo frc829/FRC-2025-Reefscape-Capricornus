@@ -23,6 +23,8 @@ public interface WristRequest {
             } else {
                 wrist.setPosition(angle);
             }
+            wrist.setPosition(angle);
+
             SmartDashboard.putNumber("Wrist Setpoint", angle.in(Degrees));
         }
 
