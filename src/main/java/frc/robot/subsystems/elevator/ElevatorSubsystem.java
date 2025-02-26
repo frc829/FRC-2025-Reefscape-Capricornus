@@ -77,7 +77,7 @@ public class ElevatorSubsystem implements Subsystem {
         ElevatorRequest.VoltageRequest voltageRequest = new ElevatorRequest.VoltageRequest();
         Config config = new Config(
                 Volts.per(Second).of(1.0),
-                Volts.of(7.0),
+                Volts.of(1.0),
                 Seconds.of(10.0));
         Mechanism mechanism = new Mechanism(
                 volts -> elevator.setControl(voltageRequest.withVoltage(volts)),
