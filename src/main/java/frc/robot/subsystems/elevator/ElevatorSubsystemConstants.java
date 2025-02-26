@@ -27,9 +27,9 @@ public class ElevatorSubsystemConstants {
         static final Voltage kg = Volts.of(0.18218);
         static final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv = Volts.per(MetersPerSecond).of(15.335);
         static final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka = Volts.per(MetersPerSecondPerSecond).of(0.36696);
-        static final double positionKp = 2.4237;
-        static final double positionKd = 0.11445;
-        static final double velocityKp = 0.60533;
+        static final double positionKp = 12.106;
+        static final double positionKd = 0.17223;
+        static final double velocityKp = 0.10044;
         static final LinearVelocity maxVelocity = MetersPerSecond.of(
                 (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.baseUnitMagnitude());
         static final LinearAcceleration maxAcceleration = MetersPerSecondPerSecond.of(

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MitocandriaPowerModule implements CameraPower {
+public class MitoCandriaPowerModule implements CameraPower {
 
     private final CameraPowerState state;
     private CameraPowerRequest request;
@@ -18,7 +18,7 @@ public class MitocandriaPowerModule implements CameraPower {
     private final Alert alert = new Alert("Error", Alert.AlertType.kError);
 
 
-    public MitocandriaPowerModule(CameraPowerConstants constants, MitoCANdria mitoCANdria) {
+    public MitoCandriaPowerModule(CameraPowerConstants constants, MitoCANdria mitoCANdria) {
         telemetry = new CameraPowerTelemetry(constants.name());
         this.mitoCANdria = mitoCANdria;
         state = new CameraPowerState(List.of(

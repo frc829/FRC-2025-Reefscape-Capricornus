@@ -3,7 +3,7 @@ package frc.robot.subsystems.cameraPower;
 import au.grapplerobotics.MitoCANdria;
 import digilib.cameraPower.CameraPower;
 import digilib.cameraPower.CameraPowerConstants;
-import digilib.cameraPower.MitocandriaPowerModule;
+import digilib.cameraPower.MitoCandriaPowerModule;
 
 import static frc.robot.subsystems.cameraPower.CameraPowerSubsystemConstants.Mechanism.name;
 import static frc.robot.subsystems.cameraPower.CameraPowerSubsystemConstants.Module.constants;
@@ -28,7 +28,7 @@ public class CameraPowerSubsystemConstants {
         }catch(Exception e){
             mitoCANdria = null;
         }
-        CameraPower cameraPower = new MitocandriaPowerModule(constants, mitoCANdria);
+        CameraPower cameraPower = new MitoCandriaPowerModule(constants, mitoCANdria);
         CameraPowerSubsystem cameraPowerSubsystem = new CameraPowerSubsystem(cameraPower);
         cameraPowerSubsystem.register();
         return cameraPowerSubsystem;

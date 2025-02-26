@@ -28,10 +28,10 @@ public class DualIntakeSubsystemConstants {
 
     static final class Algae {
         static final class Control {
-            static final Voltage ks = Volts.of(0.0);
-            static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(0.0);
-            static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.0);
-            static final double kp = 0.0;
+            static final Voltage ks = Volts.of(0.15545);
+            static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(0.12164);
+            static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.0023348);
+            static final double kp = 0.00022568;
             static final AngularVelocity maxVelocity = RadiansPerSecond.of(
                     (12.0 - ks.baseUnitMagnitude()) / kv.baseUnitMagnitude());
             static final AngularAcceleration maxAcceleration = RadiansPerSecondPerSecond.of(
@@ -85,10 +85,10 @@ public class DualIntakeSubsystemConstants {
 
     static final class Coral {
         static final class Control {
-            private static final Voltage ks = Volts.of(0.0);
-            private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(0.0);
-            private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.0);
-            private static final double kp = 0.0;
+            private static final Voltage ks = Volts.of(0.12198);
+            private static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(0.12267);
+            private static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.0045787);
+            private static final double kp = 0.00011686;
             private static final AngularVelocity maxVelocity = RadiansPerSecond.of(
                     (12.0 - ks.baseUnitMagnitude()) / kv.baseUnitMagnitude());
             private static final AngularAcceleration maxAcceleration = RadiansPerSecondPerSecond.of(

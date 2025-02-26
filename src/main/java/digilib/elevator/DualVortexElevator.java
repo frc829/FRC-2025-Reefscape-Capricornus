@@ -5,15 +5,9 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import digilib.MotorControllerType;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -47,7 +41,6 @@ public class DualVortexElevator implements Elevator {
     private SparkFlexSim sparkFlexSim = null;
     private SparkFlexSim followerSparkFlexSim = null;
     private ControlState controlState = null;
-    private final PIDController pidController;
 
     public DualVortexElevator(
             ElevatorConstants constants,
@@ -83,9 +76,6 @@ public class DualVortexElevator implements Elevator {
             DCMotor dcMotor = DCMotor.getNeoVortex(2);
             sparkFlexSim = new SparkFlexSim(motor, dcMotor);
             followerSparkFlexSim = new SparkFlexSim(follower, dcMotor);
-            LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
-                    constants.kv().baseUnitMagnitude(),
-                    constants.ka().baseUnitMagnitude());
             simElevator = SimulatedElevator.createFromSysId(
                     constants.kg().baseUnitMagnitude(),
                     constants.kv().baseUnitMagnitude(),
@@ -98,7 +88,6 @@ public class DualVortexElevator implements Elevator {
             sparkFlexSim.setPosition(constants.startingHeight().baseUnitMagnitude());
             followerSparkFlexSim.setPosition(constants.startingHeight().baseUnitMagnitude());
         }
-        pidController = new PIDController(124.39, 0.0, 1.8893, 0.020);
     }
 
     @Override
@@ -149,28 +138,6 @@ public class DualVortexElevator implements Elevator {
         motor.getClosedLoopController().setReference(next.position, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
         setpoint = next;
     }
-
-//    @Override
-//    public void setHeight(Distance height) {
-//        if(controlState != ControlState.POSITION) {
-//            setpoint.position = motor.getEncoder().getPosition();
-//            setpoint.velocity = motor.getEncoder().getVelocity();
-//            controlState = ControlState.POSITION;
-//        }
-//        goal.position = height.baseUnitMagnitude();
-//        goal.velocity = 0.0;
-//        ExponentialProfile.State next = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), setpoint, goal);
-//        double currentPosition = motor.getEncoder().getPosition();
-//        double currentVelocity = motor.getEncoder().getVelocity();
-//        double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
-//        double feedback = pidController.calculate(currentPosition, setpoint.position);
-//        double voltage = arbFeedfoward + feedback;
-//        if(RobotBase.isSimulation()){
-//            voltage = MathUtil.clamp(voltage, -12.0, 12.0);
-//        }
-//        motor.setVoltage(voltage);
-//        setpoint = next;
-//    }
 
     @Override
     public void setVelocity(Dimensionless maxPercent) {
@@ -229,3 +196,29 @@ public class DualVortexElevator implements Elevator {
         followerSparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);
     }
 }
+
+// private final PIDController pidController;
+
+// pidController = new PIDController(124.39, 0.0, 1.8893, 0.020);
+
+//    @Override
+//    public void setHeight(Distance height) {
+//        if(controlState != ControlState.POSITION) {
+//            setpoint.position = motor.getEncoder().getPosition();
+//            setpoint.velocity = motor.getEncoder().getVelocity();
+//            controlState = ControlState.POSITION;
+//        }
+//        goal.position = height.baseUnitMagnitude();
+//        goal.velocity = 0.0;
+//        ExponentialProfile.State next = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), setpoint, goal);
+//        double currentPosition = motor.getEncoder().getPosition();
+//        double currentVelocity = motor.getEncoder().getVelocity();
+//        double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
+//        double feedback = pidController.calculate(currentPosition, setpoint.position);
+//        double voltage = arbFeedfoward + feedback;
+//        if(RobotBase.isSimulation()){
+//            voltage = MathUtil.clamp(voltage, -12.0, 12.0);
+//        }
+//        motor.setVoltage(voltage);
+//        setpoint = next;
+//    }
