@@ -79,23 +79,23 @@ public class ScoringFactories {
 
     public Command l1Align() {
         return sequence(
-                parallel(factories.elevatorTo(elevatorL1, Centimeters.of(1.0)), factories.armTo(armL1, Degrees.of(2.0)))
+                parallel(factories.elevatorTo(elevatorL1), factories.armTo(armL1))
                         .until(elevatorAtL1.and(armAtL1)),
                 wristPickup());
     }
 
     public Command l2Align() {
-        return parallel(factories.elevatorTo(elevatorL2, Centimeters.of(1.0)), factories.armTo(armL2, Degrees.of(2.0)))
+        return parallel(factories.elevatorTo(elevatorL2), factories.armTo(armL2))
                 .until(elevatorAtL2.and(armAtL2));
     }
 
     public Command l3Align() {
-        return parallel(factories.elevatorTo(elevatorL3, Centimeters.of(1.0)), factories.armTo(armL3, Degrees.of(2.0)))
+        return parallel(factories.elevatorTo(elevatorL3), factories.armTo(armL3))
                 .until(elevatorAtL3.and(armAtL3));
     }
 
     public Command l4Align() {
-        return parallel(factories.elevatorTo(elevatorL4, Centimeters.of(1.0)), factories.armTo(armL4, Degrees.of(2.0)))
+        return parallel(factories.elevatorTo(elevatorL4), factories.armTo(armL4))
                 .until(elevatorAtL4.and(armAtL4));
     }
 
@@ -113,10 +113,10 @@ public class ScoringFactories {
 
     public Command bargeAlign() {
         return sequence(
-                parallel(factories.elevatorTo(elevatorBargeArmSafe, Centimeters.of(2.0)),
-                        factories.armTo(armBargeTravel, Degrees.of(2.0))),
-                parallel(factories.elevatorTo(elevatorBarge, Centimeters.of(2.0)),
-                        factories.armTo(armBarge, Degrees.of(2.0))).until(elevatorAtBarge.and(armAtBarge)))
+                parallel(factories.elevatorTo(elevatorBargeArmSafe),
+                        factories.armTo(armBargeTravel)),
+                parallel(factories.elevatorTo(elevatorBarge),
+                        factories.armTo(armBarge)).until(elevatorAtBarge.and(armAtBarge)))
                 .withName("Barge Align");
     }
 
@@ -127,12 +127,12 @@ public class ScoringFactories {
     public Command bargeScoreReset() {
         return sequence(
                 factories.wristTo(wristSafe, wristTolerance).until(isWristSafe),
-                parallel(factories.elevatorTo(Centimeters.of(1.0), Centimeters.of(1.0)), factories.armTo(Degrees.of(90.0), Degrees.of(2.0))))
+                parallel(factories.elevatorTo(Centimeters.of(1.0)), factories.armTo(Degrees.of(90.0))))
                 .withName("Barge Reset");
     }
 
     public Command processorAlign() {
-        return parallel(factories.elevatorTo(elevatorAlgaeProc, Centimeters.of(1.0)), factories.armTo(armAlgaeProc, Degrees.of(2.0)))
+        return parallel(factories.elevatorTo(elevatorAlgaeProc), factories.armTo(armAlgaeProc))
                 .until(elevatorAtProc.and(armAtProc));
     }
 

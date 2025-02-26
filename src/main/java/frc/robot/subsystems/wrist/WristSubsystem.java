@@ -31,7 +31,7 @@ public class WristSubsystem implements Subsystem {
         SysIdRoutine.Config config = new SysIdRoutine.Config(
                 Volts.per(Second).of(1),
                 Volts.of(1.0),
-                Seconds.of(10.0));
+                Seconds.of(1.0));
         WristRequest.VoltageRequest voltageRequest = new WristRequest.VoltageRequest();
         SysIdRoutine.Mechanism mechanism = new SysIdRoutine.Mechanism(
                 volts -> wrist.setControl(voltageRequest.withVoltage(volts)),

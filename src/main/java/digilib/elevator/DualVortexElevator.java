@@ -66,7 +66,7 @@ public class DualVortexElevator implements Elevator {
                 updatePeriod.baseUnitMagnitude());
         this.positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
-                        12.0,
+                        6.0,
                         constants.kv().baseUnitMagnitude(),
                         constants.ka().baseUnitMagnitude()));
         this.velocityProfile = new SlewRateLimiter(constants.maxAcceleration().baseUnitMagnitude());

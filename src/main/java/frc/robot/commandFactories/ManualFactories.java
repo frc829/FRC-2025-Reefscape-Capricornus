@@ -56,10 +56,10 @@ public class ManualFactories {
     }
 
     public Command manualElevatorTest(){
-        return manip.elevatorTo(Centimeters.of(20.0), Centimeters.of(0.0));
+        return manip.elevatorTo(Centimeters.of(20.0));
     }
 
     public Command manualArmTest(){
-        return manip.armTo(Degrees.of(45.0), Degrees.of(0.0));
+        return manip.armTo(Degrees.of(30.0));
     }
 }

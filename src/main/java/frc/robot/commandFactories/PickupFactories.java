@@ -192,59 +192,59 @@ public class PickupFactories {
     }
 
     private Command elevatorCoralHold() {
-        return manip.elevatorTo(elevatorCoralHold, elevatorTolerance);
+        return manip.elevatorTo(elevatorCoralHold);
     }
 
     private Command armCoralHold() {
-        return manip.armTo(armCoralHold, armTolerance);
+        return manip.armTo(armCoralHold);
     }
 
     private Command elevatorAlgaeHold() {
-        return manip.elevatorTo(elevatorAlgaeHold, elevatorTolerance);
+        return manip.elevatorTo(elevatorAlgaeHold);
     }
 
     private Command armAlgaeHold() {
-        return manip.armTo(armAlgaeHold, armTolerance);
+        return manip.armTo(armAlgaeHold);
     }
 
     private Command elevatorCoralFloor() {
-        return manip.elevatorTo(elevatorCoralFloor, elevatorTolerance);
+        return manip.elevatorTo(elevatorCoralFloor);
     }
 
     private Command elevatorAlgaeFloor() {
-        return manip.elevatorTo(elevatorAlgaeFloor, elevatorTolerance);
+        return manip.elevatorTo(elevatorAlgaeFloor);
     }
 
     private Command elevatorCoralStation() {
-        return manip.elevatorTo(elevatorCoralStation, elevatorTolerance);
+        return manip.elevatorTo(elevatorCoralStation);
     }
 
     private Command elevatorAlgaeL2() {
-        return manip.elevatorTo(elevatorAlgaeL2, elevatorTolerance);
+        return manip.elevatorTo(elevatorAlgaeL2);
     }
 
     private Command elevatorAlgaeL3() {
-        return manip.elevatorTo(elevatorAlgaeL3, elevatorTolerance);
+        return manip.elevatorTo(elevatorAlgaeL3);
     }
 
     private Command armCoralFloor() {
-        return manip.armTo(armCoralFloor, armTolerance);
+        return manip.armTo(armCoralFloor);
     }
 
     private Command armAlgaeFloor() {
-        return manip.armTo(armCoralFloor, armTolerance);
+        return manip.armTo(armCoralFloor);
     }
 
     private Command armCoralStation() {
-        return manip.armTo(armCoralStation, armTolerance);
+        return manip.armTo(armCoralStation);
     }
 
     private Command armAlgaeL2() {
-        return manip.armTo(armAlgaeL2, armTolerance);
+        return manip.armTo(armAlgaeL2);
     }
 
     private Command armAlgaeL3() {
-        return manip.armTo(armAlgaeL3, armTolerance);
+        return manip.armTo(armAlgaeL3);
     }
 
     private Command wristPickup() {

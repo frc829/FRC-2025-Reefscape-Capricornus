@@ -91,20 +91,18 @@ public class ManipulatorFactories {
         return wrist.atPosition(angle, tolerance);
     }
 
-    public Command elevatorTo(Distance height, Distance tolerance) {
+    public Command elevatorTo(Distance height) {
         ElevatorRequest.Position request = new ElevatorRequest.Position();
         return elevator.applyRequest(() -> request.withPosition(height))
-                .until(elevator.atPosition(height, tolerance))
                 .asProxy()
-                .withName(String.format(String.format("%s: %s meters, %s meters tolerance", elevator.getName(), height.in(Meters), tolerance.in(Meters))));
+                .withName(String.format(String.format("%s: %s meters", elevator.getName(), height.in(Meters))));
     }
 
-    public Command armTo(Angle angle, Angle tolerance) {
+    public Command armTo(Angle angle) {
         ArmRequest.Position request = new ArmRequest.Position();
         return arm.applyRequest(() -> request.withPosition(angle))
-                .until(arm.atPosition(angle, tolerance))
                 .asProxy()
-                .withName(String.format("%s: %s deg, %s deg tolerance", arm.getName(), angle.in(Degrees), tolerance.in(Degrees)));
+                .withName(String.format("%s: %s deg", arm.getName(), angle.in(Degrees)));
     }
 
     public Command wristTo(Angle position, Angle tolerance) {
