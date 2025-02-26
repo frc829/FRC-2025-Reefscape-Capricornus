@@ -114,7 +114,7 @@ public class ScoringFactories {
     public Command bargeAlign() {
         return sequence(
                 parallel(factories.elevatorTo(elevatorBargeArmSafe),
-                        factories.armTo(armBargeTravel)),
+                        factories.armTo(armBargeTravel)).until(elevatorAtBargeTravel.and(armAtBargeTravel)),
                 parallel(factories.elevatorTo(elevatorBarge),
                         factories.armTo(armBarge)).until(elevatorAtBarge.and(armAtBarge)))
                 .withName("Barge Align");

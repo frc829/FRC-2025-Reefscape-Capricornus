@@ -6,6 +6,7 @@ package frc.robot;
 
 import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoFactory;
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.wrist.WristSubsystemConstants;
 public class Robit extends TimedRobot {
 
     public Robit() {
+        SignalLogger.start();
         SmartDashboard.putString("Robot Comments", Constants.robotComments);
         PortForwarder.add(5800, "orangepi50.local", 5800);
         CanBridge.runTCP();

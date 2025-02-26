@@ -441,7 +441,7 @@ public class TriggerMap {
 
     private double getClimbDutyCycleValue() {
         SmartDashboard.putNumber("joy", climb.getRightY());
-        return -MathUtil.applyDeadband(climb.getRightY(), deadband);
+        return MathUtil.applyDeadband(climb.getRightY(), deadband);
     }
 
     private void bindManualElevatorTest(){

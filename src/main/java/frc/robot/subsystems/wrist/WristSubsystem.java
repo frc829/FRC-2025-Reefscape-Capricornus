@@ -29,8 +29,8 @@ public class WristSubsystem implements Subsystem {
         this.simLoopPeriod = simLoopPeriod;
 
         SysIdRoutine.Config config = new SysIdRoutine.Config(
-                Volts.per(Second).of(1),
-                Volts.of(1.0),
+                Volts.per(Second).of(2),
+                Volts.of(2.0),
                 Seconds.of(1.0));
         WristRequest.VoltageRequest voltageRequest = new WristRequest.VoltageRequest();
         SysIdRoutine.Mechanism mechanism = new SysIdRoutine.Mechanism(

@@ -73,7 +73,7 @@ public class NEO550Wrist implements Wrist {
                 updatePeriod.baseUnitMagnitude());
         this.positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
-                        6.0,
+                        1.0,
                         constants.kv().baseUnitMagnitude(),
                         constants.ka().baseUnitMagnitude()));
         this.velocityProfile = new SlewRateLimiter(constants.maxAngularAcceleration().baseUnitMagnitude());

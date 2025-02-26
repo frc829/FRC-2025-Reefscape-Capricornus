@@ -31,7 +31,8 @@ public class WinchSubsystemConstants {
         private static final boolean inverted = false;
         static final SparkBaseConfig config = new SparkFlexConfig()
                 .inverted(inverted)
-                .idleMode(mode);
+                .idleMode(mode)
+                .smartCurrentLimit(80);
         static final SparkFlex sparkFlex = new SparkFlex(deviceNumber, kBrushless);
     }
 

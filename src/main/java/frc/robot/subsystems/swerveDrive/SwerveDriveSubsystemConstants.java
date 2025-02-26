@@ -124,10 +124,10 @@ public class SwerveDriveSubsystemConstants {
 
     static final class Drive {
 
-        static final LinearVelocity maxVelocity = MetersPerSecond.of(4.90);
+        static final LinearVelocity maxVelocity = MetersPerSecond.of(4.73);
         static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(0.75); // 3/4 of a rotation per second max angular velocity
-        static final double pathTranslationKp = 0.0;
-        static final double pathRotationKp = 0.0;
+        static final double pathTranslationKp = 10.0;
+        static final double pathRotationKp = 0.28655;
         static final SwerveDriveConstants constants = new SwerveDriveConstants(
                 maxVelocity,
                 maxAngularVelocity,
@@ -150,22 +150,22 @@ public class SwerveDriveSubsystemConstants {
             static final Distance WHEEL_RADIUS = Inches.of(2);
 
             static final class Module0 {
-                static final Distance xPos = Inches.of(10.5);
-                static final Distance yPos = Inches.of(13.45);
+                static final Distance xPos = Inches.of(10.25);
+                static final Distance yPos = Inches.of(13.5);
 
                 static final class Steer {
 
                     static final class Control {
-                        static final Voltage ks = Volts.of(0.0);
+                        static final Voltage ks = Volts.of(0.16001);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
-                                Volts.per(RotationsPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecond).of(3.0715);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
-                                Volts.per(RotationsPerSecondPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecondPerSecond).of(0.2786);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 0.0;
+                        static final double kp = 82.842;
                         static final double ki = 0.0;
-                        static final double kd = 0.0;
+                        static final double kd = 0.5;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
                                 .withKS(ks.baseUnitMagnitude())
                                 .withKV(kv.magnitude())
@@ -185,14 +185,14 @@ public class SwerveDriveSubsystemConstants {
                 static final class DriveWheel {
 
                     static final class Control {
-                        static final Voltage ks = Volts.of(0.0);
+                        static final Voltage ks = Volts.of(0.18619);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
-                                Volts.per(RotationsPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecond).of(0.13258);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
-                                Volts.per(RotationsPerSecondPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecondPerSecond).of(0.027741);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseVelocitySign;
-                        static final double kp = 0.0;
+                        static final double kp = 1.0024E-05;
                         static final double ki = 0.0;
                         static final double kd = 0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
@@ -215,28 +215,28 @@ public class SwerveDriveSubsystemConstants {
 
                 static final class Encoder {
                     static final int id = 30;
-                    static final Angle offset = Rotations.of(0.435546875);
+                    static final Angle offset = Rotations.of(-0.020996);
                     static final boolean inverted = false;
                 }
             }
 
             static final class Module1 {
-                static final Distance xPos = Inches.of(10.5);
-                static final Distance yPos = Inches.of(-13.45);
+                static final Distance xPos = Inches.of(10.25);
+                static final Distance yPos = Inches.of(-13.5);
 
                 static final class Steer {
 
                     static final class Control {
-                        static final Voltage ks = Volts.of(0.0);
+                        static final Voltage ks = Volts.of(0.080439);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
-                                Volts.per(RotationsPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecond).of(3.0453);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
-                                Volts.per(RotationsPerSecondPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecondPerSecond).of(0.43112);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 0.0;
+                        static final double kp = 93.454;
                         static final double ki = 0.0;
-                        static final double kd = 0.0;
+                        static final double kd = 0.5;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
                                 .withKS(ks.baseUnitMagnitude())
                                 .withKV(kv.magnitude())
@@ -256,14 +256,14 @@ public class SwerveDriveSubsystemConstants {
                 static final class DriveWheel {
 
                     static final class Control {
-                        static final Voltage ks = Volts.of(0.0);
+                        static final Voltage ks = Volts.of(0.27148);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
-                                Volts.per(RotationsPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecond).of(0.12841);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
-                                Volts.per(RotationsPerSecondPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecondPerSecond).of(0.011464);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseVelocitySign;
-                        static final double kp = 0.0;
+                        static final double kp = 4.5712E-12;
                         static final double ki = 0.0;
                         static final double kd = 0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
@@ -285,28 +285,28 @@ public class SwerveDriveSubsystemConstants {
 
                 static final class Encoder {
                     static final int encoderId = 31;
-                    static final Angle offset = Rotations.of(-0.293701171875);
+                    static final Angle offset = Rotations.of(-0.000977);
                     static final boolean inverted = false;
                 }
             }
 
             static final class Module2 {
-                static final Distance xPos = Inches.of(-10.5);
-                static final Distance yPos = Inches.of(13.45);
+                static final Distance xPos = Inches.of(-10.25);
+                static final Distance yPos = Inches.of(13.5);
 
                 static final class Steer {
 
                     static final class Control {
-                        static final Voltage ks = Volts.of(0.0);
+                        static final Voltage ks = Volts.of(0.039418);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
-                                Volts.per(RotationsPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecond).of(3.03);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
-                                Volts.per(RotationsPerSecondPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecondPerSecond).of(0.36634);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 0.0;
+                        static final double kp = 89.369;
                         static final double ki = 0.0;
-                        static final double kd = 0.0;
+                        static final double kd = 0.5;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
                                 .withKS(ks.baseUnitMagnitude())
                                 .withKV(kv.magnitude())
@@ -327,14 +327,14 @@ public class SwerveDriveSubsystemConstants {
                 static final class DriveWheel {
 
                     static final class Control {
-                        static final Voltage ks = Volts.of(0.0);
+                        static final Voltage ks = Volts.of(0.24392);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
-                                Volts.per(RotationsPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecond).of(0.11293);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
-                                Volts.per(RotationsPerSecondPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecondPerSecond).of(0.0049759);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseVelocitySign;
-                        static final double kp = 0.0;
+                        static final double kp = 2.1674E-23;
                         static final double ki = 0.0;
                         static final double kd = 0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
@@ -356,29 +356,29 @@ public class SwerveDriveSubsystemConstants {
 
                 static final class Encoder {
                     static final int id = 32;
-                    static final Angle offset = Rotations.of(0.226318359375);
+                    static final Angle offset = Rotations.of(-0.381592);
                     static final boolean inverted = false;
 
                 }
             }
 
             static final class Module3 {
-                static final Distance xPos = Inches.of(-10.5);
-                static final Distance yPos = Inches.of(-13.45);
+                static final Distance xPos = Inches.of(-10.25);
+                static final Distance yPos = Inches.of(-13.5);
 
                 static final class Steer {
 
                     static final class Control {
-                        static final Voltage ks = Volts.of(0.0);
+                        static final Voltage ks = Volts.of(0.12317);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
-                                Volts.per(RotationsPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecond).of(3.0633);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
-                                Volts.per(RotationsPerSecondPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecondPerSecond).of(0.39784);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 0.0;
+                        static final double kp = 90.735;
                         static final double ki = 0.0;
-                        static final double kd = 0.0;
+                        static final double kd = 0.5;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
                                 .withKS(ks.baseUnitMagnitude())
                                 .withKV(kv.magnitude())
@@ -399,14 +399,14 @@ public class SwerveDriveSubsystemConstants {
                 static final class DriveWheel {
 
                     static final class Control {
-                        static final Voltage ks = Volts.of(0.0);
+                        static final Voltage ks = Volts.of(0.23051);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv =
-                                Volts.per(RotationsPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecond).of(0.11542);
                         static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka =
-                                Volts.per(RotationsPerSecondPerSecond).of(0.0);
+                                Volts.per(RotationsPerSecondPerSecond).of(0.0092392);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseVelocitySign;
-                        static final double kp = 0.0;
+                        static final double kp = 0.28655;
                         static final double ki = 0.0;
                         static final double kd = 0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
@@ -428,7 +428,7 @@ public class SwerveDriveSubsystemConstants {
 
                 static final class Encoder {
                     static final int id = 33;
-                    static final Angle offset = Rotations.of(-0.199951171875);
+                    static final Angle offset = Rotations.of(0.049316);
                     static final boolean inverted = false;
                 }
             }

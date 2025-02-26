@@ -22,14 +22,14 @@ import frc.robot.Constants;
 public class ArmSubsystemConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(0.011586);
-        static final Voltage kg = Volts.of(0.14103);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(40.162);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(8.3605);
+        static final Voltage ks = Volts.of(0.020004);
+        static final Voltage kg = Volts.of(0.1588);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(39.769);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(8.2555);
         static final GravityTypeValue gravityTypeValue = GravityTypeValue.Arm_Cosine;
-        static final double positionKp = 116.69;
-        static final double positionKd = 20.793;
-        static final double velocityKp = 1.6192;
+        static final double positionKp = 59.182;
+        static final double positionKd = 11.202;
+        static final double velocityKp = 0.41835;
         static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(
                 (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.magnitude());
         static final AngularAcceleration maxAngularAcceleration = RadiansPerSecondPerSecond.of(
@@ -93,6 +93,9 @@ public class ArmSubsystemConstants {
                 .withMotionMagicExpo_kA(ka.magnitude())
                 .withMotionMagicCruiseVelocity(maxAngularVelocity)
                 .withMotionMagicAcceleration(maxAngularAcceleration);
+        static final VoltageConfigs voltageConfigs = new VoltageConfigs()
+                .withPeakForwardVoltage(6.0)
+                .withPeakReverseVoltage(-6.0);
         static final MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs()
                 .withInverted(invertedValue)
                 .withNeutralMode(neutralModeValue);
@@ -115,6 +118,7 @@ public class ArmSubsystemConstants {
                 .withKP(velocityKp);
         static final TalonFX talonFX = new TalonFX(deviceNumber, Constants.rio);
         static final TalonFXConfiguration config = new TalonFXConfiguration()
+                .withVoltage(voltageConfigs)
                 .withFeedback(feedbackConfigs)
                 .withMotionMagic(motionMagicConfigs)
                 .withMotorOutput(motorOutputConfigs)

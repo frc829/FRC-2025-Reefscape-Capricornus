@@ -36,6 +36,7 @@ public class SwerveDriveSubsystem implements Subsystem {
     private double lastSimTime;
     private final Time simLoopPeriod;
     private boolean hasAppliedOperatorPerspective = false;
+    
 
     public SwerveDriveSubsystem(
             CTRESwerveDrive ctreSwerveDrive,
@@ -149,6 +150,8 @@ public class SwerveDriveSubsystem implements Subsystem {
                 Commands.runOnce(SignalLogger::start)
                         .andThen(routine.dynamic(SysIdRoutine.Direction.kReverse))
                         .andThen(SignalLogger::stop).withName("Swerve Steer Dynamic Reverse"));
+
+
     }
 
     private void sysIdDriveWheelRoutineOnDashboard() {
