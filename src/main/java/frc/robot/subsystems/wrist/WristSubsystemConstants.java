@@ -45,7 +45,7 @@ public class WristSubsystemConstants {
 
     static final class Mechanism {
         static final String name = "Wrist";
-        static final double reduction = 10.0 * 7.0 * 32.0 / 24.0;   // 32.0 / 18
+        static final double reduction = 4.0 * 3.0 * 32.0 / 24.0;   // 10 7 32.0 / 18
         static final WristConstants constants = new WristConstants(
                 name,
                 reduction,
