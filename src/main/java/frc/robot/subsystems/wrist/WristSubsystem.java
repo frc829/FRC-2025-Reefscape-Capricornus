@@ -29,8 +29,8 @@ public class WristSubsystem implements Subsystem {
         this.simLoopPeriod = simLoopPeriod;
 
         SysIdRoutine.Config config = new SysIdRoutine.Config(
-                Volts.per(Second).of(1.0),
-                Volts.of(3.0),
+                Volts.per(Second).of(1),
+                Volts.of(1.0),
                 Seconds.of(10.0));
         WristRequest.VoltageRequest voltageRequest = new WristRequest.VoltageRequest();
         SysIdRoutine.Mechanism mechanism = new SysIdRoutine.Mechanism(
@@ -42,7 +42,17 @@ public class WristSubsystem implements Subsystem {
                         .voltage(wrist.getState().getVoltage()),
                 this,
                 "wrist-sysIdRoutine");
+        SysIdRoutine.Mechanism mechanismWithAbs = new SysIdRoutine.Mechanism(
+                volts -> wrist.setControl(voltageRequest.withVoltage(volts)),
+                log -> log
+                        .motor("wrist")
+                        .angularVelocity(wrist.getState().getAbsoluteVelocity())
+                        .angularPosition(wrist.getState().getAbsolutePosition())
+                        .voltage(wrist.getState().getVoltage()),
+                this,
+                "wrist-withAbs-sysIdRoutine");
         SysIdRoutine routine = new SysIdRoutine(config, mechanism);
+        SysIdRoutine routineWithAbs = new SysIdRoutine(config, mechanismWithAbs);
         SmartDashboard.putData("Wrist Quasistatic Forward",
                 Commands.runOnce(SignalLogger::start)
                         .andThen(routine.quasistatic(SysIdRoutine.Direction.kForward))
@@ -60,6 +70,23 @@ public class WristSubsystem implements Subsystem {
                         .andThen(routine.dynamic(SysIdRoutine.Direction.kReverse))
                         .andThen(SignalLogger::stop).withName("Wrist Dynamic Reverse"));
 
+        SmartDashboard.putData("Wrist Abs Quasistatic Forward",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(routineWithAbs.quasistatic(SysIdRoutine.Direction.kForward))
+                        .andThen(SignalLogger::stop).withName("Wrist Quasistatic Forward"));
+        SmartDashboard.putData("Wrist Abs Quasistatic Reverse",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(routineWithAbs.quasistatic(SysIdRoutine.Direction.kReverse))
+                        .andThen(SignalLogger::stop).withName("Wrist Quasistatic Reverse"));
+        SmartDashboard.putData("Wrist Abs Dynamic Forward",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(routineWithAbs.dynamic(SysIdRoutine.Direction.kForward))
+                        .andThen(SignalLogger::stop).withName("Wrist Dynamic Forward"));
+        SmartDashboard.putData("Wrist Abs Dynamic Reverse",
+                Commands.runOnce(SignalLogger::start)
+                        .andThen(routineWithAbs.dynamic(SysIdRoutine.Direction.kReverse))
+                        .andThen(SignalLogger::stop).withName("Wrist Dynamic Reverse"));
+
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -74,10 +101,11 @@ public class WristSubsystem implements Subsystem {
     }
 
     Command hold() {
-        WristRequest.Position request = new WristRequest.Position();
-        return Commands.runOnce(() -> request.withAngle(wrist.getState().getAngle()))
-                .andThen(applyRequest(() -> request))
-                .withName(String.format("%s: HOLD", getName()));
+        return Commands.idle(this);
+        // WristRequest.Position request = new WristRequest.Position();
+        // return Commands.runOnce(() -> request.withAngle(wrist.getState().getAngle()))
+        //         .andThen(applyRequest(() -> request))
+        //         .withName(String.format("%s: HOLD", getName()));
     }
 
     @Override

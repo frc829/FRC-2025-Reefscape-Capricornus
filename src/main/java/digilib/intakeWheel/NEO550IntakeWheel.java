@@ -45,16 +45,16 @@ public class NEO550IntakeWheel implements IntakeWheel {
                 constants.maxVelocity(),
                 constants.maxAcceleration());
 
-        if (RobotBase.isSimulation()) {
-            DCMotor dcMotor = DCMotor.getNeo550(1);
-            sparkMaxSim = new SparkMaxSim(motor, dcMotor);
-            LinearSystem<N1, N1, N1> plant = LinearSystemId.identifyVelocitySystem(
-                    constants.kv().baseUnitMagnitude(),
-                    constants.ka().baseUnitMagnitude());
-            flywheelSim = new FlywheelSim(
-                    plant,
-                    dcMotor);
-        }
+        // if (RobotBase.isSimulation()) {
+        //     DCMotor dcMotor = DCMotor.getNeo550(1);
+        //     sparkMaxSim = new SparkMaxSim(motor, dcMotor);
+        //     LinearSystem<N1, N1, N1> plant = LinearSystemId.identifyVelocitySystem(
+        //             constants.kv().baseUnitMagnitude(),
+        //             constants.ka().baseUnitMagnitude());
+        //     flywheelSim = new FlywheelSim(
+        //             plant,
+        //             dcMotor);
+        // }
     }
 
     @Override

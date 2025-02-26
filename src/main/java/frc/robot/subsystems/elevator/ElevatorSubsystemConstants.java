@@ -23,13 +23,13 @@ import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Simulatio
 public class ElevatorSubsystemConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(0.11192);
-        static final Voltage kg = Volts.of(0.182);
-        static final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv = Volts.per(MetersPerSecond).of(15.432);
-        static final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka = Volts.per(MetersPerSecondPerSecond).of(0.42208);
-        static final double positionKp = 2.5813;
-        static final double positionKd = 0.20567;
-        static final double velocityKp = 0.18863;
+        static final Voltage ks = Volts.of(0.097815);
+        static final Voltage kg = Volts.of(0.18218);
+        static final Measure<? extends PerUnit<VoltageUnit, LinearVelocityUnit>> kv = Volts.per(MetersPerSecond).of(15.335);
+        static final Measure<? extends PerUnit<VoltageUnit, LinearAccelerationUnit>> ka = Volts.per(MetersPerSecondPerSecond).of(0.36696);
+        static final double positionKp = 2.4237;
+        static final double positionKd = 0.11445;
+        static final double velocityKp = 0.60533;
         static final LinearVelocity maxVelocity = MetersPerSecond.of(
                 (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.baseUnitMagnitude());
         static final LinearAcceleration maxAcceleration = MetersPerSecondPerSecond.of(
@@ -60,7 +60,7 @@ public class ElevatorSubsystemConstants {
 
     static final class Simulation {
         static final Distance startingHeight = Centimeters.of(0.0);
-        static final Distance minHeight = Centimeters.of(0.5);
+        static final Distance minHeight = Centimeters.of(0.0);
         static final Distance maxHeight = Centimeters.of(65);
         static final Distance positionStdDev = Meters.of(0.0);
         static final LinearVelocity velocityStdDev = MetersPerSecond.of(0.0);
@@ -86,7 +86,8 @@ public class ElevatorSubsystemConstants {
                 .idleMode(idleMode)
                 .inverted(inverted)
                 .apply(encoderConfig)
-                .apply(closedLoopConfig);
+                .apply(closedLoopConfig)
+                .smartCurrentLimit(80);
         static final SparkFlex motor = new SparkFlex(deviceId, kBrushless);
     }
 
@@ -96,7 +97,8 @@ public class ElevatorSubsystemConstants {
         static final boolean inverted = true;
         static final SparkBaseConfig config = new SparkFlexConfig()
                 .idleMode(idleMode)
-                .follow(Motor.deviceId, inverted);
+                .follow(Motor.deviceId, inverted)
+                .smartCurrentLimit(40);
         static final SparkFlex motor = new SparkFlex(deviceId, kBrushless);
     }
 

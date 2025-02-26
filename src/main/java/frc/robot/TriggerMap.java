@@ -91,6 +91,9 @@ public class TriggerMap {
         bindManualCoralOut();
         bindManualAlgaeIn();
         bindManualAlgaeOut();
+
+        bindManualElevatorTest();
+        bindArmTest();
     }
 
 
@@ -439,5 +442,13 @@ public class TriggerMap {
     private double getClimbDutyCycleValue() {
         SmartDashboard.putNumber("joy", climb.getRightY());
         return -MathUtil.applyDeadband(climb.getRightY(), deadband);
+    }
+
+    private void bindManualElevatorTest(){
+        backup.a().whileTrue(manual.manualElevatorTest());
+    }
+
+    private void bindArmTest(){
+        backup.b().whileTrue(manual.manualArmTest());
     }
 }

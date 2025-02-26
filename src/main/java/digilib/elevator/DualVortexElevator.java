@@ -2,6 +2,7 @@ package digilib.elevator;
 
 import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import digilib.MotorControllerType;
 import edu.wpi.first.math.MathUtil;
@@ -97,7 +98,7 @@ public class DualVortexElevator implements Elevator {
             sparkFlexSim.setPosition(constants.startingHeight().baseUnitMagnitude());
             followerSparkFlexSim.setPosition(constants.startingHeight().baseUnitMagnitude());
         }
-        pidController = new PIDController(28.44, 0.0, 1.3565, 0.020);
+        pidController = new PIDController(124.39, 0.0, 1.8893, 0.020);
     }
 
     @Override
@@ -164,7 +165,7 @@ public class DualVortexElevator implements Elevator {
         double currentVelocity = motor.getEncoder().getVelocity();
         double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
         double feedback = pidController.calculate(currentPosition, setpoint.position);
-        double voltage = MathUtil.clamp(arbFeedfoward + feedback, -12.0, 12.0);
+        double voltage = arbFeedfoward + feedback;
         motor.setVoltage(voltage);
         setpoint = next;
     }

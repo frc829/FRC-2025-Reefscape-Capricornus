@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.Supplier;
 
-import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.either;
 
 public class ManualFactories {
@@ -53,5 +53,13 @@ public class ManualFactories {
 
     public Command manualCoralClawToggle() {
         return manip.toggleCoralClaw();
+    }
+
+    public Command manualElevatorTest(){
+        return manip.elevatorTo(Centimeters.of(20.0), Centimeters.of(0.0));
+    }
+
+    public Command manualArmTest(){
+        return manip.armTo(Degrees.of(45.0), Degrees.of(0.0));
     }
 }

@@ -49,13 +49,11 @@ public class DualIntakeSubsystem implements Subsystem {
         SysIdRoutine.Config wheel0Config = new SysIdRoutine.Config(
                 Volts.per(Second).of(1.0),
                 Volts.of(7.0),
-                Seconds.of(10.0),
-                state -> SignalLogger.writeString("wheel0-sysIdRoutine", state.toString()));
+                Seconds.of(10.0));
         SysIdRoutine.Config wheel1Config = new SysIdRoutine.Config(
                 Volts.per(Second).of(1.0),
                 Volts.of(7.0),
-                Seconds.of(10.0),
-                state -> SignalLogger.writeString("wheel1-sysIdRoutine", state.toString()));
+                Seconds.of(10.0));
         VoltageRequest intakeWheel0VoltageRequest = new VoltageRequest();
         VoltageRequest intakeWheel1VoltageRequest = new VoltageRequest();
         SysIdRoutine.Mechanism wheel0Mechanism = new SysIdRoutine.Mechanism(
@@ -67,7 +65,7 @@ public class DualIntakeSubsystem implements Subsystem {
                 this,
                 "wheel0-sysIdRoutine");
         SysIdRoutine.Mechanism wheel1Mechanism = new SysIdRoutine.Mechanism(
-                volts -> wheel0.setControl(intakeWheel1VoltageRequest.withVoltage(volts)),
+                volts -> wheel1.setControl(intakeWheel1VoltageRequest.withVoltage(volts)),
                 log -> log
                         .motor("wheel1")
                         .angularVelocity(wheel1.getState().getAngularVelocity())
@@ -123,7 +121,7 @@ public class DualIntakeSubsystem implements Subsystem {
     }
 
     Command idle() {
-        IntakeWheelRequest.VoltageRequest request0 = new IntakeWheelRequest.VoltageRequest().withVoltage(Volts.of(-1.0));
+        IntakeWheelRequest.VoltageRequest request0 = new IntakeWheelRequest.VoltageRequest().withVoltage(Volts.of(-0.0));
         IntakeWheelRequest.VoltageRequest request1 = new IntakeWheelRequest.VoltageRequest().withVoltage(Volts.of(0.0));
         Pair<IntakeWheelRequest, IntakeWheelRequest> request = new Pair<>(request0, request1);
         return applyRequest(() -> request)

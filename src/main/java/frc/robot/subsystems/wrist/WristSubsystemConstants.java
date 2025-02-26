@@ -30,12 +30,12 @@ import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.*;
 public class WristSubsystemConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(0.14461);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(1.1894);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.026599);
-        static final double positionKp = 0.77955;
-        static final double positionKd = 0.0073908;
-        static final double velocityKp = 6.8211E-05;
+        static final Voltage ks = Volts.of(0.0);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(0.0);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.0);
+        static final double positionKp = 0.0;
+        static final double positionKd = 0.0;
+        static final double velocityKp = 0.0;
         static final Time updatePeriod = Seconds.of(0.020);
         static final AngularVelocity maxAngularVelocity = RadiansPerSecond.of(
                 (12.0 - ks.baseUnitMagnitude()) / kv.baseUnitMagnitude());
@@ -45,7 +45,7 @@ public class WristSubsystemConstants {
 
     static final class Mechanism {
         static final String name = "Wrist";
-        static final double reduction = 10.0 * 7.0 * 32.0 / 18.0;
+        static final double reduction = 10.0 * 7.0 * 32.0 / 24.0;   // 32.0 / 18
         static final WristConstants constants = new WristConstants(
                 name,
                 reduction,
@@ -70,8 +70,10 @@ public class WristSubsystemConstants {
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 37;
-        static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.CounterClockwise_Positive;
-        static final double magnetOffset = RobotBase.isReal() ? -0.188477 : 0.0;
+        static final SensorDirectionValue sensorDirectionValue = SensorDirectionValue.Clockwise_Positive;
+        static final double magnetOffset = RobotBase.isReal()
+                ? 	0.421143
+                : 0.0;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)
                 .withMagnetOffset(magnetOffset);
@@ -100,7 +102,8 @@ public class WristSubsystemConstants {
                 .idleMode(idleMode)
                 .inverted(inverted)
                 .apply(encoderConfig)
-                .apply(closedLoopConfig);
+                .apply(closedLoopConfig)
+                .smartCurrentLimit(20);
         static final SparkMax motor = new SparkMax(deviceId, kBrushless);
     }
 

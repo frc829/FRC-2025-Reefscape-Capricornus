@@ -86,21 +86,21 @@ public class NEO550Wrist implements Wrist {
         absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
         double absolutePositionRadians = absolutePositionRotations * 2 * Math.PI;
         motor.getEncoder().setPosition(absolutePositionRadians);
-        if (RobotBase.isSimulation()) {
-            DCMotor dcMotor = DCMotor.getNeo550(1);
-            sparkMaxSim = new SparkMaxSim(motor, dcMotor);
-            canCoderSimState = cancoder.getSimState();
-            LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
-                    constants.kv().baseUnitMagnitude(),
-                    constants.ka().baseUnitMagnitude());
-            simWrist = new DCMotorSim(
-                    plant,
-                    dcMotor,
-                    constants.positionStdDev().baseUnitMagnitude(),
-                    constants.velocityStdDev().baseUnitMagnitude());
-            simWrist.setState(absolutePositionRadians, 0.0);
-            sparkMaxSim.setPosition(absolutePositionRadians);
-        }
+        // if (RobotBase.isSimulation()) {
+        //     DCMotor dcMotor = DCMotor.getNeo550(1);
+        //     sparkMaxSim = new SparkMaxSim(motor, dcMotor);
+        //     canCoderSimState = cancoder.getSimState();
+        //     LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
+        //             constants.kv().baseUnitMagnitude(),
+        //             constants.ka().baseUnitMagnitude());
+        //     simWrist = new DCMotorSim(
+        //             plant,
+        //             dcMotor,
+        //             constants.positionStdDev().baseUnitMagnitude(),
+        //             constants.velocityStdDev().baseUnitMagnitude());
+        //     simWrist.setState(absolutePositionRadians, 0.0);
+        //     sparkMaxSim.setPosition(absolutePositionRadians);
+        // }
         pidController = new PIDController(8.1898, 0.0, 0.10532, 0.020);
     }
 
@@ -200,10 +200,10 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void update() {
-        double absolutePositionRotations = cancoder.getAbsolutePosition().getValueAsDouble();
-        absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
-        double absolutePositionRadians = absolutePositionRotations * 2 * Math.PI;
-        motor.getEncoder().setPosition(absolutePositionRadians);
+        // double absolutePositionRotations = cancoder.getAbsolutePosition().getValueAsDouble();
+        // absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
+        // double absolutePositionRadians = absolutePositionRotations * 2 * Math.PI;
+        // motor.getEncoder().setPosition(absolutePositionRadians);
         updateState();
         updateTelemetry();
     }
