@@ -1,8 +1,6 @@
 package frc.robot.commandFactories;
 
 import choreo.auto.AutoFactory;
-import choreo.trajectory.SwerveSample;
-import choreo.trajectory.Trajectory;
 import digilib.swerve.SwerveDriveRequest;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;

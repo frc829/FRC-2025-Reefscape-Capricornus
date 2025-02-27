@@ -28,7 +28,6 @@ import frc.robot.subsystems.wrist.WristSubsystemConstants;
 public class Robit extends TimedRobot {
 
     public Robit() {
-        SignalLogger.start();
         SmartDashboard.putString("Robot Comments", Constants.robotComments);
         PortForwarder.add(5800, "orangepi50.local", 5800);
         CanBridge.runTCP();
@@ -44,7 +43,6 @@ public class Robit extends TimedRobot {
                 PneumaticsSubsystemConstants.create(),
                 PowerSubsystemConstants.create(),
                 WinchSubsystemConstants.create(),
-                // null,
                 WristSubsystemConstants.create());
         PickupFactories pickupFactories = new PickupFactories(manipulator);
         ScoringFactories scoringFactories = new ScoringFactories(manipulator);
