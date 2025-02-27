@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot0;
-import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
 import static edu.wpi.first.units.Units.*;
 
 public class NEO550Wrist implements Wrist {
@@ -73,7 +72,7 @@ public class NEO550Wrist implements Wrist {
                 updatePeriod.baseUnitMagnitude());
         this.positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
-                        1.0,
+                        12.0,
                         constants.kv().baseUnitMagnitude(),
                         constants.ka().baseUnitMagnitude()));
         this.velocityProfile = new SlewRateLimiter(constants.maxAngularAcceleration().baseUnitMagnitude());
@@ -135,18 +134,19 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void setPosition(Angle position) {
-        if (controlState != ControlState.POSITION) {
-            setpoint.position = motor.getEncoder().getPosition();
-            setpoint.velocity = motor.getEncoder().getVelocity();
-            controlState = ControlState.POSITION;
-        }
-        goal.position = position.baseUnitMagnitude();
-        goal.velocity = 0.0;
-        ExponentialProfile.State next = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), setpoint, goal);
-        double currentVelocity = motor.getEncoder().getVelocity();
-        double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
-        motor.getClosedLoopController().setReference(next.position, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        setpoint = next;
+        // if (controlState != ControlState.POSITION) {
+        //     setpoint.position = motor.getEncoder().getPosition();
+        //     setpoint.velocity = motor.getEncoder().getVelocity();
+        //     controlState = ControlState.POSITION;
+        // }
+        // goal.position = position.baseUnitMagnitude();
+        // goal.velocity = 0.0;
+        // ExponentialProfile.State next = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), setpoint, goal);
+        // double currentVelocity = motor.getEncoder().getVelocity();
+        // double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
+        // motor.getClosedLoopController().setReference(next.position, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
+        // setpoint = next;
+        motor.getClosedLoopController().setReference(position.baseUnitMagnitude(), SparkBase.ControlType.kPosition, kSlot0);
     }
 
     @Override
@@ -155,11 +155,7 @@ public class NEO550Wrist implements Wrist {
             velocityProfile.reset(motor.getEncoder().getVelocity());
             controlState = ControlState.VELOCITY;
         }
-        double goalVelocity = maxPercent.baseUnitMagnitude() * maxVelocity.baseUnitMagnitude();
-        double nextVelocitySetpoint = velocityProfile.calculate(goalVelocity);
-        double lastVelocitySetPoint = motor.getEncoder().getVelocity();
-        double arbFeedfoward = feedforward.calculateWithVelocities(lastVelocitySetPoint, nextVelocitySetpoint);
-        motor.getClosedLoopController().setReference(nextVelocitySetpoint, SparkBase.ControlType.kVelocity, kSlot1, arbFeedfoward);
+        motor.setVoltage(maxPercent.baseUnitMagnitude());
     }
 
     @Override

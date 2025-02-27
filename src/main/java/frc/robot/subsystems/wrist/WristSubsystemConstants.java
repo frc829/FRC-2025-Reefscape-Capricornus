@@ -30,10 +30,10 @@ import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.*;
 public class WristSubsystemConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(0.0);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(0.0);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.0);
-        static final double positionKp = 0.0;
+        static final Voltage ks = Volts.of(0.13474);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RadiansPerSecond).of(0.81628);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RadiansPerSecondPerSecond).of(0.028768);
+        static final double positionKp = 0.0;  //1.3276
         static final double positionKd = 0.0;
         static final double velocityKp = 0.0;
         static final Time updatePeriod = Seconds.of(0.020);
@@ -94,8 +94,8 @@ public class WristSubsystemConstants {
                 .uvwAverageDepth(depth)
                 .uvwMeasurementPeriod(periodMs);
         static final ClosedLoopConfig closedLoopConfig = new ClosedLoopConfig()
-                .pidf(positionKp, 0.0, positionKd, 0.0)
-                .pidf(velocityKp, 0.0, 0.0, 0.0, ClosedLoopSlot.kSlot1)
+                .pidf(0.8, 0.0, 0.0, 0.0)
+                .pidf(0.0, 0.0, 0.0, 0.0, ClosedLoopSlot.kSlot1)
                 .feedbackSensor(kPrimaryEncoder)
                 .positionWrappingEnabled(false);
         static final SparkBaseConfig config = new SparkFlexConfig()

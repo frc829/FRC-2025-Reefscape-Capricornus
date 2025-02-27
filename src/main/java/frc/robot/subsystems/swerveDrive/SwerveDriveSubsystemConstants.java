@@ -127,7 +127,7 @@ public class SwerveDriveSubsystemConstants {
         static final LinearVelocity maxVelocity = MetersPerSecond.of(4.73);
         static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(0.75); // 3/4 of a rotation per second max angular velocity
         static final double pathTranslationKp = 10.0;
-        static final double pathRotationKp = 0.28655;
+        static final double pathRotationKp = 5.9918340044856690519902612191937;
         static final SwerveDriveConstants constants = new SwerveDriveConstants(
                 maxVelocity,
                 maxAngularVelocity,

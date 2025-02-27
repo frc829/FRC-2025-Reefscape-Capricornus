@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
+import static digilib.claws.ClawValue.CLOSED;
 import static digilib.claws.ClawValue.OPEN;
 import static edu.wpi.first.wpilibj.PneumaticsModuleType.REVPH;
 
@@ -34,7 +35,7 @@ public class PneumaticsSubsystemConstants {
     static final class AlgaeClaw {
 
         static final class Control {
-            static final ClawValue solenoidOnClawValue = OPEN;
+            static final ClawValue solenoidOnClawValue = CLOSED;
         }
 
         static final class Mechanism {
@@ -55,7 +56,7 @@ public class PneumaticsSubsystemConstants {
     static class CoralClaw {
 
         static final class Control {
-            static final ClawValue solenoidOnClawValue = OPEN;
+            static final ClawValue solenoidOnClawValue = CLOSED;
         }
 
         static final class Mechanism {

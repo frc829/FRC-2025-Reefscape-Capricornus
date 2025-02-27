@@ -416,7 +416,7 @@ public class TriggerMap {
     private double getMaxWristVelocityPercentValue() {
         double leftTrigger = MathUtil.applyDeadband(backup.getLeftTriggerAxis(), deadband);
         double rightTrigger = MathUtil.applyDeadband(backup.getRightTriggerAxis(), deadband);
-        return 0.2 * (leftTrigger - rightTrigger);
+        return 1 * (leftTrigger - rightTrigger);
     }
 
     private Dimensionless getMaxElevatorVelocityPercent() {

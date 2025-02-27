@@ -94,8 +94,8 @@ public class ArmSubsystemConstants {
                 .withMotionMagicCruiseVelocity(maxAngularVelocity)
                 .withMotionMagicAcceleration(maxAngularAcceleration);
         static final VoltageConfigs voltageConfigs = new VoltageConfigs()
-                .withPeakForwardVoltage(6.0)
-                .withPeakReverseVoltage(-6.0);
+                .withPeakForwardVoltage(10.0)
+                .withPeakReverseVoltage(-10.0);
         static final MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs()
                 .withInverted(invertedValue)
                 .withNeutralMode(neutralModeValue);
