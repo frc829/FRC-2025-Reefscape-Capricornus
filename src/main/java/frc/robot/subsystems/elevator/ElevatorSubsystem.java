@@ -73,6 +73,14 @@ public class ElevatorSubsystem implements Subsystem {
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
 
+    public Trigger greaterThan(Distance distance) {
+        return new Trigger(() -> elevator.getState().getHeight().gt(distance));
+    }
+
+    public Trigger lessThan(Distance distance) {
+        return new Trigger(() -> elevator.getState().getHeight().lt(distance));
+    }
+
     private void sysIdRoutinesOnDashboard(){
         ElevatorRequest.VoltageRequest voltageRequest = new ElevatorRequest.VoltageRequest();
         Config config = new Config(

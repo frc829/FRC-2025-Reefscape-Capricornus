@@ -124,4 +124,12 @@ public class WristSubsystem implements Subsystem {
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
+
+    public Trigger greaterThan(Angle angle) {
+        return new Trigger (() -> wrist.getState().getAngle().gt(angle));
+    }
+
+    public Trigger lessThan(Angle angle) {
+        return new Trigger (() -> wrist.getState().getAngle().lt(angle));
+    }
 }

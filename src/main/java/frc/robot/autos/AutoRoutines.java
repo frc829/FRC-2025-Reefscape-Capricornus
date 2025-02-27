@@ -1,4 +1,4 @@
-package frc.robot.routines;
+package frc.robot.autos;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
@@ -7,8 +7,8 @@ import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.commandFactories.PickupFactories;
-import frc.robot.commandFactories.ScoringFactories;
+import frc.robot.commands.game.CoralPickup;
+import frc.robot.commands.game.CoralScore;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
@@ -23,13 +23,13 @@ public class AutoRoutines {
     }
 
     private final AutoFactory factory;
-    private final PickupFactories pickup;
-    private final ScoringFactories score;
+    private final CoralPickup pickup;
+    private final CoralScore score;
 
     public AutoRoutines(
             AutoFactory factory,
-            PickupFactories pickup,
-            ScoringFactories score) {
+            CoralPickup pickup,
+            CoralScore score) {
         this.pickup = pickup;
         this.score = score;
 
@@ -98,6 +98,6 @@ public class AutoRoutines {
     private Command scoreL1() {
         return sequence(
                 score.l1Score().raceWith(waitSeconds(1)),
-                pickup.coralStore());
+                pickup.coralHold());
     }
 }

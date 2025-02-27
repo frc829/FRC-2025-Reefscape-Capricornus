@@ -1,52 +1,37 @@
-package frc.robot;
+package frc.robot.triggermaps;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDimensionless;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commandFactories.*;
+import frc.robot.commands.game.CoralPickup;
+import frc.robot.commands.game.CoralScore;
+import frc.robot.commands.system.*;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj.Joystick.AxisType.*;
 import static edu.wpi.first.wpilibj.XboxController.Axis.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
-import static frc.robot.commandFactories.DrivingFactories.ReefPosition.*;
+import static frc.robot.commands.system.Drive.ReefPosition.*;
 
 public class TriggerMap {
-    private static final double deadband = 0.05;
-    private final CommandXboxController driver = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(1);
-    private final CommandXboxController climb = new CommandXboxController(2);
-    private final CommandXboxController backup = new CommandXboxController(3);
+
 
     private final MutDimensionless maxVelocityPercent = Value.mutable(0.0);
     private final MutDimensionless maxRotationalVelocityPercent = Value.mutable(0.0);
-    private final MutDimensionless maxManualWristVelocityPercent = Value.mutable(0.0);
-    private final MutDimensionless maxManualElevatorVelocityPercent = Value.mutable(0.0);
-    private final MutDimensionless maxManualArmVelocityPercent = Value.mutable(0.0);
-    private final MutDimensionless climbDutyCyclePercent = Value.mutable(0.0);
+
     private final MutAngle heading = Radians.mutable(0.0);
     private final MutAngle rotation = Radians.mutable(0.0);
 
-    private final DrivingFactories driving;
-    private final PickupFactories pickup;
-    private final ScoringFactories scoring;
-    private final ManualFactories manual;
+    private final Drive driving;
+    private final CoralScore scoring;
 
-    public TriggerMap(DrivingFactories driving,
-                      PickupFactories pickup,
-                      ScoringFactories scoring,
-                      ManualFactories manual) {
+    public TriggerMap(Drive driving,
+                      CoralScore scoring) {
         this.driving = driving;
-        this.pickup = pickup;
         this.scoring = scoring;
-        this.manual = manual;
 
         bindClockDrive();
         bindFieldCentricDrive();
@@ -60,40 +45,19 @@ public class TriggerMap {
         bindGoToNearestAlgae();
 
 
-        bindAlgaeFloorPickup();
-        bindAlgaeL2Pickup();
-        bindAlgaeL3Pickup();
-        bindCoralFloorPickup();
-        bindCoralStationPickup();
 
-        bindCoralStore();
+
+
 
         bindBargeAlign();
         bindBargeScore();
         bindProcessorAlign();
         bindProcessorScore();
-        bindL1Align();
-        bindL2Align();
-        bindL3Score();
-        bindL4Score();
-        bindL1Score();
-        bindL234Score();
+
 
         bindClimbScore();
 
-        bindManualWristToggle();
-        bindManualWrist();
-        bindManualElevator();
-        bindManualArm();
-        bindManualAlgaeClawToggle();
-        bindManualCoralClawToggle();
-        bindManualCoralIn();
-        bindManualCoralOut();
-        bindManualAlgaeIn();
-        bindManualAlgaeOut();
 
-        bindManualElevatorTest();
-        bindArmTest();
     }
 
 
@@ -203,43 +167,10 @@ public class TriggerMap {
                 .whileTrue(driving.goToTag(22, CENTER));
     }
 
-    private void bindAlgaeFloorPickup() {
-        operator.axisMagnitudeGreaterThan(kRightTrigger.value, deadband)
-                .whileTrue(pickup.algaeFloor())
-                .onFalse(pickup.holdAfterAlgae());
-    }
 
-    private void bindAlgaeL2Pickup() {
-        operator.rightStick()
-                .whileTrue(pickup.algaeL2())
-                .onFalse(pickup.holdAfterAlgae());
-    }
 
-    private void bindAlgaeL3Pickup() {
-        operator.leftStick()
-                .whileTrue(pickup.algaeL3())
-                .onFalse(pickup.holdAfterAlgae());
-    }
 
-    private void bindCoralFloorPickup() {
-        operator.rightBumper()
-                .whileTrue(
-                        sequence(pickup.coralFloor(), idle())
-                                .withName("Pickup: Coral Floor"))
-                .onFalse(pickup.coralStore());
-    }
 
-    private void bindCoralStationPickup() {
-        operator.povUp()
-                .whileTrue(
-                        sequence(pickup.coralStation(), idle())
-                                .withName("Pickup: Coral Station"))
-                .onFalse(pickup.coralStore());
-    }
-
-    private void bindCoralStore(){
-        operator.back().onTrue(pickup.coralStore());
-    }
 
     private void bindBargeAlign() {
         operator.povLeft()
@@ -262,40 +193,7 @@ public class TriggerMap {
         driver.rightBumper().whileTrue(scoring.processorScore());
     }
 
-    private void bindL1Align() {
-        operator.a()
-                .whileTrue(scoring.l1Align())
-                .onFalse(pickup.coralStore());
-    }
 
-    private void bindL2Align() {
-        operator.x()
-                .whileTrue(scoring.l2Align())
-                .onFalse(pickup.coralStore());
-    }
-
-    private void bindL3Score() {
-        operator.b()
-                .whileTrue(scoring.l3Align())
-                .onFalse(pickup.coralStore());
-    }
-
-    private void bindL4Score() {
-        operator.y()
-                .whileTrue(scoring.l4Align())
-                .onFalse(pickup.coralStore());
-    }
-
-    private void bindL1Score() {
-        driver.leftBumper().and(operator.a())
-                .whileTrue(scoring.l1Score());
-    }
-
-    private void bindL234Score() {
-        driver.leftBumper().and(operator.a().negate())
-                .whileTrue(scoring.l2Score())
-                .onFalse(scoring.L234ScoreReset());
-    }
 
 
     private void bindClimbScore() {
@@ -303,63 +201,7 @@ public class TriggerMap {
                 .whileTrue(scoring.climb(this::getClimbDutyCycle));
     }
 
-    private void bindManualWristToggle() {
-        backup.y().whileTrue(manual.manualWristToggle());
-    }
 
-    private void bindManualWrist() {
-        new Trigger(() -> getMaxWristVelocityPercentValue() != 0.0)
-                .whileTrue(manual.manualWrist(this::getMaxWristVelocityPercent));
-    }
-
-    private void bindManualElevator() {
-        new Trigger(() -> getMaxElevatorVelocityPercentValue() != 0.0)
-                .whileTrue(manual.manualElevator(this::getMaxElevatorVelocityPercent));
-    }
-
-    private void bindManualArm() {
-        new Trigger(() -> getMaxArmVelocityPercentValue() != 0.0)
-                .whileTrue(manual.manualArm(this::getMaxArmVelocityPercent));
-    }
-
-    private void bindManualAlgaeClawToggle() {
-        backup.leftBumper()
-                .onTrue(manual.manualAlgaeClawToggle());
-    }
-
-    private void bindManualCoralClawToggle() {
-        backup.rightBumper()
-                .onTrue(manual.manualCoralClawToggle());
-    }
-
-    private void bindManualCoralIn() {
-        backup.povDown()
-                .whileTrue(manual.manualIntake(
-                        Percent.of(0),
-                        Percent.of(50)).until(manual.hasCoral));
-    }
-
-    private void bindManualCoralOut() {
-        backup.povUp()
-                .whileTrue(manual.manualIntake(
-                        Percent.of(0),
-                        Percent.of(-25)));
-    }
-
-    private void bindManualAlgaeIn() {
-        backup.povLeft()
-                .whileTrue(
-                        sequence(
-                                race(manual.manualIntake(Percent.of(-100), Percent.of(-100)), waitSeconds(0.5)),
-                                manual.manualIntake(Percent.of(-100), Percent.of(-100)).until(manual.hasAlgae)));
-    }
-
-    private void bindManualAlgaeOut() {
-        backup.povRight()
-                .whileTrue(manual.manualIntake(
-                        Percent.of(100),
-                        Percent.of(100)));
-    }
 
     private Dimensionless getMaxVelocityPercent() {
         return maxVelocityPercent.mut_setBaseUnitMagnitude(getMaxVelocityPercentSqValue());
@@ -409,46 +251,5 @@ public class TriggerMap {
         return Math.atan2(y, x);
     }
 
-    private Dimensionless getMaxWristVelocityPercent() {
-        return maxManualWristVelocityPercent.mut_setBaseUnitMagnitude(getMaxWristVelocityPercentValue());
-    }
 
-    private double getMaxWristVelocityPercentValue() {
-        double leftTrigger = MathUtil.applyDeadband(backup.getLeftTriggerAxis(), deadband);
-        double rightTrigger = MathUtil.applyDeadband(backup.getRightTriggerAxis(), deadband);
-        return 1 * (leftTrigger - rightTrigger);
-    }
-
-    private Dimensionless getMaxElevatorVelocityPercent() {
-        return maxManualElevatorVelocityPercent.mut_setBaseUnitMagnitude(getMaxElevatorVelocityPercentValue());
-    }
-
-    private double getMaxElevatorVelocityPercentValue() {
-        return -0.2 * MathUtil.applyDeadband(backup.getLeftY(), deadband);
-    }
-
-    private Dimensionless getMaxArmVelocityPercent() {
-        return maxManualArmVelocityPercent.mut_setBaseUnitMagnitude(getMaxArmVelocityPercentValue());
-    }
-
-    private double getMaxArmVelocityPercentValue() {
-        return -0.2 * MathUtil.applyDeadband(backup.getRightY(), deadband);
-    }
-
-    private Dimensionless getClimbDutyCycle() {
-        return climbDutyCyclePercent.mut_setBaseUnitMagnitude(getClimbDutyCycleValue());
-    }
-
-    private double getClimbDutyCycleValue() {
-        SmartDashboard.putNumber("joy", climb.getRightY());
-        return MathUtil.applyDeadband(climb.getRightY(), deadband);
-    }
-
-    private void bindManualElevatorTest(){
-        backup.a().whileTrue(manual.manualElevatorTest());
-    }
-
-    private void bindArmTest(){
-        backup.b().whileTrue(manual.manualArmTest());
-    }
 }

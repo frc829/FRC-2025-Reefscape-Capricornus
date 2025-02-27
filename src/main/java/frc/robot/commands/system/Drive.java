@@ -1,4 +1,4 @@
-package frc.robot.commandFactories;
+package frc.robot.commands.system;
 
 import choreo.auto.AutoFactory;
 import digilib.swerve.SwerveDriveRequest;
@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-public class DrivingFactories {
+public class Drive {
 
     public enum ReefPosition{
         LEFT, RIGHT, CENTER
@@ -28,7 +28,7 @@ public class DrivingFactories {
     private final AutoFactory autoFactory;
     private final List<Pose2d> aprilTagPoses;
 
-    public DrivingFactories(SwerveDriveSubsystem swerve, AutoFactory autoFactory) {
+    public Drive(SwerveDriveSubsystem swerve, AutoFactory autoFactory) {
         this.swerve = swerve;
         this.autoFactory = autoFactory;
         AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);

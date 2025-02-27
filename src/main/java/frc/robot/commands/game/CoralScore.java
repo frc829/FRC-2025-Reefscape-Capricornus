@@ -1,12 +1,10 @@
-package frc.robot.commandFactories;
+package frc.robot.commands.game;
 
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import java.util.function.Supplier;
+import frc.robot.commands.system.Manipulator;
 
 import static digilib.claws.ClawValue.CLOSED;
 import static digilib.claws.ClawValue.OPEN;
@@ -14,7 +12,7 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-public class ScoringFactories {
+public class CoralScore {
 
     private static final Angle wristSafe = Degrees.of(0.0);
     private static final Angle wristPickup = Degrees.of(90.0);
@@ -40,7 +38,7 @@ public class ScoringFactories {
     private static final Angle armAlgaeProc = Degrees.of(-20.0);
 
 
-    private final ManipulatorFactories factories;
+    private final Manipulator factories;
     private final Trigger armAtL1;
     private final Trigger elevatorAtL1;
     private final Trigger elevatorAtL2;
@@ -58,7 +56,7 @@ public class ScoringFactories {
     private final Trigger isWristSafe;
 
 
-    public ScoringFactories(ManipulatorFactories factories) {
+    public CoralScore(Manipulator factories) {
         this.factories = factories;
         this.armAtL1 = factories.armAtAngle(armL1, Degrees.of(2.0));
         this.elevatorAtL1 = factories.elevatorAtHeight(elevatorL1, Centimeters.of(1.0));
@@ -141,9 +139,7 @@ public class ScoringFactories {
         return factories.intakeToSpeed(Percent.of(100.0), Percent.of(100.0));
     }
 
-    public Command climb(Supplier<Dimensionless> dutyCycle) {
-        return factories.climbAtDutyCycle(dutyCycle);
-    }
+
 
     private Command wristPickup() {
         return factories.wristTo(wristPickup, wristTolerance);

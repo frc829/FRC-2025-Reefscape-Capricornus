@@ -1,11 +1,10 @@
-package frc.robot.commandFactories;
+package frc.robot.commands.system;
 
 import digilib.arm.ArmRequest;
 import digilib.claws.ClawRequest;
 import digilib.claws.ClawValue;
 import digilib.elevator.ElevatorRequest;
 import digilib.intakeWheel.IntakeWheelRequest;
-import digilib.winch.WinchRequest;
 import digilib.wrist.WristRequest;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.units.measure.Angle;
@@ -20,14 +19,13 @@ import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.pneumatics.PneumaticSubsystem;
 import frc.robot.subsystems.power.PowerSubsystem;
-import frc.robot.subsystems.winch.WinchSubsystem;
 import frc.robot.subsystems.wrist.WristSubsystem;
 
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
 
-public class ManipulatorFactories {
+public class Manipulator {
     private final ClawSubsystem algae;
     private final ArmSubsystem arm;
     private final ClawSubsystem coral;
@@ -35,14 +33,13 @@ public class ManipulatorFactories {
     private final ElevatorSubsystem elevator;
     private final PneumaticSubsystem pneumatics;
     private final PowerSubsystem power;
-    public final WinchSubsystem winch;
     private final WristSubsystem wrist;
     public final Trigger hasAlgae;
     public final Trigger hasCoral;
     public final Trigger isCoralClawClosed;
     public final Trigger isAlgaeClawClosed;
 
-    public ManipulatorFactories(
+    public Manipulator(
             ClawSubsystem algae,
             ArmSubsystem arm,
             ClawSubsystem coral,
@@ -50,7 +47,6 @@ public class ManipulatorFactories {
             ElevatorSubsystem elevator,
             PneumaticSubsystem pneumatics,
             PowerSubsystem power,
-            WinchSubsystem winch,
             WristSubsystem wrist) {
         this.algae = algae;
         this.arm = arm;
@@ -59,7 +55,6 @@ public class ManipulatorFactories {
         this.elevator = elevator;
         this.pneumatics = pneumatics;
         this.power = power;
-        this.winch = winch;
         this.wrist = wrist;
         this.hasAlgae = dualIntake.hasAlgae;
         this.hasCoral = dualIntake.hasCoral;
@@ -80,6 +75,22 @@ public class ManipulatorFactories {
 
     public Trigger armLessThan(Angle angle) {
         return arm.lessThan(angle);
+    }
+
+    public Trigger elevatorGreaterThan(Distance distance) {
+        return elevator.greaterThan(distance);
+    }
+
+    public Trigger elevatorLessThan(Distance distance) {
+        return elevator.lessThan(distance);
+    }
+
+    public Trigger wristGreaterThan(Angle angle) {
+        return wrist.greaterThan(angle);
+    }
+
+    public Trigger wristLessThan(Angle angle) {
+        return wrist.lessThan(angle);
     }
 
     public Trigger elevatorAtHeight(Distance height, Distance tolerance) {
@@ -104,12 +115,10 @@ public class ManipulatorFactories {
                 .withName(String.format("%s: %s deg", arm.getName(), angle.in(Degrees)));
     }
 
-    public Command wristTo(Angle position, Angle tolerance) {
+    public Command wristTo(Angle angle) {
         WristRequest.Position request = new WristRequest.Position();
-        return wrist.applyRequest(() -> request.withAngle(position))
-                .until(wrist.atPosition(position, tolerance))
-                .asProxy()
-                .withName(String.format("%s: %s deg, %s deg tolerance", wrist.getName(), position.in(Degrees), tolerance.in(Degrees)));
+        return wrist.applyRequest(() -> request.withAngle(angle)).asProxy()
+                .withName(String.format("%s: %s deg", wrist.getName(), angle.in(Degrees)));
     }
 
     public Command armToSpeed(Supplier<Dimensionless> maxPercent) {
@@ -172,9 +181,5 @@ public class ManipulatorFactories {
                 .withName(String.format("%s: TOGGLE", coral.getName()));
     }
 
-    public Command climbAtDutyCycle(Supplier<Dimensionless> dutyCycle) {
-        WinchRequest.DutyCycle request = new WinchRequest.DutyCycle();
-        return winch.applyRequest(() -> request.withDutyCycle(dutyCycle.get()));
 
-    }
 }
