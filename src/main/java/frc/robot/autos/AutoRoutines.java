@@ -40,12 +40,15 @@ public class AutoRoutines {
         autoChooser.addRoutine("Noob S2", this::theNoobSpot);
         autoChooser.addRoutine("Noob S1", this::noobS1);
         autoChooser.addRoutine("Noob S3", this::noobS3);
-        autoChooser.addRoutine("Plop and Shop", this::plopAndShop);
+        autoChooser.addRoutine("S2 L4 Left", this::S2L4Left);
+        autoChooser.addRoutine("S1 L4 Right", this::S1L4Right);
+        autoChooser.addRoutine("S3 L4 Left", this::S3L4Left);
+        // autoChooser.addRoutine("Plop and Shop", this::plopAndShop);
     }
 
     private AutoRoutine theNoobSpot() {
         AutoRoutine routine = factory.newRoutine("Noob S2");
-        AutoTrajectory S2toG = routine.trajectory("S2-to-G");
+        AutoTrajectory S2toG = routine.trajectory("S2-to-GH");
         Command routineCommand = sequence(S2toG.resetOdometry(), S2toG.cmd());
         routine.active().onTrue(routineCommand);
         S2toG.atTime("Align").onTrue(coralScore.l1Align());
@@ -73,31 +76,68 @@ public class AutoRoutines {
         return routine;
     }
 
-    private AutoRoutine plopAndShop() {
-        AutoRoutine routine = factory.newRoutine("Plop and Shop");
-        AutoTrajectory S3toIJ = routine.trajectory("S3-to-IJ");
-        AutoTrajectory IJtoStationTop = routine.trajectory("IJ-to-Station_Top");
-        AutoTrajectory StationToptoLM = routine.trajectory("Station_Top-to-LM");
-
-        Command routineCommand = sequence(
-                S3toIJ.resetOdometry(),
-                S3toIJ.cmd());
-
+    private AutoRoutine S2L4Left() {
+        AutoRoutine routine = factory.newRoutine("S2-L4-Left");
+        AutoTrajectory traj = routine.trajectory("S2G-to-G");
+        Command routineCommand = sequence(traj.resetOdometry(), traj.cmd());
         routine.active().onTrue(routineCommand);
-        S3toIJ.atTime("Align").onTrue(coralScore.l1Align());
-        S3toIJ.done().onTrue(scoreL1().andThen(IJtoStationTop.cmd()));
-
-        IJtoStationTop.atTime("Pickup").onTrue(coralPickup.station());
-        IJtoStationTop.done().onTrue(waitUntil(coralPickup.hasCoral).andThen(StationToptoLM.cmd()));
-
-        StationToptoLM.atTime("Align").onTrue(coralScore.l1Align());
-        StationToptoLM.done().onTrue(scoreL1());
+        traj.atTime("Align").onTrue(coralScore.l4Align());
+        traj.done().onTrue(waitSeconds(3.0).andThen(scoreL4()));
         return routine;
     }
+
+    private AutoRoutine S1L4Right() {
+        AutoRoutine routine = factory.newRoutine("S1-L4-Right");
+        AutoTrajectory traj = routine.trajectory("S1F-to-F");
+        Command routineCommand = sequence(traj.resetOdometry(), traj.cmd());
+        routine.active().onTrue(routineCommand);
+        traj.atTime("Align").onTrue(coralScore.l4Align());
+        traj.done().onTrue(waitSeconds(3.0).andThen(scoreL4()));
+        return routine;
+    }
+
+    private AutoRoutine S3L4Left() {
+        AutoRoutine routine = factory.newRoutine("S3-L4-Left");
+        AutoTrajectory traj = routine.trajectory("S3I-to-I");
+        Command routineCommand = sequence(traj.resetOdometry(), traj.cmd());
+        routine.active().onTrue(routineCommand);
+        traj.atTime("Align").onTrue(coralScore.l4Align());
+        traj.done().onTrue(waitSeconds(3.0).andThen(scoreL4()));
+        return routine;
+    }
+
+    // private AutoRoutine plopAndShop() {
+    //     AutoRoutine routine = factory.newRoutine("Plop and Shop");
+    //     AutoTrajectory S3toIJ = routine.trajectory("S3-to-IJ");
+    //     AutoTrajectory IJtoStationTop = routine.trajectory("IJ-to-Station_Top");
+    //     AutoTrajectory StationToptoLM = routine.trajectory("Station_Top-to-LM");
+    //
+    //     Command routineCommand = sequence(
+    //             S3toIJ.resetOdometry(),
+    //             S3toIJ.cmd());
+    //
+    //     routine.active().onTrue(routineCommand);
+    //     S3toIJ.atTime("Align").onTrue(coralScore.l1Align());
+    //     S3toIJ.done().onTrue(scoreL1().andThen(IJtoStationTop.cmd()));
+    //
+    //     IJtoStationTop.atTime("Pickup").onTrue(coralPickup.station());
+    //     IJtoStationTop.done().onTrue(waitUntil(coralPickup.hasCoral).andThen(StationToptoLM.cmd()));
+    //
+    //     StationToptoLM.atTime("Align").onTrue(coralScore.l1Align());
+    //     StationToptoLM.done().onTrue(scoreL1());
+    //     return routine;
+    // }
 
     private Command scoreL1() {
         return sequence(
                 coralScore.l1Score().raceWith(waitSeconds(1)),
+                coralPickup.hold());
+    }
+
+    private Command scoreL4(){
+        return sequence(
+                coralScore.l234Score(),
+                waitSeconds(3),
                 coralPickup.hold());
     }
 }

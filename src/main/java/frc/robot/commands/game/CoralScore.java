@@ -53,7 +53,8 @@ public class CoralScore {
                 .withName("Coral Score: L1: Align");
     }
 
-    public Command l2Align() {
+    public Command
+    l2Align() {
         return parallel(
                 manipulator.elevatorTo(elevatorL2),
                 manipulator.armTo(armL2),
