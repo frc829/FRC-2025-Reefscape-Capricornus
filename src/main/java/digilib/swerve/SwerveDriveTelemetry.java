@@ -1,5 +1,6 @@
 package digilib.swerve;
 
+import digilib.DigiMath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -79,9 +80,9 @@ public class SwerveDriveTelemetry {
         driveModulePositions.set(state.getModulePositions());
 
         /* Also write to log file */
-        poseArray[0] = state.getPose().getX();
-        poseArray[1] = state.getPose().getY();
-        poseArray[2] = state.getPose().getRotation().getDegrees();
+        poseArray[0] = DigiMath.roundToDecimal(state.getPose().getX(), 2);
+        poseArray[1] = DigiMath.roundToDecimal(state.getPose().getY(), 2);
+        poseArray[2] = DigiMath.roundToDecimal(state.getPose().getRotation().getDegrees(), 2);
         for (int i = 0; i < 4; ++i) {
             moduleStatesArray[i*2 + 0] = state.getModuleStates()[i].angle.getRadians();
             moduleStatesArray[i*2 + 1] = state.getModuleStates()[i].speedMetersPerSecond;

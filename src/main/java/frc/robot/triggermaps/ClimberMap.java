@@ -3,6 +3,8 @@ package frc.robot.triggermaps;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutDimensionless;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.system.Climber;
 
@@ -29,7 +31,7 @@ public class ClimberMap {
     }
 
     private void bindClimbScore() {
-        controller.axisMagnitudeGreaterThan(kRightY.value, deadband)
+        controller.axisMagnitudeGreaterThan(1, deadband)
                 .whileTrue(climber.climb(this::getClimbDutyCycle));
     }
 

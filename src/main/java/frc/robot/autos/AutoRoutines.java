@@ -37,14 +37,14 @@ public class AutoRoutines {
         SmartDashboard.putData("Auto Chooser", autoChooser);
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
         this.factory = factory;
-        autoChooser.addRoutine("The Noob Spot", this::theNoobSpot);
+        autoChooser.addRoutine("Noob S2", this::theNoobSpot);
         autoChooser.addRoutine("Noob S1", this::noobS1);
         autoChooser.addRoutine("Noob S3", this::noobS3);
         autoChooser.addRoutine("Plop and Shop", this::plopAndShop);
     }
 
     private AutoRoutine theNoobSpot() {
-        AutoRoutine routine = factory.newRoutine("The Noob Spot");
+        AutoRoutine routine = factory.newRoutine("Noob S2");
         AutoTrajectory S2toG = routine.trajectory("S2-to-G");
         Command routineCommand = sequence(S2toG.resetOdometry(), S2toG.cmd());
         routine.active().onTrue(routineCommand);

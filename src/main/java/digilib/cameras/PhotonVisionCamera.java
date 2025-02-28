@@ -4,6 +4,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -14,6 +15,7 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,17 +26,19 @@ import static digilib.cameras.CameraState.CameraMode.*;
 public class PhotonVisionCamera implements Camera {
 
     private final CameraState state = new CameraState();
-    private final Transform3d cameraToRobot;
+    private final Transform3d robotToCamera;
     private final AprilTagFieldLayout fieldTags;
     private final Matrix<N3, N1> singleTagStdDev;
+    private final String name;
     private CameraRequest cameraRequest;
     private final CameraTelemetry telemetry;
     private final PhotonCamera photonCamera;
     private final PhotonPoseEstimator photonPoseEstimator;
 
     public PhotonVisionCamera(CameraConstants constants, PhotonCamera photonCamera) {
+        this.name = constants.name();
         this.photonCamera = photonCamera;
-        this.cameraToRobot = constants.robotToCamera().inverse();
+        this.robotToCamera = constants.robotToCamera();
         this.fieldTags = constants.aprilTagFieldLayout();
         this.singleTagStdDev = constants.singleTagStdDev();
         photonPoseEstimator = new PhotonPoseEstimator(
@@ -76,37 +80,67 @@ public class PhotonVisionCamera implements Camera {
     public void updateState() {
         List<PhotonPipelineResult> photonPipelineResults = photonCamera.getAllUnreadResults();
         for (PhotonPipelineResult result : photonPipelineResults) {
-            state.setBestFiducialId(result.getBestTarget().fiducialId);
-            Transform3d bestTransformToFiducial = cameraToRobot.inverse().plus(result.getBestTarget().bestCameraToTarget);
-            state.setBestTransformFiducialX(bestTransformToFiducial.getX());
-            state.setBestTransformFiducialY(bestTransformToFiducial.getY());
-            state.setBestTransformFiducialThetaRadians(bestTransformToFiducial.getRotation().getZ());
-
-            Optional<EstimatedRobotPose> optionalEstimatedRobotPose = photonPoseEstimator.update(result);
-            optionalEstimatedRobotPose.ifPresentOrElse(
-                    estimatedRobotPose -> {
-                        switch (estimatedRobotPose.strategy) {
-                            case MULTI_TAG_PNP_ON_COPROCESSOR -> updateEstimatedPoseFromMultiTag(estimatedRobotPose);
-                            case LOWEST_AMBIGUITY -> updateEstimatedPoseFromLowestAmbiguity(estimatedRobotPose);
-                            default -> updateEstimatedPoseDefault();
-                        }
-                    }, this::updateEstimatedPoseDefault);
+            if (result.getBestTarget() != null) {
+                if (result.multitagResult.isPresent()) {
+                    Transform3d best = result.multitagResult.get().estimatedPose.best;
+                    Transform3d fixedBest = new Transform3d(
+                            best.getX(),
+                            best.getY(),
+                            best.getZ(),
+                            new Rotation3d(
+                                    best.getX(),
+                                    best.getY(),
+                                    best.getZ()
+                            ));
+                    state.setBestFiducialId(result.getBestTarget().fiducialId);
+                    state.setBestTransformFiducialX(fixedBest.getX());
+                    state.setBestTransformFiducialY(fixedBest.getY());
+                    state.setBestTransformFiducialThetaRadians(fixedBest.getRotation().getZ() * 180 / Math.PI);
+                    Pose3d pose3d = new Pose3d()
+                            .plus(robotToCamera)
+                            .plus(fixedBest)
+                            .relativeTo(fieldTags.getOrigin());
+                    updateEstimatedPoseFromMultiTag(pose3d, new ArrayList<PhotonTrackedTarget>(), result.getTimestampSeconds());
+                } else if (result.getBestTarget().poseAmbiguity < 0.2) {
+                    Transform3d best = result.getBestTarget().bestCameraToTarget;
+                    Transform3d fixedBest = new Transform3d(
+                            best.getX(),
+                            best.getY(),
+                            best.getZ(),
+                            new Rotation3d(
+                                    best.getX(),
+                                    best.getY(),
+                                    best.getZ()
+                            ));
+                    state.setBestFiducialId(result.getBestTarget().fiducialId);
+                    state.setBestTransformFiducialX(fixedBest.getX());
+                    state.setBestTransformFiducialY(fixedBest.getY());
+                    state.setBestTransformFiducialThetaRadians(fixedBest.getRotation().getZ() * 180 / Math.PI);
+                    Pose3d pose3d = new Pose3d()
+                            .plus(robotToCamera)
+                            .plus(fixedBest)
+                            .relativeTo(fieldTags.getOrigin());
+                    updateEstimatedPoseFromLowestAmbiguity(pose3d, new ArrayList<PhotonTrackedTarget>(), result.getTimestampSeconds());
+                } else {
+                    updateEstimatedPoseDefault();
+                }
+            }
         }
     }
 
-    private void updateEstimatedPoseFromMultiTag(EstimatedRobotPose estimatedRobotPose) {
+    private void updateEstimatedPoseFromMultiTag(Pose3d pose3d, List<PhotonTrackedTarget> targets, double timestampSeconds) {
         state.setCameraMode(CameraMode.get(photonCamera.getPipelineIndex()));
-        state.setRobotPose(estimatedRobotPose.estimatedPose.toPose2d());
-        state.setTimestamp(estimatedRobotPose.timestampSeconds);
-        updateRobotPoseStdDevFromMultiTag(estimatedRobotPose.estimatedPose.toPose2d(), estimatedRobotPose.targetsUsed);
+        state.setRobotPose(pose3d.toPose2d());
+        state.setTimestamp(timestampSeconds);
+        updateRobotPoseStdDevFromMultiTag(pose3d.toPose2d(), targets);
     }
 
     private void updateRobotPoseStdDevFromMultiTag(Pose2d pose2d, List<PhotonTrackedTarget> targets) {
         List<Pose2d> targetPose2ds = targets.stream()
                 .map(target -> new Pose3d()
+                        .plus(robotToCamera)
                         .plus(target.bestCameraToTarget)
                         .relativeTo(fieldTags.getOrigin())
-                        .plus(cameraToRobot)
                         .toPose2d()).toList();
 
         double xStdDev = standardDeviation(
@@ -128,15 +162,11 @@ public class PhotonVisionCamera implements Camera {
         state.setRobotPoseStdDev(xStdDev, yStdDev, thetaStdDevRadians);
     }
 
-    private void updateEstimatedPoseFromLowestAmbiguity(EstimatedRobotPose estimatedRobotPose) {
-        if (estimatedRobotPose.targetsUsed.get(0).poseAmbiguity <= 0.2) {
-            state.setCameraMode(CameraMode.get(photonCamera.getPipelineIndex()));
-            state.setRobotPose(estimatedRobotPose.estimatedPose.toPose2d());
-            state.setRobotPoseStdDev(singleTagStdDev.get(0, 0), singleTagStdDev.get(1, 0), singleTagStdDev.get(2, 0));
-            state.setTimestamp(estimatedRobotPose.timestampSeconds);
-        } else {
-            updateEstimatedPoseDefault();
-        }
+    private void updateEstimatedPoseFromLowestAmbiguity(Pose3d pose3d, List<PhotonTrackedTarget> targets, double timestampSeconds) {
+        state.setCameraMode(CameraMode.get(photonCamera.getPipelineIndex()));
+        state.setRobotPose(pose3d.toPose2d());
+        state.setRobotPoseStdDev(singleTagStdDev.get(0, 0), singleTagStdDev.get(1, 0), singleTagStdDev.get(2, 0));
+        state.setTimestamp(timestampSeconds);
     }
 
     private void updateEstimatedPoseDefault() {

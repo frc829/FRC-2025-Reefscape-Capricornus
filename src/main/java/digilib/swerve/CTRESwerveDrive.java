@@ -180,6 +180,7 @@ public class CTRESwerveDrive implements SwerveDrive {
     @Override
     public void update() {
         for (var camera : cameras) {
+            // camera.update();
             CameraState state = camera.getState();
             if (camera.getState().getRobotPose() != null) {
                 addVisionMeasurement(

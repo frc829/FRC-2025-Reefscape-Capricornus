@@ -47,9 +47,9 @@ public class SwerveDriveSubsystemConstants {
 
         static final class Camera0 {
             static final String name = "Thrifty_Cam_2025";
-            static final Distance cameraX = Meter.of(0.0);
-            static final Distance cameraY = Meter.of(0.0);
-            static final Distance cameraZ = Meter.of(0.0);
+            static final Distance cameraX = Centimeters.of(28);
+            static final Distance cameraY = Centimeters.of(9.5);
+            static final Distance cameraZ = Centimeters.of(52.5);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
             static final Angle yaw = Degrees.of(0.0);
@@ -72,12 +72,12 @@ public class SwerveDriveSubsystemConstants {
 
         static final class Camera1 {
             static final String name = "OV9782-08";
-            static final Distance cameraX = Meter.of(0.0);
-            static final Distance cameraY = Meter.of(0.0);
-            static final Distance cameraZ = Meter.of(0.0);
+            static final Distance cameraX = Centimeters.of(4.5);
+            static final Distance cameraY = Centimeters.of(-23.0);
+            static final Distance cameraZ = Centimeters.of(21.5);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
-            static final Angle yaw = Degrees.of(0.0);
+            static final Angle yaw = Degrees.of(180.0);
             static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
             static final Transform3d robotToCamera = new Transform3d(
                     cameraX,
@@ -215,7 +215,7 @@ public class SwerveDriveSubsystemConstants {
 
                 static final class Encoder {
                     static final int id = 30;
-                    static final Angle offset = Rotations.of(-0.020996);
+                    static final Angle offset = Rotations.of(-0.035889);
                     static final boolean inverted = false;
                 }
             }
