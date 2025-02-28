@@ -10,6 +10,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -104,20 +105,18 @@ public class Manipulator {
     public Command elevatorTo(Distance height) {
         ElevatorRequest.Position request = new ElevatorRequest.Position();
         return elevator.applyRequest(() -> request.withPosition(height))
-                .asProxy()
                 .withName(String.format(String.format("%s: %s meters", elevator.getName(), height.in(Meters))));
     }
 
     public Command armTo(Angle angle) {
         ArmRequest.Position request = new ArmRequest.Position();
         return arm.applyRequest(() -> request.withPosition(angle))
-                .asProxy()
                 .withName(String.format("%s: %s deg", arm.getName(), angle.in(Degrees)));
     }
 
     public Command wristTo(Angle angle) {
         WristRequest.Position request = new WristRequest.Position();
-        return wrist.applyRequest(() -> request.withAngle(angle)).asProxy()
+        return wrist.applyRequest(() -> request.withAngle(angle))
                 .withName(String.format("%s: %s deg", wrist.getName(), angle.in(Degrees)));
     }
 
@@ -149,37 +148,43 @@ public class Manipulator {
                     request1.withVelocity(wheel1MaxPercent);
                     return intakeRequests;
                 })
-                .asProxy()
                 .withName(String.format("%s: VELOCITY", dualIntake.getName()));
+    }
+
+    public Command intakeAtVolts(Voltage volts0, Voltage volts1) {
+        IntakeWheelRequest.VoltageRequest request0 = new IntakeWheelRequest.VoltageRequest();
+        IntakeWheelRequest.VoltageRequest request1 = new IntakeWheelRequest.VoltageRequest();
+        Pair<IntakeWheelRequest, IntakeWheelRequest> intakeRequests = new Pair<>(request0, request1);
+
+        return dualIntake.applyRequest(() -> {
+                    request0.withVoltage(volts0);
+                    request1.withVoltage(volts1);
+                    return intakeRequests;
+                })
+                .withName(String.format("%s: VOLTAGE", dualIntake.getName()));
     }
 
     public Command setAlgaeClaw(ClawValue value) {
         ClawRequest.SetValue request = new ClawRequest.SetValue();
         return algae.applyRequestOnce(() -> request.withClawValue(value))
-                .asProxy()
                 .withName(String.format("%s: %s", algae.getName(), value.toString().toUpperCase()));
     }
 
     public Command setCoralClaw(ClawValue value) {
         ClawRequest.SetValue request = new ClawRequest.SetValue();
         return coral.applyRequestOnce(() -> request.withClawValue(value))
-                .asProxy()
                 .withName(String.format("%s: %s", coral.getName(), value.toString().toUpperCase()));
     }
 
     public Command toggleAlgaeClaw() {
         ClawRequest.Toggle request = new ClawRequest.Toggle();
         return algae.applyRequestOnce(() -> request)
-                .asProxy()
                 .withName(String.format("%s: TOGGLE", algae.getName()));
     }
 
     public Command toggleCoralClaw() {
         ClawRequest.Toggle request = new ClawRequest.Toggle();
         return coral.applyRequestOnce(() -> request)
-                .asProxy()
                 .withName(String.format("%s: TOGGLE", coral.getName()));
     }
-
-
 }

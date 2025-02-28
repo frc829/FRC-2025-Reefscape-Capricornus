@@ -1,5 +1,6 @@
 package digilib.wrist;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
@@ -97,6 +98,9 @@ public class NEO550Wrist implements Wrist {
             simWrist.setState(absolutePositionRadians, 0.0);
             sparkMaxSim.setPosition(absolutePositionRadians);
         }
+        // BaseStatusSignal.setUpdateFrequencyForAll(250,
+        //         cancoder.getAbsolutePosition(),
+        //         cancoder.getVelocity());
     }
 
     @Override

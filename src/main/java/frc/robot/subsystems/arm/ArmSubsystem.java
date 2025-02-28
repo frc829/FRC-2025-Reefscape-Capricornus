@@ -96,10 +96,10 @@ public class ArmSubsystem implements Subsystem {
     }
 
     public Trigger greaterThan(Angle angle) {
-        return new Trigger (() -> arm.getState().getAngle().gt(angle));
+        return new Trigger (() -> arm.getState().getAngle().gte(angle));
     }
 
     public Trigger lessThan(Angle angle) {
-        return new Trigger (() -> arm.getState().getAngle().lt(angle));
+        return new Trigger (() -> arm.getState().getAngle().lte(angle));
     }
 }

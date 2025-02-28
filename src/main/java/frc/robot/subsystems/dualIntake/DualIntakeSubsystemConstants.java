@@ -144,7 +144,7 @@ public class DualIntakeSubsystemConstants {
         static final String name = "Coral Detector";
         static final int laserCanId = 36;
         static final LaserCanInterface.RangingMode rangingMode = LaserCanInterface.RangingMode.LONG;
-        static final Distance maxTrueDistance = Millimeters.of(20.0);
+        static final Distance maxTrueDistance = Millimeters.of(1.0);
         static final Distance minTrueDistance = Millimeters.of(-10.0);
         static final ObjectDetectorConstants constants = new ObjectDetectorConstants(name, maxTrueDistance, minTrueDistance);
     }

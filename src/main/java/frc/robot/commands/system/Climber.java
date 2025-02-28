@@ -16,7 +16,7 @@ public class Climber {
     }
 
     public Command climb(Supplier<Dimensionless> dutyCycle) {
-        return factories.climbAtDutyCycle(dutyCycle);
+        return climbAtDutyCycle(dutyCycle);
     }
 
     public Command climbAtDutyCycle(Supplier<Dimensionless> dutyCycle) {

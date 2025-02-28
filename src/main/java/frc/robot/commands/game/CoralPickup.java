@@ -14,144 +14,120 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class CoralPickup {
 
-    private static final ClawValue algaeClawCoralIntake = OPEN;
-    private static final ClawValue coralClawCoralIntake = CLOSED;
+    private static final Angle armFloor = Degrees.of(-43.7);
+    private static final Angle armStation = Degrees.of(50.0);
+    private static final Angle armHold = Degrees.of(90.0);
 
-    private static final Angle wristSafe = Degrees.of(0.0);
+    private static final Distance elevatorFloor = Centimeters.of(16.0);
+    private static final Distance elevatorStation = Centimeters.of(10.0);
+    private static final Distance elevatorHold = Centimeters.of(1.0);
+
     private static final Angle wristPickup = Degrees.of(90.0);
-    private static final Angle wristTolerance = Degrees.of(4.0);
+    private static final Angle wristSafe = Degrees.of(0.0);
 
-    private static final Distance elevatorCoralFloor = Centimeters.of(15.0);
-    private static final Distance elevatorCoralStation = Centimeters.of(5.0);
-    private static final Distance elevatorCoralHold = Centimeters.of(1.0);
+    private static final ClawValue algaeClawValue = OPEN;
+    private static final ClawValue coralClawValue = CLOSED;
 
-    private static final Angle armCoralFloor = Degrees.of(-43.7);
-    private static final Angle armCoralStation = Degrees.of(50.0);
-    private static final Angle armCoralHold = Degrees.of(90.0);
+    private static final Dimensionless algaeSpeed = Percent.of(0);
+    private static final Dimensionless coralSpeed = Percent.of(100);
 
-
-    private static final Dimensionless intakeWheel0CoralSpeed = Percent.of(0);
-    private static final Dimensionless intakeWheel1CoralSpeed = Percent.of(75);
+    private static final Angle armSafeDown = Degrees.of(60.0);
+    private static final Angle armSafeUp = Degrees.of(0.0);
 
     private final Manipulator manipulator;
-
-    private final Trigger armSafeForWristDown;
-    private final Trigger armSafeForWristUp;
-
     public final Trigger hasCoral;
-    private final Trigger isCoralClawClosed;
-    private final Trigger isAlgaeClawClosed;
-    private final Trigger isWristSafe;
-    private final Trigger isWristPickup;
-    private final Trigger isArmAtCoralStation;
-    private final Trigger isElevatorAtCoralStation;
-    private final Trigger isArmAtCoralFloor;
-    private final Trigger isElevatorAtCoralFloor;
-    private final Trigger isArmAtCoralStore;
-    private final Trigger isElevatorAtCoralStore;
+    private final Trigger isArmSafeForWristDown;
+    private final Trigger isArmSafeForWristUp;
 
 
     public CoralPickup(Manipulator manipulator) {
         this.manipulator = manipulator;
-
-        this.armSafeForWristDown = manipulator.armLessThan(Degrees.of(60.0));
-        this.armSafeForWristUp = manipulator.armGreaterThan(Degrees.of(10.0));
-
         this.hasCoral = manipulator.hasCoral;
-        this.isCoralClawClosed = manipulator.isCoralClawClosed;
-        this.isAlgaeClawClosed = manipulator.isAlgaeClawClosed;
-        this.isWristSafe = manipulator.wristAtAngle(wristSafe, wristTolerance);
-        this.isWristPickup = manipulator.wristAtAngle(wristPickup, wristTolerance);
-        this.isArmAtCoralStation = manipulator.armAtAngle(armCoralStation);
-        this.isElevatorAtCoralStation = manipulator.elevatorAtHeight(elevatorCoralStation);
-        this.isArmAtCoralFloor = manipulator.armAtAngle(armCoralFloor);
-        this.isElevatorAtCoralFloor = manipulator.elevatorAtHeight(elevatorCoralFloor);
-        this.isArmAtCoralStore = manipulator.armAtAngle(armCoralHold);
-        this.isElevatorAtCoralStore = manipulator.elevatorAtHeight(elevatorCoralHold);
+        this.isArmSafeForWristDown = manipulator.armLessThan(armSafeDown);
+        this.isArmSafeForWristUp = manipulator.armGreaterThan(armSafeUp);
     }
 
-
-
-
-
-
-
-    public Command coralFloor() {
+    public Command floor() {
         return sequence(
-                clawsForCoral(),
-                parallel(elevatorCoralFloor(), armCoralFloor(), intakeCoral())
-                        .until(armSafeForWristDown),
-                parallel(elevatorCoralFloor(), armCoralFloor(), intakeCoral().until(hasCoral), wristPickup())
-                        .until(isElevatorAtCoralFloor.and(isArmAtCoralFloor).and(isWristPickup)),
-                intakeCoral().until(hasCoral)
-        ).withName("Pickup: Coral Floor");
+                parallel(elevatorCoralFloor(),
+                        armCoralFloor())
+                        .until(isArmSafeForWristDown),
+                parallel(elevatorCoralFloor(),
+                        armCoralFloor(),
+                        clawPickup(),
+                        manipulator.wristTo(wristPickup),
+                        coralIntake()))
+                .withName("Coral Pickup: Floor");
     }
 
-    public Command coralHold() {
+    public Command station() {
         return sequence(
-                clawsForCoralStore(),
-                parallel(elevatorCoralHold(), armCoralHold())
-                        .until(armSafeForWristUp),
-                parallel(elevatorCoralHold(), armCoralHold(), wristSafe())
-        ).withName("Pickup: Coral Store");
+                parallel(elevatorStation(),
+                        armCoralStation())
+                        .until(isArmSafeForWristDown),
+                parallel(elevatorStation(),
+                        armCoralStation(),
+                        clawPickup(),
+                        manipulator.wristTo(wristPickup),
+                        coralIntake().asProxy().until(hasCoral)))
+                .withName("Coral Pickup: Station ");
     }
 
-    public Command coralStation() {
+    public Command hold() {
         return sequence(
-                clawsForCoral(),
-                parallel(elevatorCoralStation(), armCoralStation(), intakeCoral())
-                        .until(armSafeForWristDown),
-                parallel(elevatorCoralStation(), armCoralStation(), intakeCoral().until(hasCoral), wristPickup())
-                        .until(isElevatorAtCoralStation.and(isArmAtCoralStation).and(isWristPickup)),
-                intakeCoral().until(hasCoral)
-        ).withName("Pickup: Coral Station");
+                parallel(armCoralHold(), coralHoldIntake())
+                        .until(manipulator.armGreaterThan(Degrees.of(-20))),
+                parallel(elevatorCoralHold(), armCoralHold(), coralHoldIntake())
+                        .until(isArmSafeForWristUp),
+                parallel(elevatorCoralHold(),
+                        armCoralHold(),
+                        clawHold(),
+                        coralHoldIntake(),
+                        manipulator.wristTo(wristSafe)))
+                .withName("Coral Hold");
     }
 
-
-
-
-
-    private Command clawsForCoral() {
-        return parallel(manip.setAlgaeClaw(algaeClawCoralIntake), manip.setCoralClaw(coralClawCoralIntake));
+    private Command coralIntake() {
+        return manipulator.intakeToSpeed(algaeSpeed, coralSpeed).until(hasCoral)
+                .andThen(manipulator.intakeToSpeed(Percent.of(0.0), Percent.of(5.0)));
     }
 
-    private Command clawsForCoralStore() {
-        return parallel(manip.setAlgaeClaw(CLOSED), manip.setCoralClaw(CLOSED));
+    private Command coralHoldIntake() {
+        return manipulator.intakeToSpeed(Percent.of(0.0), Percent.of(5.0));
+    }
+
+    private Command clawPickup() {
+        return parallel(
+                manipulator.setAlgaeClaw(algaeClawValue),
+                manipulator.setCoralClaw(coralClawValue));
+    }
+
+    private Command clawHold() {
+        return parallel(
+                manipulator.setAlgaeClaw(algaeClawValue.opposite()));
+    }
+
+    private Command elevatorStation() {
+        return manipulator.elevatorTo(elevatorStation);
+    }
+
+    private Command elevatorCoralFloor() {
+        return manipulator.elevatorTo(elevatorFloor);
     }
 
     private Command elevatorCoralHold() {
-        return manip.elevatorTo(elevatorCoralHold);
+        return manipulator.elevatorTo(elevatorHold);
+    }
+
+    private Command armCoralStation() {
+        return manipulator.armTo(armStation);
+    }
+
+    private Command armCoralFloor() {
+        return manipulator.armTo(armFloor);
     }
 
     private Command armCoralHold() {
-        return manip.armTo(armCoralHold);
+        return manipulator.armTo(armHold);
     }
-
-
-
-    private Command elevatorCoralFloor() {
-        return manip.elevatorTo(elevatorCoralFloor);
-    }
-
-
-    private Command elevatorCoralStation() {
-        return manip.elevatorTo(elevatorCoralStation);
-    }
-
-
-
-    private Command wristPickup() {
-        return manip.wristTo(wristPickup, wristTolerance);
-    }
-
-    private Command wristSafe() {
-        return manip.wristTo(wristSafe, wristTolerance);
-    }
-
-
-    private Command intakeCoral() {
-        return manip.intakeToSpeed(intakeWheel0CoralSpeed, intakeWheel1CoralSpeed);
-    }
-
-
 }

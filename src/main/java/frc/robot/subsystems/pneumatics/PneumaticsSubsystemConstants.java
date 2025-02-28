@@ -35,7 +35,7 @@ public class PneumaticsSubsystemConstants {
     static final class AlgaeClaw {
 
         static final class Control {
-            static final ClawValue solenoidOnClawValue = CLOSED;
+            static final ClawValue solenoidOnClawValue = OPEN;
         }
 
         static final class Mechanism {
@@ -56,7 +56,7 @@ public class PneumaticsSubsystemConstants {
     static class CoralClaw {
 
         static final class Control {
-            static final ClawValue solenoidOnClawValue = CLOSED;
+            static final ClawValue solenoidOnClawValue = OPEN;
         }
 
         static final class Mechanism {

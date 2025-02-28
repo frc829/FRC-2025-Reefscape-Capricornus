@@ -30,7 +30,7 @@ public class AlgaePickupMap {
     }
 
     private void bindAlgaeL2Pickup() {
-        controller.rightStick()
+        controller.povRight()
                 .whileTrue(algae.L2())
                 .onFalse(algae.hold());
     }

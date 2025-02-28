@@ -1,5 +1,6 @@
 package digilib.arm;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -66,6 +67,10 @@ public class KrakenX60Arm implements Arm {
             canCoderSimState.setRawPosition(simArm.getAngleRads() / 2 / Math.PI);
             talonFXSimState.setRawRotorPosition(simArm.getAngleRads() * reduction / 2 / Math.PI);
         }
+        // BaseStatusSignal.setUpdateFrequencyForAll(250,
+        //         talonFX.getPosition(),
+        //         talonFX.getVelocity(),
+        //         talonFX.getMotorVoltage());
     }
 
     @Override

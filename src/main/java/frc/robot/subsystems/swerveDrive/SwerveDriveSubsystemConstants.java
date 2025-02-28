@@ -71,7 +71,7 @@ public class SwerveDriveSubsystemConstants {
         }
 
         static final class Camera1 {
-            static final String name = "OV9782-07";
+            static final String name = "OV9782-08";
             static final Distance cameraX = Meter.of(0.0);
             static final Distance cameraY = Meter.of(0.0);
             static final Distance cameraZ = Meter.of(0.0);
@@ -96,13 +96,13 @@ public class SwerveDriveSubsystemConstants {
         }
 
         static final class Camera2 {
-            static final String name = "OV9782-08";
-            static final Distance cameraX = Meter.of(0.0);
-            static final Distance cameraY = Meter.of(0.0);
-            static final Distance cameraZ = Meter.of(0.0);
+            static final String name = "OV9782-07";
+            static final Distance cameraX = Centimeters.of(1.0);
+            static final Distance cameraY = Centimeters.of(40.5);
+            static final Distance cameraZ = Centimeters.of(19.0);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
-            static final Angle yaw = Degrees.of(0.0);
+            static final Angle yaw = Degrees.of(90.0);
             static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
             static final Transform3d robotToCamera = new Transform3d(
                     cameraX,

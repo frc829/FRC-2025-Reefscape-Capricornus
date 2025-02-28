@@ -21,6 +21,10 @@ public class CameraTelemetry {
     private final StructPublisher<Matrix<N3, N1>> robotPoseStdDevPublisher;
     private final StringPublisher cameraModePublisher;
 
+    private final DoubleArrayPublisher fieldPub;
+    private final StringPublisher fieldTypePub;
+    private final double[] poseArray = new double[3];
+
     public CameraTelemetry(String name,
                            Transform3d robotToCamera,
                            PoseStrategy primaryStrategy,
@@ -29,6 +33,7 @@ public class CameraTelemetry {
         table.getStructTopic("Robot to Camera", Transform3d.struct).publish().set(robotToCamera);
         table.getStringTopic("Primary Pose Strategy").publish().set(primaryStrategy.toString());
         table.getStringTopic("Fall Back Pose Strategy").publish().set(fallBackPoseStrategy.toString());
+
         bestFiducialIdPublisher = table.getIntegerTopic("Best Fiducial Id").publish();
         bestTransformFiducialXPublisher = table.getDoubleTopic("Best Transform Fiducial X").publish();
         bestTransformFiducialYPublisher = table.getDoubleTopic("Best Transform Fiducial Y").publish();
@@ -37,6 +42,11 @@ public class CameraTelemetry {
         robotPosePublisher = table.getStructTopic("Robot Pose", Pose2d.struct).publish();
         robotPoseStdDevPublisher = table.getStructTopic("Robot Pose Std Dev", Matrix.getStruct(Nat.N3(), Nat.N1())).publish();
         cameraModePublisher = table.getStringTopic("Camera mode").publish();
+
+
+        NetworkTable poseTable = NetworkTableInstance.getDefault().getTable("Pose");
+        fieldPub = poseTable.getDoubleArrayTopic(name + "robotPose").publish();
+        fieldTypePub = poseTable.getStringTopic(".type").publish();
     }
 
     public void telemeterize(CameraState state) {
@@ -48,5 +58,12 @@ public class CameraTelemetry {
         robotPosePublisher.set(state.getRobotPose());
         robotPoseStdDevPublisher.set(state.getRobotPoseStdDev());
         cameraModePublisher.set(state.getCameraMode().toString());
+
+        poseArray[0] = state.getRobotPose().getX();
+        poseArray[1] = state.getRobotPose().getY();
+        poseArray[2] = state.getRobotPose().getRotation().getDegrees();
+
+        fieldTypePub.set("Field2d");
+        fieldPub.set(poseArray);
     }
 }

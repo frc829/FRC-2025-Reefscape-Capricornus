@@ -49,7 +49,10 @@ public class AlgaePickup {
         return parallel(
                 elevatorAlgaeFloor(),
                 armAlgaeFloor(),
-                either(idle(), manipulator.wristTo(wristPickup), isArmSafeForWristDown),
+                either(
+                        idle(),
+                        manipulator.wristTo(wristPickup),
+                        isArmSafeForWristDown),
                 either(
                         idle(),
                         algaeIntake().until(hasAlgae),
@@ -65,10 +68,17 @@ public class AlgaePickup {
         return parallel(
                 elevatorAlgaeL2(),
                 armAlgaeL2(),
-                either(idle(), manipulator.wristTo(wristPickup), isArmSafeForWristDown),
+                either(
+                        idle(),
+                        manipulator.wristTo(wristPickup),
+                        isArmSafeForWristDown),
                 either(
                         idle(),
                         algaeIntake().until(hasAlgae),
+                        isArmSafeForWristDown),
+                either(
+                        idle(),
+                        claws(),
                         isArmSafeForWristDown))
                 .withName("Algae Pickup: L2");
     }
@@ -77,10 +87,17 @@ public class AlgaePickup {
         return parallel(
                 elevatorAlgaeL3(),
                 armAlgaeL3(),
-                either(idle(), manipulator.wristTo(wristPickup), isArmSafeForWristDown),
+                either(
+                        idle(),
+                        manipulator.wristTo(wristPickup),
+                        isArmSafeForWristDown),
                 either(
                         idle(),
                         algaeIntake().until(hasAlgae),
+                        isArmSafeForWristDown),
+                either(
+                        idle(),
+                        claws(),
                         isArmSafeForWristDown))
                 .withName("Algae Pickup: L3");
     }

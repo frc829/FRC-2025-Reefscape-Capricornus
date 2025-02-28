@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.game.*;
 import frc.robot.commands.system.*;
@@ -37,7 +38,7 @@ public class Robit extends TimedRobot {
         double deadband = 0.05;
         CommandXboxController driverController = new CommandXboxController(0);
         CommandXboxController operatorController = new CommandXboxController(1);
-        CommandXboxController climberController = new CommandXboxController(2);
+        CommandJoystick climberController = new CommandJoystick(2);
         CommandXboxController manualController = new CommandXboxController(3);
 
 
@@ -62,15 +63,21 @@ public class Robit extends TimedRobot {
         CoralScore coralScore = new CoralScore(manipulator);
         Manual manual = new Manual(manipulator);
 
+        new DriveMap(driverController, deadband, drive);
         new AlgaePickupMap(operatorController, deadband, algaePickup);
+        new AlgaeScoreMap(driverController, operatorController, deadband, algaeScore, coralPickup::hold);
         new CoralPickupMap(operatorController, coralPickup);
-        new CoralScoreMap(driverController, operatorController, coralScore, coralPickup::coralHold);
-        new ManualMap(manualController, deadband, manual);
-        new TriggerMap(drive, manipulator, algaePickup, coralPickup, coralScore, manual);
+        new CoralScoreMap(driverController, operatorController, coralScore, coralPickup::hold);
+        new ClimberMap(climberController, deadband, climber);
+        new ManualMap(manualController, operatorController, deadband, manual);
         new AutoRoutines(autoFactory, coralPickup, coralScore);
         SmartDashboard.putData(CommandScheduler.getInstance());
         DataLogManager.start();
         DriverStation.startDataLog(DataLogManager.getLog(), true);
-        addPeriodic(CommandScheduler.getInstance()::run, 0.020);
+    }
+
+    @Override
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
     }
 }

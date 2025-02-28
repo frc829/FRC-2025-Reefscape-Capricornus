@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.system.Climber;
 
 import static edu.wpi.first.units.Units.Value;
+import static edu.wpi.first.wpilibj.XboxController.Axis.kRightY;
 
 public class ClimberMap {
 
@@ -22,6 +23,14 @@ public class ClimberMap {
         this.controller = controller;
         this.deadband = deadband;
         this.climber = climber;
+
+        bindClimbScore();
+
+    }
+
+    private void bindClimbScore() {
+        controller.axisMagnitudeGreaterThan(kRightY.value, deadband)
+                .whileTrue(climber.climb(this::getClimbDutyCycle));
     }
 
     private Dimensionless getClimbDutyCycle() {

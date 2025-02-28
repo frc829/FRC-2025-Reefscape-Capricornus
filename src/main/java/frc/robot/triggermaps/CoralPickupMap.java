@@ -3,9 +3,6 @@ package frc.robot.triggermaps;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.game.CoralPickup;
 
-import static edu.wpi.first.wpilibj2.command.Commands.idle;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-
 public class CoralPickupMap {
 
     private final CommandXboxController controller;
@@ -23,21 +20,17 @@ public class CoralPickupMap {
 
     private void bindCoralFloorPickup() {
         controller.rightBumper()
-                .whileTrue(
-                        sequence(coral.coralFloor(), idle())
-                                .withName("Pickup: Coral Floor"))
-                .onFalse(coral.coralHold());
+                .whileTrue(coral.floor())
+                .onFalse(coral.hold());
     }
 
     private void bindCoralStationPickup() {
         controller.povUp()
-                .whileTrue(
-                        sequence(coral.coralStation(), idle())
-                                .withName("Pickup: Coral Station"))
-                .onFalse(coral.coralHold());
+                .whileTrue(coral.station())
+                .onFalse(coral.hold());
     }
 
     private void bindCoralHold(){
-        controller.back().onTrue(coral.coralHold());
+        controller.back().onTrue(coral.hold());
     }
 }

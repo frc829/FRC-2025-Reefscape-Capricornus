@@ -22,14 +22,14 @@ import frc.robot.Constants;
 public class ArmSubsystemConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(0.020004);
-        static final Voltage kg = Volts.of(0.1588);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(39.769);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(8.2555);
+        static final Voltage ks = Volts.of(0.14546);
+        static final Voltage kg = Volts.of(0.13317);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(39.295);
+        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(0.33517);
         static final GravityTypeValue gravityTypeValue = GravityTypeValue.Arm_Cosine;
-        static final double positionKp = 59.182;
-        static final double positionKd = 11.202;
-        static final double velocityKp = 0.41835;
+        static final double positionKp = 96.725;
+        static final double positionKd = 0.2086;
+        static final double velocityKp = 2.0133;
         static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(
                 (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.magnitude());
         static final AngularAcceleration maxAngularAcceleration = RadiansPerSecondPerSecond.of(
@@ -94,8 +94,8 @@ public class ArmSubsystemConstants {
                 .withMotionMagicCruiseVelocity(maxAngularVelocity)
                 .withMotionMagicAcceleration(maxAngularAcceleration);
         static final VoltageConfigs voltageConfigs = new VoltageConfigs()
-                .withPeakForwardVoltage(10.0)
-                .withPeakReverseVoltage(-10.0);
+                .withPeakForwardVoltage(12.0)
+                .withPeakReverseVoltage(-12.0);
         static final MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs()
                 .withInverted(invertedValue)
                 .withNeutralMode(neutralModeValue);

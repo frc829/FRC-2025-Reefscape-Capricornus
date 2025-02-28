@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.Value;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class ManualMap {
+    private final CommandXboxController operator;
     private final CommandXboxController controller;
     private final double deadband;
     private final Manual manual;
@@ -21,9 +22,11 @@ public class ManualMap {
     private final MutDimensionless maxManualArmVelocityPercent = Value.mutable(0.0);
 
     public ManualMap(CommandXboxController controller,
+                     CommandXboxController operator,
                      double deadband,
                      Manual manual) {
         this.controller = controller;
+        this.operator = operator;
         this.deadband = deadband;
         this.manual = manual;
         bindManualWristToggle();
@@ -122,7 +125,7 @@ public class ManualMap {
     }
 
     private double getMaxArmVelocityPercentValue() {
-        return -0.2 * MathUtil.applyDeadband(controller.getRightY(), deadband);
+        return -0.2 * MathUtil.applyDeadband(operator.getRightY(), deadband);
     }
 
     private void bindManualElevatorTest(){

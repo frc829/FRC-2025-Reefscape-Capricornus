@@ -1,6 +1,7 @@
 package digilib.objectDetectors;
 
 import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.interfaces.LaserCanInterface;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -23,6 +24,12 @@ public class LaserCanObjectDetector implements ObjectDetector {
             Distance maxTrueDistance,
             Distance minTrueDistance) {
         this.laserCan = laserCan;
+        try{
+            laserCan.setRegionOfInterest(new LaserCanInterface.RegionOfInterest(0, 0, 16, 16));
+            laserCan.setTimingBudget(LaserCanInterface.TimingBudget.TIMING_BUDGET_100MS);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         this.maxTrueDistance = maxTrueDistance;
         this.minTrueDistance = minTrueDistance;
         this.state = new ObjectDetectorState();
@@ -67,7 +74,13 @@ public class LaserCanObjectDetector implements ObjectDetector {
                 alert.set(true);
             }
         }else{
-            state.withInRange(true);
+            if(simulated.a().getAsBoolean()){
+                state.withDistance(0.003);
+                state.withInRange(true);
+            }else{
+                state.withDistance(5);
+                state.withInRange(false);
+            }
         }
 
     }
