@@ -105,7 +105,7 @@ public class CoralPickup {
 
     private Command clawHold() {
         return parallel(
-                manipulator.setAlgaeClaw(algaeClawValue.opposite()));
+                manipulator.setAlgaeClaw(algaeClawValue));
     }
 
     private Command elevatorStation() {

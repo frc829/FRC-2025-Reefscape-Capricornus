@@ -40,6 +40,6 @@ public class ClimberMap {
     }
 
     private double getClimbDutyCycleValue() {
-        return -MathUtil.applyDeadband(controller.getY(), deadband);
+        return MathUtil.applyDeadband(controller.getY(), deadband);
     }
 }
