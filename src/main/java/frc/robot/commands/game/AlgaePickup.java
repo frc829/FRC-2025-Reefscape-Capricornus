@@ -20,9 +20,9 @@ public class AlgaePickup {
     private static final Angle armL3 = Degrees.of(-7.0);
     private static final Angle armHold = Degrees.of(0.0);
 
-    private static final Distance elevatorFloor = Centimeters.of(15.0);
+    private static final Distance elevatorFloor = Centimeters.of(17.0);
     private static final Distance elevatorL2 = Centimeters.of(27.0);
-    private static final Distance elevatorL3 = Centimeters.of(46.0);
+    private static final Distance elevatorL3 = Centimeters.of(51.0);
     private static final Distance elevatorHold = Centimeters.of(0.0);
 
     private static final Angle wristPickup = Degrees.of(90.0);
@@ -64,7 +64,7 @@ public class AlgaePickup {
                 .withName("Algae Pickup: Floor");
     }
 
-    public Command L2() {
+    public Command oldL2() {
         return parallel(
                 elevatorAlgaeL2(),
                 armAlgaeL2(),
@@ -83,7 +83,21 @@ public class AlgaePickup {
                 .withName("Algae Pickup: L2");
     }
 
-    public Command L3() {
+    public Command L2() {
+        return sequence(
+                parallel(elevatorAlgaeL2(),
+                        armAlgaeL2())
+                        .until(isArmSafeForWristDown),
+                parallel(elevatorAlgaeL2(),
+                        armAlgaeL2(),
+                        claws(),
+                        manipulator.wristTo(wristPickup),
+                        algaeIntake().asProxy().until(hasAlgae)))
+                .withName("Algae Pickup: L2 ");
+
+    }
+
+    public Command oldL3() {
         return parallel(
                 elevatorAlgaeL3(),
                 armAlgaeL3(),
@@ -100,6 +114,20 @@ public class AlgaePickup {
                         claws(),
                         isArmSafeForWristDown))
                 .withName("Algae Pickup: L3");
+    }
+
+    public Command L3() {
+        return sequence(
+                parallel(elevatorAlgaeL3(),
+                        armAlgaeL3())
+                        .until(isArmSafeForWristDown),
+                parallel(elevatorAlgaeL3(),
+                        armAlgaeL3(),
+                        claws(),
+                        manipulator.wristTo(wristPickup),
+                        algaeIntake().asProxy().until(hasAlgae)))
+                .withName("Algae Pickup: L3 ");
+
     }
 
     public Command hold() {

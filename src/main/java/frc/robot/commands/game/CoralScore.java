@@ -18,14 +18,14 @@ public class CoralScore {
     private static final Angle armL1 = Degrees.of(35.0);
     private static final Angle armSafe = Degrees.of(40.0);
 
-    private static final Distance elevatorL2 = Centimeters.of(19.0);
+    private static final Distance elevatorL2 = Centimeters.of(16.0);
     private static final Angle armL2 = Degrees.of(42.6);
 
-    private static final Distance elevatorL3 = Centimeters.of(40.0);
+    private static final Distance elevatorL3 = Centimeters.of(36.0);
     private static final Angle armL3 = Degrees.of(42.6);
 
     private static final Distance elevatorL4 = Centimeters.of(65.0);
-    private static final Angle armL4 = Degrees.of(48.0);
+    private static final Angle armL4 = Degrees.of(46.0);
 
     private static final Angle wristL1 = Degrees.of(90.0);
     private static final Angle wristL234 = Degrees.of(0.0);
