@@ -133,7 +133,8 @@ public class AlgaePickup {
     public Command hold() {
         return parallel(
                 elevatorAlgaeHold(),
-                armAlgaeHold())
+                armAlgaeHold(),
+                algaeHoldIntake())
                 .withName("Algae Hold");
     }
 
@@ -184,5 +185,9 @@ public class AlgaePickup {
 
     private Command armAlgaeFloor() {
         return manipulator.armTo(armFloor);
+    }
+
+    private Command algaeHoldIntake() {
+        return manipulator.intakeToSpeed(Percent.of(-8.0), Percent.of(0.0));
     }
 }

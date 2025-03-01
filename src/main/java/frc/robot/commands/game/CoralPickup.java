@@ -18,8 +18,8 @@ public class CoralPickup {
     private static final Angle armStation = Degrees.of(50.0);
     private static final Angle armHold = Degrees.of(90.0);
 
-    private static final Distance elevatorFloor = Centimeters.of(16.0);
-    private static final Distance elevatorStation = Centimeters.of(10.0);
+    private static final Distance elevatorFloor = Centimeters.of(17.0);
+    private static final Distance elevatorStation = Centimeters.of(14.0);
     private static final Distance elevatorHold = Centimeters.of(1.0);
 
     private static final Angle wristPickup = Degrees.of(90.0);
@@ -69,7 +69,8 @@ public class CoralPickup {
                         armCoralStation(),
                         clawPickup(),
                         manipulator.wristTo(wristPickup),
-                        coralIntake().asProxy().until(hasCoral)))
+                        coralIntake().until(hasCoral).asProxy())
+                )
                 .withName("Coral Pickup: Station ");
     }
 
@@ -89,11 +90,11 @@ public class CoralPickup {
 
     private Command coralIntake() {
         return manipulator.intakeToSpeed(algaeSpeed, coralSpeed).until(hasCoral)
-                .andThen(manipulator.intakeToSpeed(Percent.of(0.0), Percent.of(5.0)));
+                .andThen(manipulator.intakeToSpeed(Percent.of(0.0), Percent.of(10.0)));
     }
 
     private Command coralHoldIntake() {
-        return manipulator.intakeToSpeed(Percent.of(0.0), Percent.of(5.0));
+        return manipulator.intakeToSpeed(Percent.of(0.0), Percent.of(10.0));
     }
 
     private Command clawPickup() {

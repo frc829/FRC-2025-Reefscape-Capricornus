@@ -122,7 +122,7 @@ public class DualIntakeSubsystem implements Subsystem {
 
     Command idle() {
         IntakeWheelRequest.VoltageRequest request0 = new IntakeWheelRequest.VoltageRequest().withVoltage(Volts.of(-1.0));
-        IntakeWheelRequest.VoltageRequest request1 = new IntakeWheelRequest.VoltageRequest().withVoltage(Volts.of(0.0));
+        IntakeWheelRequest.VoltageRequest request1 = new IntakeWheelRequest.VoltageRequest().withVoltage(Volts.of(3.0));
         Pair<IntakeWheelRequest, IntakeWheelRequest> request = new Pair<>(request0, request1);
         return applyRequest(() -> request)
                 .withName(String.format("%s: IDLE", getName()));
