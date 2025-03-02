@@ -80,4 +80,8 @@ public class Robit extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
     }
+
+    @Override
+    public void teleopPeriodic() {
+    }
 }

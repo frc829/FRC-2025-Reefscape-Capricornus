@@ -94,7 +94,7 @@ public class CoralPickup {
     }
 
     private Command coralHoldIntake() {
-        return manipulator.intakeToSpeed(Percent.of(0.0), Percent.of(10.0));
+        return manipulator.intakeToSpeed(Percent.of(0.0), Percent.of(5.0));
     }
 
     private Command clawPickup() {

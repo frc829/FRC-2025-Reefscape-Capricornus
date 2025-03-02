@@ -15,13 +15,13 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 public class CoralScore {
 
     private static final Distance elevatorL1 = Centimeters.of(5.0);
-    private static final Angle armL1 = Degrees.of(35.0);
+    private static final Angle armL1 = Degrees.of(40.0);
     private static final Angle armSafe = Degrees.of(40.0);
 
-    private static final Distance elevatorL2 = Centimeters.of(16.0);
+    private static final Distance elevatorL2 = Centimeters.of(24.0);
     private static final Angle armL2 = Degrees.of(42.6);
 
-    private static final Distance elevatorL3 = Centimeters.of(36.0);
+    private static final Distance elevatorL3 = Centimeters.of(44.0);
     private static final Angle armL3 = Degrees.of(42.6);
 
     private static final Distance elevatorL4 = Centimeters.of(65.0);
@@ -57,6 +57,7 @@ public class CoralScore {
     l2Align() {
         return parallel(
                 manipulator.elevatorTo(elevatorL2),
+
                 manipulator.armTo(armL2),
                 manipulator.wristTo(wristL234))
                 .withName("Coral Score: L2: Align");

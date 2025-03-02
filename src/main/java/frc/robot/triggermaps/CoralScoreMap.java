@@ -62,7 +62,6 @@ public class CoralScoreMap {
 
     private void bindL234Score() {
         driver.leftBumper().and(operator.a().negate())
-                .whileTrue(coral.l234Score())
-                .onFalse(coralHold.get());
+                .whileTrue(coral.l234Score());
     }
 }
