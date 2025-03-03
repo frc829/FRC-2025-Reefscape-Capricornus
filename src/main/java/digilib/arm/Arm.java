@@ -1,30 +1,26 @@
 package digilib.arm;
 
 import digilib.MotorControllerType;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.units.measure.Voltage;
 
 public interface Arm {
 
     MotorControllerType getMotorControllerType();
 
-    Angle getMaxAngle();
+    double getMinAngleRotations();
 
-    Angle getMinAngle();
+    double getMaxAngleRotations();
 
-    AngularVelocity getMaxVelocity();
+    double getMaxVelocityRPS();
 
     ArmState getState();
 
     void setControl(ArmRequest request);
 
-    void setPosition(Angle position);
+    void setPosition(double setpointRotations);
 
-    void setVelocity(Dimensionless maxPercent);
+    void setVelocity(double setpointScalar);
 
-    void setVoltage(Voltage voltage);
+    void setVoltage(double volts);
 
     void resetPosition();
 

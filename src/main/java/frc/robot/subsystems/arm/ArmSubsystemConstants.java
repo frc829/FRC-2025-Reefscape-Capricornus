@@ -15,7 +15,7 @@ import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 import digilib.arm.Arm;
 import digilib.arm.ArmConstants;
-import digilib.arm.KrakenX60Arm;
+import digilib.arm.TalonFXArm;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants;
 
@@ -129,7 +129,7 @@ public class ArmSubsystemConstants {
     public static ArmSubsystem create() {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         talonFX.getConfigurator().apply(Motor.config);
-        Arm arm = new KrakenX60Arm(constants, talonFX, cancoder);
+        Arm arm = new TalonFXArm(constants, talonFX, cancoder);
         ArmSubsystem armSubsystem = new ArmSubsystem(arm, simLoopPeriod);
         armSubsystem.setDefaultCommand(armSubsystem.hold());
         return armSubsystem;

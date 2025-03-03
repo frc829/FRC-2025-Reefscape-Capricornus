@@ -10,7 +10,7 @@ public interface ArmRequest {
     void apply(Arm arm);
 
     class Position implements ArmRequest {
-        private final MutAngle angle = Radians.mutable(0.0);
+        private final double setpointDegrees = 0.0;
 
         @Override
         public void apply(Arm arm) {
@@ -22,7 +22,6 @@ public interface ArmRequest {
             } else {
                 arm.setPosition(angle);
             }
-            SmartDashboard.putNumber("Arm Setpoint", angle.in(Degrees));
         }
 
         public Position withPosition(Angle angle) {

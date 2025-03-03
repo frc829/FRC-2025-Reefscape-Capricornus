@@ -83,19 +83,10 @@ public class PhotonVisionCamera implements Camera {
             if (result.getBestTarget() != null) {
                 if (result.multitagResult.isPresent()) {
                     Transform3d best = result.multitagResult.get().estimatedPose.best;
-                    Transform3d fixedBest = new Transform3d(
-                            best.getX(),
-                            best.getY(),
-                            best.getZ(),
-                            new Rotation3d(
-                                    best.getX(),
-                                    best.getY(),
-                                    best.getZ()
-                            ));
                     state.setBestFiducialId(result.getBestTarget().fiducialId);
-                    state.setBestTransformFiducialX(fixedBest.getX());
-                    state.setBestTransformFiducialY(fixedBest.getY());
-                    state.setBestTransformFiducialThetaRadians(fixedBest.getRotation().getZ() * 180 / Math.PI);
+                    state.setBestTransformFiducialX(best.getX());
+                    state.setBestTransformFiducialY(best.getY());
+                    state.setBestTransformFiducialThetaRadians(best.getRotation().getZ() * 180 / Math.PI);
                     Pose3d pose3d = new Pose3d()
                             .plus(robotToCamera)
                             .plus(fixedBest)
