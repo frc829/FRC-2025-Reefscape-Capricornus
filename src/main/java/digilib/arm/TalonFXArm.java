@@ -101,7 +101,9 @@ public class TalonFXArm implements Arm {
 
     @Override
     public void setPosition(double setpointRotations) {
-        if (state.getMotorEncoderPositionRotations() > maxAngleRotations &&
+        double currentPosition = talonFX.getPosition().getValueAsDouble();
+
+        if (currentPosition > maxAngleRotations &&
                 state.getMotorEncoderPositionRotations() > setpointRotations) {
 
         }
