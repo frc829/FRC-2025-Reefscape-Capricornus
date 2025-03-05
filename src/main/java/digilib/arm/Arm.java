@@ -14,8 +14,6 @@ public interface Arm {
 
     ArmState getState();
 
-    void setControl(ArmRequest request);
-
     void setPosition(double setpointRotations);
 
     void setVelocity(double setpointScalar);

@@ -26,7 +26,6 @@ public class TalonFXArm implements Arm {
     private final MotionMagicExpoVoltage positionControl = new MotionMagicExpoVoltage(0.0).withSlot(0).withEnableFOC(true);
     private final MotionMagicVelocityVoltage velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(1).withEnableFOC(true);
     private final VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true);
-    private ArmRequest armRequest = null;
     private SimulatedArm simArm = null;
     private TalonFXSimState talonFXSimState = null;
     private CANcoderSimState canCoderSimState = null;
@@ -92,35 +91,28 @@ public class TalonFXArm implements Arm {
     }
 
     @Override
-    public void setControl(ArmRequest request) {
-        if (armRequest != request) {
-            armRequest = request;
-        }
-        request.apply(this);
-    }
-
-    @Override
     public void setPosition(double setpointRotations) {
-        double currentPosition = talonFX.getPosition().getValueAsDouble();
-
-        if (currentPosition > maxAngleRotations &&
-                state.getMotorEncoderPositionRotations() > setpointRotations) {
-
-        }
-
-        if (state.getAngle().gte(arm.getMaxAngle()) && angle.gt(arm.getMaxAngle())) {
-            arm.setPosition(angle.mut_replace(arm.getMaxAngle()));
-        } else if (state.getAngle().lte(arm.getMinAngle()) && angle.lt(arm.getMinAngle())) {
-            arm.setPosition(angle.mut_replace(arm.getMinAngle()));
+        double currentAngleRotations = talonFX.getPosition().getValueAsDouble();
+        if (currentAngleRotations >= maxAngleRotations && setpointRotations > maxAngleRotations) {
+            talonFX.setControl(positionControl.withPosition(maxAngleRotations));
+        } else if (currentAngleRotations <= minAngleRotations && setpointRotations < minAngleRotations) {
+            talonFX.setControl(positionControl.withPosition(minAngleRotations));
         } else {
-            arm.setPosition(angle);
+            talonFX.setControl(positionControl.withPosition(setpointRotations));
         }
-        talonFX.setControl(positionControl.withPosition(setpointRotations));
     }
 
     @Override
     public void setVelocity(double setpointScalar) {
-        talonFX.setControl(velocityControl.withVelocity(setpointScalar));
+        double velocitySetpointRPS = setpointScalar * maxVelocityRPS;
+        double currentAngleRotations = talonFX.getPosition().getValueAsDouble();
+        if (currentAngleRotations >= maxAngleRotations && setpointScalar > 0.0){
+            talonFX.setControl(positionControl.withPosition(maxAngleRotations));
+        }else if(currentAngleRotations <= minAngleRotations && setpointScalar < 0.0){
+            talonFX.setControl(positionControl.withPosition(minAngleRotations));
+        }else{
+            talonFX.setControl(velocityControl.withVelocity(velocitySetpointRPS));
+        }
     }
 
     @Override
@@ -145,7 +137,7 @@ public class TalonFXArm implements Arm {
         state.setMotorEncoderVelocityRPS(talonFX.getVelocity().getValueAsDouble());
         state.setAbsoluteEncoderVelocityRPS(cancoder.getVelocity().getValueAsDouble());
         state.setVoltage(talonFX.getMotorVoltage().getValueAsDouble());
-        state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue());
+        state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue());;
     }
 
     @Override

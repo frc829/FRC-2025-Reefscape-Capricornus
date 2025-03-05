@@ -20,7 +20,6 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
     private final double minAngle;
     private final double maxAngle;
     private final double unmodeledAccelerationAt0Rad;
-    private final double ks;
 
     public SimulatedArm(
             LinearSystem<N2, N1, N2> plant,
@@ -33,7 +32,6 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
             double maxAngleRads,
             double... measurementStdDevs) {
         super(plant, measurementStdDevs);
-        this.ks = ks;
         this.gearbox = gearbox;
         this.gearing = gearing;
         minAngle = minAngleRads;

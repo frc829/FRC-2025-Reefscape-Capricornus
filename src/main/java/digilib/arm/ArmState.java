@@ -25,7 +25,6 @@ public class ArmState {
     private double absoluteEncoderPositionRotations = 0.0;
     private double absoluteEncoderVelocityRPS = 0.0;
     private double voltage = 0.0;
-    private double currentSetpointRotations = 0.0;
     private AbsoluteEncoderStatus absoluteEncoderStatus;
 
     public double getMotorEncoderPositionRotations() {
@@ -90,18 +89,6 @@ public class ArmState {
 
     public void setAbsoluteEncoderStatus(MagnetHealthValue magnetHealthValue) {
         this.absoluteEncoderStatus = AbsoluteEncoderStatus.fromMagnetHealthValue(magnetHealthValue);
-    }
-
-    public double getCurrentSetpointRotations() {
-        return currentSetpointRotations;
-    }
-
-    public double getCurrentSetpointDegrees() {
-        return currentSetpointRotations * 360.0;
-    }
-
-    public void setCurrentSetpointRotations(double currentSetpointRotations) {
-        this.currentSetpointRotations = currentSetpointRotations;
     }
 }
 

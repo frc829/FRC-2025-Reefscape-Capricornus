@@ -1,6 +1,5 @@
 package frc.robot.commands.system;
 
-import digilib.arm.ArmRequest;
 import digilib.claws.ClawRequest;
 import digilib.claws.ClawValue;
 import digilib.elevator.ElevatorRequest;
