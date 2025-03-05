@@ -3,6 +3,8 @@ package digilib.claws;
 import digilib.SolenoidType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
+import static digilib.claws.ClawState.*;
+
 public interface Claw {
 
     SolenoidType getSolenoidType();
@@ -11,9 +13,9 @@ public interface Claw {
 
     ClawState getState();
 
-    void setControl(ClawRequest request);
-
     void setValue(ClawValue state);
+
+    void toggle();
 
     void update();
 

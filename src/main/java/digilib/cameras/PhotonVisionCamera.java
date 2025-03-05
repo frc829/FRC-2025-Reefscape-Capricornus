@@ -89,7 +89,6 @@ public class PhotonVisionCamera implements Camera {
                     state.setBestTransformFiducialThetaRadians(best.getRotation().getZ() * 180 / Math.PI);
                     Pose3d pose3d = new Pose3d()
                             .plus(robotToCamera)
-                            .plus(fixedBest)
                             .relativeTo(fieldTags.getOrigin());
                     updateEstimatedPoseFromMultiTag(pose3d, new ArrayList<PhotonTrackedTarget>(), result.getTimestampSeconds());
                 } else if (result.getBestTarget().poseAmbiguity < 0.2) {

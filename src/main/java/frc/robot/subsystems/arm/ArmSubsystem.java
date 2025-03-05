@@ -1,7 +1,7 @@
 package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix6.Utils;
-import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -11,12 +11,16 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import digilib.arm.Arm;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import java.util.function.Supplier;
+import java.util.function.DoubleSupplier;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
 
 public class ArmSubsystem implements Subsystem {
     private final Arm arm;
     private double lastSimTime;
     private final Time simLoopPeriod;
+    private final MutAngle holdPosition = Degrees.mutable(0.0);
 
     public ArmSubsystem(Arm arm, Time simLoopPeriod) {
         this.arm = arm;
@@ -27,13 +31,13 @@ public class ArmSubsystem implements Subsystem {
     }
 
     public Trigger gte(double angleDegrees) {
-        return new Trigger (() -> arm
+        return new Trigger(() -> arm
                 .getState()
                 .getMotorEncoderPositionDegrees() >= angleDegrees);
     }
 
     public Trigger lte(double angleDegrees) {
-        return new Trigger (() -> arm
+        return new Trigger(() -> arm
                 .getState()
                 .getMotorEncoderPositionDegrees() <= angleDegrees);
     }
@@ -42,17 +46,20 @@ public class ArmSubsystem implements Subsystem {
         return gte(maxAngleDegrees).and(lte(minAngleDegrees));
     }
 
+    public Command toAngle(double degrees) {
+        return run(() -> arm.setPosition(degrees / 360.0))
+                .withName(String.format("%s: %d deg", getName(), degrees));
+    }
 
-
-    public Command applyRequest(Supplier<ArmRequest> requestSupplier) {
-        return run(() -> arm.setControl(requestSupplier.get()));
+    public Command toVelocity(DoubleSupplier scalarSetpoint) {
+        return run(() -> arm.setVelocity(scalarSetpoint.getAsDouble()))
+                .withName(String.format("%s: VELOCITY", getName()));
     }
 
     Command hold() {
-         ArmRequest.Position request = new ArmRequest.Position();
-         return Commands.runOnce(() -> request.withPosition(arm.getState().getAngle()))
-                 .andThen(applyRequest(() -> request))
-                 .withName(String.format("%s: HOLD", getName()));
+        return Commands.runOnce(() -> holdPosition.mut_setMagnitude(arm.getState().getMotorEncoderPositionDegrees()))
+                .andThen(toAngle((holdPosition.in(Rotations)))
+                .withName(String.format("%s: HOLD", getName())));
     }
 
     @Override
@@ -72,6 +79,4 @@ public class ArmSubsystem implements Subsystem {
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
-
-
 }

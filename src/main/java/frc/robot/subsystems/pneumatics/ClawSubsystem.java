@@ -1,7 +1,6 @@
 package frc.robot.subsystems.pneumatics;
 
 import digilib.claws.Claw;
-import digilib.claws.ClawRequest;
 import digilib.claws.ClawValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;

@@ -5,7 +5,7 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.*;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
-import digilib.elevator.DualVortexElevator;
+import digilib.elevator.TwoVortexElevator;
 import digilib.elevator.Elevator;
 import digilib.elevator.ElevatorConstants;
 
@@ -105,7 +105,7 @@ public class ElevatorSubsystemConstants {
     public static ElevatorSubsystem create() {
         Motor.motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
         Follower.motor.configure(Follower.config, kResetSafeParameters, kPersistParameters);
-        Elevator elevator = new DualVortexElevator(
+        Elevator elevator = new TwoVortexElevator(
                 constants,
                 Motor.motor,
                 Follower.motor,

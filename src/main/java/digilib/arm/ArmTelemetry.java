@@ -1,6 +1,5 @@
 package digilib.arm;
 
-import digilib.arm.ArmState.AbsoluteEncoderStatus;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.StringPublisher;
@@ -13,7 +12,6 @@ public class ArmTelemetry {
     private final DoublePublisher motorEncoderVelocity;
     private final DoublePublisher absoluteEncoderPosition;
     private final DoublePublisher absoluteEncoderVelocity;
-    private final DoublePublisher currentSetpoint;
     private final DoublePublisher voltage;
     private final StringPublisher absoluteEncoderStatus;
 
@@ -21,9 +19,7 @@ public class ArmTelemetry {
     private double motorEncoderVelocityDPS;
     private double absoluteEncoderPositionDegrees;
     private double absoluteEncoderVelocityDPS;
-    private double currentSetpointDegrees;
     private double volts;
-    private AbsoluteEncoderStatus status = null;
 
     public ArmTelemetry(
             String name,
@@ -56,10 +52,9 @@ public class ArmTelemetry {
         absoluteEncoderVelocity = table
                 .getDoubleTopic("Absolute Encoder Velocity [dps]")
                 .publish();
-        currentSetpoint = table
-                .getDoubleTopic("Current Setpoint [deg]")
+        voltage = table
+                .getDoubleTopic("Voltage [volts]")
                 .publish();
-        voltage = table.getDoubleTopic("Voltage").publish();
         absoluteEncoderStatus = table
                 .getStringTopic("Absolute Encoder Status")
                 .publish();
@@ -70,18 +65,19 @@ public class ArmTelemetry {
         absoluteEncoderPositionDegrees = state.getAbsoluteEncoderPositionDegrees();
         motorEncoderVelocityDPS = state.getMotorEncoderVelocityDPS() * 360;
         absoluteEncoderVelocityDPS = state.getAbsoluteEncoderVelocityDPS();
-        currentSetpointDegrees = state.getCurrentSetpointDegrees();
         volts = state.getVoltage();
 
         motorEncoderPositionDegrees = roundToDecimal(motorEncoderPositionDegrees, 2);
         absoluteEncoderPositionDegrees = roundToDecimal(absoluteEncoderPositionDegrees, 2);
         motorEncoderVelocityDPS = roundToDecimal(motorEncoderVelocityDPS, 2);
         absoluteEncoderVelocityDPS = roundToDecimal(absoluteEncoderVelocityDPS, 2);
-
+        volts = roundToDecimal(volts, 2);
 
         motorEncoderPosition.set(motorEncoderPositionDegrees);
         absoluteEncoderPosition.set(motorEncoderPositionDegrees);
         motorEncoderVelocity.set(motorEncoderVelocityDPS);
         absoluteEncoderVelocity.set(motorEncoderVelocityDPS);
+        voltage.set(volts);
+        absoluteEncoderStatus.set(state.getAbsoluteEncoderStatus().name());
     }
 }

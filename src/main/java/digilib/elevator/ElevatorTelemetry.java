@@ -3,52 +3,59 @@ package digilib.elevator;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.measure.*;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static digilib.DigiMath.roundToDecimal;
-import static edu.wpi.first.units.Units.*;
 
 public class ElevatorTelemetry {
     private final DoublePublisher position;
-    private final DoublePublisher setpoint;
     private final DoublePublisher velocity;
     private final DoublePublisher voltage;
-    private final DoublePublisher timestamp;
-    private final MechanismLigament2d ligament;
+
+    private double motorEncoderPositionMeters;
+    private double motorEncoderVelocityMPS;
+    private double volts;
 
     public ElevatorTelemetry(
             String name,
-            Distance minHeight,
-            Distance maxHeight,
-            LinearVelocity maxVelocity,
-            LinearAcceleration maxAcceleration) {
+            double minHeightMeters,
+            double maxHeightMeters,
+            double maxVelocityMPS,
+            double maxAccelerationMPSSquared) {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
-        table.getDoubleTopic("MinHeight").publish().set(roundToDecimal(minHeight.baseUnitMagnitude(), 2));
-        table.getDoubleTopic("MaxHeight").publish().set(roundToDecimal(maxHeight.baseUnitMagnitude(), 2));
-        table.getDoubleTopic("MaxVelocity").publish().set(roundToDecimal(maxVelocity.baseUnitMagnitude(), 2));
-        table.getDoubleTopic("MaxAcceleration").publish().set(roundToDecimal(maxAcceleration.baseUnitMagnitude(), 2));
-        this.position = table.getDoubleTopic("Position").publish();
-        this.setpoint = table.getDoubleTopic("Setpoint").publish();
-        this.velocity = table.getDoubleTopic("Velocity").publish();
-        this.voltage = table.getDoubleTopic("Voltage").publish();
-        this.timestamp = table.getDoubleTopic("Timestamp").publish();
-
-        Mechanism2d elevatorMechanism = new Mechanism2d(1, 2);
-        ligament = elevatorMechanism
-                .getRoot("ElevatorRoot", 0.5, 0.0)
-                .append(new MechanismLigament2d("Elevator", 0.0, 90));
-        SmartDashboard.putData("Elevator", elevatorMechanism);
+        table.getDoubleTopic("Min Height [meters]")
+                .publish()
+                .set(roundToDecimal(minHeightMeters, 2));
+        table.getDoubleTopic("Max Height [meters]")
+                .publish()
+                .set(roundToDecimal(maxHeightMeters, 2));
+        table.getDoubleTopic("Max Velocity [mps]")
+                .publish()
+                .set(roundToDecimal(maxVelocityMPS, 2));
+        table.getDoubleTopic("Max Acceleration[mpss] ")
+                .publish()
+                .set(roundToDecimal(maxAccelerationMPSSquared, 2));
+        this.position = table
+                .getDoubleTopic("Height [meters]")
+                .publish();
+        this.velocity = table
+                .getDoubleTopic("Velocity [mps]")
+                .publish();
+        this.voltage = table
+                .getDoubleTopic("Voltage [volts]")
+                .publish();
     }
 
     public void telemeterize(ElevatorState state) {
-        position.set(roundToDecimal(state.getHeight().in(Meters), 2));
-        setpoint.set(roundToDecimal(state.getSetpoint().in(Meters), 2));
-        velocity.set(roundToDecimal(state.getVelocity().in(MetersPerSecond), 2));
-        voltage.set(roundToDecimal(state.getVoltage().in(Volts), 2));
-        timestamp.set(roundToDecimal(state.getTimestamp().in(Seconds), 2));
-        ligament.setLength(roundToDecimal(state.getHeight().in(Meters), 2));
+        motorEncoderPositionMeters = state.getMotorEncoderPositionMeters();
+        motorEncoderVelocityMPS = state.getMotorEncoderVelocityMPS();
+        volts = state.getVoltage();
+
+        motorEncoderPositionMeters = roundToDecimal(motorEncoderPositionMeters, 2);
+        motorEncoderVelocityMPS = roundToDecimal(motorEncoderVelocityMPS, 2);
+        volts = roundToDecimal(volts, 2);
+
+        position.set(motorEncoderPositionMeters);
+        velocity.set(motorEncoderVelocityMPS);
+        voltage.set(volts);
     }
 }

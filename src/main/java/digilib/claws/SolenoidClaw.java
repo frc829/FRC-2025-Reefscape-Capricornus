@@ -3,13 +3,13 @@ package digilib.claws;
 import digilib.SolenoidType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
+
+import static digilib.claws.ClawState.*;
 
 public class SolenoidClaw implements Claw {
     private final ClawState clawState = new ClawState();
     private final PneumaticsModuleType moduleType;
     private final ClawValue solenoidOnClawValue;
-    private ClawRequest request;
     private final ClawTelemetry telemetry;
     private final Solenoid solenoid;
 
@@ -40,16 +40,13 @@ public class SolenoidClaw implements Claw {
     }
 
     @Override
-    public void setControl(ClawRequest request) {
-        if (this.request != request) {
-            this.request = request;
-        }
-        request.apply(this);
+    public void setValue(ClawValue clawValue) {
+        solenoid.set(clawValue == solenoidOnClawValue);
     }
 
     @Override
-    public void setValue(ClawValue clawValue) {
-        solenoid.set(clawValue == solenoidOnClawValue);
+    public void toggle() {
+        solenoid.toggle();
     }
 
     @Override
@@ -60,8 +57,9 @@ public class SolenoidClaw implements Claw {
 
     @Override
     public void updateState() {
-        clawState.withClawValue(solenoid.get() ? solenoidOnClawValue : solenoidOnClawValue.opposite())
-                .withTimestamp(Timer.getFPGATimestamp());
+        clawState.setClawValue(solenoid.get()
+                ? solenoidOnClawValue
+                : solenoidOnClawValue.opposite());
     }
 
     @Override

@@ -21,7 +21,6 @@ import frc.robot.subsystems.dualIntake.DualIntakeSubsystemConstants;
 import frc.robot.subsystems.arm.ArmSubsystemConstants;
 import frc.robot.subsystems.elevator.ElevatorSubsystemConstants;
 import frc.robot.subsystems.pneumatics.PneumaticsSubsystemConstants;
-import frc.robot.subsystems.power.PowerSubsystemConstants;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 import frc.robot.subsystems.winch.WinchSubsystemConstants;
@@ -52,8 +51,6 @@ public class Robit extends TimedRobot {
                 PneumaticsSubsystemConstants.createCoralClaw(),
                 DualIntakeSubsystemConstants.create(),
                 ElevatorSubsystemConstants.create(),
-                PneumaticsSubsystemConstants.create(),
-                PowerSubsystemConstants.create(),
                 WristSubsystemConstants.create());
         Climber climber = new Climber(WinchSubsystemConstants.create());
 

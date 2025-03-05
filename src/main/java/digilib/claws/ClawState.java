@@ -1,29 +1,28 @@
 package digilib.claws;
 
-import edu.wpi.first.units.measure.MutTime;
-
-import static edu.wpi.first.units.Units.Seconds;
-
 public class ClawState {
 
+    public enum ClawValue {
+        OPEN,
+        CLOSED,
+        UNKNOWN;
+
+        public ClawValue opposite() {
+            return switch (this) {
+                case OPEN -> CLOSED;
+                case CLOSED -> OPEN;
+                default -> UNKNOWN;
+            };
+        }
+    }
+
     private ClawValue clawValue = null;
-    private final MutTime timestamp = Seconds.mutable(0.0);
 
     public ClawValue getClawValue() {
         return clawValue;
     }
 
-    public MutTime getTimestamp() {
-        return timestamp;
-    }
-
-    public ClawState withClawValue(ClawValue clawValue) {
+    public void setClawValue(ClawValue clawValue) {
         this.clawValue = clawValue;
-        return this;
-    }
-
-    public ClawState withTimestamp(double seconds) {
-        this.timestamp.mut_setBaseUnitMagnitude(seconds);
-        return this;
     }
 }
