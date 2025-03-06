@@ -24,7 +24,6 @@ import static frc.robot.Constants.*;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.AbsoluteEncoder.cancoder;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Control.*;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.*;
-import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.reduction;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Motor.*;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.*;
 

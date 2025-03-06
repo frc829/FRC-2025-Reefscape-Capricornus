@@ -1,6 +1,5 @@
 package digilib.swerve;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.*;

@@ -2,7 +2,6 @@ package frc.robot.subsystems.pneumatics;
 
 import digilib.claws.Claw;
 import digilib.claws.ClawConstants;
-import digilib.claws.ClawState;
 import digilib.claws.SolenoidClaw;
 import digilib.pneumatics.Pneumatics;
 import digilib.pneumatics.PneumaticsConstants;

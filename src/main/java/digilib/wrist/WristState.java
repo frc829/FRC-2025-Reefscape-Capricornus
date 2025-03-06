@@ -1,7 +1,6 @@
 package digilib.wrist;
 
 import com.ctre.phoenix6.signals.MagnetHealthValue;
-import digilib.arm.ArmState;
 
 public class WristState {
 

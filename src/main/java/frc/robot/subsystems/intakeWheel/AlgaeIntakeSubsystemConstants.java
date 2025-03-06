@@ -1,24 +1,26 @@
 package frc.robot.subsystems.intakeWheel;
 
-import com.revrobotics.spark.*;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.*;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import edu.wpi.first.units.measure.*;
 import digilib.intakeWheel.IntakeWheel;
 import digilib.intakeWheel.IntakeWheelConstants;
 import digilib.intakeWheel.NEO550IntakeWheel;
+import edu.wpi.first.units.measure.Time;
 
-import static com.revrobotics.spark.SparkBase.PersistMode.*;
-import static com.revrobotics.spark.SparkBase.ResetMode.*;
+import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
+import static com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters;
 import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
 import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder;
-import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
-import static edu.wpi.first.units.Units.*;
+import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
+import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Control.*;
-import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Mechanism.*;
-import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Motor.*;
-import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Simulation.*;
+import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Mechanism.constants;
 import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Mechanism.reduction;
+import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Motor.config;
+import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Motor.motor;
+import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Simulation.simLoopPeriod;
 
 public class AlgaeIntakeSubsystemConstants {
 

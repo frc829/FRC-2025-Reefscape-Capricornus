@@ -104,7 +104,7 @@ public class AlgaePickup {
     }
 
     private Command intakeHold() {
-        return manipulator.algaeIntakeWheel().toVelocity(() -> algaeSpeed);
+        return manipulator.algaeIntakeWheel().toVelocity(() -> algaeHoldSpeed);
     }
 
     private Command claws() {

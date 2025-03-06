@@ -1,12 +1,7 @@
 package digilib.cameras;
 
 import digilib.DigiMath;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
 
 import static edu.wpi.first.units.Units.Seconds;

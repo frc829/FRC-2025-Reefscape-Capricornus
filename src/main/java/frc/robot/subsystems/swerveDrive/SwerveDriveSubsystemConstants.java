@@ -1,21 +1,25 @@
 package frc.robot.subsystems.swerveDrive;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Cameras.*;
-import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.*;
-import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.Modules.*;
-import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.Simulation.*;
-import static org.photonvision.PhotonPoseEstimator.*;
-
-import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.*;
-import com.ctre.phoenix6.swerve.*;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.DeviceConstructor;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
-
+import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.ClosedLoopOutputType;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
+import digilib.cameras.CameraConstants;
+import digilib.cameras.PhotonVisionCamera;
+import digilib.swerve.CTRESwerveDrive;
 import digilib.swerve.SwerveDriveConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -28,13 +32,15 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
-
-import digilib.cameras.CameraConstants;
-import digilib.cameras.PhotonVisionCamera;
-import digilib.swerve.CTRESwerveDrive;
-import digilib.swerve.SwerveDriveTelemetry;
 import frc.robot.Constants;
 import org.photonvision.PhotonCamera;
+
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Cameras.*;
+import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.*;
+import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.Modules.*;
+import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.Simulation.simLoopPeriod;
+import static org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class SwerveDriveSubsystemConstants {
 

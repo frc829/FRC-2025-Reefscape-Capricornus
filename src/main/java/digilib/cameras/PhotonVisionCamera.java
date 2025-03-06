@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -17,7 +16,6 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static digilib.DigiMath.standardDeviation;
 import static digilib.cameras.CameraState.*;
@@ -90,7 +88,7 @@ public class PhotonVisionCamera implements Camera {
                     Pose3d pose3d = new Pose3d()
                             .plus(robotToCamera)
                             .relativeTo(fieldTags.getOrigin());
-                    updateEstimatedPoseFromMultiTag(pose3d, new ArrayList<PhotonTrackedTarget>(), result.getTimestampSeconds());
+                    updateEstimatedPoseFromMultiTag(pose3d, new ArrayList<>(), result.getTimestampSeconds());
                 } else if (result.getBestTarget().poseAmbiguity < 0.2) {
                     Transform3d best = result.getBestTarget().bestCameraToTarget;
                     Transform3d fixedBest = new Transform3d(
@@ -110,7 +108,7 @@ public class PhotonVisionCamera implements Camera {
                             .plus(robotToCamera)
                             .plus(fixedBest)
                             .relativeTo(fieldTags.getOrigin());
-                    updateEstimatedPoseFromLowestAmbiguity(pose3d, new ArrayList<PhotonTrackedTarget>(), result.getTimestampSeconds());
+                    updateEstimatedPoseFromLowestAmbiguity(pose3d, new ArrayList<>(), result.getTimestampSeconds());
                 } else {
                     updateEstimatedPoseDefault();
                 }

@@ -84,9 +84,9 @@ public class SwerveDriveTelemetry {
         poseArray[1] = DigiMath.roundToDecimal(state.getPose().getY(), 2);
         poseArray[2] = DigiMath.roundToDecimal(state.getPose().getRotation().getDegrees(), 2);
         for (int i = 0; i < 4; ++i) {
-            moduleStatesArray[i*2 + 0] = state.getModuleStates()[i].angle.getRadians();
+            moduleStatesArray[i * 2] = state.getModuleStates()[i].angle.getRadians();
             moduleStatesArray[i*2 + 1] = state.getModuleStates()[i].speedMetersPerSecond;
-            moduleTargetsArray[i*2 + 0] = state.getModuleTargets()[i].angle.getRadians();
+            moduleTargetsArray[i * 2] = state.getModuleTargets()[i].angle.getRadians();
             moduleTargetsArray[i*2 + 1] = state.getModuleTargets()[i].speedMetersPerSecond;
         }
 

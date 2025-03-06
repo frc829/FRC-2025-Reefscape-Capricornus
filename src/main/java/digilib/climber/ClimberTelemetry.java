@@ -1,12 +1,10 @@
 package digilib.climber;
 
-import digilib.elevator.ElevatorState;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import static digilib.DigiMath.roundToDecimal;
-import static edu.wpi.first.units.Units.*;
 
 public class ClimberTelemetry {
     private final DoublePublisher position;

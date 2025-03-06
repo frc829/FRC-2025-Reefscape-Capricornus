@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.CANBus;
-import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.wpilibj.RobotController;
