@@ -34,9 +34,9 @@ public class WristSubsystemConstants {
 
     static final class Control {
         static final double ksVolts = 0.13474;
-        static final double kvVoltsPerRPS = 0.81628;
-        static final double kaVoltsPerRPSSquared = 0.028768;
-        static final double positionKpVoltsPerRotation = 0.0;
+        static final double kvVoltsPerRPS = 0.81628 * 2 * Math.PI;
+        static final double kaVoltsPerRPSSquared = 0.028768 * 2 * Math.PI;
+        static final double positionKpVoltsPerRotation = 10.0;
         static final double positionKdVoltsPerRPS = 0.0;
         static final double velocityKpVoltsPerRPS = 0.0;
         static final double maxControlVoltage = 12.0 - ksVolts;

@@ -18,17 +18,17 @@ public class WristTelemetry {
 
     public WristTelemetry(
             String name,
-            double minAngleRotations,
-            double maxAngleRotations,
+            double minAngleDegrees,
+            double maxAngleDegrees,
             double maxVelocityRPS,
             double maxAccelerationRPSSquared) {
         NetworkTable table = getDefault().getTable(name);
         table.getDoubleTopic("Min Angle [deg]")
                 .publish()
-                .set(roundToDecimal(minAngleRotations * 360, 2));
+                .set(roundToDecimal(minAngleDegrees, 2));
         table.getDoubleTopic("Max Angle [deg]")
                 .publish()
-                .set(roundToDecimal(maxAngleRotations * 360, 2));
+                .set(roundToDecimal(maxAngleDegrees, 2));
         table.getDoubleTopic("Max Velocity [dps]")
                 .publish()
                 .set(roundToDecimal(maxVelocityRPS * 360, 2));

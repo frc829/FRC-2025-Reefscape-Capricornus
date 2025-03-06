@@ -17,10 +17,10 @@ public class IntakeWheelTelemetry {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
         table.getDoubleTopic("Max Velocity [dps]")
                 .publish()
-                .set(maxVelocityRPS);
+                .set(maxVelocityRPS * 360);
         table.getDoubleTopic("Max Acceleration [dpss]")
                 .publish()
-                .set(maxAccelerationRPSSquared);
+                .set(maxAccelerationRPSSquared * 360);
         motorEncoderVelocity = table
                 .getDoubleTopic("Motor Encoder Velocity [dps]")
                 .publish();
