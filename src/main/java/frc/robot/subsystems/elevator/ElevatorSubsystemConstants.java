@@ -2,26 +2,24 @@ package frc.robot.subsystems.elevator;
 
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.*;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.*;
-import digilib.elevator.TwoVortexElevator;
 import digilib.elevator.Elevator;
 import digilib.elevator.ElevatorConstants;
-import edu.wpi.first.wpilibj2.command.Command;
+import digilib.elevator.TwoVortexElevator;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Time;
 
-import static com.revrobotics.spark.ClosedLoopSlot.*;
-import static com.revrobotics.spark.SparkBase.PersistMode.*;
-import static com.revrobotics.spark.SparkBase.ResetMode.*;
-import static com.revrobotics.spark.SparkLowLevel.MotorType.*;
-import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.*;
-import static com.revrobotics.spark.config.SparkBaseConfig.*;
-import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
-import static edu.wpi.first.units.Units.Meters;
+import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
+import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
+import static com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters;
+import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
+import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder;
+import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Control.*;
 import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Mechanism.*;
-import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Simulation.*;
+import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Simulation.simLoopPeriod;
+import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Simulation.startingHeightMeters;
 
 public class ElevatorSubsystemConstants {
 
@@ -132,10 +130,7 @@ public class ElevatorSubsystemConstants {
                 Follower.motor,
                 controlPeriodSeconds);
         ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(elevator, simLoopPeriod);
-        MutDistance holdPosition = Meters.mutable(0.0);
-        Command hold = runOnce(() -> holdPosition.mut_setBaseUnitMagnitude(elevator.getState().getMotorEncoderPositionMeters()))
-                        .andThen(elevatorSubsystem.toHeight(holdPosition.baseUnitMagnitude()));
-        elevatorSubsystem.setDefaultCommand(hold);
+        elevatorSubsystem.setDefaultCommand(elevatorSubsystem.hold());
         return elevatorSubsystem;
     }
 }

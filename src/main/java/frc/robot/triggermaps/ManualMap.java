@@ -3,7 +3,7 @@ package frc.robot.triggermaps;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.game.Manual;
+import frc.robot.commands.Manual;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 

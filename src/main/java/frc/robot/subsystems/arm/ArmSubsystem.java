@@ -1,15 +1,19 @@
 package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix6.Utils;
+import digilib.arm.Arm;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import digilib.arm.Arm;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.DoubleSupplier;
+
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class ArmSubsystem implements Subsystem {
     private final Arm arm;
@@ -53,6 +57,14 @@ public class ArmSubsystem implements Subsystem {
     public Command toVoltage(double volts) {
         return run(() -> arm.setVoltage(volts))
                 .withName(String.format("%s: VOLTAGE", getName()));
+    }
+
+    public Command hold() {
+        MutAngle holdPosition = Rotations.mutable(0.0);
+        return sequence(
+                runOnce(() -> holdPosition.mut_setMagnitude(arm.getState().getAbsoluteEncoderPositionRotations())),
+                run(() -> arm.setPosition(holdPosition.in(Rotations))))
+                .withName(String.format("%s: HOLD", getName()));
     }
 
     @Override

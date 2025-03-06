@@ -18,20 +18,20 @@ public class ArmTelemetry {
 
     public ArmTelemetry(
             String name,
-            double minAngleRotations,
-            double maxAngleRotations,
+            double minAngleDegrees,
+            double maxAngleDegrees,
             double maxVelocityRPS,
             double maxAccelerationRPSSquared) {
         NetworkTable table = getDefault().getTable(name);
         table.getDoubleTopic("Min Angle [deg]")
                 .publish()
-                .set(roundToDecimal(minAngleRotations * 360, 2));
+                .set(roundToDecimal(minAngleDegrees, 2));
         table.getDoubleTopic("Max Angle [deg]")
                 .publish()
-                .set(roundToDecimal(maxAngleRotations * 360, 2));
+                .set(roundToDecimal(maxAngleDegrees, 2));
         table.getDoubleTopic("Max Velocity [dps]")
                 .publish()
-                .set(roundToDecimal(maxVelocityRPS * 360, 2));
+                .set(roundToDecimal(maxVelocityRPS * 360.0, 2));
         table.getDoubleTopic("Max Acceleration [dpss]")
                 .publish()
                 .set(roundToDecimal(maxAccelerationRPSSquared * 360, 2));

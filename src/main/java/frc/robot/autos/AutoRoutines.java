@@ -7,8 +7,8 @@ import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.commands.game.CoralPickup;
-import frc.robot.commands.game.CoralScore;
+import frc.robot.commands.CoralPickup;
+import frc.robot.commands.CoralScore;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 

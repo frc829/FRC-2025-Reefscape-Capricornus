@@ -32,7 +32,7 @@ public class ElevatorTelemetry {
                 .publish()
                 .set(roundToDecimal(maxAccelerationMPSSquared, 2));
         this.position = table
-                .getDoubleTopic("Length [meters]")
+                .getDoubleTopic("Height [meters]")
                 .publish();
         this.velocity = table
                 .getDoubleTopic("Velocity [mps]")

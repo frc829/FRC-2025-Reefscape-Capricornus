@@ -1,6 +1,7 @@
 package frc.robot.subsystems.wrist;
 
 import com.ctre.phoenix6.Utils;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -10,6 +11,9 @@ import digilib.wrist.Wrist;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.DoubleSupplier;
+
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class WristSubsystem implements Subsystem {
     private final Wrist wrist;
@@ -53,6 +57,14 @@ public class WristSubsystem implements Subsystem {
     public Command toVoltage(double volts) {
         return run(() -> wrist.setVoltage(volts))
                 .withName(String.format("%s: VOLTAGE", getName()));
+    }
+
+    public Command hold() {
+        MutAngle holdPosition = Rotations.mutable(0.0);
+        return sequence(
+                runOnce(() -> holdPosition.mut_setMagnitude(wrist.getState().getAbsoluteEncoderPositionRotations())),
+                run(() -> wrist.setPosition(holdPosition.in(Rotations))))
+                .withName(String.format("%s: HOLD", getName()));
     }
 
     @Override

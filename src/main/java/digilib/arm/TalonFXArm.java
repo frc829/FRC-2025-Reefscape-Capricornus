@@ -53,13 +53,13 @@ public class TalonFXArm implements Arm {
             simArm = SimulatedArm.createFromSysId(
                     constants.ksVolts(),
                     constants.kgVolts(),
-                    constants.kvVoltsPerRPS(),
-                    constants.kaVoltsPerRPSSquared(),
+                    constants.kvVoltsPerRPS() / 2 / Math.PI,
+                    constants.kaVoltsPerRPSSquared() / 2 / Math.PI,
                     DCMotor.getKrakenX60Foc(1),
                     constants.reduction(),
-                    constants.startingAngleDegrees(),
-                    constants.minAngleDegrees(),
-                    constants.maxAngleDegrees());
+                    constants.startingAngleDegrees() * Math.PI / 180,
+                    constants.minAngleDegrees() * Math.PI / 180,
+                    constants.maxAngleDegrees() * Math.PI / 180);
             canCoderSimState.setRawPosition(simArm.getAngleRads() / 2 / Math.PI);
             talonFXSimState.setRawRotorPosition(simArm.getAngleRads() * reduction / 2 / Math.PI);
         }
@@ -133,7 +133,7 @@ public class TalonFXArm implements Arm {
 
     public void updateState() {
         state.setMotorEncoderPositionRotations(talonFX.getPosition().getValueAsDouble());
-        state.setAbsoluteEncoderPositionRotations(cancoder.getAbsolutePosition().getValueAsDouble());
+        state.setAbsoluteEncoderPositionRotations(cancoder.getPosition().getValueAsDouble());
         state.setMotorEncoderVelocityRPS(talonFX.getVelocity().getValueAsDouble());
         state.setAbsoluteEncoderVelocityRPS(cancoder.getVelocity().getValueAsDouble());
         state.setVolts(talonFX.getMotorVoltage().getValueAsDouble());

@@ -4,28 +4,31 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import com.revrobotics.spark.*;
-import com.revrobotics.spark.config.*;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.units.measure.*;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SignalsConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import digilib.wrist.NEO550Wrist;
 import digilib.wrist.Wrist;
 import digilib.wrist.WristConstants;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Command;
 
-import static com.revrobotics.spark.SparkBase.PersistMode.*;
+import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
 import static com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters;
 import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
-import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
-import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static frc.robot.Constants.*;
+import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
+import static edu.wpi.first.units.Units.Seconds;
+import static frc.robot.Constants.rio;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.AbsoluteEncoder.cancoder;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Control.*;
-import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.*;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.constants;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.reduction;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Motor.*;
-import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.*;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.simLoopPeriod;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.startingAngleDegrees;
 
 public class WristSubsystemConstants {
 
@@ -111,6 +114,7 @@ public class WristSubsystemConstants {
         static final SparkBaseConfig config = new SparkFlexConfig()
                 .idleMode(idleMode)
                 .inverted(inverted)
+                .smartCurrentLimit(smartCurrentLimit)
                 .apply(encoderConfig)
                 .smartCurrentLimit(20);
         static final SparkMax motor = new SparkMax(deviceId, kBrushless);
@@ -129,10 +133,7 @@ public class WristSubsystemConstants {
                 velocityPIDController,
                 controlPeriodSeconds);
         WristSubsystem wristSubsystem = new WristSubsystem(wrist, simLoopPeriod);
-        MutAngle holdPosition = Degrees.mutable(0.0);
-        Command hold = runOnce(() -> holdPosition.mut_setBaseUnitMagnitude(wrist.getState().getAbsoluteEncoderPositionDegrees()))
-                .andThen(wristSubsystem.toAngle(holdPosition.in(Degrees)));
-        wristSubsystem.setDefaultCommand(hold);
+        wristSubsystem.setDefaultCommand(wristSubsystem.hold());
         return wristSubsystem;
     }
 }

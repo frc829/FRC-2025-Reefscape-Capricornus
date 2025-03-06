@@ -15,9 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autos.AutoRoutines;
-import frc.robot.commands.game.*;
-import frc.robot.commands.system.Drive;
-import frc.robot.commands.system.Manipulator;
+import frc.robot.commands.*;
 import frc.robot.subsystems.arm.ArmSubsystemConstants;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystemConstants;
@@ -45,9 +43,8 @@ public class Robit extends TimedRobot {
         CommandXboxController manualController = new CommandXboxController(3);
 
         SwerveDriveSubsystem swerveDriveSubsystem = SwerveDriveSubsystemConstants.createCTRESwerveDrive();
-        AutoFactory autoFactory = swerveDriveSubsystem.createAutoFactory();
+        AutoFactory autoFactory = SwerveDriveSubsystemConstants.getAutoFactory();
 
-        Drive drive = new Drive(swerveDriveSubsystem, autoFactory);
         Manipulator manipulator = new Manipulator(
                 ArmSubsystemConstants.create(),
                 PneumaticsSubsystemConstants.createAlgaeClaw(),
@@ -65,7 +62,7 @@ public class Robit extends TimedRobot {
         CoralScore coralScore = new CoralScore(manipulator);
         Manual manual = new Manual(manipulator);
 
-        new DriveMap(driverController, deadband, drive);
+        new DriveMap(driverController, deadband, swerveDriveSubsystem);
         new AlgaePickupMap(operatorController, deadband, algaePickup);
         new AlgaeScoreMap(driverController, operatorController, deadband, algaeScore);
         new CoralPickupMap(operatorController, coralPickup);
@@ -76,14 +73,6 @@ public class Robit extends TimedRobot {
         SmartDashboard.putData(CommandScheduler.getInstance());
         DataLogManager.start();
         DriverStation.startDataLog(DataLogManager.getLog(), true);
-    }
-
-    @Override
-    public void robotPeriodic() {
-        CommandScheduler.getInstance().run();
-    }
-
-    @Override
-    public void teleopPeriodic() {
+        addPeriodic(CommandScheduler.getInstance()::run, 0.020);
     }
 }

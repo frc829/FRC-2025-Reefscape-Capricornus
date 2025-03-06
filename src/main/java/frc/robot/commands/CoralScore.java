@@ -1,9 +1,9 @@
-package frc.robot.commands.game;
+package frc.robot.commands;
 
 import digilib.claws.ClawState.ClawValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.system.Manipulator;
+import frc.robot.Manipulator;
 
 import static digilib.claws.ClawState.ClawValue.CLOSED;
 import static digilib.claws.ClawState.ClawValue.OPEN;

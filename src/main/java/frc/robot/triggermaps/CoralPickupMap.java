@@ -1,7 +1,7 @@
 package frc.robot.triggermaps;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.game.CoralPickup;
+import frc.robot.commands.CoralPickup;
 
 public class CoralPickupMap {
 

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerveDrive;
 
+import choreo.auto.AutoFactory;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -130,13 +131,18 @@ public class SwerveDriveSubsystemConstants {
 
     static final class Drive {
 
-        static final LinearVelocity maxVelocity = MetersPerSecond.of(4.73);
-        static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(0.75); // 3/4 of a rotation per second max angular velocity
+        static final double maxVelocityMPS = 4.73;
+        static final double maxAngularVelocityRPS = 0.75;
         static final double pathTranslationKp = 10.0;
+        static final double deadband = 0.1;
+        static final double rotationalDeadband = 0.0;
         static final double pathRotationKp = 5.9918340044856690519902612191937;
         static final SwerveDriveConstants constants = new SwerveDriveConstants(
-                maxVelocity,
-                maxAngularVelocity,
+                "Swerve Drive",
+                maxVelocityMPS,
+                maxAngularVelocityRPS,
+                deadband,
+                rotationalDeadband,
                 new PhoenixPIDController(pathTranslationKp, 0, 0),
                 new PhoenixPIDController(pathTranslationKp, 0, 0),
                 new PhoenixPIDController(pathRotationKp, 0, 0));
@@ -459,10 +465,9 @@ public class SwerveDriveSubsystemConstants {
     private static final Voltage STEER_FRICTION_VOLTAGE = Volts.of(0.2);
     private static final Voltage DRIVE_FRICTION_VOLTAGE = Volts.of(0.2);
 
-    /**
-     * Creates a CommandSwerveDrivetrain instance.
-     * This should only be called once in your robot program,
-     */
+    private static AutoFactory autoFactory = null;
+
+
     public static SwerveDriveSubsystem createCTRESwerveDrive() {
         DeviceConstructor<TalonFX> driveMotorConstructor = TalonFX::new;
         DeviceConstructor<TalonFX> steerMotorConstructor = TalonFX::new;
@@ -491,7 +496,7 @@ public class SwerveDriveSubsystemConstants {
                         .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
                         .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
                         .withSlipCurrent(SLIP_CURRENT)
-                        .withSpeedAt12Volts(maxVelocity)
+                        .withSpeedAt12Volts(maxVelocityMPS)
                         .withDriveMotorType(DRIVE_MOTOR_TYPE)
                         .withSteerMotorType(STEER_MOTOR_TYPE)
                         .withFeedbackSource(STEER_FEEDBACK_TYPE)
@@ -514,7 +519,7 @@ public class SwerveDriveSubsystemConstants {
                         .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
                         .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
                         .withSlipCurrent(SLIP_CURRENT)
-                        .withSpeedAt12Volts(maxVelocity)
+                        .withSpeedAt12Volts(maxVelocityMPS)
                         .withDriveMotorType(DRIVE_MOTOR_TYPE)
                         .withSteerMotorType(STEER_MOTOR_TYPE)
                         .withFeedbackSource(STEER_FEEDBACK_TYPE)
@@ -537,7 +542,7 @@ public class SwerveDriveSubsystemConstants {
                         .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
                         .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
                         .withSlipCurrent(SLIP_CURRENT)
-                        .withSpeedAt12Volts(maxVelocity)
+                        .withSpeedAt12Volts(maxVelocityMPS)
                         .withDriveMotorType(DRIVE_MOTOR_TYPE)
                         .withSteerMotorType(STEER_MOTOR_TYPE)
                         .withFeedbackSource(STEER_FEEDBACK_TYPE)
@@ -560,7 +565,7 @@ public class SwerveDriveSubsystemConstants {
                         .withSteerMotorClosedLoopOutput(STEER_CLOSED_LOOP_OUTPUT)
                         .withDriveMotorClosedLoopOutput(DRIVE_CLOSED_LOOP_OUTPUT)
                         .withSlipCurrent(SLIP_CURRENT)
-                        .withSpeedAt12Volts(maxVelocity)
+                        .withSpeedAt12Volts(maxVelocityMPS)
                         .withDriveMotorType(DRIVE_MOTOR_TYPE)
                         .withSteerMotorType(STEER_MOTOR_TYPE)
                         .withFeedbackSource(STEER_FEEDBACK_TYPE)
@@ -630,15 +635,28 @@ public class SwerveDriveSubsystemConstants {
 
         CTRESwerveDrive CTRE_SWERVE_DRIVE = new CTRESwerveDrive(
                 constants,
-                swerveDriveTrain,
-                Camera0.camera,
-                Camera1.camera,
-                Camera2.camera);
+                swerveDriveTrain);
 
         SwerveDriveSubsystem swerveDriveSubsystem = new SwerveDriveSubsystem(
                 CTRE_SWERVE_DRIVE,
-                simLoopPeriod);
+                simLoopPeriod,
+                layout,
+                Camera0.camera,
+                Camera1.camera,
+                Camera2.camera);
+        autoFactory = new AutoFactory(
+                CTRE_SWERVE_DRIVE.getState()::getPose,
+                CTRE_SWERVE_DRIVE::resetPose,
+                CTRE_SWERVE_DRIVE::followPath,
+                true,
+                swerveDriveSubsystem,
+                (swerveSample, staring) -> {
+                });
         swerveDriveSubsystem.setDefaultCommand(swerveDriveSubsystem.idle());
         return swerveDriveSubsystem;
+    }
+
+    public static AutoFactory getAutoFactory() {
+        return autoFactory;
     }
 }

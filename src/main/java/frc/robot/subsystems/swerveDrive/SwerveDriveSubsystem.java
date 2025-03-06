@@ -1,13 +1,9 @@
 package frc.robot.subsystems.swerveDrive;
 
-import java.util.function.Supplier;
-
-import choreo.Choreo.TrajectoryLogger;
 import com.ctre.phoenix6.Utils;
-
-import choreo.auto.AutoFactory;
-import choreo.trajectory.SwerveSample;
-import digilib.swerve.SwerveDriveRequest;
+import digilib.cameras.Camera;
+import digilib.swerve.SwerveDrive;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Time;
@@ -18,51 +14,98 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-import digilib.swerve.CTRESwerveDrive;
+import java.util.List;
+import java.util.function.DoubleSupplier;
 
 public class SwerveDriveSubsystem implements Subsystem {
     private static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
     private static final Rotation2d RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.k180deg;
-    private final CTRESwerveDrive ctreSwerveDrive;
+
+    private final SwerveDrive swerveDrive;
+    private final Camera[] cameras;
+
+    private final List<Pose2d> aprilTagPoses;
     private double lastSimTime;
     private final Time simLoopPeriod;
     private boolean hasAppliedOperatorPerspective = false;
-    
+
 
     public SwerveDriveSubsystem(
-            CTRESwerveDrive ctreSwerveDrive,
-            Time simLoopPeriod) {
-        this.ctreSwerveDrive = ctreSwerveDrive;
+            SwerveDrive swerveDrive,
+            Time simLoopPeriod,
+            AprilTagFieldLayout aprilTagFieldLayout,
+            Camera... cameras) {
+        this.swerveDrive = swerveDrive;
         this.simLoopPeriod = simLoopPeriod;
+        this.cameras = cameras;
+
+        aprilTagPoses = aprilTagFieldLayout.getTags().stream().map(tag -> tag.pose.toPose2d()).toList();
 
         if (Utils.isSimulation()) {
             startSimThread();
         }
     }
 
-    public Pose2d getPose() {
-        return ctreSwerveDrive.getPose();
+    public Command fieldCentricDrive(
+            DoubleSupplier maxVelocitySetpointScalar,
+            DoubleSupplier headingAngleDegrees,
+            DoubleSupplier maxAngularVelocitySetpointScalar) {
+        return run(() -> swerveDrive.setFieldCentric(
+                maxVelocitySetpointScalar.getAsDouble(),
+                headingAngleDegrees.getAsDouble(),
+                maxAngularVelocitySetpointScalar.getAsDouble()))
+                .withName(String.format("%s: Field Centric", getName()));
     }
 
-    public Command applyRequest(Supplier<SwerveDriveRequest> request) {
-        return run(() -> ctreSwerveDrive.setControl(request.get()));
+    public Command robotCentricDrive(
+            DoubleSupplier maxVelocitySetpointScalar,
+            DoubleSupplier headingAngleDegrees,
+            DoubleSupplier maxAngularVelocitySetpointScalar) {
+        return run(() -> swerveDrive.setRobotCentric(
+                maxVelocitySetpointScalar.getAsDouble(),
+                headingAngleDegrees.getAsDouble(),
+                maxAngularVelocitySetpointScalar.getAsDouble()))
+                .withName(String.format("%s: Robot Centric", getName()));
     }
 
-    public Command applyRequestOnce(Supplier<SwerveDriveRequest> request) {
-        return runOnce(() -> ctreSwerveDrive.setControl(request.get()));
+    public Command clockDrive(
+            DoubleSupplier maxVelocitySetpointScalar,
+            DoubleSupplier headingAngleDegrees,
+            DoubleSupplier rotationAngleDegrees) {
+        return run(() -> swerveDrive.setClockDrive(
+                maxVelocitySetpointScalar.getAsDouble(),
+                headingAngleDegrees.getAsDouble(),
+                rotationAngleDegrees.getAsDouble()))
+                .withName(String.format("%s: Clock Centric", getName()));
     }
 
-    Command idle() {
-        SwerveDriveRequest.Idle idle = new SwerveDriveRequest.Idle();
-        return applyRequest(() -> idle)
-                .withName(String.format("%s: IDLE", getName()));
+    public Command brake() {
+        return run(() -> swerveDrive.setBrake())
+                .withName(String.format("%s: Brake", getName()));
     }
+
+    public Command idle() {
+        return run(() -> swerveDrive.setIdle())
+                .withName(String.format("%s: Idle", getName()));
+    }
+
+    public Command zeroWheels() {
+        return run(() -> swerveDrive.setWheelAngle(0.0))
+                .withName(String.format("%s: Zero Wheels", getName()));
+    }
+
+    public Command seedFieldCentric() {
+        return run(() -> swerveDrive.seedFieldCentric())
+                .withName(String.format("%s: Seed Field Centric", getName()));
+    }
+
+
 
     @Override
     public void periodic() {
         if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
-                ctreSwerveDrive.setOperatorPerspectiveForward(
+                swerveDrive.setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red
                                 ? RED_ALLIANCE_PERSPECTIVE_ROTATION
                                 : BLUE_ALLIANCE_PERSPECTIVE_ROTATION
@@ -70,23 +113,13 @@ public class SwerveDriveSubsystem implements Subsystem {
                 hasAppliedOperatorPerspective = true;
             });
         }
-        ctreSwerveDrive.update();
-    }
-
-    public AutoFactory createAutoFactory() {
-        return createAutoFactory((swerveSample, staring) -> {
-        });
-    }
-
-    public AutoFactory createAutoFactory(TrajectoryLogger<SwerveSample> trajLogger) {
-        return new AutoFactory(
-                ctreSwerveDrive::getPose,
-                ctreSwerveDrive::resetPose,
-                ctreSwerveDrive::followPath,
-                true,
-                this,
-                trajLogger
-        );
+        swerveDrive.update();
+        // for (var camera : cameras) {
+        //     swerveDrive.addVisionMeasurement(
+        //             camera.getState().getRobotPose(),
+        //             camera.getState().getTimestamp().baseUnitMagnitude(),
+        //             camera.getState().getRobotPoseStdDev());
+        // }
     }
 
     private void startSimThread() {
@@ -100,8 +133,10 @@ public class SwerveDriveSubsystem implements Subsystem {
             lastSimTime = currentTime;
 
             /* use the measured time delta, get battery voltage from WPILib */
-            ctreSwerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            swerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
+
+
 }

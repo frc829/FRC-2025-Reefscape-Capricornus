@@ -1,7 +1,7 @@
 package frc.robot.triggermaps;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.game.AlgaeScore;
+import frc.robot.commands.AlgaeScore;
 
 import static edu.wpi.first.wpilibj.XboxController.Axis.kLeftTrigger;
 

@@ -177,6 +177,7 @@ public class NEO550Wrist implements Wrist {
             double feedbackVolts = velocityPIDController
                     .calculate(currentVelocityRPS, nextVelocitySetpoint);
             double volts = MathUtil.clamp(feedbackVolts + feedforwardVolts, -maxControlVoltage, maxControlVoltage);
+            motor.setVoltage(volts);
             setpoint.velocity = nextVelocitySetpoint;
         }
     }

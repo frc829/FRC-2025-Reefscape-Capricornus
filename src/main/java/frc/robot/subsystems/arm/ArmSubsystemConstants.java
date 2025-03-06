@@ -1,29 +1,28 @@
 package frc.robot.subsystems.arm;
 
-import static com.ctre.phoenix6.signals.FeedbackSensorSourceValue.*;
-import static com.ctre.phoenix6.signals.GravityTypeValue.*;
-import static com.ctre.phoenix6.signals.InvertedValue.*;
-import static com.ctre.phoenix6.signals.NeutralModeValue.*;
-import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static frc.robot.Constants.*;
-import static frc.robot.subsystems.arm.ArmSubsystemConstants.AbsoluteEncoder.*;
-import static frc.robot.subsystems.arm.ArmSubsystemConstants.Control.*;
-import static frc.robot.subsystems.arm.ArmSubsystemConstants.Mechanism.*;
-import static frc.robot.subsystems.arm.ArmSubsystemConstants.Motor.*;
-import static frc.robot.subsystems.arm.ArmSubsystemConstants.Simulation.*;
-
-
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
-import edu.wpi.first.units.measure.*;
 import digilib.arm.Arm;
 import digilib.arm.ArmConstants;
 import digilib.arm.TalonFXArm;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Command;
+
+import static com.ctre.phoenix6.signals.FeedbackSensorSourceValue.FusedCANcoder;
+import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
+import static com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
+import static edu.wpi.first.units.Units.Seconds;
+import static frc.robot.Constants.rio;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.AbsoluteEncoder.*;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.Control.*;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.Mechanism.constants;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.Mechanism.reduction;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.Motor.talonFX;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.Simulation.simLoopPeriod;
+import static frc.robot.subsystems.arm.ArmSubsystemConstants.Simulation.startingAngleDegrees;
 
 public class ArmSubsystemConstants {
 
@@ -141,10 +140,7 @@ public class ArmSubsystemConstants {
                 talonFX,
                 cancoder);
         ArmSubsystem armSubsystem = new ArmSubsystem(arm, simLoopPeriod);
-        MutAngle holdPosition = Degrees.mutable(0.0);
-        Command hold = runOnce(() -> holdPosition.mut_setBaseUnitMagnitude(arm.getState().getAbsoluteEncoderPositionDegrees()))
-                .andThen(armSubsystem.toAngle(holdPosition.in(Degrees)));
-        armSubsystem.setDefaultCommand(hold);
+        armSubsystem.setDefaultCommand(armSubsystem.hold());
         return armSubsystem;
     }
 }

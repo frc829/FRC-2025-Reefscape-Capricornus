@@ -1,15 +1,19 @@
 package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.Utils;
+import digilib.elevator.Elevator;
+import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import digilib.elevator.Elevator;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.DoubleSupplier;
+
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class ElevatorSubsystem implements Subsystem {
     private final Elevator elevator;
@@ -54,6 +58,15 @@ public class ElevatorSubsystem implements Subsystem {
         return run(() -> elevator.setVoltage(volts))
                 .withName(String.format("%s: VOLTAGE", getName()));
     }
+
+    public Command hold() {
+        MutDistance holdPosition = Meters.mutable(0.0);
+        return sequence(
+                runOnce(() -> holdPosition.mut_setMagnitude(elevator.getState().getMotorEncoderPositionMeters())),
+                run(() -> elevator.setPosition(holdPosition.in(Meters))))
+                .withName(String.format("%s: HOLD", getName()));
+    }
+
 
     @Override
     public void periodic() {
