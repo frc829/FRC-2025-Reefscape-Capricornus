@@ -30,7 +30,8 @@ public class CoralPickupMap {
                 .onFalse(coral.hold());
     }
 
-    private void bindCoralHold(){
-        controller.back().onTrue(coral.hold());
+    private void bindCoralHold() {
+        controller.back()
+                .onTrue(coral.hold());
     }
 }

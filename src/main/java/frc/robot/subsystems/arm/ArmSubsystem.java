@@ -1,26 +1,20 @@
 package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix6.Utils;
-import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import digilib.arm.Arm;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.DoubleSupplier;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Rotations;
-
 public class ArmSubsystem implements Subsystem {
     private final Arm arm;
     private double lastSimTime;
     private final Time simLoopPeriod;
-    private final MutAngle holdPosition = Degrees.mutable(0.0);
 
     public ArmSubsystem(Arm arm, Time simLoopPeriod) {
         this.arm = arm;
@@ -43,12 +37,12 @@ public class ArmSubsystem implements Subsystem {
     }
 
     public Trigger inRange(double minAngleDegrees, double maxAngleDegrees) {
-        return gte(maxAngleDegrees).and(lte(minAngleDegrees));
+        return gte(minAngleDegrees).and(lte(maxAngleDegrees));
     }
 
     public Command toAngle(double degrees) {
         return run(() -> arm.setPosition(degrees / 360.0))
-                .withName(String.format("%s: %d deg", getName(), degrees));
+                .withName(String.format("%s: %.2f deg", getName(), degrees));
     }
 
     public Command toVelocity(DoubleSupplier scalarSetpoint) {
@@ -56,10 +50,9 @@ public class ArmSubsystem implements Subsystem {
                 .withName(String.format("%s: VELOCITY", getName()));
     }
 
-    Command hold() {
-        return Commands.runOnce(() -> holdPosition.mut_setMagnitude(arm.getState().getMotorEncoderPositionDegrees()))
-                .andThen(toAngle((holdPosition.in(Rotations)))
-                .withName(String.format("%s: HOLD", getName())));
+    public Command toVoltage(double volts) {
+        return run(() -> arm.setVoltage(volts))
+                .withName(String.format("%s: VOLTAGE", getName()));
     }
 
     @Override
@@ -74,7 +67,6 @@ public class ArmSubsystem implements Subsystem {
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
-
             arm.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());

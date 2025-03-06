@@ -1,12 +1,11 @@
 package frc.robot.subsystems.pneumatics;
 
 import digilib.claws.Claw;
-import digilib.claws.ClawValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import java.util.function.Supplier;
+import static digilib.claws.ClawState.*;
 
 public class ClawSubsystem implements Subsystem {
     private final Claw claw;
@@ -19,8 +18,12 @@ public class ClawSubsystem implements Subsystem {
         isClosed = new Trigger(() -> claw.getState().getClawValue() == ClawValue.CLOSED);
     }
 
-    public Command applyRequestOnce(Supplier<ClawRequest> requestSupplier) {
-        return runOnce(() -> claw.setControl(requestSupplier.get()));
+    public Command toClawValue(ClawValue clawValue) {
+        return runOnce(() -> claw.setValue(clawValue));
+    }
+
+    public Command toggle(){
+        return runOnce(claw::toggle);
     }
 
     @Override

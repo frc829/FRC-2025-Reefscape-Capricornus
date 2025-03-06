@@ -1,9 +1,9 @@
-package digilib.elevator;
+package digilib.climber;
 
-public class ElevatorState {
+public class ClimberState {
 
     private double motorEncoderPositionMeters = 0.0;
-    private double motorEncoderVelocityMPS = 0.0;
+    private double motorEncoderVelocityMetersPerSecond = 0.0;
     private double volts = 0.0;
     private double amps = 0.0;
 
@@ -15,12 +15,12 @@ public class ElevatorState {
         this.motorEncoderPositionMeters = motorEncoderPositionMeters;
     }
 
-    public double getMotorEncoderVelocityMPS() {
-        return motorEncoderVelocityMPS;
+    public double getMotorEncoderVelocityMetersPerSecond() {
+        return motorEncoderVelocityMetersPerSecond;
     }
 
-    public void setMotorEncoderVelocityMPS(double motorEncoderVelocityMPS) {
-        this.motorEncoderVelocityMPS = motorEncoderVelocityMPS;
+    public void setMotorEncoderVelocityMetersPerSecond(double motorEncoderVelocityMetersPerSecond) {
+        this.motorEncoderVelocityMetersPerSecond = motorEncoderVelocityMetersPerSecond;
     }
 
     public double getVolts() {

@@ -66,10 +66,10 @@ public class TwoVortexElevator implements Elevator {
                 controlPeriodSeconds);
         positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
-                        12.0 - feedforward.getKs() - feedforward.getKg(),
+                        constants.maxControlVoltage(),
                         constants.kvVoltsPerMPS(),
                         constants.kaVoltsPerMPSSquared()));
-        this.velocityProfile = new SlewRateLimiter(constants.maxVelocityMPS());
+        this.velocityProfile = new SlewRateLimiter(constants.maxAccelerationMPSSquared());
         this.controlPeriodSeconds = controlPeriodSeconds;
 
         if (RobotBase.isSimulation()) {
@@ -191,7 +191,8 @@ public class TwoVortexElevator implements Elevator {
     public void updateState() {
         state.setMotorEncoderPositionMeters(motor.getEncoder().getPosition());
         state.setMotorEncoderVelocityMPS(motor.getEncoder().getVelocity());
-        state.setVoltage(motor.getAppliedOutput() * motor.getBusVoltage());
+        state.setVolts(motor.getAppliedOutput() * motor.getBusVoltage());
+        state.setAmps(motor.getOutputCurrent());
     }
 
     @Override

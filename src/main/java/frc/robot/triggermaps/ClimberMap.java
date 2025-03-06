@@ -1,45 +1,35 @@
 package frc.robot.triggermaps;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.units.measure.MutDimensionless;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import frc.robot.commands.system.Climber;
-
-import static edu.wpi.first.units.Units.Value;
-import static edu.wpi.first.wpilibj.XboxController.Axis.kRightY;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 
 public class ClimberMap {
 
+    private static final double maxVoltage = 12.0;
+
     private final CommandJoystick controller;
     private final double deadband;
-    private final Climber climber;
-    private final MutDimensionless climbDutyCyclePercent = Value.mutable(0.0);
+    private final ClimberSubsystem climber;
 
 
     public ClimberMap(CommandJoystick controller,
                       double deadband,
-                      Climber climber) {
+                      ClimberSubsystem climber) {
         this.controller = controller;
         this.deadband = deadband;
         this.climber = climber;
 
-        bindClimbScore();
+        bindClimb();
 
     }
 
-    private void bindClimbScore() {
+    private void bindClimb() {
         controller.axisMagnitudeGreaterThan(1, deadband)
-                .whileTrue(climber.climb(this::getClimbDutyCycle));
+                .whileTrue(climber.toVoltage(getClimbVoltageScalar()));
     }
 
-    private Dimensionless getClimbDutyCycle() {
-        return climbDutyCyclePercent.mut_setBaseUnitMagnitude(getClimbDutyCycleValue());
-    }
-
-    private double getClimbDutyCycleValue() {
-        return MathUtil.applyDeadband(controller.getY(), deadband);
+    private double getClimbVoltageScalar() {
+        return maxVoltage * MathUtil.applyDeadband(controller.getY(), deadband);
     }
 }

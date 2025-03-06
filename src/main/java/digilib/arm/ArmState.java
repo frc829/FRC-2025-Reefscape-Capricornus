@@ -24,7 +24,8 @@ public class ArmState {
     private double motorEncoderVelocityRPS = 0.0;
     private double absoluteEncoderPositionRotations = 0.0;
     private double absoluteEncoderVelocityRPS = 0.0;
-    private double voltage = 0.0;
+    private double volts = 0.0;
+    private double amps = 0.0;
     private AbsoluteEncoderStatus absoluteEncoderStatus;
 
     public double getMotorEncoderPositionRotations() {
@@ -75,12 +76,20 @@ public class ArmState {
         this.absoluteEncoderVelocityRPS = absoluteEncoderVelocityRPS;
     }
 
-    public double getVoltage() {
-        return voltage;
+    public double getVolts() {
+        return volts;
     }
 
-    public void setVoltage(double voltage) {
-        this.voltage = voltage;
+    public void setVolts(double volts) {
+        this.volts = volts;
+    }
+
+    public double getAmps() {
+        return amps;
+    }
+
+    public void setAmps(double amps) {
+        this.amps = amps;
     }
 
     public AbsoluteEncoderStatus getAbsoluteEncoderStatus() {

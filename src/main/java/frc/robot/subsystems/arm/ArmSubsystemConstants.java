@@ -1,73 +1,76 @@
 package frc.robot.subsystems.arm;
 
+import static com.ctre.phoenix6.signals.FeedbackSensorSourceValue.*;
+import static com.ctre.phoenix6.signals.GravityTypeValue.*;
+import static com.ctre.phoenix6.signals.InvertedValue.*;
+import static com.ctre.phoenix6.signals.NeutralModeValue.*;
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static frc.robot.Constants.*;
 import static frc.robot.subsystems.arm.ArmSubsystemConstants.AbsoluteEncoder.*;
 import static frc.robot.subsystems.arm.ArmSubsystemConstants.Control.*;
 import static frc.robot.subsystems.arm.ArmSubsystemConstants.Mechanism.*;
 import static frc.robot.subsystems.arm.ArmSubsystemConstants.Motor.*;
 import static frc.robot.subsystems.arm.ArmSubsystemConstants.Simulation.*;
 
+
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
-import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 import digilib.arm.Arm;
 import digilib.arm.ArmConstants;
 import digilib.arm.TalonFXArm;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class ArmSubsystemConstants {
 
     static final class Control {
-        static final Voltage ks = Volts.of(0.14546);
-        static final Voltage kg = Volts.of(0.13317);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularVelocityUnit>> kv = Volts.per(RotationsPerSecond).of(39.295);
-        static final Measure<? extends PerUnit<VoltageUnit, AngularAccelerationUnit>> ka = Volts.per(RotationsPerSecondPerSecond).of(0.33517);
-        static final GravityTypeValue gravityTypeValue = GravityTypeValue.Arm_Cosine;
-        static final double positionKp = 96.725;
-        static final double positionKd = 0.2086;
-        static final double velocityKp = 2.0133;
-        static final AngularVelocity maxAngularVelocity = RotationsPerSecond.of(
-                (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / kv.magnitude());
-        static final AngularAcceleration maxAngularAcceleration = RadiansPerSecondPerSecond.of(
-                (12.0 - ks.baseUnitMagnitude() - kg.baseUnitMagnitude()) / ka.magnitude());
+        static final double ksVolts = 0.14546;
+        static final double kgVolts = 0.13317;
+        static final double kvVoltsPerRPS = 39.295;
+        static final double kaVoltsPerRPSSquared = 0.33517;
+        static final GravityTypeValue gravityTypeValue = Arm_Cosine;
+        static final double positionKpVoltsPerRotation = 96.725;
+        static final double positionKdVoltsPerRPS = 0.2086;
+        static final double velocityKpVoltsPerRPS = 2.0133;
+        static final double maxControlVoltage = 12.0 - ksVolts - kgVolts;
+        static final double maxVelocityRPS = maxControlVoltage / kvVoltsPerRPS;
+        static final double maxAccelerationRPSS = maxControlVoltage / kaVoltsPerRPSSquared;
+    }
+
+    static final class Simulation {
+        static final double startingAngleDegrees = 0.0;
+        static final Time simLoopPeriod = Seconds.of(0.001);
     }
 
     static final class Mechanism {
         static final String name = "Arm";
         static final double reduction = 5.0 * 5.0 * 4.0 * 72.0 / 22.0;
+        static final double minAngleDegrees = -50.0;
+        static final double maxAngleDegrees = 180.0;
         static final ArmConstants constants = new ArmConstants(
                 name,
                 reduction,
-                maxAngle,
-                minAngle,
-                startingAngle,
-                ks,
-                kg,
-                kv,
-                ka,
-                maxAngularVelocity,
-                maxAngularAcceleration,
-                positionStdDev,
-                velocityStdDev);
-    }
-
-    static final class Simulation {
-        static final Angle startingAngle = Degrees.of(0.0);
-        static final Angle minAngle = Degrees.of(-50.0);
-        static final Angle maxAngle = Degrees.of(180.0);
-        static final Angle positionStdDev = Degrees.of(0.0);
-        static final AngularVelocity velocityStdDev = DegreesPerSecond.of(0.0);
-        static final Time simLoopPeriod = Seconds.of(0.001);
+                startingAngleDegrees,
+                minAngleDegrees,
+                maxAngleDegrees,
+                ksVolts,
+                kgVolts,
+                kvVoltsPerRPS,
+                kaVoltsPerRPSSquared,
+                maxVelocityRPS,
+                maxAccelerationRPSS);
     }
 
     static final class AbsoluteEncoder {
         static final int cancoderDeviceNumber = 34;
-        static final double magnetDirection = RobotBase.isReal() ? 0.093506 : 0.0;  // 0.088623
-        static final FeedbackSensorSourceValue feedbackSensorSourceValue = FeedbackSensorSourceValue.FusedCANcoder;
+        static final double magnetDirection = RobotBase.isReal()
+                ? 0.093506
+                : 0.0;
+        static final FeedbackSensorSourceValue feedbackSensorSourceValue = FusedCANcoder;
         static final SensorDirectionValue sensorDirectionValue = RobotBase.isReal()
                 ? SensorDirectionValue.Clockwise_Positive
                 : SensorDirectionValue.CounterClockwise_Positive;
@@ -76,62 +79,72 @@ public class ArmSubsystemConstants {
                 .withMagnetOffset(magnetDirection);
         static final CANcoderConfiguration config = new CANcoderConfiguration()
                 .withMagnetSensor(magnetSensorConfigs);
-        static final CANcoder cancoder = new CANcoder(cancoderDeviceNumber, Constants.rio);
+        static final CANcoder cancoder = new CANcoder(cancoderDeviceNumber, rio);
     }
 
     static final class Motor {
         static final int deviceNumber = 14;
-        static final InvertedValue invertedValue = InvertedValue.CounterClockwise_Positive;
-        static final NeutralModeValue neutralModeValue = NeutralModeValue.Brake;
+        static final NeutralModeValue neutralModeValue = Brake;
+        static final InvertedValue invertedValue = CounterClockwise_Positive;
+        static final double supplyCurrentLimitAmps = 70;
         static final FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(cancoderDeviceNumber)
                 .withFeedbackSensorSource(feedbackSensorSourceValue)
                 .withSensorToMechanismRatio(1.0)
                 .withRotorToSensorRatio(reduction);
         static final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs()
-                .withMotionMagicExpo_kV(kv.magnitude())
-                .withMotionMagicExpo_kA(ka.magnitude())
-                .withMotionMagicCruiseVelocity(maxAngularVelocity)
-                .withMotionMagicAcceleration(maxAngularAcceleration);
+                .withMotionMagicExpo_kV(kvVoltsPerRPS)
+                .withMotionMagicExpo_kA(kaVoltsPerRPSSquared)
+                .withMotionMagicAcceleration(maxAccelerationRPSS);
         static final VoltageConfigs voltageConfigs = new VoltageConfigs()
-                .withPeakForwardVoltage(12.0)
-                .withPeakReverseVoltage(-12.0);
+                .withPeakForwardVoltage(maxControlVoltage)
+                .withPeakReverseVoltage(-maxControlVoltage);
+        static final CurrentLimitsConfigs currentLimitsConfigs = new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(supplyCurrentLimitAmps)
+                .withSupplyCurrentLimitEnable(true);
         static final MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs()
                 .withInverted(invertedValue)
                 .withNeutralMode(neutralModeValue);
         static final Slot0Configs slot0Configs = new Slot0Configs()
-                .withKS(ks.baseUnitMagnitude())
+                .withKS(ksVolts)
                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseVelocitySign)
-                .withKG(kg.baseUnitMagnitude())
-                .withKV(kv.magnitude())
-                .withKA(ka.magnitude())
+                .withKG(kgVolts)
+                .withKV(kvVoltsPerRPS)
+                .withKA(kaVoltsPerRPSSquared)
                 .withGravityType(gravityTypeValue)
-                .withKP(positionKp)
-                .withKD(positionKd);
+                .withKP(positionKpVoltsPerRotation)
+                .withKD(positionKdVoltsPerRPS);
         static final Slot1Configs slot1Configs = new Slot1Configs()
-                .withKS(ks.baseUnitMagnitude())
+                .withKS(ksVolts)
                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseVelocitySign)
-                .withKG(kg.baseUnitMagnitude())
-                .withKV(kv.magnitude())
-                .withKA(ka.magnitude())
+                .withKG(kgVolts)
+                .withKV(kvVoltsPerRPS)
+                .withKA(kaVoltsPerRPSSquared)
                 .withGravityType(gravityTypeValue)
-                .withKP(velocityKp);
-        static final TalonFX talonFX = new TalonFX(deviceNumber, Constants.rio);
+                .withKP(velocityKpVoltsPerRPS);
         static final TalonFXConfiguration config = new TalonFXConfiguration()
+                .withCurrentLimits(currentLimitsConfigs)
                 .withVoltage(voltageConfigs)
                 .withFeedback(feedbackConfigs)
                 .withMotionMagic(motionMagicConfigs)
                 .withMotorOutput(motorOutputConfigs)
                 .withSlot0(slot0Configs)
                 .withSlot1(slot1Configs);
+        static final TalonFX talonFX = new TalonFX(deviceNumber, rio);
     }
 
     public static ArmSubsystem create() {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         talonFX.getConfigurator().apply(Motor.config);
-        Arm arm = new TalonFXArm(constants, talonFX, cancoder);
+        Arm arm = new TalonFXArm(
+                constants,
+                talonFX,
+                cancoder);
         ArmSubsystem armSubsystem = new ArmSubsystem(arm, simLoopPeriod);
-        armSubsystem.setDefaultCommand(armSubsystem.hold());
+        MutAngle holdPosition = Degrees.mutable(0.0);
+        Command hold = runOnce(() -> holdPosition.mut_setBaseUnitMagnitude(arm.getState().getAbsoluteEncoderPositionDegrees()))
+                .andThen(armSubsystem.toAngle(holdPosition.in(Degrees)));
+        armSubsystem.setDefaultCommand(hold);
         return armSubsystem;
     }
 }

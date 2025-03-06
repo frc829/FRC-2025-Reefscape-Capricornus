@@ -1,4 +1,4 @@
-package frc.robot.subsystems.winch;
+package frc.robot.subsystems.climber;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.Time;
@@ -6,18 +6,16 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import digilib.winch.Winch;
-import digilib.winch.WinchRequest;
+import digilib.climber.Climber;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import java.util.function.Supplier;
-
-public class WinchSubsystem implements Subsystem {
+public class ClimberSubsystem implements Subsystem {
     private final Time simLoopPeriod;
-    private final Winch winch;
+    private final Climber climber;
     private double lastSimTime;
 
-    public WinchSubsystem(Winch winch, Time simLoopPeriod) {
-        this.winch = winch;
+    public ClimberSubsystem(Climber climber, Time simLoopPeriod) {
+        this.climber = climber;
         this.simLoopPeriod = simLoopPeriod;
 
         if (Utils.isSimulation()) {
@@ -25,19 +23,30 @@ public class WinchSubsystem implements Subsystem {
         }
     }
 
-    public Command applyRequest(Supplier<WinchRequest> requestSupplier) {
-        return run(() -> winch.setControl(requestSupplier.get()));
+    public Trigger gte(double lengthMeters) {
+        return new Trigger(() -> climber
+                .getState()
+                .getMotorEncoderPositionMeters() >= lengthMeters);
     }
 
-    public Command idle() {
-        WinchRequest.Idle request = new WinchRequest.Idle();
-        return applyRequest(() -> request)
-                .withName(String.format("%s: IDLE", getName()));
+    public Trigger lte(double lengthMeters) {
+        return new Trigger(() -> climber
+                .getState()
+                .getMotorEncoderPositionMeters() <= lengthMeters);
+    }
+
+    public Trigger inRange(double minLengthMeters, double maxLengthMeters) {
+        return gte(minLengthMeters).and(lte(maxLengthMeters));
+    }
+
+    public Command toVoltage(double volts) {
+        return run(() -> climber.setVoltage(volts))
+                .withName(String.format("%s: VOLTAGE", getName()));
     }
 
     @Override
     public void periodic() {
-        winch.update();
+        climber.update();
     }
 
     private void startSimThread() {
@@ -51,10 +60,8 @@ public class WinchSubsystem implements Subsystem {
             lastSimTime = currentTime;
 
             /* use the measured time delta, get battery voltage from WPILib */
-            winch.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            climber.updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
-
-
 }

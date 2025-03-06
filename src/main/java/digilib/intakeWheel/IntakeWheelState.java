@@ -1,49 +1,36 @@
 package digilib.intakeWheel;
 
-import edu.wpi.first.units.measure.*;
-
-import static edu.wpi.first.units.Units.*;
-
 public class IntakeWheelState {
 
-    private final MutAngularVelocity angularVelocity = RadiansPerSecond.mutable(0.0);
-    private final MutVoltage voltage = Volts.mutable(0.0);
-    private final MutCurrent current = Amps.mutable(0.0);
-    private final MutTime timestamp = Seconds.mutable(0.0);
+    private double motorEncoderVelocityRPS = 0.0;
+    private double volts = 0.0;
+    private double amps = 0.0;
 
-    public AngularVelocity getAngularVelocity() {
-        return angularVelocity;
+    public double getMotorEncoderVelocityRPS() {
+        return motorEncoderVelocityRPS;
     }
 
-    public Voltage getVoltage() {
-        return voltage;
+    public double getMotorEncoderVelocityDPS() {
+        return motorEncoderVelocityRPS * 360.0;
     }
 
-    public Current getCurrent() {
-        return current;
+    public void setMotorEncoderVelocityRPS(double motorEncoderVelocityRPS) {
+        this.motorEncoderVelocityRPS = motorEncoderVelocityRPS;
     }
 
-    public Time getTimestamp() {
-        return timestamp;
+    public double getVolts() {
+        return volts;
     }
 
-    public void setAngularVelocity(double radiansPerSecond) {
-        this.angularVelocity.mut_setBaseUnitMagnitude(radiansPerSecond);
+    public void setVolts(double volts) {
+        this.volts = volts;
     }
 
-    public void setAngularVelocity(AngularVelocity angularVelocity) {
-        this.angularVelocity.mut_replace(angularVelocity);
+    public double getAmps() {
+        return amps;
     }
 
-    public void setVoltage(double volts) {
-        this.voltage.mut_setBaseUnitMagnitude(volts);
-    }
-
-    public void setCurrent(double amps) {
-        this.current.mut_setBaseUnitMagnitude(amps);
-    }
-
-    public void setTimestamp(double seconds) {
-        this.timestamp.mut_setBaseUnitMagnitude(seconds);
+    public void setAmps(double amps) {
+        this.amps = amps;
     }
 }

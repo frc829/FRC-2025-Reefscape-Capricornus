@@ -1,68 +1,103 @@
 package digilib.wrist;
 
-import edu.wpi.first.units.measure.*;
-
-import static edu.wpi.first.units.Units.*;
+import com.ctre.phoenix6.signals.MagnetHealthValue;
+import digilib.arm.ArmState;
 
 public class WristState {
 
-    private final MutAngle position = Radians.mutable(0.0);
-    private final MutAngle setpoint = Radians.mutable(0.0);
-    private final MutAngle absolutePosition = Radians.mutable(0.0);
-    private final MutAngularVelocity velocity = RadiansPerSecond.mutable(0.0);
-    private final MutAngularVelocity absoluteVelocity = RadiansPerSecond.mutable(0.0);
-    private final MutVoltage voltage = Volts.mutable(0.0);
-    private String status = "";
+    public enum AbsoluteEncoderStatus {
+        GOOD,
+        OK,
+        BAD,
+        REALLY_BAD;
 
-    public Angle getAngle() {
-        return position;
+        public static AbsoluteEncoderStatus fromMagnetHealthValue(MagnetHealthValue magnetHealthValue) {
+            return switch (magnetHealthValue) {
+                case Magnet_Green -> GOOD;
+                case Magnet_Orange -> OK;
+                case Magnet_Red -> BAD;
+                default -> REALLY_BAD;
+            };
+        }
     }
 
-    public Angle getAbsolutePosition() {
-        return absolutePosition;
+    private double motorEncoderPositionRotations = 0.0;
+    private double motorEncoderVelocityRPS = 0.0;
+    private double absoluteEncoderPositionRotations = 0.0;
+    private double absoluteEncoderVelocityRPS = 0.0;
+    private double volts = 0.0;
+    private double amps = 0.0;
+    private AbsoluteEncoderStatus absoluteEncoderStatus;
+
+    public double getMotorEncoderPositionRotations() {
+        return motorEncoderPositionRotations;
     }
 
-    public AngularVelocity getVelocity() {
-        return velocity;
+    public double getMotorEncoderPositionDegrees(){
+        return motorEncoderPositionRotations * 360.0;
     }
 
-    public AngularVelocity getAbsoluteVelocity() {
-        return absoluteVelocity;
+    public void setMotorEncoderPositionRotations(double motorEncoderPositionRotations) {
+        this.motorEncoderPositionRotations = motorEncoderPositionRotations;
     }
 
-    public Voltage getVoltage() {
-        return voltage;
+    public double getMotorEncoderVelocityRPS() {
+        return motorEncoderVelocityRPS;
     }
 
-    public String getAbsoluteEncoderStatus() {
-        return status;
+    public double getMotorEncoderVelocityDPS(){
+        return motorEncoderVelocityRPS * 360.0;
     }
 
-    public void setPosition(double radians) {
-        this.position.mut_setBaseUnitMagnitude(radians);
+    public void setMotorEncoderVelocityRPS(double motorEncoderVelocityRPS) {
+        this.motorEncoderVelocityRPS = motorEncoderVelocityRPS;
     }
 
-    public void setSetpoint(double setpoint) {
-        this.setpoint.mut_setBaseUnitMagnitude(setpoint);
+    public double getAbsoluteEncoderPositionRotations() {
+        return absoluteEncoderPositionRotations;
     }
 
-    public void setAbsolutePosition(double radians) {
-        this.absolutePosition.mut_setBaseUnitMagnitude(radians);
+    public double getAbsoluteEncoderPositionDegrees(){
+        return absoluteEncoderPositionRotations * 360.0;
     }
 
-    public void setVelocity(double radiansPerSecond) {
-        this.velocity.mut_setBaseUnitMagnitude(radiansPerSecond);
+    public void setAbsoluteEncoderPositionRotations(double absoluteEncoderPositionRotations) {
+        this.absoluteEncoderPositionRotations = absoluteEncoderPositionRotations;
     }
 
-    public void setAbsoluteVelocity(double radiansPerSecond) {
-        this.absoluteVelocity.mut_setBaseUnitMagnitude(radiansPerSecond);
+    public double getAbsoluteEncoderVelocityRPS() {
+        return absoluteEncoderVelocityRPS;
     }
 
-    public void setVoltage(double voltage) {
-        this.voltage.mut_setBaseUnitMagnitude(voltage);
+    public double getAbsoluteEncoderVelocityDPS(){
+        return absoluteEncoderVelocityRPS * 360.0;
     }
 
-    public void setAbsoluteEncoderStatus(String status) {
-        this.status = status;
+    public void setAbsoluteEncoderVelocityRPS(double absoluteEncoderVelocityRPS) {
+        this.absoluteEncoderVelocityRPS = absoluteEncoderVelocityRPS;
+    }
+
+    public double getVolts() {
+        return volts;
+    }
+
+    public void setVolts(double volts) {
+        this.volts = volts;
+    }
+
+    public double getAmps() {
+        return amps;
+    }
+
+    public void setAmps(double amps) {
+        this.amps = amps;
+    }
+
+    public AbsoluteEncoderStatus getAbsoluteEncoderStatus() {
+        return absoluteEncoderStatus;
+    }
+
+    public void setAbsoluteEncoderStatus(MagnetHealthValue magnetHealthValue) {
+        this.absoluteEncoderStatus = AbsoluteEncoderStatus.fromMagnetHealthValue(magnetHealthValue);
     }
 }

@@ -2,7 +2,7 @@ package frc.robot.subsystems.pneumatics;
 
 import digilib.claws.Claw;
 import digilib.claws.ClawConstants;
-import digilib.claws.ClawValue;
+import digilib.claws.ClawState;
 import digilib.claws.SolenoidClaw;
 import digilib.pneumatics.Pneumatics;
 import digilib.pneumatics.PneumaticsConstants;
@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
-import static digilib.claws.ClawValue.CLOSED;
-import static digilib.claws.ClawValue.OPEN;
+import static digilib.claws.ClawState.*;
+import static digilib.claws.ClawState.ClawValue.OPEN;
 import static edu.wpi.first.wpilibj.PneumaticsModuleType.REVPH;
 
 public class PneumaticsSubsystemConstants {

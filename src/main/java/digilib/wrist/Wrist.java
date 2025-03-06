@@ -1,30 +1,24 @@
 package digilib.wrist;
 
 import digilib.MotorControllerType;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.units.measure.Voltage;
 
 public interface Wrist {
 
     MotorControllerType getMotorControllerType();
 
-    Angle getMaxAngle();
+    double getMinAngleRotations();
 
-    Angle getMinAngle();
+    double getMaxAngleRotations();
 
-    AngularVelocity getMaxVelocity();
+    double getMaxVelocityRPS();
 
     WristState getState();
 
-    void setControl(WristRequest request);
+    void setPosition(double setpointRotations);
 
-    void setPosition(Angle position);
+    void setVelocity(double setpointScalar);
 
-    void setVelocity(Dimensionless maxPercent);
-
-    void setVoltage(Voltage voltage);
+    void setVoltage(double volts);
 
     void resetPosition();
 

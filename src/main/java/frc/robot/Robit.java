@@ -14,16 +14,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.game.*;
-import frc.robot.commands.system.*;
-import frc.robot.autos.*;
-import frc.robot.subsystems.dualIntake.DualIntakeSubsystemConstants;
+import frc.robot.commands.system.Drive;
+import frc.robot.commands.system.Manipulator;
 import frc.robot.subsystems.arm.ArmSubsystemConstants;
+import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.climber.ClimberSubsystemConstants;
 import frc.robot.subsystems.elevator.ElevatorSubsystemConstants;
+import frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants;
+import frc.robot.subsystems.intakeWheel.CoralIntakeSubsystemConstants;
+import frc.robot.subsystems.lidarSensor.LidarSensorSubsystemConstants;
 import frc.robot.subsystems.pneumatics.PneumaticsSubsystemConstants;
-import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
-import frc.robot.subsystems.winch.WinchSubsystemConstants;
+import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants;
 import frc.robot.subsystems.wrist.WristSubsystemConstants;
 import frc.robot.triggermaps.*;
 
@@ -40,19 +44,20 @@ public class Robit extends TimedRobot {
         CommandJoystick climberController = new CommandJoystick(2);
         CommandXboxController manualController = new CommandXboxController(3);
 
-
         SwerveDriveSubsystem swerveDriveSubsystem = SwerveDriveSubsystemConstants.createCTRESwerveDrive();
         AutoFactory autoFactory = swerveDriveSubsystem.createAutoFactory();
 
         Drive drive = new Drive(swerveDriveSubsystem, autoFactory);
         Manipulator manipulator = new Manipulator(
-                PneumaticsSubsystemConstants.createAlgaeClaw(),
                 ArmSubsystemConstants.create(),
+                PneumaticsSubsystemConstants.createAlgaeClaw(),
                 PneumaticsSubsystemConstants.createCoralClaw(),
-                DualIntakeSubsystemConstants.create(),
                 ElevatorSubsystemConstants.create(),
+                AlgaeIntakeSubsystemConstants.create(),
+                CoralIntakeSubsystemConstants.create(),
+                LidarSensorSubsystemConstants.create(),
                 WristSubsystemConstants.create());
-        Climber climber = new Climber(WinchSubsystemConstants.create());
+        ClimberSubsystem climberSubsystem = ClimberSubsystemConstants.create();
 
         AlgaePickup algaePickup = new AlgaePickup(manipulator);
         AlgaeScore algaeScore = new AlgaeScore(manipulator);
@@ -62,10 +67,10 @@ public class Robit extends TimedRobot {
 
         new DriveMap(driverController, deadband, drive);
         new AlgaePickupMap(operatorController, deadband, algaePickup);
-        new AlgaeScoreMap(driverController, operatorController, deadband, algaeScore, coralPickup::hold);
+        new AlgaeScoreMap(driverController, operatorController, deadband, algaeScore);
         new CoralPickupMap(operatorController, coralPickup);
-        new CoralScoreMap(driverController, operatorController, coralScore, coralPickup::hold);
-        new ClimberMap(climberController, deadband, climber);
+        new CoralScoreMap(driverController, operatorController, coralScore);
+        new ClimberMap(climberController, deadband, climberSubsystem);
         new ManualMap(manualController, operatorController, deadband, manual);
         new AutoRoutines(autoFactory, coralPickup, coralScore);
         SmartDashboard.putData(CommandScheduler.getInstance());

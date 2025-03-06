@@ -1,6 +1,5 @@
 package digilib.wrist;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
@@ -8,6 +7,7 @@ import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.*;
 import digilib.MotorControllerType;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
@@ -16,14 +16,14 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
-import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
-import static com.revrobotics.spark.ClosedLoopSlot.kSlot0;
-import static edu.wpi.first.units.Units.*;
+import static digilib.wrist.NEO550Wrist.ControlState.POSITION;
+import static digilib.wrist.NEO550Wrist.ControlState.VELOCITY;
 
 public class NEO550Wrist implements Wrist {
+
 
     public enum ControlState {
         POSITION,
@@ -32,75 +32,76 @@ public class NEO550Wrist implements Wrist {
     }
 
     private final WristState state = new WristState();
-    private final Angle minAngle;
-    private final Angle maxAngle;
-    private final AngularVelocity maxVelocity;
+    private final double minAngleRotations;
+    private final double maxAngleRotations;
+    private final double maxVelocityRPS;
     private final WristTelemetry telemetry;
-    private WristRequest wristRequest;
     private final SparkMax motor;
     private final CANcoder cancoder;
+    private ControlState controlState = null;
     private final ExponentialProfile positionProfile;
     private final SlewRateLimiter velocityProfile;
     private final ExponentialProfile.State goal = new ExponentialProfile.State();
-    private final SimpleMotorFeedforward feedforward;
-    private final Time profilePeriod;
     private ExponentialProfile.State setpoint = new ExponentialProfile.State();
+    private final SimpleMotorFeedforward feedforward;
+    private final PIDController positionPIDController;
+    private final PIDController velocityPIDController;
+    private final double maxControlVoltage;
+    private final double controlPeriodSeconds;
     private DCMotorSim simWrist = null;
     private SparkMaxSim sparkMaxSim = null;
     private CANcoderSimState canCoderSimState = null;
-    private ControlState controlState = null;
 
     public NEO550Wrist(
             WristConstants constants,
             SparkMax motor,
             CANcoder cancoder,
-            Time updatePeriod) {
-        minAngle = constants.minAngle();
-        maxAngle = constants.maxAngle();
-        maxVelocity = constants.maxAngularVelocity();
+            PIDController positionPIDController,
+            PIDController velocityPIDController,
+            double controlPeriodSeconds) {
+        minAngleRotations = constants.minAngleDegrees() / 360.0;
+        maxAngleRotations = constants.maxAngleDegrees() / 360.0;
+        maxVelocityRPS = constants.maxVelocityRPS();
         this.motor = motor;
         this.cancoder = cancoder;
         this.telemetry = new WristTelemetry(
                 constants.name(),
-                constants.minAngle(),
-                constants.maxAngle(),
-                constants.maxAngularVelocity(),
-                constants.maxAngularAcceleration());
+                constants.minAngleDegrees(),
+                constants.maxAngleDegrees(),
+                constants.maxVelocityRPS(),
+                constants.maxAccelerationRPSSquared());
         this.feedforward = new SimpleMotorFeedforward(
-                constants.ks().baseUnitMagnitude(),
-                constants.kv().baseUnitMagnitude(),
-                constants.ka().baseUnitMagnitude(),
-                updatePeriod.baseUnitMagnitude());
+                constants.ksVolts(),
+                constants.kvVoltsPerRPS(),
+                constants.kaVoltsPerRPSSquared(),
+                controlPeriodSeconds);
+        this.positionPIDController = positionPIDController;
+        this.velocityPIDController = velocityPIDController;
         this.positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
-                        12.0,
-                        constants.kv().baseUnitMagnitude(),
-                        constants.ka().baseUnitMagnitude()));
-        this.velocityProfile = new SlewRateLimiter(constants.maxAngularAcceleration().baseUnitMagnitude());
-        this.profilePeriod = updatePeriod;
+                        constants.maxControlVoltage(),
+                        constants.kvVoltsPerRPS(),
+                        constants.kaVoltsPerRPSSquared()));
+        this.velocityProfile = new SlewRateLimiter(constants.maxAccelerationRPSSquared());
+        this.maxControlVoltage = constants.maxControlVoltage();
+        this.controlPeriodSeconds = controlPeriodSeconds;
 
-        double absolutePositionRotations = cancoder.getAbsolutePosition().getValueAsDouble();
-        absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
-        double absolutePositionRadians = absolutePositionRotations * 2 * Math.PI;
-        motor.getEncoder().setPosition(absolutePositionRadians);
+        resetPosition();
+
         if (RobotBase.isSimulation()) {
             DCMotor dcMotor = DCMotor.getNeo550(1);
             sparkMaxSim = new SparkMaxSim(motor, dcMotor);
             canCoderSimState = cancoder.getSimState();
             LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
-                    constants.kv().baseUnitMagnitude(),
-                    constants.ka().baseUnitMagnitude());
+                    constants.kvVoltsPerRPS() / 2 / Math.PI,
+                    constants.kaVoltsPerRPSSquared() / 2 / Math.PI);
             simWrist = new DCMotorSim(
                     plant,
-                    dcMotor,
-                    constants.positionStdDev().baseUnitMagnitude(),
-                    constants.velocityStdDev().baseUnitMagnitude());
-            simWrist.setState(absolutePositionRadians, 0.0);
-            sparkMaxSim.setPosition(absolutePositionRadians);
+                    dcMotor);
+            simWrist.setAngle(constants.startingAngleDegrees() / 360.0);
+            canCoderSimState.setRawPosition(constants.startingAngleDegrees() / 360.0);
+            sparkMaxSim.setPosition(constants.startingAngleDegrees() / 360.0);
         }
-        // BaseStatusSignal.setUpdateFrequencyForAll(250,
-        //         cancoder.getAbsolutePosition(),
-        //         cancoder.getVelocity());
     }
 
     @Override
@@ -109,18 +110,18 @@ public class NEO550Wrist implements Wrist {
     }
 
     @Override
-    public Angle getMaxAngle() {
-        return maxAngle;
+    public double getMinAngleRotations() {
+        return minAngleRotations;
     }
 
     @Override
-    public Angle getMinAngle() {
-        return minAngle;
+    public double getMaxAngleRotations() {
+        return maxAngleRotations;
     }
 
     @Override
-    public AngularVelocity getMaxVelocity() {
-        return maxVelocity;
+    public double getMaxVelocityRPS() {
+        return maxVelocityRPS;
     }
 
     @Override
@@ -129,70 +130,88 @@ public class NEO550Wrist implements Wrist {
     }
 
     @Override
-    public void setControl(WristRequest request) {
-        if (wristRequest != request) {
-            wristRequest = request;
+    public void setPosition(double setpointRotations) {
+        if (controlState != POSITION) {
+            setpoint.position = cancoder.getAbsolutePosition().getValueAsDouble();
+            setpoint.velocity = cancoder.getVelocity().getValueAsDouble();
+            controlState = POSITION;
         }
-        request.apply(this);
-    }
-
-    @Override
-    public void setPosition(Angle position) {
-        // if (controlState != ControlState.POSITION) {
-        //     setpoint.position = motor.getEncoder().getPosition();
-        //     setpoint.velocity = motor.getEncoder().getVelocity();
-        //     controlState = ControlState.POSITION;
-        // }
-        // goal.position = position.baseUnitMagnitude();
-        // goal.velocity = 0.0;
-        // ExponentialProfile.State next = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), setpoint, goal);
-        // double currentVelocity = motor.getEncoder().getVelocity();
-        // double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
-        // motor.getClosedLoopController().setReference(next.position, SparkBase.ControlType.kPosition, kSlot0, arbFeedfoward, SparkClosedLoopController.ArbFFUnits.kVoltage);
-        // setpoint = next;
-        motor.getClosedLoopController().setReference(position.baseUnitMagnitude(), SparkBase.ControlType.kPosition, kSlot0);
-    }
-
-    @Override
-    public void setVelocity(Dimensionless maxPercent) {
-        if (controlState != ControlState.VELOCITY) {
-            velocityProfile.reset(motor.getEncoder().getVelocity());
-            controlState = ControlState.VELOCITY;
+        double currentAngleRotations = cancoder.getAbsolutePosition().getValueAsDouble();
+        goal.velocity = 0.0;
+        if (currentAngleRotations >= maxAngleRotations && setpointRotations > maxVelocityRPS) {
+            goal.position = maxAngleRotations;
+        } else if (currentAngleRotations <= minAngleRotations && setpointRotations < minAngleRotations) {
+            goal.position = minAngleRotations;
+        } else {
+            goal.position = setpointRotations;
         }
-        motor.setVoltage(maxPercent.baseUnitMagnitude());
+        ExponentialProfile.State next = positionProfile
+                .calculate(controlPeriodSeconds, setpoint, goal);
+        double feedforwardVolts = feedforward
+                .calculateWithVelocities(setpoint.velocity, next.velocity);
+        double feedbackVolts = positionPIDController
+                .calculate(currentAngleRotations, next.position);
+        double volts = MathUtil.clamp(feedbackVolts + feedforwardVolts, -maxControlVoltage, maxControlVoltage);
+        motor.setVoltage(volts);
+        setpoint = next;
     }
 
     @Override
-    public void setVoltage(Voltage voltage) {
+    public void setVelocity(double setpointScalar) {
+        if (controlState != VELOCITY) {
+            velocityProfile.reset(cancoder.getVelocity().getValueAsDouble());
+            setpoint.velocity = cancoder.getVelocity().getValueAsDouble();
+            controlState = VELOCITY;
+        }
+        double currentAngleRotations = cancoder.getAbsolutePosition().getValueAsDouble();
+        double currentVelocityRPS = cancoder.getVelocity().getValueAsDouble();
+        if (currentAngleRotations >= maxAngleRotations && setpointScalar > 0.0){
+            setPosition(maxAngleRotations);
+        }else if(currentAngleRotations <= minAngleRotations && setpointScalar < 0.0){
+            setPosition(minAngleRotations);
+        }else{
+            goal.velocity = setpointScalar * maxVelocityRPS;
+            double nextVelocitySetpoint = velocityProfile.calculate(goal.velocity);
+            double feedforwardVolts = feedforward
+                    .calculateWithVelocities(setpoint.velocity, nextVelocitySetpoint);
+            double feedbackVolts = velocityPIDController
+                    .calculate(currentVelocityRPS, nextVelocitySetpoint);
+            double volts = MathUtil.clamp(feedbackVolts + feedforwardVolts, -maxControlVoltage, maxControlVoltage);
+            setpoint.velocity = nextVelocitySetpoint;
+        }
+    }
+
+    @Override
+    public void setVoltage(double volts) {
         if (controlState != ControlState.VOLTAGE) {
             controlState = ControlState.VOLTAGE;
         }
-        motor.setVoltage(voltage.baseUnitMagnitude());
+        motor.setVoltage(volts);
     }
 
     @Override
     public void resetPosition() {
+        double absolutePositionRotations = cancoder.getAbsolutePosition().getValueAsDouble();
+        absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
+        motor.getEncoder().setPosition(absolutePositionRotations);
     }
 
     @Override
     public void update() {
-        double absolutePositionRotations = cancoder.getAbsolutePosition().getValueAsDouble();
-        absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
-        double absolutePositionRadians = absolutePositionRotations * 2 * Math.PI;
-        motor.getEncoder().setPosition(absolutePositionRadians);
+        resetPosition();
         updateState();
         updateTelemetry();
     }
 
     @Override
     public void updateState() {
-        state.setPosition(motor.getEncoder().getPosition());
-        state.setSetpoint(setpoint.position);
-        state.setAbsolutePosition(cancoder.getAbsolutePosition().getValue().in(Radians));
-        state.setVelocity(motor.getEncoder().getVelocity());
-        state.setAbsoluteVelocity(cancoder.getVelocity().getValue().in(RadiansPerSecond));
-        state.setVoltage(motor.getAppliedOutput() * motor.getBusVoltage());
-        state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue().name());
+        state.setMotorEncoderPositionRotations(motor.getEncoder().getPosition());
+        state.setAbsoluteEncoderPositionRotations(cancoder.getAbsolutePosition().getValueAsDouble());
+        state.setMotorEncoderVelocityRPS(motor.getEncoder().getVelocity());
+        state.setAbsoluteEncoderVelocityRPS(cancoder.getVelocity().getValueAsDouble());
+        state.setVolts(motor.getAppliedOutput() * motor.getBusVoltage());
+        state.setAmps(motor.getOutputCurrent());
+        state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue());
     }
 
     @Override
@@ -217,28 +236,3 @@ public class NEO550Wrist implements Wrist {
         sparkMaxSim.iterate(simWrist.getAngularVelocityRadPerSec(), 12.0, dt);
     }
 }
-
-// private final PIDController pidController;
-// pidController = new PIDController(89.778, 0.0, 6.7465, 0.020);
-
-//    @Override
-//    public void setPosition(Angle position) {
-//        if (controlState != ControlState.POSITION) {
-//            setpoint.position = motor.getEncoder().getPosition();
-//            setpoint.velocity = motor.getEncoder().getVelocity();
-//            controlState = ControlState.POSITION;
-//        }
-//        goal.position = position.baseUnitMagnitude();
-//        goal.velocity = 0.0;
-//        ExponentialProfile.State next = positionProfile.calculate(profilePeriod.baseUnitMagnitude(), setpoint, goal);
-//        double currentPosition = motor.getEncoder().getPosition();
-//        double currentVelocity = motor.getEncoder().getVelocity();
-//        double arbFeedfoward = feedforward.calculateWithVelocities(currentVelocity, next.velocity);
-//        double feedback = pidController.calculate(currentPosition, setpoint.position);
-//        double voltage = arbFeedfoward + feedback;
-//        if(RobotBase.isSimulation()) {
-//            voltage = MathUtil.clamp(voltage, -12.0, 12.0);
-//        }
-//        motor.setVoltage(voltage);
-//        setpoint = next;
-//    }

@@ -136,7 +136,8 @@ public class TalonFXArm implements Arm {
         state.setAbsoluteEncoderPositionRotations(cancoder.getAbsolutePosition().getValueAsDouble());
         state.setMotorEncoderVelocityRPS(talonFX.getVelocity().getValueAsDouble());
         state.setAbsoluteEncoderVelocityRPS(cancoder.getVelocity().getValueAsDouble());
-        state.setVoltage(talonFX.getMotorVoltage().getValueAsDouble());
+        state.setVolts(talonFX.getMotorVoltage().getValueAsDouble());
+        state.setAmps(talonFX.getTorqueCurrent().getValueAsDouble());
         state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue());;
     }
 

@@ -1,11 +1,12 @@
 package digilib.elevator;
 
 public record ElevatorConstants(String name,
-                                double  reduction,
+                                double reduction,
                                 double drumRadiusMeters,
                                 double startingHeightMeters,
                                 double minHeightMeters,
                                 double maxHeightMeters,
+                                double maxControlVoltage,
                                 double ksVolts,
                                 double kgVolts,
                                 double kvVoltsPerMPS,

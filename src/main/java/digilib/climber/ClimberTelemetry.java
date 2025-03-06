@@ -1,30 +1,32 @@
-package digilib.elevator;
+package digilib.climber;
 
+import digilib.elevator.ElevatorState;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import static digilib.DigiMath.roundToDecimal;
+import static edu.wpi.first.units.Units.*;
 
-public class ElevatorTelemetry {
+public class ClimberTelemetry {
     private final DoublePublisher position;
     private final DoublePublisher velocity;
     private final DoublePublisher voltage;
     private final DoublePublisher current;
 
-    public ElevatorTelemetry(
+    public ClimberTelemetry(
             String name,
-            double minHeightMeters,
-            double maxHeightMeters,
+            double minLengthMeters,
+            double maxLengthMeters,
             double maxVelocityMPS,
             double maxAccelerationMPSSquared) {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
-        table.getDoubleTopic("Min Height [meters]")
+        table.getDoubleTopic("Min Length [meters]")
                 .publish()
-                .set(roundToDecimal(minHeightMeters, 2));
-        table.getDoubleTopic("Max Height [meters]")
+                .set(roundToDecimal(minLengthMeters, 2));
+        table.getDoubleTopic("Max Length [meters]")
                 .publish()
-                .set(roundToDecimal(maxHeightMeters, 2));
+                .set(roundToDecimal(maxLengthMeters, 2));
         table.getDoubleTopic("Max Velocity [mps]")
                 .publish()
                 .set(roundToDecimal(maxVelocityMPS, 2));
@@ -32,7 +34,7 @@ public class ElevatorTelemetry {
                 .publish()
                 .set(roundToDecimal(maxAccelerationMPSSquared, 2));
         this.position = table
-                .getDoubleTopic("Length [meters]")
+                .getDoubleTopic("Height [meters]")
                 .publish();
         this.velocity = table
                 .getDoubleTopic("Velocity [mps]")
@@ -45,9 +47,9 @@ public class ElevatorTelemetry {
                 .publish();
     }
 
-    public void telemeterize(ElevatorState state) {
+    public void telemeterize(ClimberState state) {
         double motorEncoderPositionMeters = state.getMotorEncoderPositionMeters();
-        double motorEncoderVelocityMPS = state.getMotorEncoderVelocityMPS();
+        double motorEncoderVelocityMPS = state.getMotorEncoderVelocityMetersPerSecond();
         double volts = state.getVolts();
         double amps = state.getAmps();
 

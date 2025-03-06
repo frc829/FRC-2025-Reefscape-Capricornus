@@ -1,39 +1,35 @@
 package frc.robot.commands.game;
 
-import digilib.claws.ClawValue;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.system.Manipulator;
 
-import static digilib.claws.ClawValue.CLOSED;
-import static digilib.claws.ClawValue.OPEN;
-import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.units.Units.Percent;
+import static digilib.claws.ClawState.*;
+import static digilib.claws.ClawState.ClawValue.CLOSED;
+import static digilib.claws.ClawState.ClawValue.OPEN;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class AlgaePickup {
-    private static final Angle armFloor = Degrees.of(-43.7);
-    private static final Angle armL2 = Degrees.of(-7.0);
-    private static final Angle armL3 = Degrees.of(-7.0);
-    private static final Angle armHold = Degrees.of(0.0);
+    private static final double armFloorDegrees = -43.7;
+    private static final double armL2Degrees = -7.0;
+    private static final double armL3Degrees = -7.0;
+    private static final double armHoldDegrees = 0.0;
+    private static final double armSafeDownDegrees = 0.0;
 
-    private static final Distance elevatorFloor = Centimeters.of(17.0);
-    private static final Distance elevatorL2 = Centimeters.of(27.0);
-    private static final Distance elevatorL3 = Centimeters.of(51.0);
-    private static final Distance elevatorHold = Centimeters.of(0.0);
+    private static final double elevatorFloorCM = 17.0;
+    private static final double elevatorL2CM = 27.0;
+    private static final double elevatorL3CM = 51.0;
+    private static final double elevatorHoldCM = 0.0;
 
-    private static final Angle wristPickup = Degrees.of(90.0);
+    private static final double wristPickupDegrees = 90.0;
+
+    private static final double algaeSpeed = -1;
+    private static final double coralSpeed = -1;
+
+    private static final double algaeHoldSpeed = -0.08;
 
     private static final ClawValue algaeClawValue = CLOSED;
     private static final ClawValue coralClawValue = OPEN;
-
-    private static final Dimensionless algaeSpeed = Percent.of(-100);
-    private static final Dimensionless coralSpeed = Percent.of(-100);
-
-    private static final Angle armSafeDown = Degrees.of(0.0);
 
     private final Manipulator manipulator;
     private final Trigger hasAlgae;
@@ -41,153 +37,111 @@ public class AlgaePickup {
 
     public AlgaePickup(Manipulator manipulator) {
         this.manipulator = manipulator;
-        this.hasAlgae = manipulator.hasAlgae;
-        this.isArmSafeForWristDown = manipulator.armLessThan(armSafeDown);
+        this.hasAlgae = manipulator.hasAlgae();
+        this.isArmSafeForWristDown = manipulator.arm().lte(armSafeDownDegrees);
     }
 
     public Command floor() {
-        return parallel(
-                elevatorAlgaeFloor(),
-                armAlgaeFloor(),
-                either(
-                        idle(),
-                        manipulator.wristTo(wristPickup),
-                        isArmSafeForWristDown),
-                either(
-                        idle(),
-                        algaeIntake().until(hasAlgae),
-                        isArmSafeForWristDown),
-                either(
-                        idle(),
+        return sequence(
+                parallel(elevatorFloor(),
+                        armFloor())
+                        .until(isArmSafeForWristDown),
+                parallel(elevatorFloor(),
+                        armFloor(),
                         claws(),
-                        isArmSafeForWristDown))
+                        manipulator.wrist().toAngle(wristPickupDegrees),
+                        intake()))
                 .withName("Algae Pickup: Floor");
-    }
-
-    public Command oldL2() {
-        return parallel(
-                elevatorAlgaeL2(),
-                armAlgaeL2(),
-                either(
-                        idle(),
-                        manipulator.wristTo(wristPickup),
-                        isArmSafeForWristDown),
-                either(
-                        idle(),
-                        algaeIntake().until(hasAlgae),
-                        isArmSafeForWristDown),
-                either(
-                        idle(),
-                        claws(),
-                        isArmSafeForWristDown))
-                .withName("Algae Pickup: L2");
     }
 
     public Command L2() {
         return sequence(
-                parallel(elevatorAlgaeL2(),
-                        armAlgaeL2())
+                parallel(elevatorL2(),
+                        armL2())
                         .until(isArmSafeForWristDown),
-                parallel(elevatorAlgaeL2(),
-                        armAlgaeL2(),
+                parallel(elevatorL2(),
+                        armL2(),
                         claws(),
-                        manipulator.wristTo(wristPickup),
-                        algaeIntake().asProxy().until(hasAlgae)))
+                        manipulator.wrist().toAngle(wristPickupDegrees),
+                        intake()))
                 .withName("Algae Pickup: L2 ");
 
     }
 
-    public Command oldL3() {
-        return parallel(
-                elevatorAlgaeL3(),
-                armAlgaeL3(),
-                either(
-                        idle(),
-                        manipulator.wristTo(wristPickup),
-                        isArmSafeForWristDown),
-                either(
-                        idle(),
-                        algaeIntake().until(hasAlgae),
-                        isArmSafeForWristDown),
-                either(
-                        idle(),
-                        claws(),
-                        isArmSafeForWristDown))
-                .withName("Algae Pickup: L3");
-    }
-
     public Command L3() {
         return sequence(
-                parallel(elevatorAlgaeL3(),
-                        armAlgaeL3())
+                parallel(elevatorL3(),
+                        armL3())
                         .until(isArmSafeForWristDown),
-                parallel(elevatorAlgaeL3(),
-                        armAlgaeL3(),
+                parallel(elevatorL3(),
+                        armL3(),
                         claws(),
-                        manipulator.wristTo(wristPickup),
-                        algaeIntake().asProxy().until(hasAlgae)))
+                        manipulator.wrist().toAngle(wristPickupDegrees),
+                        intake()))
                 .withName("Algae Pickup: L3 ");
 
     }
 
     public Command hold() {
         return parallel(
-                elevatorAlgaeHold(),
-                armAlgaeHold(),
-                algaeHoldIntake())
+                elevatorHold(),
+                armHold(),
+                intakeHold())
                 .withName("Algae Hold");
     }
 
-    private Command algaeIntake() {
+    private Command intake() {
         return sequence(
                 race(
-                        manipulator.intakeToSpeed(algaeSpeed, coralSpeed),
-                        waitSeconds(0.5)
-                ),
-                manipulator.intakeToSpeed(algaeSpeed, coralSpeed)
-                        .until(hasAlgae)
-        );
+                        parallel(
+                                manipulator.algaeIntakeWheel().toVelocity(() -> algaeSpeed),
+                                manipulator.coralIntakeWheel().toVelocity(() -> coralSpeed)),
+                        waitSeconds(0.5)),
+                parallel(
+                        manipulator.algaeIntakeWheel().toVelocity(() -> algaeSpeed),
+                        manipulator.coralIntakeWheel().toVelocity(() -> coralSpeed))
+                        .until(hasAlgae));
+    }
+
+    private Command intakeHold() {
+        return manipulator.algaeIntakeWheel().toVelocity(() -> algaeSpeed);
     }
 
     private Command claws() {
         return parallel(
-                manipulator.setAlgaeClaw(algaeClawValue),
-                manipulator.setCoralClaw(coralClawValue));
+                manipulator.algaeClaw().toClawValue(algaeClawValue),
+                manipulator.coralClaw().toClawValue(coralClawValue));
     }
 
-    private Command elevatorAlgaeL2() {
-        return manipulator.elevatorTo(elevatorL2);
+    private Command elevatorL2() {
+        return manipulator.elevator().toHeight(elevatorL2CM / 100.0);
     }
 
-    private Command elevatorAlgaeL3() {
-        return manipulator.elevatorTo(elevatorL3);
+    private Command elevatorL3() {
+        return manipulator.elevator().toHeight(elevatorL3CM / 100.0);
     }
 
-    private Command elevatorAlgaeHold() {
-        return manipulator.elevatorTo(elevatorHold);
+    private Command elevatorHold() {
+        return manipulator.elevator().toHeight(elevatorHoldCM / 100.0);
     }
 
-    private Command elevatorAlgaeFloor() {
-        return manipulator.elevatorTo(elevatorFloor);
+    private Command elevatorFloor() {
+        return manipulator.elevator().toHeight(elevatorFloorCM / 100.0);
     }
 
-    private Command armAlgaeL2() {
-        return manipulator.armTo(armL2);
+    private Command armL2() {
+        return manipulator.arm().toAngle(armL2Degrees);
     }
 
-    private Command armAlgaeL3() {
-        return manipulator.armTo(armL3);
+    private Command armL3() {
+        return manipulator.arm().toAngle(armL3Degrees);
     }
 
-    private Command armAlgaeHold() {
-        return manipulator.armTo(armHold);
+    private Command armHold() {
+        return manipulator.arm().toAngle(armHoldDegrees);
     }
 
-    private Command armAlgaeFloor() {
-        return manipulator.armTo(armFloor);
-    }
-
-    private Command algaeHoldIntake() {
-        return manipulator.intakeToSpeed(Percent.of(-8.0), Percent.of(0.0));
+    private Command armFloor() {
+        return manipulator.arm().toAngle(armFloorDegrees);
     }
 }

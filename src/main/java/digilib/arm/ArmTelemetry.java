@@ -13,13 +13,8 @@ public class ArmTelemetry {
     private final DoublePublisher absoluteEncoderPosition;
     private final DoublePublisher absoluteEncoderVelocity;
     private final DoublePublisher voltage;
+    private final DoublePublisher current;
     private final StringPublisher absoluteEncoderStatus;
-
-    private double motorEncoderPositionDegrees;
-    private double motorEncoderVelocityDPS;
-    private double absoluteEncoderPositionDegrees;
-    private double absoluteEncoderVelocityDPS;
-    private double volts;
 
     public ArmTelemetry(
             String name,
@@ -55,29 +50,35 @@ public class ArmTelemetry {
         voltage = table
                 .getDoubleTopic("Voltage [volts]")
                 .publish();
+        current = table
+                .getDoubleTopic("Current [amps]")
+                .publish();
         absoluteEncoderStatus = table
                 .getStringTopic("Absolute Encoder Status")
                 .publish();
     }
 
     public void telemeterize(ArmState state) {
-        motorEncoderPositionDegrees = state.getMotorEncoderPositionDegrees();
-        absoluteEncoderPositionDegrees = state.getAbsoluteEncoderPositionDegrees();
-        motorEncoderVelocityDPS = state.getMotorEncoderVelocityDPS() * 360;
-        absoluteEncoderVelocityDPS = state.getAbsoluteEncoderVelocityDPS();
-        volts = state.getVoltage();
+        double motorEncoderPositionDegrees = state.getMotorEncoderPositionDegrees();
+        double absoluteEncoderPositionDegrees = state.getAbsoluteEncoderPositionDegrees();
+        double motorEncoderVelocityDPS = state.getMotorEncoderVelocityDPS();
+        double absoluteEncoderVelocityDPS = state.getAbsoluteEncoderVelocityDPS();
+        double volts = state.getVolts();
+        double amps = state.getAmps();
 
         motorEncoderPositionDegrees = roundToDecimal(motorEncoderPositionDegrees, 2);
         absoluteEncoderPositionDegrees = roundToDecimal(absoluteEncoderPositionDegrees, 2);
         motorEncoderVelocityDPS = roundToDecimal(motorEncoderVelocityDPS, 2);
         absoluteEncoderVelocityDPS = roundToDecimal(absoluteEncoderVelocityDPS, 2);
         volts = roundToDecimal(volts, 2);
+        amps = roundToDecimal(amps, 2);
 
         motorEncoderPosition.set(motorEncoderPositionDegrees);
-        absoluteEncoderPosition.set(motorEncoderPositionDegrees);
+        absoluteEncoderPosition.set(absoluteEncoderPositionDegrees);
         motorEncoderVelocity.set(motorEncoderVelocityDPS);
-        absoluteEncoderVelocity.set(motorEncoderVelocityDPS);
+        absoluteEncoderVelocity.set(absoluteEncoderVelocityDPS);
         voltage.set(volts);
+        current.set(amps);
         absoluteEncoderStatus.set(state.getAbsoluteEncoderStatus().name());
     }
 }

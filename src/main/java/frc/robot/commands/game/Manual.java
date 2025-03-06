@@ -1,13 +1,11 @@
 package frc.robot.commands.game;
 
-import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.system.Manipulator;
 
-import java.util.function.Supplier;
+import java.util.function.DoubleSupplier;
 
-import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.either;
 
 public class Manual {
@@ -18,49 +16,51 @@ public class Manual {
 
     public Manual(Manipulator manipulator) {
         this.manipulator = manipulator;
-        this.hasAlgae = manipulator.hasAlgae;
-        this.hasCoral = manipulator.hasCoral;
+        hasAlgae = manipulator.hasAlgae();
+        hasCoral = manipulator.hasCoral();
     }
 
-    public Command manualArm(Supplier<Dimensionless> maxPercent) {
-        return manipulator.armToSpeed(maxPercent);
+    public Command manualArm(DoubleSupplier setpointScalar) {
+        return manipulator.arm().toVelocity(setpointScalar);
     }
 
-    public Command manualElevator(Supplier<Dimensionless> maxPercent) {
-        return manipulator.elevatorToSpeed(maxPercent);
+    public Command manualElevator(DoubleSupplier setpointScalar) {
+        return manipulator.elevator().toVelocity(setpointScalar);
     }
 
     public Command manualWristToggle() {
         return either(
-                manipulator.wristTo(Degrees.of(90.0)),
-                manipulator.wristTo(Degrees.of(0.0)),
-                manipulator.wristAtAngle(Degrees.of(0.0), Degrees.of(2.0)))
+                manipulator.wrist().toAngle(90.0),
+                manipulator.wrist().toAngle(0.0),
+                manipulator.wrist().inRange(-10.0, 45.0))
                 .withName("Manual Wrist Toggle");
     }
 
-    public Command manualWrist(Supplier<Dimensionless> maxPercent) {
-        return manipulator.wristToSpeed(maxPercent);
+    public Command manualWrist(DoubleSupplier setpointScalar) {
+        return manipulator.wrist().toVelocity(setpointScalar);
     }
 
-    public Command manualIntake(
-            Dimensionless maxWheel0Percent,
-            Dimensionless maxWheel1Percent) {
-        return manipulator.intakeToSpeed(maxWheel0Percent, maxWheel1Percent);
+    public Command manualAlgaeIntake(DoubleSupplier setpointScalar) {
+        return manipulator.algaeIntakeWheel().toVelocity(setpointScalar);
+    }
+
+    public Command manualCoralIntake(DoubleSupplier setpointScalar) {
+        return manipulator.coralIntakeWheel().toVelocity(setpointScalar);
     }
 
     public Command manualAlgaeClawToggle() {
-        return manipulator.toggleAlgaeClaw();
+        return manipulator.algaeClaw().toggle();
     }
 
     public Command manualCoralClawToggle() {
-        return manipulator.toggleCoralClaw();
+        return manipulator.coralClaw().toggle();
     }
 
-    public Command manualElevatorTest(){
-        return manipulator.elevatorTo(Centimeters.of(20.0));
+    public Command manualElevatorTest() {
+        return manipulator.elevator().toHeight(20.0 / 100.0);
     }
 
-    public Command manualArmTest(){
-        return manipulator.armTo(Degrees.of(30.0));
+    public Command manualArmTest() {
+        return manipulator.arm().toAngle(30.0);
     }
 }
