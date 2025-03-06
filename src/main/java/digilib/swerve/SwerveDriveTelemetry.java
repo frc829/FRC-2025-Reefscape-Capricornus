@@ -39,6 +39,7 @@ public class SwerveDriveTelemetry {
         this.maxVelocityMPS = maxVelocityMPS;
         NetworkTable tableData = getDefault().getTable(name + "-Data");
         NetworkTable table = getDefault().getTable(name);
+        NetworkTable field = getDefault().getTable(name + "-Field");
         table.getDoubleTopic("Max Velocity [mps]")
                 .publish()
                 .set(maxVelocityMPS);
@@ -69,10 +70,10 @@ public class SwerveDriveTelemetry {
         rawHeading = table
                 .getDoubleTopic("Raw Heading [deg]")
                 .publish();
-        fieldPub = table
+        fieldPub = field
                 .getDoubleArrayTopic("robotPose")
                 .publish();
-        fieldTypePub = table
+        fieldTypePub = field
                 .getStringTopic(".type")
                 .publish();
         Mechanism2d[] moduleMechanisms = new Mechanism2d[]{
