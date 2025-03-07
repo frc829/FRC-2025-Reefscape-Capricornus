@@ -79,9 +79,9 @@ public class CTRESwerveDrive implements SwerveDrive {
             double translationalVelocityMPS,
             double headingAngleDegrees,
             double rotationalVelocityDPS) {
-        double vx = cos(toRadians(headingAngleDegrees)) * translationalVelocityMPS;
-        double vy = sin(toRadians(headingAngleDegrees)) * translationalVelocityMPS;
-        double omega = toRadians(rotationalVelocityDPS);
+        double vx = cos(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
+        double vy = sin(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
+        double omega = toRadians(rotationalVelocityDPS) * maxAngularVelocityRPS;
         fieldCentric
                 .withVelocityX(vx)
                 .withVelocityY(vy)
@@ -96,9 +96,9 @@ public class CTRESwerveDrive implements SwerveDrive {
             double translationalVelocityMPS,
             double headingAngleDegrees,
             double rotationalVelocityDPS) {
-        double vx = cos(toRadians(headingAngleDegrees)) * translationalVelocityMPS;
-        double vy = sin(toRadians(headingAngleDegrees)) * translationalVelocityMPS;
-        double omega = toRadians(rotationalVelocityDPS);
+        double vx = cos(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
+        double vy = sin(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
+        double omega = toRadians(rotationalVelocityDPS) * maxAngularVelocityRPS;
         robotCentric
                 .withVelocityX(vx)
                 .withVelocityY(vy)
@@ -113,8 +113,8 @@ public class CTRESwerveDrive implements SwerveDrive {
             double translationalVelocityMPS,
             double headingAngleDegrees,
             double rotationAngleDegrees) {
-        double vx = cos(toRadians(headingAngleDegrees)) * translationalVelocityMPS;
-        double vy = sin(toRadians(headingAngleDegrees)) * translationalVelocityMPS;
+        double vx = cos(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
+        double vy = sin(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
         clockDrive
                 .withVelocityX(vx)
                 .withVelocityY(vy)

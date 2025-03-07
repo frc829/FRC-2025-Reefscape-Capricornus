@@ -75,7 +75,7 @@ public class DriveMap {
         Trigger rotationalVelocity = new Trigger(() -> getMaxAngularVelocitySetpointScalar() != 0.0);
         notClockDrive.or(rotationalVelocity)
                 .whileTrue(swerveDriveSubsystem.fieldCentricDrive(
-                        this::getMaxVelocitySetpointScalar,
+                        this::getMaxVelocitySetpointSquaredScalar,
                         this::getHeadingDegrees,
                         this::getMaxAngularVelocitySetpointScalar));
     }
@@ -87,7 +87,7 @@ public class DriveMap {
         Trigger rotationalVelocity = new Trigger(() -> getMaxAngularVelocitySetpointScalar() != 0.0);
         (notClockDrive.or(rotationalVelocity)).and(driver.y())
                 .whileTrue(swerveDriveSubsystem.robotCentricDrive(
-                        this::getMaxVelocitySetpointScalar,
+                        this::getMaxVelocitySetpointSquaredScalar,
                         this::getHeadingDegrees,
                         this::getMaxAngularVelocitySetpointScalar));
     }
@@ -95,7 +95,7 @@ public class DriveMap {
     private void bindClockDrive() {
         new Trigger(() -> getRightStickValue() != 0.0)
                 .whileTrue(swerveDriveSubsystem.clockDrive(
-                        this::getMaxVelocitySetpointScalar,
+                        this::getMaxVelocitySetpointSquaredScalar,
                         this::getHeadingDegrees,
                         this::getRotationDegrees));
 

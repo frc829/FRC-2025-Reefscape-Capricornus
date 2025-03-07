@@ -53,7 +53,7 @@ public class SwerveDriveSubsystemConstants {
         static final Matrix<N3, N1> singleTagStdDev = MatBuilder.fill(Nat.N3(), Nat.N1(), 0.0, 0.0, 0.0);
 
         static final class Camera0 {
-            static final String name = "Thrifty_Cam_2025";
+            static final String name = "Front-Camera";
             static final Distance cameraX = Centimeters.of(28);
             static final Distance cameraY = Centimeters.of(9.5);
             static final Distance cameraZ = Centimeters.of(52.5);
@@ -78,7 +78,7 @@ public class SwerveDriveSubsystemConstants {
         }
 
         static final class Camera1 {
-            static final String name = "OV9782-08";
+            static final String name = "Back-Camera";
             static final Distance cameraX = Centimeters.of(4.5);
             static final Distance cameraY = Centimeters.of(-23.0);
             static final Distance cameraZ = Centimeters.of(21.5);
@@ -103,7 +103,7 @@ public class SwerveDriveSubsystemConstants {
         }
 
         static final class Camera2 {
-            static final String name = "OV9782-07";
+            static final String name = "Side-Camera";
             static final Distance cameraX = Centimeters.of(1.0);
             static final Distance cameraY = Centimeters.of(40.5);
             static final Distance cameraZ = Centimeters.of(19.0);

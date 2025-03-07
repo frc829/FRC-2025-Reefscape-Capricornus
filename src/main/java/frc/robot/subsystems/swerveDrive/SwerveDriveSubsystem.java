@@ -51,7 +51,7 @@ public class SwerveDriveSubsystem implements Subsystem {
             DoubleSupplier headingAngleDegrees,
             DoubleSupplier maxAngularVelocitySetpointScalar) {
         return run(() -> swerveDrive.setFieldCentric(
-                maxVelocitySetpointScalar.getAsDouble(),
+                 maxVelocitySetpointScalar.getAsDouble(),
                 headingAngleDegrees.getAsDouble(),
                 maxAngularVelocitySetpointScalar.getAsDouble()))
                 .withName(String.format("%s: Field Centric", getName()));
