@@ -16,17 +16,17 @@ public interface SwerveDrive {
     SwerveDriveState getState();
 
     void setFieldCentric(
-            double translationalVelocityMPS,
+            double translationVelocitySetpointScalar,
             double headingAngleDegrees,
-            double rotationalVelocityDPS);
+            double rotationalVelocitySetpointScalar);
 
     void setRobotCentric(
-            double translationalVelocityMPS,
+            double translationVelocitySetpointScalar,
             double headingAngleDegrees,
-            double rotationalVelocityDPS);
+            double rotationalVelocitySetpointScalar);
 
     void setClockDrive(
-            double translationalVelocityMPS,
+            double translationVelocitySetpointScalar,
             double headingAngleDegrees,
             double rotationAngleDegrees);
 

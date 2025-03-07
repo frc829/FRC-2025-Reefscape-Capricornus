@@ -26,6 +26,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -58,9 +59,9 @@ public class SwerveDriveSubsystemConstants {
 
         static final class Camera0 {
             static final String name = "Front-Camera";
-            static final Distance cameraX = Centimeters.of(28);
-            static final Distance cameraY = Centimeters.of(9.5);
-            static final Distance cameraZ = Centimeters.of(52.5);
+            static final Distance cameraX = Centimeters.of(0.0);
+            static final Distance cameraY = Centimeters.of(0.0);
+            static final Distance cameraZ = Centimeters.of(0.0);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
             static final Angle yaw = Degrees.of(0.0);
@@ -76,19 +77,29 @@ public class SwerveDriveSubsystemConstants {
                     layout,
                     primaryStrategy,
                     fallbackPoseStrategy,
-                    singleTagStdDev);
+                    640,
+                    480,
+                    Rotation2d.fromDegrees(70),
+                    0.35,
+                    0.10,
+                    15,
+                    50,
+                    15,
+                    MULTI_TAG_STD_DEVS_TELEOP,
+                    MULTI_TAG_STD_DEVS_AUTO,
+                    SINGLE_TAG_STD_DEVS);
             static final PhotonCamera photonCamera = new PhotonCamera(name);
             static final PhotonVisionCamera camera = new PhotonVisionCamera(constants, photonCamera);
         }
 
         static final class Camera1 {
             static final String name = "Back-Camera";
-            static final Distance cameraX = Centimeters.of(4.5);
-            static final Distance cameraY = Centimeters.of(-23.0);
-            static final Distance cameraZ = Centimeters.of(21.5);
+            static final Distance cameraX = Centimeters.of(0.0);
+            static final Distance cameraY = Centimeters.of(0.0);
+            static final Distance cameraZ = Centimeters.of(0.0);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
-            static final Angle yaw = Degrees.of(180.0);
+            static final Angle yaw = Degrees.of(0.0);
             static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
             static final Transform3d robotToCamera = new Transform3d(
                     cameraX,
@@ -101,19 +112,29 @@ public class SwerveDriveSubsystemConstants {
                     layout,
                     primaryStrategy,
                     fallbackPoseStrategy,
-                    singleTagStdDev);
+                    640,
+                    480,
+                    Rotation2d.fromDegrees(70),
+                    0.35,
+                    0.10,
+                    15,
+                    50,
+                    15,
+                    MULTI_TAG_STD_DEVS_TELEOP,
+                    MULTI_TAG_STD_DEVS_AUTO,
+                    SINGLE_TAG_STD_DEVS);
             static final PhotonCamera photonCamera = new PhotonCamera(name);
             static final PhotonVisionCamera camera = new PhotonVisionCamera(constants, photonCamera);
         }
 
         static final class Camera2 {
             static final String name = "Side-Camera";
-            static final Distance cameraX = Centimeters.of(1.0);
-            static final Distance cameraY = Centimeters.of(40.5);
-            static final Distance cameraZ = Centimeters.of(19.0);
+            static final Distance cameraX = Centimeters.of(0.0);
+            static final Distance cameraY = Centimeters.of(0.0);
+            static final Distance cameraZ = Centimeters.of(0.0);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
-            static final Angle yaw = Degrees.of(90.0);
+            static final Angle yaw = Degrees.of(0.0);
             static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
             static final Transform3d robotToCamera = new Transform3d(
                     cameraX,
@@ -126,7 +147,17 @@ public class SwerveDriveSubsystemConstants {
                     layout,
                     primaryStrategy,
                     fallbackPoseStrategy,
-                    singleTagStdDev);
+                    640,
+                    480,
+                    Rotation2d.fromDegrees(70),
+                    0.35,
+                    0.10,
+                    15,
+                    50,
+                    15,
+                    MULTI_TAG_STD_DEVS_TELEOP,
+                    MULTI_TAG_STD_DEVS_AUTO,
+                    SINGLE_TAG_STD_DEVS);
             static final PhotonCamera photonCamera = new PhotonCamera(name);
             static final PhotonVisionCamera camera = new PhotonVisionCamera(constants, photonCamera);
         }

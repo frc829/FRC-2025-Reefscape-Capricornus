@@ -51,7 +51,7 @@ public class SwerveDriveSubsystem implements Subsystem {
             DoubleSupplier headingAngleDegrees,
             DoubleSupplier maxAngularVelocitySetpointScalar) {
         return run(() -> swerveDrive.setFieldCentric(
-                 maxVelocitySetpointScalar.getAsDouble(),
+                maxVelocitySetpointScalar.getAsDouble(),
                 headingAngleDegrees.getAsDouble(),
                 maxAngularVelocitySetpointScalar.getAsDouble()))
                 .withName(String.format("%s: Field Centric", getName()));
@@ -100,7 +100,6 @@ public class SwerveDriveSubsystem implements Subsystem {
     }
 
 
-
     @Override
     public void periodic() {
         if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
@@ -114,12 +113,13 @@ public class SwerveDriveSubsystem implements Subsystem {
             });
         }
         swerveDrive.update();
-        // for (var camera : cameras) {
-        //     swerveDrive.addVisionMeasurement(
-        //             camera.getState().getRobotPose(),
-        //             camera.getState().getTimestamp().baseUnitMagnitude(),
-        //             camera.getState().getRobotPoseStdDev());
-        // }
+        for (var camera : cameras) {
+            camera.updateSimState(swerveDrive.getState().getPose());
+            // swerveDrive.addVisionMeasurement(
+            //         camera.getState().getRobotPose(),
+            //         camera.getState().getTimestamp().baseUnitMagnitude(),
+            //         camera.getState().getRobotPoseStdDev());
+        }
     }
 
     private void startSimThread() {

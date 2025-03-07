@@ -4,13 +4,16 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -23,6 +26,8 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static java.lang.Math.pow;
 
 public class PhotonVisionCamera implements Camera {
 
@@ -137,12 +142,24 @@ public class PhotonVisionCamera implements Camera {
 
         avgDist /= numTags;
 
-
-        return null;
+        if (avgDist > 6) {
+            return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        } else if (numTags > 1 && RobotModeTriggers.teleop().getAsBoolean()) {
+            return multiTagStdDevsTeleop.times(1 + pow(avgDist, 2) / 5);
+        } else {
+            return multiTagStdDevsTeleop.times(1 + pow(avgDist, 2) / 5);
+        }
     }
 
     public void updateState(Optional<EstimatedRobotPose> estimatedRobotPose, Matrix<N3, N1> estimatedRobotPoseStdDev) {
-
+        state.setCameraMode(CameraState.CameraMode.ROBOT_POSE);
+        state.setRobotPose(estimatedRobotPose.isPresent()
+                ? estimatedRobotPose.get().estimatedPose
+                : new Pose3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE, new Rotation3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE)));
+        state.setRobotPoseStdDev(estimatedRobotPoseStdDev);
+        state.setTimestampSeconds(estimatedRobotPose.isPresent()
+                ? estimatedRobotPose.get().timestampSeconds
+                : Double.NaN);
     }
 
 
@@ -152,7 +169,8 @@ public class PhotonVisionCamera implements Camera {
     }
 
     @Override
-    public void updateSimState() {
+    public void updateSimState(Pose2d robotSimPose) {
+        visionSim.update(robotSimPose);
 
     }
 

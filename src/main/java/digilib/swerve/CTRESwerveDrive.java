@@ -76,12 +76,12 @@ public class CTRESwerveDrive implements SwerveDrive {
 
     @Override
     public void setFieldCentric(
-            double translationalVelocityMPS,
+            double translationVelocitySetpointScalar,
             double headingAngleDegrees,
-            double rotationalVelocityDPS) {
-        double vx = cos(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
-        double vy = sin(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
-        double omega = toRadians(rotationalVelocityDPS) * maxAngularVelocityRPS;
+            double rotationalVelocitySetpointScalar) {
+        double vx = cos(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
+        double vy = sin(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
+        double omega = rotationalVelocitySetpointScalar * maxAngularVelocityRPS * 2 * Math.PI;
         fieldCentric
                 .withVelocityX(vx)
                 .withVelocityY(vy)
@@ -93,12 +93,12 @@ public class CTRESwerveDrive implements SwerveDrive {
 
     @Override
     public void setRobotCentric(
-            double translationalVelocityMPS,
+            double translationVelocitySetpointScalar,
             double headingAngleDegrees,
-            double rotationalVelocityDPS) {
-        double vx = cos(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
-        double vy = sin(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
-        double omega = toRadians(rotationalVelocityDPS) * maxAngularVelocityRPS;
+            double rotationalVelocitySetpointScalar) {
+        double vx = cos(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
+        double vy = sin(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
+        double omega = rotationalVelocitySetpointScalar * maxAngularVelocityRPS * 2 * Math.PI;
         robotCentric
                 .withVelocityX(vx)
                 .withVelocityY(vy)
@@ -110,11 +110,11 @@ public class CTRESwerveDrive implements SwerveDrive {
 
     @Override
     public void setClockDrive(
-            double translationalVelocityMPS,
+            double translationVelocitySetpointScalar,
             double headingAngleDegrees,
             double rotationAngleDegrees) {
-        double vx = cos(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
-        double vy = sin(toRadians(headingAngleDegrees)) * translationalVelocityMPS * maxVelocityMPS;
+        double vx = cos(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
+        double vy = sin(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
         clockDrive
                 .withVelocityX(vx)
                 .withVelocityY(vy)
