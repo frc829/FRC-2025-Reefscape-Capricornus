@@ -19,7 +19,6 @@ import java.util.List;
 
 import static digilib.DigiMath.standardDeviation;
 import static digilib.cameras.CameraState.*;
-import static digilib.cameras.CameraState.CameraMode.*;
 
 public class PhotonVisionCamera implements Camera {
 
@@ -28,7 +27,6 @@ public class PhotonVisionCamera implements Camera {
     private final AprilTagFieldLayout fieldTags;
     private final Matrix<N3, N1> singleTagStdDev;
     private final String name;
-    private CameraRequest cameraRequest;
     private final CameraTelemetry telemetry;
     private final PhotonCamera photonCamera;
     private final PhotonPoseEstimator photonPoseEstimator;
@@ -54,19 +52,6 @@ public class PhotonVisionCamera implements Camera {
     @Override
     public CameraState getState() {
         return state;
-    }
-
-    @Override
-    public void setControl(CameraRequest request) {
-        if (cameraRequest != request) {
-            cameraRequest = request;
-        }
-        request.apply(this);
-    }
-
-    @Override
-    public void setRobotPoseMode() {
-        photonCamera.setPipelineIndex(ROBOT_POSE.getPipelineIndex());
     }
 
     @Override
@@ -167,5 +152,10 @@ public class PhotonVisionCamera implements Camera {
     @Override
     public void updateTelemetry() {
         telemetry.telemeterize(state);
+    }
+
+    @Override
+    public void updateSimState() {
+
     }
 }
