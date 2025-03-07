@@ -39,7 +39,7 @@ public class SwerveDriveTelemetry {
         this.maxVelocityMPS = maxVelocityMPS;
         NetworkTable tableData = getDefault().getTable(name + "-Data");
         NetworkTable table = getDefault().getTable(name);
-        NetworkTable field = getDefault().getTable(name + "-Field");
+        NetworkTable field = getDefault().getTable("Field");
         table.getDoubleTopic("Max Velocity [mps]")
                 .publish()
                 .set(maxVelocityMPS);

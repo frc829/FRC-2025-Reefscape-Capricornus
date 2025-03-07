@@ -1,78 +1,98 @@
 package digilib.cameras;
 
-import digilib.DigiMath;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
 
-import static edu.wpi.first.units.Units.Seconds;
-import static org.photonvision.PhotonPoseEstimator.*;
+import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
+import static org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class CameraTelemetry {
-    private final IntegerPublisher bestFiducialIdPublisher;
-    private final DoublePublisher bestTransformFiducialXPublisher;
-    private final DoublePublisher bestTransformFiducialYPublisher;
-    private final DoublePublisher bestTransformFiducialThetaRadiansPublisher;
-    private final DoublePublisher timestampPublisher;
-    private final DoubleArrayPublisher robotPosePublisher;
-    private final DoubleArrayPublisher robotPoseStdDevPublisher;
+    private final StringPublisher poseStrategyUsed;
     private final StringPublisher cameraModePublisher;
-
-    private final DoubleArrayPublisher fieldPub;
-    private final StringPublisher fieldTypePub;
+    private final IntegerPublisher bestFiducialIdPublisher;
+    private final StructPublisher<Transform2d> bestTransformPublisher;
+    private final double[] transformArray = new double[3];
+    private final DoubleArrayPublisher bestTransformPublisherDashboard;
+    private final StructPublisher<Pose2d> robotPosePublisher;
     private final double[] poseArray = new double[3];
+    private final DoubleArrayPublisher robotPosePublisherDashboard;
+    private final StructPublisher<Matrix<N3, N1>> robotPoseStdDevPublisher;
     private final double[] poseStdDevArray = new double[3];
-
+    private final DoubleArrayPublisher robotPoseStdDevPublisherDashboard;
+    private final DoubleArrayPublisher fieldPub;
 
     public CameraTelemetry(String name,
                            Transform3d robotToCamera,
                            PoseStrategy primaryStrategy,
                            PoseStrategy fallBackPoseStrategy) {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
-        table.getStructTopic("Robot to Camera", Transform3d.struct).publish().set(robotToCamera);
-        table.getStringTopic("Primary Pose Strategy").publish().set(primaryStrategy.toString());
-        table.getStringTopic("Fall Back Pose Strategy").publish().set(fallBackPoseStrategy.toString());
-
-        bestFiducialIdPublisher = table.getIntegerTopic("Best Fiducial Id").publish();
-        bestTransformFiducialXPublisher = table.getDoubleTopic("Best Transform Fiducial X").publish();
-        bestTransformFiducialYPublisher = table.getDoubleTopic("Best Transform Fiducial Y").publish();
-        bestTransformFiducialThetaRadiansPublisher = table.getDoubleTopic("Best Transform Fiducial Theta").publish();
-        timestampPublisher = table.getDoubleTopic("Timestamp").publish();
-        robotPosePublisher = table.getDoubleArrayTopic("Robot Pose").publish();
-        robotPoseStdDevPublisher = table.getDoubleArrayTopic("Robot Pose Std Dev").publish();
-        cameraModePublisher = table.getStringTopic("Camera mode").publish();
-
-
-        NetworkTable poseTable = NetworkTableInstance.getDefault().getTable("Pose");
-        fieldPub = poseTable.getDoubleArrayTopic(name + "robotPose").publish();
-        fieldTypePub = poseTable.getStringTopic(".type").publish();
+        NetworkTable field = getDefault().getTable("Field");
+        table.getStructTopic("Robot to Camera", Transform3d.struct)
+                .publish()
+                .set(robotToCamera);
+        table.getStringTopic("Primary Pose Strategy")
+                .publish()
+                .set(primaryStrategy.toString());
+        table.getStringTopic("Fall Back Pose Strategy")
+                .publish()
+                .set(fallBackPoseStrategy.toString());
+        poseStrategyUsed = table
+                .getStringTopic("Pose Strategy Used")
+                .publish();
+        cameraModePublisher = table
+                .getStringTopic("Camera mode")
+                .publish();
+        bestFiducialIdPublisher = table
+                .getIntegerTopic("Best Fiducial Id")
+                .publish();
+        bestTransformPublisher = table
+                .getStructTopic("Best Transform", Transform2d.struct)
+                .publish();
+        bestTransformPublisherDashboard = table
+                .getDoubleArrayTopic("Best Transform Array")
+                .publish();
+        robotPosePublisher = table
+                .getStructTopic("Robot Pose", Pose2d.struct)
+                .publish();
+        robotPosePublisherDashboard = table
+                .getDoubleArrayTopic("Robot Pose Array")
+                .publish();
+        robotPoseStdDevPublisher = table
+                .getStructTopic("Robot Pose Std Dev", Matrix.getStruct(Nat.N3(), Nat.N1()))
+                .publish();
+        robotPoseStdDevPublisherDashboard = table
+                .getDoubleArrayTopic("Robot Pose Std Dev Array")
+                .publish();
+        fieldPub = field
+                .getDoubleArrayTopic(name + "-" + "Pose")
+                .publish();
     }
 
     public void telemeterize(CameraState state) {
+        poseStrategyUsed.set(state.getStrategyUsed());
+        cameraModePublisher.set(state.getCameraMode());
         bestFiducialIdPublisher.set(state.getBestFiducialId());
-        bestTransformFiducialXPublisher.set(state.getBestFiducialTransformX());
-        bestTransformFiducialYPublisher.set(state.getBestFiducialTransformY());
-        bestTransformFiducialThetaRadiansPublisher.set(state.getBestFiducialTransformThetaRadians());
-        timestampPublisher.set(state.getTimestamp().in(Seconds));
-        cameraModePublisher.set(state.getCameraMode() != null ? state.getCameraMode().toString() : "null");
-
-        if (state.getRobotPose() != null) {
-            poseArray[0] = DigiMath.roundToDecimal(state.getRobotPose().getX(), 2);
-            poseArray[1] = DigiMath.roundToDecimal(state.getRobotPose().getY(), 2);
-            poseArray[2] = DigiMath.roundToDecimal(state.getRobotPose().getRotation().getDegrees(), 2);
-
-            robotPosePublisher.set(new double[]{poseArray[0], poseArray[1], poseArray[2]});
-        }
-
-        if(state.getRobotPoseStdDev() != null){
-            poseStdDevArray[0] = DigiMath.roundToDecimal(state.getRobotPoseStdDev().get(0, 0), 2);
-            poseStdDevArray[1] = DigiMath.roundToDecimal(state.getRobotPoseStdDev().get(1, 0), 2);
-            poseStdDevArray[2] = DigiMath.roundToDecimal(state.getRobotPoseStdDev().get(2, 0) * 180 / Math.PI, 2);
-            robotPoseStdDevPublisher.set(new double[]{poseStdDevArray[0], poseStdDevArray[1], poseStdDevArray[2]});
-
-        }
-
-
-        fieldTypePub.set("Field2d");
+        bestTransformPublisher.set(state.getBestTransformToFiducial());
+        transformArray[0] = state.getBestTransformToFiducial().getX();
+        transformArray[1] = state.getBestTransformToFiducial().getY();
+        transformArray[2] = state.getBestTransformToFiducial().getRotation().getDegrees();
+        bestTransformPublisherDashboard.set(transformArray);
+        robotPosePublisher.set(state.getRobotPose());
+        poseArray[0] = state.getRobotPose().getX();
+        poseArray[1] = state.getRobotPose().getY();
+        poseArray[2] = state.getRobotPose().getRotation().getDegrees();
+        robotPosePublisherDashboard.set(poseArray);
+        robotPoseStdDevPublisher.set(state.getRobotPoseStdDev());
+        poseStdDevArray[0] = state.getRobotPoseStdDev().get(0, 0);
+        poseStdDevArray[1] = state.getRobotPoseStdDev().get(1, 0);
+        poseStdDevArray[2] = state.getRobotPoseStdDev().get(2, 0);
+        robotPoseStdDevPublisherDashboard.set(poseStdDevArray);
         fieldPub.set(poseArray);
     }
 }

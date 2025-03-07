@@ -3,16 +3,17 @@ package digilib.cameras;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.units.measure.MutTime;
-import edu.wpi.first.units.measure.Time;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import java.util.Map;
 
-import static edu.wpi.first.units.Units.Seconds;
-
 public class CameraState {
+
+
 
     public enum CameraMode {
         ROBOT_POSE(0);
@@ -24,6 +25,7 @@ public class CameraState {
         }
 
         private static final Map<Integer, CameraMode> map = Map.of(0, ROBOT_POSE);
+
         public int getPipelineIndex() {
             return pipelineIndex;
         }
@@ -33,78 +35,71 @@ public class CameraState {
         }
     }
 
-    private CameraMode cameraMode = null;
-    private Pose2d robotPose = null;
+    private String strategyUsed = "N/A";
+    private String cameraMode = "N/A";
     private int bestFiducialId = 0;
-    private double bestFiducialTransformX;
-    private double bestFiducialTransformY;
-    private double bestFiducialTransformThetaRadians;
+    private Transform2d bestTransformToFiducial = new Transform2d(Double.NaN, Double.NaN, Rotation2d.fromRadians(Double.NaN));
+    private Pose2d robotPose = new Pose2d(Double.NaN, Double.NaN, Rotation2d.fromDegrees(Double.NaN));
     private final Matrix<N3, N1> robotPoseStdDev = new Matrix<>(Nat.N3(), Nat.N1());
-    private final MutTime timestamp = Seconds.mutable(0.0);
+    private double timestampSeconds = 0.0;
 
-    public CameraMode getCameraMode() {
+    public String getStrategyUsed() {
+        return strategyUsed;
+    }
+
+    public void setStrategyUsed(PoseStrategy strategyUsed) {
+        this.strategyUsed = strategyUsed.name();
+    }
+
+    public String getCameraMode() {
         return cameraMode;
     }
 
-    public Pose2d getRobotPose() {
-        return robotPose;
+    public void setCameraMode(CameraMode cameraMode) {
+        this.cameraMode = cameraMode.name();
     }
+
+
 
     public int getBestFiducialId() {
         return bestFiducialId;
-    }
-
-    public double getBestFiducialTransformX() {
-        return bestFiducialTransformX;
-    }
-
-    public double getBestFiducialTransformY() {
-        return bestFiducialTransformY;
-    }
-
-    public double getBestFiducialTransformThetaRadians() {
-        return bestFiducialTransformThetaRadians;
-    }
-
-    public Matrix<N3, N1> getRobotPoseStdDev() {
-        return robotPoseStdDev;
-    }
-
-    public Time getTimestamp() {
-        return timestamp;
-    }
-
-    public void setCameraMode(CameraMode cameraMode) {
-        this.cameraMode = cameraMode;
-    }
-
-    public void setRobotPose(Pose2d robotPose) {
-        this.robotPose = robotPose;
     }
 
     public void setBestFiducialId(int bestFiducialId) {
         this.bestFiducialId = bestFiducialId;
     }
 
-    public void setBestTransformFiducialX(double bestFiducialTransformX) {
-        this.bestFiducialTransformX = bestFiducialTransformX;
+    public Transform2d getBestTransformToFiducial() {
+        return bestTransformToFiducial;
     }
 
-    public void setBestTransformFiducialY(double bestFiducialTransformY) {
-        this.bestFiducialTransformY = bestFiducialTransformY;
+    public void setBestTransformToFiducial(Transform2d bestTransformToFiducial) {
+        this.bestTransformToFiducial = bestTransformToFiducial;
     }
 
-    public void setBestTransformFiducialThetaRadians(double bestFiducialTransformThetaRadians) {
-        this.bestFiducialTransformThetaRadians = bestFiducialTransformThetaRadians;
+    public Pose2d getRobotPose() {
+        return robotPose;
     }
 
-    public void setRobotPoseStdDev(double xStdDev, double yStdDev, double thetaStdDev) {
-        this.robotPoseStdDev.set(0, 0, xStdDev);
-        this.robotPoseStdDev.set(1, 0, yStdDev);
-        this.robotPoseStdDev.set(2, 0, thetaStdDev);
+    public void setRobotPose(Pose2d robotPose) {
+        this.robotPose = robotPose;
     }
 
-    public void setTimestamp(double seconds) {
-        timestamp.mut_setBaseUnitMagnitude(seconds);
+    public Matrix<N3, N1> getRobotPoseStdDev() {
+        return robotPoseStdDev;
+    }
+
+    public void setRobotPoseStdDev(double xMetersStdDev, double yMetersStdDev, double thetaRadiansStdDev) {
+        this.robotPoseStdDev.set(0, 0, xMetersStdDev);
+        this.robotPoseStdDev.set(1, 0, yMetersStdDev);
+        this.robotPoseStdDev.set(2, 0, thetaRadiansStdDev);
+    }
+
+    public double getTimestampSeconds() {
+        return timestampSeconds;
+    }
+
+    public void setTimestampSeconds(double timestampSeconds) {
+        this.timestampSeconds = timestampSeconds;
     }
 }
