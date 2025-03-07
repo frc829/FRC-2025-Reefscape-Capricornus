@@ -26,13 +26,11 @@ public class PhotonVisionCamera implements Camera {
     private final Transform3d robotToCamera;
     private final AprilTagFieldLayout fieldTags;
     private final Matrix<N3, N1> singleTagStdDev;
-    private final String name;
     private final CameraTelemetry telemetry;
     private final PhotonCamera photonCamera;
     private final PhotonPoseEstimator photonPoseEstimator;
 
     public PhotonVisionCamera(CameraConstants constants, PhotonCamera photonCamera) {
-        this.name = constants.name();
         this.photonCamera = photonCamera;
         this.robotToCamera = constants.robotToCamera();
         this.fieldTags = constants.aprilTagFieldLayout();
