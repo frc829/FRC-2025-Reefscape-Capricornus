@@ -24,9 +24,8 @@ import digilib.swerve.CTRESwerveDrive;
 import digilib.swerve.SwerveDriveConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -50,7 +49,12 @@ public class SwerveDriveSubsystemConstants {
         static final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
         static final PoseStrategy primaryStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
         static final PoseStrategy fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-        static final Matrix<N3, N1> singleTagStdDev = MatBuilder.fill(Nat.N3(), Nat.N1(), 0.0, 0.0, 0.0);
+        static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(
+                Double.MAX_VALUE,
+                Double.MAX_VALUE,
+                Double.MAX_VALUE);
+        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS_AUTO = VecBuilder.fill(0.1, 0.1, Double.MAX_VALUE);
+        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS_TELEOP = VecBuilder.fill(0.01, 0.01, Double.MAX_VALUE);
 
         static final class Camera0 {
             static final String name = "Front-Camera";
