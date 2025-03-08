@@ -57,8 +57,8 @@ public class CoralIntakeSubsystemConstants {
         static final int smartCurrentLimit = 20;
         static final int depth = 2;
         static final int periodMs = 16;
-        static final double positionFactor = AlgaeIntakeSubsystemConstants.Mechanism.reduction;
-        static final double velocityFactor = AlgaeIntakeSubsystemConstants.Mechanism.reduction / 60.0;
+        static final double positionFactor = 1.0 / CoralIntakeSubsystemConstants.Mechanism.reduction;
+        static final double velocityFactor = 1.0 / CoralIntakeSubsystemConstants.Mechanism.reduction / 60.0;
         static final SignalsConfig signalsConfig = new SignalsConfig()
                 .absoluteEncoderPositionAlwaysOn(false)
                 .absoluteEncoderVelocityAlwaysOn(false)
@@ -91,7 +91,7 @@ public class CoralIntakeSubsystemConstants {
         motor.configure(config, kResetSafeParameters, kPersistParameters);
         IntakeWheel intakeWheel = new NEO550IntakeWheel(constants, motor, controlPeriodSeconds);
         IntakeWheelSubsystem intakeWheelSubsystem = new IntakeWheelSubsystem(intakeWheel, simLoopPeriod);
-        intakeWheelSubsystem.setDefaultCommand(intakeWheelSubsystem.toVoltage(-0.75));
+        intakeWheelSubsystem.setDefaultCommand(intakeWheelSubsystem.toVoltage(0.75));
         return intakeWheelSubsystem;
     }
 }

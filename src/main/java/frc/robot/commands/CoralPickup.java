@@ -7,7 +7,8 @@ import frc.robot.Manipulator;
 
 import static digilib.claws.ClawState.ClawValue.CLOSED;
 import static digilib.claws.ClawState.ClawValue.OPEN;
-import static edu.wpi.first.wpilibj2.command.Commands.*;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class CoralPickup {
 
@@ -45,6 +46,12 @@ public class CoralPickup {
         this.isArmSafeForElevatorUp = manipulator.arm().gte(armSafeElevatorDegrees);
         this.isArmSafeForWristDown = manipulator.arm().lte(armSafeDownDegrees);
         this.isArmSafeForWristUp = manipulator.arm().gte(armSafeUpDegrees);
+
+        // Trigger hasCoral = manipulator.lidarSensor().inRange(-10, 20);
+        // hasCoral.whileTrue()
+        //
+        // manipulator.lidarSensor().inRange(-10, 20).whileTrue(
+        //         Commands.run(() -> SmartDashboard.putBoolean("Has Coral", true)));
     }
 
     public Command floor() {

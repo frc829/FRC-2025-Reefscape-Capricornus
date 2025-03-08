@@ -36,7 +36,7 @@ public class WristSubsystemConstants {
         static final double ksVolts = 0.26668;
         static final double kvVoltsPerRPS = 4.1236;
         static final double kaVoltsPerRPSSquared = 0.20062;
-        static final double positionKpVoltsPerRotation = 27.095;
+        static final double positionKpVoltsPerRotation = 50; //27.095;
         static final double positionKdVoltsPerRPS = 0.0;
         static final double velocityKpVoltsPerRPS = 0.75898;
         static final double maxControlVoltage = 12.0 - ksVolts;
@@ -92,8 +92,8 @@ public class WristSubsystemConstants {
         static final int smartCurrentLimit = 20;
         static final int depth = 2;
         static final int periodMs = 16;
-        static final double positionFactor = reduction;
-        static final double velocityFactor = reduction / 60.0;
+        static final double positionFactor = 1.0 / reduction;
+        static final double velocityFactor = 1.0 / reduction / 60.0;
         static final SignalsConfig signalsConfig = new SignalsConfig()
                 .absoluteEncoderPositionAlwaysOn(false)
                 .absoluteEncoderVelocityAlwaysOn(false)

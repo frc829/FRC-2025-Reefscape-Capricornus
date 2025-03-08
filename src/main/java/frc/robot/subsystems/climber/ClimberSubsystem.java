@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import digilib.climber.Climber;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import java.util.function.DoubleSupplier;
+
 public class ClimberSubsystem implements Subsystem {
     private final Time simLoopPeriod;
     private final Climber climber;
@@ -39,8 +41,8 @@ public class ClimberSubsystem implements Subsystem {
         return gte(minLengthMeters).and(lte(maxLengthMeters));
     }
 
-    public Command toVoltage(double volts) {
-        return run(() -> climber.setVoltage(volts))
+    public Command toVoltage(DoubleSupplier volts) {
+        return run(() -> climber.setVoltage(volts.getAsDouble()))
                 .withName(String.format("%s: VOLTAGE", getName()));
     }
 

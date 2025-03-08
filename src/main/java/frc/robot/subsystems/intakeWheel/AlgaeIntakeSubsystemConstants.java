@@ -60,8 +60,8 @@ public class AlgaeIntakeSubsystemConstants {
         static final int smartCurrentLimit = 20;
         static final int depth = 2;
         static final int periodMs = 16;
-        static final double positionFactor = reduction;
-        static final double velocityFactor = reduction / 60.0;
+        static final double positionFactor = 1.0 / reduction;
+        static final double velocityFactor = 1.0 / reduction / 60.0;
         static final SignalsConfig signalsConfig = new SignalsConfig()
                 .absoluteEncoderPositionAlwaysOn(false)
                 .absoluteEncoderVelocityAlwaysOn(false)

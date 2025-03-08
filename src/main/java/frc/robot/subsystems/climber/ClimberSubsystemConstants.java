@@ -109,7 +109,7 @@ public class ClimberSubsystemConstants {
         motor.configure(config, kResetSafeParameters, kPersistParameters);
         Climber climber = new VortexClimber(constants, motor);
         ClimberSubsystem climberSubsystem = new ClimberSubsystem(climber, simLoopPeriod);
-        climberSubsystem.setDefaultCommand(climberSubsystem.toVoltage(0.0));
+        climberSubsystem.setDefaultCommand(climberSubsystem.toVoltage(() -> 0.0));
         return climberSubsystem;
     }
 }

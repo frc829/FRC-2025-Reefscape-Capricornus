@@ -4,6 +4,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 
+import static edu.wpi.first.wpilibj.Joystick.AxisType.kY;
+
 public class ClimberMap {
 
     private static final double maxVoltage = 12.0;
@@ -25,11 +27,12 @@ public class ClimberMap {
     }
 
     private void bindClimb() {
-        controller.axisMagnitudeGreaterThan(1, deadband)
-                .whileTrue(climber.toVoltage(getClimbVoltageScalar()));
+        controller.axisMagnitudeGreaterThan(kY.value, deadband)
+                .whileTrue(climber.toVoltage(this::getClimbVoltageScalar));
     }
 
     private double getClimbVoltageScalar() {
         return maxVoltage * MathUtil.applyDeadband(controller.getY(), deadband);
     }
+
 }
