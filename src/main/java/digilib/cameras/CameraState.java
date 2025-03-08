@@ -3,12 +3,12 @@ package digilib.cameras;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import org.photonvision.EstimatedRobotPose;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class CameraState {
 
@@ -34,14 +34,13 @@ public class CameraState {
     }
 
     private String cameraMode = "N/A";
-    private Pose3d robotPose = new Pose3d(Double.NaN, Double.NaN, Double.NaN, new Rotation3d(Double.NaN, Double.NaN, Double.NaN));
-    private Matrix<N3, N1> robotPoseStdDev = MatBuilder
+    private Optional<EstimatedRobotPose> robotPose = Optional.empty();
+    private Optional<Matrix<N3, N1>> robotPoseStdDev = Optional.of(MatBuilder
             .fill(Nat.N3(),
                     Nat.N1(),
                     Double.MAX_VALUE,
                     Double.MAX_VALUE,
-                    Double.MAX_VALUE);
-    private double timestampSeconds = 0.0;
+                    Double.MAX_VALUE));
 
     public String getCameraMode() {
         return cameraMode;
@@ -51,27 +50,19 @@ public class CameraState {
         this.cameraMode = cameraMode.name();
     }
 
-    public Pose3d getRobotPose() {
+    public Optional<EstimatedRobotPose> getRobotPose() {
         return robotPose;
     }
 
-    public void setRobotPose(Pose3d robotPose) {
+    public void setRobotPose(Optional<EstimatedRobotPose> robotPose) {
         this.robotPose = robotPose;
     }
 
-    public Matrix<N3, N1> getRobotPoseStdDev() {
+    public Optional<Matrix<N3, N1>> getRobotPoseStdDev() {
         return robotPoseStdDev;
     }
 
-    public void setRobotPoseStdDev(Matrix<N3, N1> robotPoseStdDev) {
+    public void setRobotPoseStdDev(Optional<Matrix<N3, N1>> robotPoseStdDev) {
         this.robotPoseStdDev = robotPoseStdDev;
-    }
-
-    public double getTimestampSeconds() {
-        return timestampSeconds;
-    }
-
-    public void setTimestampSeconds(double timestampSeconds) {
-        this.timestampSeconds = timestampSeconds;
     }
 }

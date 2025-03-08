@@ -8,13 +8,14 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
 
+import static digilib.DigiMath.roundToDecimal;
 import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 import static org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class CameraTelemetry {
     private final StringPublisher cameraModePublisher;
     private final StructPublisher<Pose3d> robotPosePublisher;
-    private final double[] poseArray = new double[6];
+    private final double[] poseArray = new double[3];
     private final DoubleArrayPublisher robotPosePublisherDashboard;
     private final StructPublisher<Matrix<N3, N1>> robotPoseStdDevPublisher;
     private final double[] poseStdDevArray = new double[3];
@@ -58,19 +59,27 @@ public class CameraTelemetry {
 
     public void telemeterize(CameraState state) {
         cameraModePublisher.set(state.getCameraMode());
-        robotPosePublisher.set(state.getRobotPose());
-        poseArray[0] = state.getRobotPose().getX();
-        poseArray[1] = state.getRobotPose().getY();
-        poseArray[2] = state.getRobotPose().getZ();
-        poseArray[3] = state.getRobotPose().getRotation().getX();
-        poseArray[4] = state.getRobotPose().getRotation().getY();
-        poseArray[5] = state.getRobotPose().getRotation().getZ();
-        robotPosePublisherDashboard.set(poseArray);
-        robotPoseStdDevPublisher.set(state.getRobotPoseStdDev());
-        poseStdDevArray[0] = state.getRobotPoseStdDev().get(0, 0);
-        poseStdDevArray[1] = state.getRobotPoseStdDev().get(1, 0);
-        poseStdDevArray[2] = state.getRobotPoseStdDev().get(2, 0);
-        robotPoseStdDevPublisherDashboard.set(poseStdDevArray);
-        fieldPub.set(poseArray);
+        if (state.getRobotPose().isPresent()) {
+            robotPosePublisher.set(state.getRobotPose().get().estimatedPose);
+            poseArray[0] = roundToDecimal(state.getRobotPose().get().estimatedPose.getX(), 2);
+            poseArray[1] = roundToDecimal(state.getRobotPose().get().estimatedPose.getY(), 2);
+            poseArray[2] = roundToDecimal(state.getRobotPose().get().estimatedPose.getRotation().getZ() * 180 / Math.PI, 2);
+            robotPosePublisherDashboard.set(poseArray);
+            fieldPub.set(poseArray);
+        }else{
+            robotPosePublisherDashboard.set(new double[0]);
+        }
+
+
+        if (state.getRobotPoseStdDev().isPresent()) {
+            robotPoseStdDevPublisher.set(state.getRobotPoseStdDev().get());
+            poseStdDevArray[0] = roundToDecimal(state.getRobotPoseStdDev().get().get(0, 0), 2);
+            poseStdDevArray[1] = roundToDecimal(state.getRobotPoseStdDev().get().get(1, 0), 2);
+            poseStdDevArray[2] = roundToDecimal(state.getRobotPoseStdDev().get().get(2, 0), 2);
+            robotPoseStdDevPublisherDashboard.set(poseStdDevArray);
+        }else{
+            robotPoseStdDevPublisherDashboard.set(new double[0]);
+        }
+
     }
 }

@@ -14,7 +14,7 @@ public interface Camera {
 
     void update();
 
-    void updateState(Optional<EstimatedRobotPose> estimatedRobotPose, Matrix<N3, N1> estimatedRobotPoseStdDev);
+    void updateState(Optional<EstimatedRobotPose> estimatedRobotPose, Optional<Matrix<N3, N1>> estimatedRobotPoseStdDev);
 
     void updateTelemetry();
 

@@ -41,8 +41,7 @@ public class AutoRoutines {
         autoChooser.addRoutine("Noob S1", this::noobS1);
         autoChooser.addRoutine("Noob S3", this::noobS3);
         autoChooser.addRoutine("S2 L4 Left", this::S2L4Left);
-        autoChooser.addRoutine("S1 L4 Right", this::S1L4Right);
-        autoChooser.addRoutine("S3 L4 Left", this::S3L4Left);
+        autoChooser.addRoutine("TwoCoralS3", this::TwoCoralS3);
         // autoChooser.addRoutine("Plop and Shop", this::plopAndShop);
     }
 
@@ -86,25 +85,44 @@ public class AutoRoutines {
         return routine;
     }
 
-    private AutoRoutine S1L4Right() {
-        AutoRoutine routine = factory.newRoutine("S1-L4-Right");
-        AutoTrajectory traj = routine.trajectory("S1F-to-F");
-        Command routineCommand = sequence(traj.resetOdometry(), traj.cmd());
-        routine.active().onTrue(routineCommand);
-        traj.atTime("Align").onTrue(coralScore.l4Align());
-        traj.done().onTrue(waitSeconds(3.0).andThen(scoreL4()));
+    private AutoRoutine TwoCoralS3() {
+        AutoRoutine routine = factory.newRoutine("Two-Coral-S3");
+        AutoTrajectory traj0 = routine.trajectory("S3-to-IJ");
+        AutoTrajectory traj1 = routine.trajectory("IJ-to-NorthRight");
+        AutoTrajectory traj2 = routine.trajectory("NorthRight-to-KL");
+        Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
+        routine.active().onTrue(cmd);
+
+        // First Trajectory Score
+        traj0.atTime("Align").onTrue(coralScore.l4Align());
+        traj0.done().onTrue(
+                sequence(
+                        waitSeconds(0.25),
+                        scoreL4(),
+                        race(coralPickup.hold(), waitSeconds(0.25)),
+                        traj1.cmd()));
+
+        // Second Trajectory Pickup
+        traj1.atTime("Reset").onTrue(coralPickup.station());
+        traj1.atTime("Pickup").onTrue(coralPickup.station());
+        traj1.done().onTrue(
+                sequence(
+                        waitSeconds(1),
+                        race(coralPickup.hold(), waitSeconds(0.25))));
+
+        //Third Trajectory Score
+        traj2.atTime("Reset").onTrue(coralPickup.station());
+        traj2.atTime("Pickup").onTrue(coralPickup.station());
+        traj2.done().onTrue(
+                sequence(
+                        waitSeconds(0.25),
+                        scoreL4(),
+                        race(coralPickup.hold(), waitSeconds(0.25))));
+
         return routine;
+
     }
 
-    private AutoRoutine S3L4Left() {
-        AutoRoutine routine = factory.newRoutine("S3-L4-Left");
-        AutoTrajectory traj = routine.trajectory("S3I-to-I");
-        Command routineCommand = sequence(traj.resetOdometry(), traj.cmd());
-        routine.active().onTrue(routineCommand);
-        traj.atTime("Align").onTrue(coralScore.l4Align());
-        traj.done().onTrue(waitSeconds(3.0).andThen(scoreL4()));
-        return routine;
-    }
 
     // private AutoRoutine plopAndShop() {
     //     AutoRoutine routine = factory.newRoutine("Plop and Shop");
@@ -134,7 +152,7 @@ public class AutoRoutines {
                 coralPickup.hold());
     }
 
-    private Command scoreL4(){
+    private Command scoreL4() {
         return sequence(
                 coralScore.l234Score(),
                 waitSeconds(3),

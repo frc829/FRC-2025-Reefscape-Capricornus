@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.OpenLoopVoltage;
 import static com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue.OperatorPerspective;
@@ -82,6 +83,7 @@ public class CTRESwerveDrive implements SwerveDrive {
         double vx = cos(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
         double vy = sin(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
         double omega = rotationalVelocitySetpointScalar * maxAngularVelocityRPS * 2 * Math.PI;
+        SmartDashboard.putNumber("VX", vx);
         fieldCentric
                 .withVelocityX(vx)
                 .withVelocityY(vy)
@@ -170,7 +172,9 @@ public class CTRESwerveDrive implements SwerveDrive {
 
     @Override
     public void resetPose(Pose2d pose2d) {
-        swerveDriveTrain.resetPose(pose2d);
+        if(pose2d != null){
+            swerveDriveTrain.resetPose(pose2d);
+        }
     }
 
     @Override

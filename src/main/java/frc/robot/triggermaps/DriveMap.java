@@ -28,6 +28,8 @@ public class DriveMap {
         bindZeroWheel();
         bindSeedFieldCentric();
 
+        bindSetFieldFromCamera();
+
         // bindGoToNearestLeftReef();
         // bindGoToNearestRightReef();
         // bindGoToNearestAlgae();
@@ -110,6 +112,10 @@ public class DriveMap {
 
     private void bindSeedFieldCentric() {
         driver.start().onTrue(swerveDriveSubsystem.seedFieldCentric());
+    }
+
+    private void bindSetFieldFromCamera() {
+        driver.b().whileTrue(swerveDriveSubsystem.setFieldFromCamera());
     }
 
     // private int getNearestTagId(int startingTag, int endingTag, Pose2d robotLocation) {

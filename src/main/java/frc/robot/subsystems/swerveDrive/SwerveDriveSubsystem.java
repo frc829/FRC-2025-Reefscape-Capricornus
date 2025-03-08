@@ -99,6 +99,14 @@ public class SwerveDriveSubsystem implements Subsystem {
                 .withName(String.format("%s: Seed Field Centric", getName()));
     }
 
+    public Command setFieldFromCamera() {
+        return run(() -> {
+            if (cameras[0].getState().getRobotPose().isPresent()) {
+                swerveDrive.resetPose(cameras[0].getState().getRobotPose().get().estimatedPose.toPose2d());
+            }
+        });
+    }
+
 
     @Override
     public void periodic() {
@@ -113,13 +121,15 @@ public class SwerveDriveSubsystem implements Subsystem {
             });
         }
         swerveDrive.update();
-        for (var camera : cameras) {
-            camera.updateSimState(swerveDrive.getState().getPose());
-            // swerveDrive.addVisionMeasurement(
-            //         camera.getState().getRobotPose(),
-            //         camera.getState().getTimestamp().baseUnitMagnitude(),
-            //         camera.getState().getRobotPoseStdDev());
-        }
+        // for (var camera : cameras) {
+        //     camera.update();
+        //     if (camera.getState().getRobotPose().isPresent() && camera.getState().getRobotPoseStdDev().isPresent()) {
+        //         swerveDrive.addVisionMeasurement(
+        //                 camera.getState().getRobotPose().get().estimatedPose.toPose2d(),
+        //                 camera.getState().getRobotPose().get().timestampSeconds,
+        //                 camera.getState().getRobotPoseStdDev().get());
+        //     }
+        // }
     }
 
     private void startSimThread() {
@@ -134,6 +144,9 @@ public class SwerveDriveSubsystem implements Subsystem {
 
             /* use the measured time delta, get battery voltage from WPILib */
             swerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            for (var camera : cameras) {
+                camera.updateSimState(swerveDrive.getState().getPose());
+            }
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
