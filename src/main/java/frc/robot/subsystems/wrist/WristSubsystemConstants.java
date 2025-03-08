@@ -33,12 +33,12 @@ import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.star
 public class WristSubsystemConstants {
 
     static final class Control {
-        static final double ksVolts = 0.13474;
-        static final double kvVoltsPerRPS = 0.81628 * 2 * Math.PI;
-        static final double kaVoltsPerRPSSquared = 0.028768 * 2 * Math.PI;
-        static final double positionKpVoltsPerRotation = 10.0;
+        static final double ksVolts = 0.26668;
+        static final double kvVoltsPerRPS = 4.1236;
+        static final double kaVoltsPerRPSSquared = 0.20062;
+        static final double positionKpVoltsPerRotation = 27.095;
         static final double positionKdVoltsPerRPS = 0.0;
-        static final double velocityKpVoltsPerRPS = 0.0;
+        static final double velocityKpVoltsPerRPS = 0.75898;
         static final double maxControlVoltage = 12.0 - ksVolts;
         static final double maxVelocityRPS = maxControlVoltage / kvVoltsPerRPS;
         static final double maxAccelerationRPSS = maxControlVoltage / kaVoltsPerRPSSquared;
@@ -75,7 +75,7 @@ public class WristSubsystemConstants {
                 ? SensorDirectionValue.Clockwise_Positive
                 : SensorDirectionValue.CounterClockwise_Positive;
         static final double magnetOffset = RobotBase.isReal()
-                ? 0.439453
+                ? -0.224365
                 : 0.0;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)
@@ -115,6 +115,7 @@ public class WristSubsystemConstants {
                 .idleMode(idleMode)
                 .inverted(inverted)
                 .smartCurrentLimit(smartCurrentLimit)
+                .apply(signalsConfig)
                 .apply(encoderConfig)
                 .smartCurrentLimit(20);
         static final SparkMax motor = new SparkMax(deviceId, kBrushless);

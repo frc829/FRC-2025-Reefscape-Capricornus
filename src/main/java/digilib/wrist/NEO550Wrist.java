@@ -18,6 +18,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static digilib.wrist.NEO550Wrist.ControlState.POSITION;
 import static digilib.wrist.NEO550Wrist.ControlState.VELOCITY;
@@ -212,6 +213,7 @@ public class NEO550Wrist implements Wrist {
         state.setAbsoluteEncoderVelocityRPS(cancoder.getVelocity().getValueAsDouble());
         state.setVolts(motor.getAppliedOutput() * motor.getBusVoltage());
         state.setAmps(motor.getOutputCurrent());
+        SmartDashboard.putString("Wrist CAN Coder", cancoder.getMagnetHealth().getValue().name());
         state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue());
     }
 

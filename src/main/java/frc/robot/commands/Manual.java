@@ -57,7 +57,7 @@ public class Manual {
     }
 
     public Command manualElevatorTest() {
-        return manipulator.elevator().toHeight(20.0 / 100.0);
+        return manipulator.elevator().toHeight(60.0 / 100.0);
     }
 
     public Command manualArmTest() {

@@ -59,9 +59,9 @@ public class SwerveDriveSubsystemConstants {
 
         static final class Camera0 {
             static final String name = "Front-Camera";
-            static final Distance cameraX = Centimeters.of(0.0);
-            static final Distance cameraY = Centimeters.of(0.0);
-            static final Distance cameraZ = Centimeters.of(0.0);
+            static final Distance cameraX = Inches.of(10.35);
+            static final Distance cameraY = Inches.of(2.6);
+            static final Distance cameraZ = Inches.of(20.7);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
             static final Angle yaw = Degrees.of(0.0);
@@ -94,12 +94,12 @@ public class SwerveDriveSubsystemConstants {
 
         static final class Camera1 {
             static final String name = "Back-Camera";
-            static final Distance cameraX = Centimeters.of(0.0);
-            static final Distance cameraY = Centimeters.of(0.0);
-            static final Distance cameraZ = Centimeters.of(0.0);
+            static final Distance cameraX = Inches.of(-9.2);
+            static final Distance cameraY = Inches.of(1.5);
+            static final Distance cameraZ = Inches.of(8.5);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
-            static final Angle yaw = Degrees.of(0.0);
+            static final Angle yaw = Degrees.of(180.0);
             static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
             static final Transform3d robotToCamera = new Transform3d(
                     cameraX,

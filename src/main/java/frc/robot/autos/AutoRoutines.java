@@ -98,25 +98,28 @@ public class AutoRoutines {
         traj0.done().onTrue(
                 sequence(
                         waitSeconds(0.25),
-                        scoreL4(),
-                        race(coralPickup.hold(), waitSeconds(0.25)),
-                        traj1.cmd()));
+                        race(scoreL4(), waitSeconds(0.25)),
+                        race(coralPickup.hold(), waitSeconds(0.25))));
+        traj0.doneFor(1.0).onTrue(traj1.cmd());
+
 
         // Second Trajectory Pickup
-        traj1.atTime("Reset").onTrue(coralPickup.station());
+        traj1.atTime("Reset").onTrue(coralPickup.hold());
         traj1.atTime("Pickup").onTrue(coralPickup.station());
         traj1.done().onTrue(
                 sequence(
                         waitSeconds(1),
                         race(coralPickup.hold(), waitSeconds(0.25))));
 
-        //Third Trajectory Score
+        traj1.doneFor(1.0).onTrue(traj2.cmd());
+
+        // Third Trajectory Score
         traj2.atTime("Reset").onTrue(coralPickup.station());
         traj2.atTime("Pickup").onTrue(coralPickup.station());
         traj2.done().onTrue(
                 sequence(
                         waitSeconds(0.25),
-                        scoreL4(),
+                        race(scoreL4(), waitSeconds(0.25)),
                         race(coralPickup.hold(), waitSeconds(0.25))));
 
         return routine;
@@ -149,13 +152,16 @@ public class AutoRoutines {
     private Command scoreL1() {
         return sequence(
                 coralScore.l1Score().raceWith(waitSeconds(1)),
-                coralPickup.hold());
+                coralPickup.hold())
+                .withName("ScoreL1");
+
     }
 
     private Command scoreL4() {
         return sequence(
                 coralScore.l234Score(),
                 waitSeconds(3),
-                coralPickup.hold());
+                coralPickup.hold())
+                .withName("ScoreL4");
     }
 }
