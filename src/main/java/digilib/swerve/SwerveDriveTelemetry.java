@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,20 +28,20 @@ public class SwerveDriveTelemetry {
     private final StructArrayPublisher<SwerveModuleState> driveModuleTargets;
     private final StructArrayPublisher<SwerveModulePosition> driveModulePositions;
     private final DoublePublisher rawHeading;
-    private final DoubleArrayPublisher fieldPub;
-    private final StringPublisher fieldTypePub;
+
     private final MechanismLigament2d[] moduleSpeeds;
     private final MechanismLigament2d[] moduleDirections;
     private final double maxVelocityMPS;
+    private final Field2d field;
 
     public SwerveDriveTelemetry(
             String name,
             double maxVelocityMPS,
             double maxAngularVelocityRPS) {
         this.maxVelocityMPS = maxVelocityMPS;
+        field = new Field2d();
         NetworkTable tableData = getDefault().getTable(name + "-Data");
         NetworkTable table = getDefault().getTable(name);
-        NetworkTable field = getDefault().getTable("Field");
         table.getDoubleTopic("Max Velocity [mps]")
                 .publish()
                 .set(maxVelocityMPS);
@@ -71,12 +72,6 @@ public class SwerveDriveTelemetry {
         rawHeading = table
                 .getDoubleTopic("Raw Heading [deg]")
                 .publish();
-        fieldPub = field
-                .getDoubleArrayTopic("robotPose")
-                .publish();
-        fieldTypePub = field
-                .getStringTopic(".type")
-                .publish();
         Mechanism2d[] moduleMechanisms = new Mechanism2d[]{
                 new Mechanism2d(1, 1),
                 new Mechanism2d(1, 1),
@@ -102,6 +97,7 @@ public class SwerveDriveTelemetry {
         SmartDashboard.putData("Module 1", moduleMechanisms[0]);
         SmartDashboard.putData("Module 2", moduleMechanisms[0]);
         SmartDashboard.putData("Module 3", moduleMechanisms[0]);
+        SmartDashboard.putData("Field", field);
     }
 
     public void telemeterize(SwerveDriveState state) {
@@ -123,8 +119,7 @@ public class SwerveDriveTelemetry {
 
         rawHeading.set(MathUtil.inputModulus(state.getRawHeading().getDegrees(), -180, 180));
 
-        fieldPub.set(poseArray);
-        fieldTypePub.set("Field2d");
+        field.setRobotPose(state.getPose());
 
         for (int i = 0; i < 4; ++i) {
             moduleSpeeds[i].setAngle(state.getModuleStates()[i].angle);

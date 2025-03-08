@@ -54,8 +54,8 @@ public class SwerveDriveSubsystemConstants {
                 Double.MAX_VALUE,
                 Double.MAX_VALUE,
                 Double.MAX_VALUE);
-        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS_AUTO = VecBuilder.fill(0.1, 0.1, Double.MAX_VALUE);
-        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS_TELEOP = VecBuilder.fill(0.01, 0.01, Double.MAX_VALUE);
+        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS_AUTO = VecBuilder.fill(0.1, 0.1, 0.1);
+        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS_TELEOP = VecBuilder.fill(0.01, 0.01, 0.1);
 
         static final class Camera0 {
             static final String name = "Front-Camera";

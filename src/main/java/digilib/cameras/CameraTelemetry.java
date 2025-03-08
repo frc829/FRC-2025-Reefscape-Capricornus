@@ -7,9 +7,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static digilib.DigiMath.roundToDecimal;
-import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 import static org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class CameraTelemetry {
@@ -20,14 +21,16 @@ public class CameraTelemetry {
     private final StructPublisher<Matrix<N3, N1>> robotPoseStdDevPublisher;
     private final double[] poseStdDevArray = new double[3];
     private final DoubleArrayPublisher robotPoseStdDevPublisherDashboard;
-    private final DoubleArrayPublisher fieldPub;
+    private final Field2d field;
+    private final String name;
 
     public CameraTelemetry(String name,
                            Transform3d robotToCamera,
                            PoseStrategy primaryStrategy,
                            PoseStrategy fallBackPoseStrategy) {
+        this.name = name;
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
-        NetworkTable field = getDefault().getTable("Field");
+        field = (Field2d) SmartDashboard.getData("Field");
         table.getStructTopic("Robot to Camera", Transform3d.struct)
                 .publish()
                 .set(robotToCamera);
@@ -52,9 +55,6 @@ public class CameraTelemetry {
         robotPoseStdDevPublisherDashboard = table
                 .getDoubleArrayTopic("Robot Pose Std Dev Array")
                 .publish();
-        fieldPub = field
-                .getDoubleArrayTopic(name + "-" + "Pose")
-                .publish();
     }
 
     public void telemeterize(CameraState state) {
@@ -65,7 +65,9 @@ public class CameraTelemetry {
             poseArray[1] = roundToDecimal(state.getRobotPose().get().estimatedPose.getY(), 2);
             poseArray[2] = roundToDecimal(state.getRobotPose().get().estimatedPose.getRotation().getZ() * 180 / Math.PI, 2);
             robotPosePublisherDashboard.set(poseArray);
-            fieldPub.set(poseArray);
+            if(state.getRobotPoseStdDev().isPresent()){
+                field.getObject(name).setPose(state.getRobotPose().get().estimatedPose.toPose2d());
+            }
         }else{
             robotPosePublisherDashboard.set(new double[0]);
         }
