@@ -15,6 +15,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -53,27 +54,27 @@ public class PhotonVisionCamera implements Camera {
         this.multiTagStdDevsAuto = constants.multiTagStdDevAuto();
 
 
-        // if (RobotBase.isSimulation()) {
-        //     if (!aprilTagsAdded) {
-        //         visionSim = new VisionSystemSim("main");
-        //         visionSim.addAprilTags(constants.aprilTagFieldLayout());
-        //         aprilTagsAdded = true;
-        //     }
-        //     SimCameraProperties simCameraProperties = new SimCameraProperties();
-        //     simCameraProperties.setCalibration(
-        //             constants.xResolution(),
-        //             constants.yResolution(),
-        //             constants.fieldOfView());
-        //     simCameraProperties.setCalibError(
-        //             constants.averageErrorPixels(),
-        //             constants.errorStdDevPixels());
-        //     simCameraProperties.setFPS(constants.fps());
-        //     simCameraProperties.setAvgLatencyMs(constants.averageLatencyMs());
-        //     simCameraProperties.setLatencyStdDevMs(constants.latencyStdDevMs());
-        //     cameraSim = new PhotonCameraSim(photonCamera, simCameraProperties);
-        //     visionSim.addCamera(cameraSim, robotToCamera);
-        //     cameraSim.enableDrawWireframe(true);
-        // }
+        if (RobotBase.isSimulation()) {
+            if (!aprilTagsAdded) {
+                visionSim = new VisionSystemSim("main");
+                visionSim.addAprilTags(constants.aprilTagFieldLayout());
+                aprilTagsAdded = true;
+            }
+            SimCameraProperties simCameraProperties = new SimCameraProperties();
+            simCameraProperties.setCalibration(
+                    constants.xResolution(),
+                    constants.yResolution(),
+                    constants.fieldOfView());
+            simCameraProperties.setCalibError(
+                    constants.averageErrorPixels(),
+                    constants.errorStdDevPixels());
+            simCameraProperties.setFPS(constants.fps());
+            simCameraProperties.setAvgLatencyMs(constants.averageLatencyMs());
+            simCameraProperties.setLatencyStdDevMs(constants.latencyStdDevMs());
+            cameraSim = new PhotonCameraSim(photonCamera, simCameraProperties);
+            visionSim.addCamera(cameraSim, robotToCamera);
+            cameraSim.enableDrawWireframe(true);
+        }
 
         photonPoseEstimator = new PhotonPoseEstimator(
                 fieldTags,
