@@ -1,6 +1,7 @@
 package digilib.swerve;
 
 import digilib.DigiMath;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -120,7 +121,7 @@ public class SwerveDriveTelemetry {
         driveModuleTargets.set(state.getModuleTargets());
         driveModulePositions.set(state.getModulePositions());
 
-        rawHeading.set(state.getRawHeading().getRadians());
+        rawHeading.set(MathUtil.inputModulus(state.getRawHeading().getDegrees(), -180, 180));
 
         fieldPub.set(poseArray);
         fieldTypePub.set("Field2d");
