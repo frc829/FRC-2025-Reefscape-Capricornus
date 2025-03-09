@@ -94,9 +94,9 @@ public class SwerveDriveTelemetry {
                         .append(new MechanismLigament2d("Direction", 0.1, 0, 0, new Color8Bit(Color.kWhite))),
         };
         SmartDashboard.putData("Module 0", moduleMechanisms[0]);
-        SmartDashboard.putData("Module 1", moduleMechanisms[0]);
-        SmartDashboard.putData("Module 2", moduleMechanisms[0]);
-        SmartDashboard.putData("Module 3", moduleMechanisms[0]);
+        SmartDashboard.putData("Module 1", moduleMechanisms[1]);
+        SmartDashboard.putData("Module 2", moduleMechanisms[2]);
+        SmartDashboard.putData("Module 3", moduleMechanisms[3]);
         SmartDashboard.putData("Field", field);
     }
 

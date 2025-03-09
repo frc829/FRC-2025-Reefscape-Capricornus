@@ -32,6 +32,6 @@ public class CoralPickupMap {
 
     private void bindCoralHold() {
         controller.back()
-                .onTrue(coral.hold());
+                .onTrue(coral.hardReset());
     }
 }

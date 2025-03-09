@@ -4,7 +4,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.spark.*;
+import com.revrobotics.spark.SparkMax;
 import digilib.MotorControllerType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -18,10 +18,9 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot0;
-import static com.revrobotics.spark.SparkBase.ControlType.*;
+import static com.revrobotics.spark.SparkBase.ControlType.kPosition;
 import static com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits.kVoltage;
 import static digilib.wrist.NEO550Wrist.ControlState.POSITION;
 import static digilib.wrist.NEO550Wrist.ControlState.VELOCITY;
@@ -41,7 +40,6 @@ public class NEO550Wrist implements Wrist {
     private final double maxVelocityRPS;
     private final WristTelemetry telemetry;
     private final SparkMax motor;
-    private final CANcoder cancoder;
     private ControlState controlState = null;
     private final ExponentialProfile positionProfile;
     private final SlewRateLimiter velocityProfile;
@@ -67,7 +65,6 @@ public class NEO550Wrist implements Wrist {
         maxAngleRotations = constants.maxAngleDegrees() / 360.0;
         maxVelocityRPS = constants.maxVelocityRPS();
         this.motor = motor;
-        this.cancoder = cancoder;
         this.telemetry = new WristTelemetry(
                 constants.name(),
                 constants.minAngleDegrees(),
@@ -90,7 +87,8 @@ public class NEO550Wrist implements Wrist {
         this.maxControlVoltage = constants.maxControlVoltage();
         this.controlPeriodSeconds = controlPeriodSeconds;
 
-        resetPosition();
+        // resetPosition();
+        motor.getEncoder().setPosition(0.0);
 
         if (RobotBase.isSimulation()) {
             DCMotor dcMotor = DCMotor.getNeo550(1);
@@ -136,11 +134,11 @@ public class NEO550Wrist implements Wrist {
     @Override
     public void setPosition(double setpointRotations) {
         if (controlState != POSITION) {
-            setpoint.position = cancoder.getAbsolutePosition().getValueAsDouble();
-            setpoint.velocity = cancoder.getVelocity().getValueAsDouble();
+            setpoint.position = motor.getEncoder().getPosition();
+            setpoint.velocity = motor.getEncoder().getVelocity();
             controlState = POSITION;
         }
-        double currentAngleRotations = cancoder.getAbsolutePosition().getValueAsDouble();
+        double currentAngleRotations = motor.getEncoder().getPosition();
         goal.velocity = 0.0;
         if (currentAngleRotations >= maxAngleRotations && setpointRotations > maxVelocityRPS) {
             goal.position = maxAngleRotations;
@@ -165,12 +163,12 @@ public class NEO550Wrist implements Wrist {
     @Override
     public void setVelocity(double setpointScalar) {
         if (controlState != VELOCITY) {
-            velocityProfile.reset(cancoder.getVelocity().getValueAsDouble());
-            setpoint.velocity = cancoder.getVelocity().getValueAsDouble();
+            velocityProfile.reset(motor.getEncoder().getVelocity());
+            setpoint.velocity = motor.getEncoder().getVelocity();
             controlState = VELOCITY;
         }
-        double currentAngleRotations = cancoder.getAbsolutePosition().getValueAsDouble();
-        double currentVelocityRPS = cancoder.getVelocity().getValueAsDouble();
+        double currentAngleRotations = motor.getEncoder().getPosition();
+        double currentVelocityRPS = motor.getEncoder().getVelocity();
         if (currentAngleRotations >= maxAngleRotations && setpointScalar > 0.0){
             setPosition(maxAngleRotations);
         }else if(currentAngleRotations <= minAngleRotations && setpointScalar < 0.0){
@@ -198,14 +196,11 @@ public class NEO550Wrist implements Wrist {
 
     @Override
     public void resetPosition() {
-        double absolutePositionRotations = cancoder.getAbsolutePosition().getValueAsDouble();
-        absolutePositionRotations = MathUtil.inputModulus(absolutePositionRotations, -0.5, 0.5);
-        motor.getEncoder().setPosition(absolutePositionRotations);
     }
 
     @Override
     public void update() {
-        resetPosition();
+        // resetPosition();
         updateState();
         updateTelemetry();
     }
@@ -213,13 +208,9 @@ public class NEO550Wrist implements Wrist {
     @Override
     public void updateState() {
         state.setMotorEncoderPositionRotations(motor.getEncoder().getPosition());
-        state.setAbsoluteEncoderPositionRotations(cancoder.getAbsolutePosition().getValueAsDouble());
         state.setMotorEncoderVelocityRPS(motor.getEncoder().getVelocity());
-        state.setAbsoluteEncoderVelocityRPS(cancoder.getVelocity().getValueAsDouble());
         state.setVolts(motor.getAppliedOutput() * motor.getBusVoltage());
         state.setAmps(motor.getOutputCurrent());
-        SmartDashboard.putString("Wrist CAN Coder", cancoder.getMagnetHealth().getValue().name());
-        state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue());
     }
 
     @Override

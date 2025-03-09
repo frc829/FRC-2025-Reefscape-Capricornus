@@ -87,7 +87,7 @@ public class AutoRoutines {
 
     private AutoRoutine TwoCoralS3() {
         AutoRoutine routine = factory.newRoutine("Two-Coral-S3");
-        AutoTrajectory traj0 = routine.trajectory("S3-to-IJ");
+        AutoTrajectory traj0 = routine.trajectory("S3-to-IJ-Fast");
         AutoTrajectory traj1 = routine.trajectory("IJ-to-NorthRight");
         AutoTrajectory traj2 = routine.trajectory("NorthRight-to-KL");
         Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());

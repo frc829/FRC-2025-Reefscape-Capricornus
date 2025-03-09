@@ -175,7 +175,7 @@ public class SwerveDriveSubsystemConstants {
                                 Volts.per(RotationsPerSecondPerSecond).of(0.16477);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 80.0;
+                        static final double kp = 70.0;
                         static final double ki = 0.0;
                         static final double kd = 0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
@@ -246,7 +246,7 @@ public class SwerveDriveSubsystemConstants {
                                 Volts.per(RotationsPerSecondPerSecond).of(0.15858);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 80.0;
+                        static final double kp = 70.0;
                         static final double ki = 0.0;
                         static final double kd = 0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
@@ -316,7 +316,7 @@ public class SwerveDriveSubsystemConstants {
                                 Volts.per(RotationsPerSecondPerSecond).of(0.1568);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 80.0;
+                        static final double kp = 70.0;
                         static final double ki = 0.0;
                         static final double kd = 0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
@@ -388,7 +388,7 @@ public class SwerveDriveSubsystemConstants {
                                 Volts.per(RotationsPerSecondPerSecond).of(0.15239);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 80.0;
+                        static final double kp = 70.0;
                         static final double ki = 0.0;
                         static final double kd = 0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()

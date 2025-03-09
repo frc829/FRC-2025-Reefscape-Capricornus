@@ -31,13 +31,13 @@ public class WristSubsystem implements Subsystem {
     public Trigger gte(double angleDegrees) {
         return new Trigger(() -> wrist
                 .getState()
-                .getAbsoluteEncoderPositionDegrees() >= angleDegrees);
+                .getMotorEncoderPositionDegrees() >= angleDegrees);
     }
 
     public Trigger lte(double angleDegrees) {
         return new Trigger(() -> wrist
                 .getState()
-                .getAbsoluteEncoderPositionDegrees() <= angleDegrees);
+                .getMotorEncoderPositionDegrees() <= angleDegrees);
     }
 
     public Trigger inRange(double minAngleDegrees, double maxAngleDegrees) {
@@ -62,7 +62,7 @@ public class WristSubsystem implements Subsystem {
     public Command hold() {
         MutAngle holdPosition = Rotations.mutable(0.0);
         return sequence(
-                runOnce(() -> holdPosition.mut_setMagnitude(wrist.getState().getAbsoluteEncoderPositionRotations())),
+                runOnce(() -> holdPosition.mut_setMagnitude(wrist.getState().getMotorEncoderPositionRotations())),
                 run(() -> wrist.setPosition(holdPosition.in(Rotations))))
                 .withName(String.format("%s: HOLD", getName()));
     }

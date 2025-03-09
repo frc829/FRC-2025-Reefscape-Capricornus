@@ -7,13 +7,12 @@ package frc.robot;
 import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.*;
 import frc.robot.subsystems.arm.ArmSubsystemConstants;
@@ -28,6 +27,8 @@ import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants;
 import frc.robot.subsystems.wrist.WristSubsystemConstants;
 import frc.robot.triggermaps.*;
+
+import static digilib.DigiMath.roundToDecimal;
 
 public class Robit extends TimedRobot {
 
@@ -61,6 +62,24 @@ public class Robit extends TimedRobot {
         CoralPickup coralPickup = new CoralPickup(manipulator);
         CoralScore coralScore = new CoralScore(manipulator);
         Manual manual = new Manual(manipulator);
+
+        if(RobotBase.isSimulation()){
+            Timer timer = new Timer();
+            addPeriodic(() -> {
+                if(!timer.isRunning() && timer.get() <= 15.0 && RobotModeTriggers.autonomous().getAsBoolean()){
+                    timer.start();
+                }
+                if(RobotModeTriggers.autonomous().getAsBoolean()){
+                    SmartDashboard.putNumber("Auto Timer", roundToDecimal(15 - timer.get(), 2));
+                }else if(RobotModeTriggers.teleop().getAsBoolean() || timer.get() > 15.0){
+                    timer.stop();
+                    timer.reset();
+                }else if(RobotModeTriggers.disabled().getAsBoolean()){
+                    timer.stop();
+                    timer.reset();
+                }
+            }, 0.020);
+        }
 
         new DriveMap(driverController, deadband, swerveDriveSubsystem);
         new AlgaePickupMap(operatorController, deadband, algaePickup);

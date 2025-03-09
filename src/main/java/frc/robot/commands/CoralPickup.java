@@ -84,6 +84,18 @@ public class CoralPickup {
         return sequence(
                 parallel(armHold(),
                         intakeHold())
+                        .until(isArmSafeForWristUp),
+                parallel(armHold(),
+                        algaeClawHold(),
+                        intakeHold(),
+                        manipulator.wrist().toAngle(wristSafeDegrees)))
+                .withName("Coral Hold");
+    }
+
+    public Command hardReset(){
+        return sequence(
+                parallel(armHold(),
+                        intakeHold())
                         .until(isArmSafeForElevatorUp),
                 parallel(elevatorHold(),
                         armHold(),
@@ -94,7 +106,7 @@ public class CoralPickup {
                         algaeClawHold(),
                         intakeHold(),
                         manipulator.wrist().toAngle(wristSafeDegrees)))
-                .withName("Coral Hold");
+                .withName("Coral Hard Reset");
     }
 
     private Command intake() {
