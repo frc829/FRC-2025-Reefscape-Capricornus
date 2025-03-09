@@ -5,10 +5,7 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.EncoderConfig;
-import com.revrobotics.spark.config.SignalsConfig;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.*;
 import digilib.wrist.NEO550Wrist;
 import digilib.wrist.Wrist;
 import digilib.wrist.WristConstants;
@@ -16,9 +13,11 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.RobotBase;
 
+import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
 import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
 import static com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters;
 import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
+import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.rio;
@@ -33,12 +32,12 @@ import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.star
 public class WristSubsystemConstants {
 
     static final class Control {
-        static final double ksVolts = 0.26668;
-        static final double kvVoltsPerRPS = 4.1236;
-        static final double kaVoltsPerRPSSquared = 0.20062;
-        static final double positionKpVoltsPerRotation = 50; //27.095;
-        static final double positionKdVoltsPerRPS = 0.0;
-        static final double velocityKpVoltsPerRPS = 0.75898;
+        static final double ksVolts = 0.17044;
+        static final double kvVoltsPerRPS = 4.9058;
+        static final double kaVoltsPerRPSSquared = 0.14377;
+        static final double positionKpVoltsPerRotation = 6.5235; // 27.095;
+        static final double positionKdVoltsPerRPS = 0.0; //0.17512;
+        static final double velocityKpVoltsPerRPS = 5.4797E-07;
         static final double maxControlVoltage = 12.0 - ksVolts;
         static final double maxVelocityRPS = maxControlVoltage / kvVoltsPerRPS;
         static final double maxAccelerationRPSS = maxControlVoltage / kaVoltsPerRPSSquared;
@@ -75,7 +74,7 @@ public class WristSubsystemConstants {
                 ? SensorDirectionValue.Clockwise_Positive
                 : SensorDirectionValue.CounterClockwise_Positive;
         static final double magnetOffset = RobotBase.isReal()
-                ? -0.224365
+                ? -0.228271
                 : 0.0;
         static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
                 .withSensorDirection(sensorDirectionValue)
@@ -111,13 +110,18 @@ public class WristSubsystemConstants {
                 .velocityConversionFactor(velocityFactor)
                 .quadratureAverageDepth(depth)
                 .quadratureMeasurementPeriod(periodMs);
+        static final ClosedLoopConfig closedLoopConfig = new ClosedLoopConfig()
+                .p(positionKpVoltsPerRotation)
+                .d(positionKdVoltsPerRPS)
+                .p(velocityKpVoltsPerRPS, kSlot1)
+                .feedbackSensor(kPrimaryEncoder);
         static final SparkBaseConfig config = new SparkFlexConfig()
                 .idleMode(idleMode)
                 .inverted(inverted)
                 .smartCurrentLimit(smartCurrentLimit)
                 .apply(signalsConfig)
                 .apply(encoderConfig)
-                .smartCurrentLimit(20);
+                .apply(closedLoopConfig);
         static final SparkMax motor = new SparkMax(deviceId, kBrushless);
         static final PIDController positionPIDController = new PIDController(positionKpVoltsPerRotation, 0.0, positionKdVoltsPerRPS, controlPeriodSeconds);
         static final PIDController velocityPIDController = new PIDController(velocityKpVoltsPerRPS, 0.0, 0.0, controlPeriodSeconds);

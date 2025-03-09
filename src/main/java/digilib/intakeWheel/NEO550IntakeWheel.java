@@ -93,7 +93,13 @@ public class NEO550IntakeWheel implements IntakeWheel {
         double goalVelocity = setpointScalar * maxVelocityRPS;
         double nextVelocitySetpoint = profile.calculate(goalVelocity);
         double arbFeedforward = feedforward.calculateWithVelocities(setpoint.in(RotationsPerSecond), nextVelocitySetpoint);
-        motor.getClosedLoopController().setReference(nextVelocitySetpoint, kVelocity, kSlot1, arbFeedforward, kVoltage);
+        motor.getClosedLoopController()
+                .setReference(
+                        nextVelocitySetpoint,
+                        kVelocity,
+                        kSlot1,
+                        arbFeedforward,
+                        kVoltage);
         setpoint.mut_setMagnitude(nextVelocitySetpoint);
     }
 

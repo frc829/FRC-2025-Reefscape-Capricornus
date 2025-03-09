@@ -20,6 +20,9 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import static com.revrobotics.spark.ClosedLoopSlot.kSlot0;
+import static com.revrobotics.spark.SparkBase.ControlType.*;
+import static com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits.kVoltage;
 import static digilib.wrist.NEO550Wrist.ControlState.POSITION;
 import static digilib.wrist.NEO550Wrist.ControlState.VELOCITY;
 
@@ -150,10 +153,12 @@ public class NEO550Wrist implements Wrist {
                 .calculate(controlPeriodSeconds, setpoint, goal);
         double feedforwardVolts = feedforward
                 .calculateWithVelocities(setpoint.velocity, next.velocity);
-        double feedbackVolts = positionPIDController
-                .calculate(currentAngleRotations, next.position);
-        double volts = MathUtil.clamp(feedbackVolts + feedforwardVolts, -maxControlVoltage, maxControlVoltage);
-        motor.setVoltage(volts);
+        motor.getClosedLoopController()
+                .setReference(next.position,
+                        kPosition,
+                        kSlot0,
+                        feedforwardVolts,
+                        kVoltage);
         setpoint = next;
     }
 

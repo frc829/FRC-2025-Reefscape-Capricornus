@@ -12,7 +12,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class CoralPickup {
 
-    private static final double armFloorDegrees = -43.7;
+    private static final double armFloorDegrees = -39;
     private static final double armStationDegrees = 50.0;
     private static final double armHoldDegrees = 90.0;
     private static final double armSafeDownDegrees = 60.0;
@@ -31,7 +31,7 @@ public class CoralPickup {
     private static final double coralHoldSpeed = 0.05;
 
     private static final ClawValue algaeClawIntakeValue = OPEN;
-    private static final ClawValue algaeClawHoldValue = CLOSED;
+    private static final ClawValue algaeClawHoldValue = OPEN;
     private static final ClawValue coralClawValue = CLOSED;
 
     private final Manipulator manipulator;

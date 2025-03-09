@@ -97,7 +97,6 @@ public class AutoRoutines {
         traj0.atTime("Align").onTrue(coralScore.l4Align());
         traj0.done().onTrue(
                 sequence(
-                        waitSeconds(0.25),
                         race(scoreL4(), waitSeconds(0.25)),
                         race(coralPickup.hold(), waitSeconds(0.25))));
         traj0.doneFor(1.0).onTrue(traj1.cmd());
