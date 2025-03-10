@@ -2,38 +2,49 @@ package digilib.cameras;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static digilib.DigiMath.roundToDecimal;
+import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 import static org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class CameraTelemetry {
-    private final StringPublisher cameraModePublisher;
-    private final StructPublisher<Pose3d> robotPosePublisher;
-    private final double[] poseArray = new double[3];
-    private final DoubleArrayPublisher robotPosePublisherDashboard;
+    private final StructPublisher<Pose2d> robotPosePublisher;
     private final StructPublisher<Matrix<N3, N1>> robotPoseStdDevPublisher;
+
+    private final StringPublisher cameraModePublisher;
+    private final DoubleArrayPublisher robotPose;
+    private final DoubleArrayPublisher robotPoseStdDev;
+    private final double[] poseArray = new double[3];
     private final double[] poseStdDevArray = new double[3];
-    private final DoubleArrayPublisher robotPoseStdDevPublisherDashboard;
-    private final Field2d field;
-    private final String name;
 
     public CameraTelemetry(String name,
                            Transform3d robotToCamera,
                            PoseStrategy primaryStrategy,
                            PoseStrategy fallBackPoseStrategy) {
-        this.name = name;
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
-        field = (Field2d) SmartDashboard.getData("Field");
-        table.getStructTopic("Robot to Camera", Transform3d.struct)
+        NetworkTable field = getDefault().getTable("Field");
+
+        robotPosePublisher = field
+                .getStructTopic(name + "-RobotPose", Pose2d.struct)
+                .publish();
+        robotPoseStdDevPublisher = table
+                .getStructTopic(name + "-Robot Pose Std Dev", Matrix.getStruct(Nat.N3(), Nat.N1()))
+                .publish();
+
+        table.getDoubleArrayTopic("Robot to Camera")
                 .publish()
-                .set(robotToCamera);
+                .set(new double[]{
+                        robotToCamera.getX(),
+                        robotToCamera.getY(),
+                        robotToCamera.getZ(),
+                        roundToDecimal(robotToCamera.getRotation().getX(), 2),
+                        roundToDecimal(robotToCamera.getRotation().getY(), 2),
+                        roundToDecimal(robotToCamera.getRotation().getZ(), 2)});
         table.getStringTopic("Primary Pose Strategy")
                 .publish()
                 .set(primaryStrategy.toString());
@@ -43,45 +54,29 @@ public class CameraTelemetry {
         cameraModePublisher = table
                 .getStringTopic("Camera mode")
                 .publish();
-        robotPosePublisher = table
-                .getStructTopic("Robot Pose", Pose3d.struct)
+        robotPose = table
+                .getDoubleArrayTopic(name + "Robot Pose Array")
                 .publish();
-        robotPosePublisherDashboard = table
-                .getDoubleArrayTopic("Robot Pose Array")
-                .publish();
-        robotPoseStdDevPublisher = table
-                .getStructTopic("Robot Pose Std Dev", Matrix.getStruct(Nat.N3(), Nat.N1()))
-                .publish();
-        robotPoseStdDevPublisherDashboard = table
+        robotPoseStdDev = table
                 .getDoubleArrayTopic("Robot Pose Std Dev Array")
                 .publish();
     }
 
     public void telemeterize(CameraState state) {
-        cameraModePublisher.set(state.getCameraMode());
-        if (state.getRobotPose().isPresent()) {
-            robotPosePublisher.set(state.getRobotPose().get().estimatedPose);
+        if(state.getRobotPose().isPresent() && state.getRobotPoseStdDev().isPresent()) {
+            robotPosePublisher.set(state.getRobotPose().get().estimatedPose.toPose2d());
+            robotPoseStdDevPublisher.set(state.getRobotPoseStdDev().get());
+
             poseArray[0] = roundToDecimal(state.getRobotPose().get().estimatedPose.getX(), 2);
             poseArray[1] = roundToDecimal(state.getRobotPose().get().estimatedPose.getY(), 2);
             poseArray[2] = roundToDecimal(state.getRobotPose().get().estimatedPose.getRotation().getZ() * 180 / Math.PI, 2);
-            robotPosePublisherDashboard.set(poseArray);
-            if(state.getRobotPoseStdDev().isPresent()){
-                field.getObject(name).setPose(state.getRobotPose().get().estimatedPose.toPose2d());
-            }
-        }else{
-            robotPosePublisherDashboard.set(new double[0]);
-        }
+            robotPose.set(poseArray);
 
-
-        if (state.getRobotPoseStdDev().isPresent()) {
-            robotPoseStdDevPublisher.set(state.getRobotPoseStdDev().get());
             poseStdDevArray[0] = roundToDecimal(state.getRobotPoseStdDev().get().get(0, 0), 2);
             poseStdDevArray[1] = roundToDecimal(state.getRobotPoseStdDev().get().get(1, 0), 2);
             poseStdDevArray[2] = roundToDecimal(state.getRobotPoseStdDev().get().get(2, 0), 2);
-            robotPoseStdDevPublisherDashboard.set(poseStdDevArray);
-        }else{
-            robotPoseStdDevPublisherDashboard.set(new double[0]);
+            robotPoseStdDev.set(poseStdDevArray);
         }
-
+        cameraModePublisher.set(state.getCameraMode());
     }
 }
