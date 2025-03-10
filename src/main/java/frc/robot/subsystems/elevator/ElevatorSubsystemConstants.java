@@ -7,6 +7,7 @@ import digilib.elevator.ElevatorConstants;
 import digilib.elevator.TwoVortexElevator;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
 import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
@@ -121,14 +122,16 @@ public class ElevatorSubsystemConstants {
         static final SparkFlex motor = new SparkFlex(deviceId, kBrushless);
     }
 
-    public static ElevatorSubsystem create() {
+    public static ElevatorSubsystem create(MechanismLigament2d ligament, double minimumHeight) {
         Motor.motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
         Follower.motor.configure(Follower.config, kResetSafeParameters, kPersistParameters);
         Elevator elevator = new TwoVortexElevator(
                 constants,
                 Motor.motor,
                 Follower.motor,
-                controlPeriodSeconds);
+                controlPeriodSeconds,
+                ligament,
+                minimumHeight);
         ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(elevator, simLoopPeriod);
         elevatorSubsystem.setDefaultCommand(elevatorSubsystem.hold());
         return elevatorSubsystem;

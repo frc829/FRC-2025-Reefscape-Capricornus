@@ -32,7 +32,7 @@ public class SwerveDriveTelemetry {
         field.getStringTopic(".type").publish().set("Field2d");
 
         robotPose = field
-                .getStructTopic("RobotPose", Pose2d.struct)
+                .getStructTopic("Robot", Pose2d.struct)
                 .publish();
         robotSpeeds = field
                 .getStructTopic("Robot Speeds", ChassisSpeeds.struct)

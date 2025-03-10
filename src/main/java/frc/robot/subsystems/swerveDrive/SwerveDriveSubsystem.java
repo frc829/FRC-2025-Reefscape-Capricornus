@@ -121,23 +121,21 @@ public class SwerveDriveSubsystem implements Subsystem {
             });
         }
         swerveDrive.update();
-        // if(RobotBase.isReal()){
-            for (var camera : cameras) {
-                camera.update();
-                if (camera.getState().getRobotPose().isPresent() && camera.getState().getRobotPoseStdDev().isPresent()) {
-                    var cameraPose = camera.getState().getRobotPose().get().estimatedPose.toPose2d();
-                    var timeStampSeconds = camera.getState().getRobotPose().get().timestampSeconds;
-                    var robotPose = swerveDrive.getState().getPose();
-                    timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
-                    if(cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 1.0){
-                        swerveDrive.addVisionMeasurement(
-                                cameraPose,
-                                timeStampSeconds,
-                                camera.getState().getRobotPoseStdDev().get());
-                    }
+        for (var camera : cameras) {
+            camera.update();
+            if (camera.getState().getRobotPose().isPresent() && camera.getState().getRobotPoseStdDev().isPresent()) {
+                var cameraPose = camera.getState().getRobotPose().get().estimatedPose.toPose2d();
+                var timeStampSeconds = camera.getState().getRobotPose().get().timestampSeconds;
+                var robotPose = swerveDrive.getState().getPose();
+                timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
+                if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.25) {
+                    swerveDrive.addVisionMeasurement(
+                            cameraPose,
+                            timeStampSeconds,
+                            camera.getState().getRobotPoseStdDev().get());
                 }
             }
-        // }
+        }
     }
 
     private void startSimThread() {

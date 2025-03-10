@@ -74,7 +74,7 @@ public class ManualMap {
     }
 
     private double getMaxElevatorVelocityPercentValue() {
-        return maxManualElevatorSetpointScalar * MathUtil.applyDeadband(-controller.getLeftY(), deadband);
+        return maxManualElevatorSetpointScalar * MathUtil.applyDeadband(-operator.getLeftY(), deadband);
     }
 
     private void bindManualElevatorTest() {

@@ -36,7 +36,7 @@ public class AlgaePickupMap {
     }
 
     private void bindAlgaeL3Pickup() {
-        controller.leftStick()
+        controller.povDown()
                 .whileTrue(algae.L3())
                 .onFalse(algae.hold());
     }

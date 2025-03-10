@@ -98,12 +98,12 @@ public class AutoRoutines {
         traj0.done().onTrue(
                 sequence(
                         race(scoreL4(), waitSeconds(0.25)),
-                        race(coralPickup.hold(), waitSeconds(0.25))));
-        traj0.doneFor(1.0).onTrue(traj1.cmd());
+                        race(coralPickup.hold(), waitSeconds(1))));
+        traj0.doneFor(1.25).onTrue(traj1.cmd());
 
 
         // Second Trajectory Pickup
-        traj1.atTime("Reset").onTrue(coralPickup.hold());
+        traj1.atTime("Reset").onTrue(coralPickup.hardReset());
         traj1.atTime("Pickup").onTrue(coralPickup.station());
         traj1.done().onTrue(
                 sequence(
@@ -113,13 +113,13 @@ public class AutoRoutines {
         traj1.doneFor(1.0).onTrue(traj2.cmd());
 
         // Third Trajectory Score
-        traj2.atTime("Reset").onTrue(coralPickup.station());
-        traj2.atTime("Pickup").onTrue(coralPickup.station());
+        traj2.atTime("Reset").onTrue(coralPickup.hold());
+        traj2.atTime("Align").onTrue(coralScore.l4Align());
         traj2.done().onTrue(
                 sequence(
                         waitSeconds(0.25),
                         race(scoreL4(), waitSeconds(0.25)),
-                        race(coralPickup.hold(), waitSeconds(0.25))));
+                        race(coralPickup.hardReset(), waitSeconds(1.0))));
 
         return routine;
 

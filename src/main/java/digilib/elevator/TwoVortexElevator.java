@@ -8,6 +8,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot0;
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
@@ -29,6 +30,8 @@ public class TwoVortexElevator implements Elevator {
     private final double maxHeightMeters;
     private final double maxVelocityMPS;
     private final ElevatorTelemetry telemetry;
+    private final MechanismLigament2d ligament;
+    private final double minimumHeight;
     private final SparkFlex motor;
     private final SparkFlex follower;
     private ControlState controlState = null;
@@ -46,7 +49,9 @@ public class TwoVortexElevator implements Elevator {
             ElevatorConstants constants,
             SparkFlex motor,
             SparkFlex follower,
-            double controlPeriodSeconds) {
+            double controlPeriodSeconds,
+            MechanismLigament2d ligament,
+            double minimumHeight) {
         minHeightMeters = constants.minHeightMeters();
         maxHeightMeters = constants.maxHeightMeters();
         maxVelocityMPS = constants.maxVelocityMPS();
@@ -58,6 +63,8 @@ public class TwoVortexElevator implements Elevator {
                 constants.maxHeightMeters(),
                 constants.maxVelocityMPS(),
                 constants.maxAccelerationMPSSquared());
+        this.ligament = ligament;
+        this.minimumHeight = minimumHeight;
         feedforward = new ElevatorFeedforward(
                 constants.ksVolts(),
                 constants.kgVolts(),
@@ -207,5 +214,7 @@ public class TwoVortexElevator implements Elevator {
         simElevator.update(dt);
         sparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);
         followerSparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);
+
+        ligament.setLength(minimumHeight + state.getMotorEncoderPositionMeters());
     }
 }

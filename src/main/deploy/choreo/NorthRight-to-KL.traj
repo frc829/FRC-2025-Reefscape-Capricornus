@@ -117,6 +117,6 @@
   "splits":[0]
  },
  "events":[
-   {"name":"Pickup", "from":{"target":2, "targetTimestamp":0.9237, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Align", "from":{"target":2, "targetTimestamp":0.9237, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
    {"name":"Reset", "from":{"target":0, "targetTimestamp":0.0, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
 }

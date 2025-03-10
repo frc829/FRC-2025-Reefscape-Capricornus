@@ -8,7 +8,12 @@ import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -46,15 +51,32 @@ public class Robit extends TimedRobot {
         SwerveDriveSubsystem swerveDriveSubsystem = SwerveDriveSubsystemConstants.createCTRESwerveDrive();
         AutoFactory autoFactory = SwerveDriveSubsystemConstants.getAutoFactory();
 
+        Mechanism2d manipulatorMechanism = new Mechanism2d(3, 5, new Color8Bit(Color.kMediumPurple));
+        MechanismRoot2d manipulatorRoot = manipulatorMechanism.getRoot("Manipulator", 1.5, 2);
+        MechanismLigament2d elevatorLigament = new MechanismLigament2d("Elevator", 0.20, 90, 2, new Color8Bit(Color.kYellow));
+        MechanismLigament2d bar = new MechanismLigament2d("ElevatorBackBar", 1, 90, 2, new Color8Bit(Color.kYellow));
+        MechanismLigament2d armLigament = new MechanismLigament2d("Arm", 0.60, -90, 2, new Color8Bit(Color.kAntiqueWhite));
+        MechanismLigament2d wristTopLigament = new MechanismLigament2d("WristTop", 0.3, 90, 2, new Color8Bit(Color.kDarkOrange));
+        MechanismLigament2d wristBottomLigament = new MechanismLigament2d("WristBot", 0.3, -90, 2, new Color8Bit(Color.kGreen));
+        manipulatorRoot.append(elevatorLigament);
+        manipulatorRoot.append(bar);
+        elevatorLigament.append(armLigament);
+        armLigament.append(wristTopLigament);
+        armLigament.append(wristBottomLigament);
+
+
+
+        SmartDashboard.putData("Manipulator", manipulatorMechanism);
+
         Manipulator manipulator = new Manipulator(
-                ArmSubsystemConstants.create(),
+                ArmSubsystemConstants.create(armLigament, -90),
                 PneumaticsSubsystemConstants.createAlgaeClaw(),
                 PneumaticsSubsystemConstants.createCoralClaw(),
-                ElevatorSubsystemConstants.create(),
+                ElevatorSubsystemConstants.create(elevatorLigament, 0.20),
                 AlgaeIntakeSubsystemConstants.create(),
                 CoralIntakeSubsystemConstants.create(),
                 LidarSensorSubsystemConstants.create(),
-                WristSubsystemConstants.create());
+                WristSubsystemConstants.create(wristTopLigament, wristBottomLigament));
         ClimberSubsystem climberSubsystem = ClimberSubsystemConstants.create();
 
         AlgaePickup algaePickup = new AlgaePickup(manipulator);
@@ -63,18 +85,18 @@ public class Robit extends TimedRobot {
         CoralScore coralScore = new CoralScore(manipulator);
         Manual manual = new Manual(manipulator);
 
-        if(RobotBase.isSimulation()){
+        if (RobotBase.isSimulation()) {
             Timer timer = new Timer();
             addPeriodic(() -> {
-                if(!timer.isRunning() && timer.get() <= 15.0 && RobotModeTriggers.autonomous().getAsBoolean()){
+                if (!timer.isRunning() && timer.get() <= 15.0 && RobotModeTriggers.autonomous().getAsBoolean()) {
                     timer.start();
                 }
-                if(RobotModeTriggers.autonomous().getAsBoolean()){
+                if (RobotModeTriggers.autonomous().getAsBoolean()) {
                     SmartDashboard.putNumber("Auto Timer", roundToDecimal(15 - timer.get(), 2));
-                }else if(RobotModeTriggers.teleop().getAsBoolean() || timer.get() > 15.0){
+                } else if (RobotModeTriggers.teleop().getAsBoolean() || timer.get() > 15.0) {
                     timer.stop();
                     timer.reset();
-                }else if(RobotModeTriggers.disabled().getAsBoolean()){
+                } else if (RobotModeTriggers.disabled().getAsBoolean()) {
                     timer.stop();
                     timer.reset();
                 }

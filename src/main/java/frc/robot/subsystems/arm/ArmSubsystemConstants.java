@@ -9,6 +9,7 @@ import digilib.arm.ArmConstants;
 import digilib.arm.TalonFXArm;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 
 import static com.ctre.phoenix6.signals.FeedbackSensorSourceValue.FusedCANcoder;
 import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
@@ -132,13 +133,15 @@ public class ArmSubsystemConstants {
         static final TalonFX talonFX = new TalonFX(deviceNumber, rio);
     }
 
-    public static ArmSubsystem create() {
+    public static ArmSubsystem create(MechanismLigament2d ligament, double offsetDegrees) {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         talonFX.getConfigurator().apply(Motor.config);
         Arm arm = new TalonFXArm(
                 constants,
                 talonFX,
-                cancoder);
+                cancoder,
+                ligament,
+                offsetDegrees);
         ArmSubsystem armSubsystem = new ArmSubsystem(arm, simLoopPeriod);
         armSubsystem.setDefaultCommand(armSubsystem.hold());
         return armSubsystem;

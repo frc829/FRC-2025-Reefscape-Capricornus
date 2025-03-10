@@ -9,15 +9,15 @@ import com.revrobotics.spark.config.*;
 import digilib.wrist.NEO550Wrist;
 import digilib.wrist.Wrist;
 import digilib.wrist.WristConstants;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
 import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
 import static com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters;
 import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
-import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.*;
+import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.rio;
@@ -25,7 +25,7 @@ import static frc.robot.subsystems.wrist.WristSubsystemConstants.AbsoluteEncoder
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Control.*;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.constants;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.reduction;
-import static frc.robot.subsystems.wrist.WristSubsystemConstants.Motor.*;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Motor.motor;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.simLoopPeriod;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.startingAngleDegrees;
 
@@ -35,8 +35,12 @@ public class WristSubsystemConstants {
         static final double ksVolts = 0.17044;
         static final double kvVoltsPerRPS = 4.9058;
         static final double kaVoltsPerRPSSquared = 0.14377;
-        static final double positionKpVoltsPerRotation = 6.5235; // 27.095;
-        static final double positionKdVoltsPerRPS = 0.0; //0.17512;
+        static final double positionKpVoltsPerRotation = RobotBase.isReal()
+                ? 6.5235
+                : 6.5235;
+        static final double positionKdVoltsPerRPS = RobotBase.isReal()
+                ? 0.0
+                : 1.0;
         static final double velocityKpVoltsPerRPS = 5.4797E-07;
         static final double maxControlVoltage = 12.0 - ksVolts;
         static final double maxVelocityRPS = maxControlVoltage / kvVoltsPerRPS;
@@ -123,20 +127,17 @@ public class WristSubsystemConstants {
                 .apply(encoderConfig)
                 .apply(closedLoopConfig);
         static final SparkMax motor = new SparkMax(deviceId, kBrushless);
-        static final PIDController positionPIDController = new PIDController(positionKpVoltsPerRotation, 0.0, positionKdVoltsPerRPS, controlPeriodSeconds);
-        static final PIDController velocityPIDController = new PIDController(velocityKpVoltsPerRPS, 0.0, 0.0, controlPeriodSeconds);
     }
 
-    public static WristSubsystem create() {
+    public static WristSubsystem create(MechanismLigament2d top, MechanismLigament2d bottom) {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
         Wrist wrist = new NEO550Wrist(
                 constants,
                 motor,
-                cancoder,
-                positionPIDController,
-                velocityPIDController,
-                controlPeriodSeconds);
+                controlPeriodSeconds,
+                top,
+                bottom);
         WristSubsystem wristSubsystem = new WristSubsystem(wrist, simLoopPeriod);
         wristSubsystem.setDefaultCommand(wristSubsystem.hold());
         return wristSubsystem;

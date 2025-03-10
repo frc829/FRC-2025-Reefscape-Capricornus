@@ -10,11 +10,11 @@ import static digilib.claws.ClawState.ClawValue.OPEN;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class AlgaePickup {
-    private static final double armFloorDegrees = -43.7;
+    private static final double armFloorDegrees = -39;
     private static final double armL2Degrees = -7.0;
     private static final double armL3Degrees = -7.0;
     private static final double armHoldDegrees = 0.0;
-    private static final double armSafeDownDegrees = 0.0;
+    private static final double armSafeDownDegrees = 60.0;
 
     private static final double elevatorFloorCM = 17.0;
     private static final double elevatorL2CM = 27.0;

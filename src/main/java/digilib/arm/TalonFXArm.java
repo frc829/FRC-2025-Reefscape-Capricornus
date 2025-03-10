@@ -11,8 +11,9 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import digilib.MotorControllerType;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 
-import static digilib.MotorControllerType.*;
+import static digilib.MotorControllerType.TALONFX;
 
 public class TalonFXArm implements Arm {
     private final ArmState state = new ArmState();
@@ -29,11 +30,17 @@ public class TalonFXArm implements Arm {
     private SimulatedArm simArm = null;
     private TalonFXSimState talonFXSimState = null;
     private CANcoderSimState canCoderSimState = null;
+    private MechanismLigament2d ligament = null;
+    private double offsetDegrees = 0.0;
+
+
 
     public TalonFXArm(
             ArmConstants constants,
             TalonFX talonFX,
-            CANcoder cancoder) {
+            CANcoder cancoder,
+            MechanismLigament2d ligament,
+            double offsetDegrees) {
         minAngleRotations = constants.minAngleDegrees() / 360.0;
         maxAngleRotations = constants.maxAngleDegrees() / 360.0;
         maxVelocityRPS = constants.maxVelocityRPS();
@@ -62,6 +69,8 @@ public class TalonFXArm implements Arm {
                     constants.maxAngleDegrees() * Math.PI / 180);
             canCoderSimState.setRawPosition(simArm.getAngleRads() / 2 / Math.PI);
             talonFXSimState.setRawRotorPosition(simArm.getAngleRads() * reduction / 2 / Math.PI);
+            this.ligament = ligament;
+            this.offsetDegrees = offsetDegrees;
         }
     }
 
@@ -129,6 +138,9 @@ public class TalonFXArm implements Arm {
     public void update() {
         updateState();
         updateTelemetry();
+        if(ligament!=null){
+            ligament.setAngle(offsetDegrees + state.getAbsoluteEncoderPositionDegrees());
+        }
     }
 
     public void updateState() {
@@ -160,5 +172,7 @@ public class TalonFXArm implements Arm {
         talonFXSimState.setRawRotorPosition(simArm.getAngleRads() * reduction / 2 / Math.PI);
         talonFXSimState.setRotorVelocity(simArm.getVelocityRadPerSec() * reduction / 2 / Math.PI);
         talonFXSimState.setSupplyVoltage(supplyVoltage);
+
+
     }
 }
