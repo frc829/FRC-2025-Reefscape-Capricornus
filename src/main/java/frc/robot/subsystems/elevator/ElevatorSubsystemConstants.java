@@ -72,7 +72,7 @@ public class ElevatorSubsystemConstants {
     static final class Motor {
         static final int deviceId = 15;
         static final IdleMode idleMode = kBrake;
-        static final boolean inverted = false;
+        static final boolean inverted = true;
         static final int smartCurrentLimit = 80;
         static final int depth = 2;
         static final int periodMs = 16;
@@ -108,6 +108,7 @@ public class ElevatorSubsystemConstants {
                 .apply(encoderConfig)
                 .apply(closedLoopConfig);
         static final SparkFlex motor = new SparkFlex(deviceId, kBrushless);
+
     }
 
     static final class Follower {

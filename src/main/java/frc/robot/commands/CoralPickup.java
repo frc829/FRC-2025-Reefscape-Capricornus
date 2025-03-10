@@ -14,12 +14,16 @@ public class CoralPickup {
 
     private static final double armFloorDegrees = -39;
     private static final double armStationDegrees = 50.0;
+    private static final double armStationDegreesBack = 130.0;
+
     private static final double armHoldDegrees = 90.0;
     private static final double armSafeDownDegrees = 60.0;
+    private static final double armSafeDownDegreesBack = 120.0;
+
     private static final double armSafeUpDegrees = 0.0;
     private static final double armSafeElevatorDegrees = -20.0;
 
-    private static final double elevatorFloorCM = 17.0;
+    private static final double elevatorFloorCM = 19.0;
     private static final double elevatorStationCM = 14.0;
     private static final double elevatorHoldCM = 1.0;
 
@@ -39,6 +43,7 @@ public class CoralPickup {
     private final Trigger isArmSafeForElevatorUp;
     private final Trigger isArmSafeForWristDown;
     private final Trigger isArmSafeForWristUp;
+    private final Trigger isArmSafeForWristDownBack;
 
     public CoralPickup(Manipulator manipulator) {
         this.manipulator = manipulator;
@@ -46,6 +51,7 @@ public class CoralPickup {
         this.isArmSafeForElevatorUp = manipulator.arm().gte(armSafeElevatorDegrees);
         this.isArmSafeForWristDown = manipulator.arm().lte(armSafeDownDegrees);
         this.isArmSafeForWristUp = manipulator.arm().gte(armSafeUpDegrees);
+        this.isArmSafeForWristDownBack = manipulator.arm().gte(armSafeDownDegreesBack);
 
         // Trigger hasCoral = manipulator.lidarSensor().inRange(-10, 20);
         // hasCoral.whileTrue()
@@ -74,6 +80,19 @@ public class CoralPickup {
                         .until(isArmSafeForWristDown),
                 parallel(elevatorStation(),
                         armStation(),
+                        claws(),
+                        manipulator.wrist().toAngle(wristPickupDegrees),
+                        intake()))
+                .withName("Coral Pickup: Station ");
+    }
+
+    public Command stationBack() {
+        return sequence(
+                parallel(elevatorStation(),
+                        armStationBack())
+                        .until(isArmSafeForWristDownBack),
+                parallel(elevatorStation(),
+                        armStationBack(),
                         claws(),
                         manipulator.wrist().toAngle(wristPickupDegrees),
                         intake()))
@@ -142,6 +161,10 @@ public class CoralPickup {
 
     private Command armStation() {
         return manipulator.arm().toAngle(armStationDegrees);
+    }
+
+    private Command armStationBack() {
+        return manipulator.arm().toAngle(armStationDegreesBack);
     }
 
     private Command armFloor() {

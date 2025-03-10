@@ -13,9 +13,11 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.List;
 import java.util.function.DoubleSupplier;
+import java.util.stream.IntStream;
 
 public class SwerveDriveSubsystem implements Subsystem {
     private static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
@@ -138,6 +140,26 @@ public class SwerveDriveSubsystem implements Subsystem {
         }
     }
 
+    private int getNearestTagId(int startingTag, int endingTag, Pose2d robotLocation) {
+        List<Pose2d> filteredPoses = IntStream.rangeClosed(startingTag - 1, endingTag - 1).mapToObj(tagId -> aprilTagPoses.get(tagId)).toList();
+        Pose2d nearestPose = robotLocation.nearest(filteredPoses);
+        return aprilTagPoses.indexOf(nearestPose) + 1;
+    }
+
+    private int getNearestTagId() {
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+            return getNearestTagId(17, 22, swerveDrive.getState().getPose());
+        } else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+            return getNearestTagId(6, 11, swerveDrive.getState().getPose());
+        } else {
+            return -1;
+        }
+    }
+
+    public Trigger isNearestTag(int tagId) {
+        return new Trigger(() -> getNearestTagId() == tagId);
+    }
+
     private void startSimThread() {
         lastSimTime = Utils.getCurrentTimeSeconds();
 
@@ -156,6 +178,10 @@ public class SwerveDriveSubsystem implements Subsystem {
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
+
+
+
+
 
 
 }

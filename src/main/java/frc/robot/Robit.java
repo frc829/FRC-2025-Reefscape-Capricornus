@@ -42,7 +42,7 @@ public class Robit extends TimedRobot {
         PortForwarder.add(5800, "orangepi50.local", 5800);
         CanBridge.runTCP();
 
-        double deadband = 0.05;
+        double deadband = 0.10;
         CommandXboxController driverController = new CommandXboxController(0);
         CommandXboxController operatorController = new CommandXboxController(1);
         CommandJoystick climberController = new CommandJoystick(2);
@@ -103,7 +103,7 @@ public class Robit extends TimedRobot {
             }, 0.020);
         }
 
-        new DriveMap(driverController, deadband, swerveDriveSubsystem);
+        new DriveMap(driverController, deadband, swerveDriveSubsystem, autoFactory);
         new AlgaePickupMap(operatorController, deadband, algaePickup);
         new AlgaeScoreMap(driverController, operatorController, deadband, algaeScore);
         new CoralPickupMap(operatorController, coralPickup);
