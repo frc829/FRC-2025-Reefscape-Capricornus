@@ -49,10 +49,17 @@ public class ManualMap {
     private void bindManualArm() {
         new Trigger(() -> getArmVelocitySetpointScalar() != 0.0)
                 .whileTrue(manual.manualArm(this::getArmVelocitySetpointScalar));
+
+        new Trigger(() -> getArmVelocitySetpointScalarManual() != 0.0)
+                .whileTrue(manual.manualArm(this::getArmVelocitySetpointScalarManual));
     }
 
     private double getArmVelocitySetpointScalar() {
         return maxManualArmSetpointScalar * MathUtil.applyDeadband(-operator.getRightY(), deadband);
+    }
+
+    private double getArmVelocitySetpointScalarManual() {
+        return maxManualArmSetpointScalar * MathUtil.applyDeadband(-controller.getRightY(), deadband);
     }
 
     private void bindArmTest() {
@@ -72,17 +79,24 @@ public class ManualMap {
     private void bindManualElevator() {
         new Trigger(() -> getMaxElevatorVelocityPercentValue() != 0.0)
                 .whileTrue(manual.manualElevator(this::getMaxElevatorVelocityPercentValue));
+
+        new Trigger(() -> getMaxElevatorVelocityPercentValueManual() != 0.0)
+                .whileTrue(manual.manualElevator(this::getMaxElevatorVelocityPercentValueManual));
     }
 
     private double getMaxElevatorVelocityPercentValue() {
         return maxManualElevatorSetpointScalar * MathUtil.applyDeadband(-operator.getLeftY(), deadband);
     }
 
+    private double getMaxElevatorVelocityPercentValueManual() {
+        return maxManualElevatorSetpointScalar * MathUtil.applyDeadband(-controller.getLeftY(), deadband);
+    }
+
     private void bindManualElevatorTest() {
         controller.a().whileTrue(manual.manualElevatorTest());
     }
 
-    private void bindManualElevatorDownTest(){
+    private void bindManualElevatorDownTest() {
         controller.x().whileTrue(manual.manualElevatorTestDown());
     }
 
