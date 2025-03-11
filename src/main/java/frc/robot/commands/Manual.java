@@ -60,6 +60,11 @@ public class Manual {
         return manipulator.elevator().toHeight(60.0 / 100.0);
     }
 
+
+    public Command manualElevatorTestDown() {
+        return manipulator.elevator().toHeight(1.0 / 100.0);
+    }
+
     public Command manualArmTest() {
         return manipulator.arm().toAngle(30.0);
     }

@@ -33,6 +33,7 @@ public class ManualMap {
 
         bindManualElevator();
         bindManualElevatorTest();
+        bindManualElevatorDownTest();
 
         bindManualWristToggle();
         bindManualWrist();
@@ -79,6 +80,10 @@ public class ManualMap {
 
     private void bindManualElevatorTest() {
         controller.a().whileTrue(manual.manualElevatorTest());
+    }
+
+    private void bindManualElevatorDownTest(){
+        controller.x().whileTrue(manual.manualElevatorTestDown());
     }
 
     private void bindManualAlgaeIn() {
