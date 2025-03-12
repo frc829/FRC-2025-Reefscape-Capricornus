@@ -156,9 +156,9 @@ public class SwerveDriveSubsystemConstants {
             static final Current SLIP_CURRENT = Amps.of(120.0);
             static final Current steerStatorCurrentLimit = Amps.of(60.0);
             static final boolean steerStatorCurrentLimitEnabled = true;
-            static final double COUPLE_RATIO = 4.1666666666666666666666666666667;
-            static final double DRIVE_GEAR_RATIO = 6.75;
-            static final double STEER_GEAR_RATIO = 25;
+            static final double COUPLE_RATIO = 4.1666666666666666666666666666667; // 50 tooth first stage / 12 tooth pinion
+            static final double DRIVE_GEAR_RATIO = 5.54;  // 16 tooth second stage, 13 tooth pinion
+            static final double STEER_GEAR_RATIO = 25;   //12T
             static final Distance WHEEL_RADIUS = Inches.of(2);
 
             static final class Module0 {
@@ -175,9 +175,9 @@ public class SwerveDriveSubsystemConstants {
                                 Volts.per(RotationsPerSecondPerSecond).of(0.16477);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 70.0;
+                        static final double kp = 8.0727; //70.0;
                         static final double ki = 0.0;
-                        static final double kd = 0.0;
+                        static final double kd = 0.004028; //0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
                                 .withKS(ks.baseUnitMagnitude())
                                 .withKV(kv.magnitude())
@@ -246,9 +246,9 @@ public class SwerveDriveSubsystemConstants {
                                 Volts.per(RotationsPerSecondPerSecond).of(0.15858);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 70.0;
+                        static final double kp = 8.0727; //70.0;
                         static final double ki = 0.0;
-                        static final double kd = 0.0;
+                        static final double kd = 0.004028; //0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
                                 .withKS(ks.baseUnitMagnitude())
                                 .withKV(kv.magnitude())
@@ -316,9 +316,9 @@ public class SwerveDriveSubsystemConstants {
                                 Volts.per(RotationsPerSecondPerSecond).of(0.1568);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 70.0;
+                        static final double kp = 8.0727; //70.0;
                         static final double ki = 0.0;
-                        static final double kd = 0.0;
+                        static final double kd = 0.004028; //0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
                                 .withKS(ks.baseUnitMagnitude())
                                 .withKV(kv.magnitude())
@@ -388,9 +388,9 @@ public class SwerveDriveSubsystemConstants {
                                 Volts.per(RotationsPerSecondPerSecond).of(0.15239);
                         static final StaticFeedforwardSignValue staticFeedforwardSignValue =
                                 StaticFeedforwardSignValue.UseClosedLoopSign;
-                        static final double kp = 70.0;
+                        static final double kp = 8.0727; //70.0;
                         static final double ki = 0.0;
-                        static final double kd = 0.0;
+                        static final double kd = 0.004028; //0.0;
                         static final Slot0Configs slot0Configs = new Slot0Configs()
                                 .withKS(ks.baseUnitMagnitude())
                                 .withKV(kv.magnitude())

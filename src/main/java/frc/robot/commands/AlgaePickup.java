@@ -16,7 +16,7 @@ public class AlgaePickup {
     private static final double armHoldDegrees = 0.0;
     private static final double armSafeDownDegrees = 60.0;
 
-    private static final double elevatorFloorCM = 19.0;
+    private static final double elevatorFloorCM = 18.0;
     private static final double elevatorL2CM = 27.0;
     private static final double elevatorL3CM = 51.0;
     private static final double elevatorHoldCM = 0.0;
@@ -84,7 +84,6 @@ public class AlgaePickup {
 
     public Command hold() {
         return parallel(
-                elevatorHold(),
                 armHold(),
                 intakeHold())
                 .withName("Algae Hold");
