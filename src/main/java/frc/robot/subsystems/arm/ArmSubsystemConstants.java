@@ -28,14 +28,14 @@ import static frc.robot.subsystems.arm.ArmSubsystemConstants.Simulation.starting
 public class ArmSubsystemConstants {
 
     static final class Control {
-        static final double ksVolts = 0.14546;
-        static final double kgVolts = 0.13317;
-        static final double kvVoltsPerRPS = 39.295;
-        static final double kaVoltsPerRPSSquared = 0.33517;
+        static final double ksVolts = 0.34146;
+        static final double kgVolts = 0.13084;
+        static final double kvVoltsPerRPS = 37.322;
+        static final double kaVoltsPerRPSSquared = 1.7601;
         static final GravityTypeValue gravityTypeValue = Arm_Cosine;
-        static final double positionKpVoltsPerRotation = 96.725;
-        static final double positionKdVoltsPerRPS = 0.2086;
-        static final double velocityKpVoltsPerRPS = 2.0133;
+        static final double positionKpVoltsPerRotation = 34.862;
+        static final double positionKdVoltsPerRPS = 0.022423;
+        static final double velocityKpVoltsPerRPS = 1.699E-15;
         static final double maxControlVoltage = 12.0 - ksVolts - kgVolts;
         static final double maxVelocityRPS = maxControlVoltage / kvVoltsPerRPS;
         static final double maxAccelerationRPSS = maxControlVoltage / kaVoltsPerRPSSquared;
