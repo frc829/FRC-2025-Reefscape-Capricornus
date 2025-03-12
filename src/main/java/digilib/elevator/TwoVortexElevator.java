@@ -74,8 +74,8 @@ public class TwoVortexElevator implements Elevator {
         positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
                         constants.maxControlVoltage(),
-                        constants.kvVoltsPerMPS(),
-                        constants.kaVoltsPerMPSSquared()));
+                        constants.kvVoltsPerMPS() / 0.90,
+                        constants.kaVoltsPerMPSSquared() / 0.25));
         this.velocityProfile = new SlewRateLimiter(constants.maxAccelerationMPSSquared());
         this.controlPeriodSeconds = controlPeriodSeconds;
 
