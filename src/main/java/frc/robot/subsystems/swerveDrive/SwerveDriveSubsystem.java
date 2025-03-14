@@ -81,6 +81,10 @@ public class SwerveDriveSubsystem implements Subsystem {
                 .withName(String.format("%s: Clock Centric", getName()));
     }
 
+    public Command pointSteer(DoubleSupplier angleDegrees){
+        return run(() -> swerveDrive.setSteerAngle(angleDegrees.getAsDouble()));
+    }
+
     public Command brake() {
         return run(() -> swerveDrive.setBrake())
                 .withName(String.format("%s: Brake", getName()));

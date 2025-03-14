@@ -30,6 +30,8 @@ public interface SwerveDrive {
             double headingAngleDegrees,
             double rotationAngleDegrees);
 
+    void setSteerAngle(double angleDegrees);
+
     void setBrake();
 
     void setIdle();

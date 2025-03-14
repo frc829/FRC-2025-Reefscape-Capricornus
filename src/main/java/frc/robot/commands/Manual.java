@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Manipulator;
+import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 
 import java.util.function.DoubleSupplier;
 
@@ -10,11 +11,13 @@ import static edu.wpi.first.wpilibj2.command.Commands.either;
 
 public class Manual {
 
+    private final SwerveDriveSubsystem swerveDrive;
     private final Manipulator manipulator;
     public final Trigger hasAlgae;
     public final Trigger hasCoral;
 
-    public Manual(Manipulator manipulator) {
+    public Manual(SwerveDriveSubsystem swerveDrive, Manipulator manipulator) {
+        this.swerveDrive = swerveDrive;
         this.manipulator = manipulator;
         hasAlgae = manipulator.hasAlgae();
         hasCoral = manipulator.hasCoral();
@@ -67,5 +70,13 @@ public class Manual {
 
     public Command manualArmTest() {
         return manipulator.arm().toAngle(30.0);
+    }
+
+    public Command manualSteer90Test(){
+        return swerveDrive.pointSteer(() -> 90);
+    }
+
+    public Command manualSteer0Test(){
+        return swerveDrive.pointSteer(() -> 0);
     }
 }

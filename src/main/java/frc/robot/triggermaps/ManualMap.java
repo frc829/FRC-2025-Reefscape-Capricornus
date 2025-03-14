@@ -44,6 +44,9 @@ public class ManualMap {
         bindManualAlgaeIn();
         bindManualAlgaeOut();
 
+        bindSteer90Test();
+        bindSteer0Test();
+
     }
 
     private void bindManualArm() {
@@ -143,6 +146,14 @@ public class ManualMap {
     private void bindManualWrist() {
         new Trigger(() -> getWristVelocitySetpointScalar() != 0.0)
                 .whileTrue(manual.manualWrist(this::getWristVelocitySetpointScalar));
+    }
+
+    private void bindSteer90Test(){
+        controller.a().and(controller.b()).whileTrue(manual.manualSteer90Test());
+    }
+
+    private void bindSteer0Test(){
+        controller.x().and(controller.y()).whileTrue(manual.manualSteer0Test());
     }
 
     private double getWristVelocitySetpointScalar() {

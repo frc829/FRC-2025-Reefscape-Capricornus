@@ -64,8 +64,6 @@ public class Robit extends TimedRobot {
         armLigament.append(wristTopLigament);
         armLigament.append(wristBottomLigament);
 
-
-
         SmartDashboard.putData("Manipulator", manipulatorMechanism);
 
         Manipulator manipulator = new Manipulator(
@@ -83,7 +81,7 @@ public class Robit extends TimedRobot {
         AlgaeScore algaeScore = new AlgaeScore(manipulator);
         CoralPickup coralPickup = new CoralPickup(manipulator);
         CoralScore coralScore = new CoralScore(manipulator);
-        Manual manual = new Manual(manipulator);
+        Manual manual = new Manual(swerveDriveSubsystem, manipulator);
 
         if (RobotBase.isSimulation()) {
             Timer timer = new Timer();

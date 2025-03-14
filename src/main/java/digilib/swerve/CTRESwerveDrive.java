@@ -125,6 +125,12 @@ public class CTRESwerveDrive implements SwerveDrive {
     }
 
     @Override
+    public void setSteerAngle(double angleDegrees) {
+        point.withModuleDirection(Rotation2d.fromDegrees(angleDegrees));
+        swerveDriveTrain.setControl(point);
+    }
+
+    @Override
     public void setBrake() {
         swerveDriveTrain.setControl(brake);
     }
