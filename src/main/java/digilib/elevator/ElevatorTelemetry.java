@@ -11,6 +11,8 @@ public class ElevatorTelemetry {
     private final DoublePublisher velocity;
     private final DoublePublisher voltage;
     private final DoublePublisher current;
+    private final DoublePublisher setpointPosition;
+    private final DoublePublisher setpointVelocity;
 
     public ElevatorTelemetry(
             String name,
@@ -43,6 +45,12 @@ public class ElevatorTelemetry {
         this.current = table
                 .getDoubleTopic("Current [amps]")
                 .publish();
+        this.setpointPosition = table
+                .getDoubleTopic("Setpoint Position [meters]")
+                .publish();
+        this.setpointVelocity = table
+                .getDoubleTopic("Setpoint Velocity [mps]")
+                .publish();
     }
 
     public void telemeterize(ElevatorState state) {
@@ -50,15 +58,21 @@ public class ElevatorTelemetry {
         double motorEncoderVelocityMPS = state.getMotorEncoderVelocityMPS();
         double volts = state.getVolts();
         double amps = state.getAmps();
+        double setpointPositionMeters = state.getPositionSetpointMeters();
+        double setpointVelocityMPS = state.getVelocitySetpointMPS();
 
         motorEncoderPositionMeters = roundToDecimal(motorEncoderPositionMeters, 2);
         motorEncoderVelocityMPS = roundToDecimal(motorEncoderVelocityMPS, 2);
         volts = roundToDecimal(volts, 2);
         amps = roundToDecimal(amps, 2);
+        setpointPositionMeters = roundToDecimal(setpointPositionMeters, 2);
+        setpointVelocityMPS = roundToDecimal(setpointVelocityMPS, 2);
 
         position.set(motorEncoderPositionMeters);
         velocity.set(motorEncoderVelocityMPS);
         voltage.set(volts);
         current.set(amps);
+        setpointPosition.set(setpointPositionMeters);
+        setpointVelocity.set(setpointVelocityMPS);
     }
 }

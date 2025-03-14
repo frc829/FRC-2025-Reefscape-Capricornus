@@ -84,6 +84,7 @@ public class TwoVortexElevator implements Elevator {
             sparkFlexSim = new SparkFlexSim(motor, dcMotor);
             followerSparkFlexSim = new SparkFlexSim(follower, dcMotor);
             simElevator = SimulatedElevator.createFromSysId(
+                    constants.ksVolts(),
                     constants.kgVolts(),
                     constants.kvVoltsPerMPS(),
                     constants.kaVoltsPerMPSSquared(),
@@ -142,13 +143,14 @@ public class TwoVortexElevator implements Elevator {
                 .calculate(controlPeriodSeconds, setpoint, goal);
         double arbFeedfoward = feedforward
                 .calculateWithVelocities(setpoint.velocity, next.velocity);
+        setpoint = next;
         motor.getClosedLoopController()
                 .setReference(next.position,
                         kPosition,
                         kSlot0,
                         arbFeedfoward,
                         kVoltage);
-        setpoint = next;
+
     }
 
     @Override
@@ -200,6 +202,8 @@ public class TwoVortexElevator implements Elevator {
         state.setMotorEncoderVelocityMPS(motor.getEncoder().getVelocity());
         state.setVolts(motor.getAppliedOutput() * motor.getBusVoltage());
         state.setAmps(motor.getOutputCurrent());
+        state.setPositionSetpointMeters(setpoint.position);
+        state.setVelocitySetpointMPS(setpoint.velocity);
     }
 
     @Override

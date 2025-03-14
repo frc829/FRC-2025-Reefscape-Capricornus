@@ -68,8 +68,12 @@ public class Manual {
         return manipulator.elevator().toHeight(1.0 / 100.0);
     }
 
-    public Command manualArmTest() {
-        return manipulator.arm().toAngle(30.0);
+    public Command manualArm60Test() {
+        return manipulator.arm().toAngle(60.0);
+    }
+
+    public Command manualArm0Test(){
+        return manipulator.arm().toAngle(0.0);
     }
 
     public Command manualSteer90Test(){
@@ -79,4 +83,6 @@ public class Manual {
     public Command manualSteer0Test(){
         return swerveDrive.pointSteer(() -> 0);
     }
+
+
 }

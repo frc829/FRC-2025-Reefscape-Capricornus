@@ -26,12 +26,12 @@ import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Simulatio
 public class ElevatorSubsystemConstants {
 
     static final class Control {
-        static final double ksVolts = 0.13629;
-        static final double kgVolts = 0.19226;
-        static final double kvVoltsPerMPS = 15.156;
+        static final double ksVolts = 0.13639;
+        static final double kgVolts = 0.19231;
+        static final double kvVoltsPerMPS = 15.154;
         static final double kaVoltsPerMPSSquared = 0.44182;
-        static final double positionKpVoltsPerMeter = 17.106;
-        static final double positionKdVoltsPerMPS = 0.90078;
+        static final double positionKpVoltsPerMeter = 8.2482;
+        static final double positionKdVoltsPerMPS = 0.0;
         static final double velocityKpVoltsPerMPS = 6.3919E-15;
         static final double maxControlVoltage = 12.0 - ksVolts - kgVolts;
         static final double maxVelocityMPS = maxControlVoltage / kvVoltsPerMPS;

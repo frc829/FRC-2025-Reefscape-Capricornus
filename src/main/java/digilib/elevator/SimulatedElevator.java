@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 
 public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
+    private final double ks;
     private final DCMotor gearbox;
 
     private final double gearing;
@@ -25,6 +26,7 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
 
     public SimulatedElevator(
             LinearSystem<N2, N1, N2> plant,
+            double ks,
             DCMotor gearbox,
             double gearing,
             double unmodeledAcceleration,
@@ -33,6 +35,7 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
             double maxHeightMeters,
             double... measurementStdDevs) {
         super(plant, measurementStdDevs);
+        this.ks = ks;
         this.gearbox = gearbox;
         this.gearing = gearing;
         minHeight = minHeightMeters;
@@ -86,6 +89,7 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
     }
 
     public void setInputVoltage(double volts) {
+        volts = addFriction(volts);
         setInput(volts);
         clampInput(RobotController.getBatteryVoltage());
     }
@@ -114,7 +118,25 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
         return updatedXhat;
     }
 
+    /**
+     * Applies the effects of friction to dampen the motor voltage.
+     *
+     * @param motorVoltage Voltage output by the motor
+     * @return Friction-dampened motor voltage
+     */
+    protected double addFriction(double motorVoltage) {
+        if (Math.abs(motorVoltage) < ks) {
+            motorVoltage = 0.0;
+        } else if (motorVoltage > 0.0) {
+            motorVoltage -= ks;
+        } else {
+            motorVoltage += ks;
+        }
+        return motorVoltage;
+    }
+
     public static SimulatedElevator createFromSysId(
+            double ks,
             double kg,
             double kv,
             double ka,
@@ -123,7 +145,9 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
             double startingHeightMeters,
             double minHeightMeters,
             double maxHeightMeters) {
-        return createFromSysId(kg,
+        return createFromSysId(
+                ks,
+                kg,
                 kv,
                 ka,
                 gearbox,
@@ -136,6 +160,7 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
     }
 
     public static SimulatedElevator createFromSysId(
+            double ks,
             double kg,
             double kv,
             double ka,
@@ -148,6 +173,7 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
             double velocityStdDevRadiansPerSecond) {
         return new SimulatedElevator(
                 LinearSystemId.identifyPositionSystem(kv, ka),
+                ks,
                 gearbox,
                 gearing,
                 -kg / ka,
@@ -157,4 +183,6 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
                 positionStdDevRadians,
                 velocityStdDevRadiansPerSecond);
     }
+
+
 }

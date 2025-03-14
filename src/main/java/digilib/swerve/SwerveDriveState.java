@@ -6,6 +6,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
+import java.util.List;
+
 public class SwerveDriveState {
 
     private Pose2d pose = new Pose2d();
@@ -20,6 +22,10 @@ public class SwerveDriveState {
             new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()
     };
     private Rotation2d rawHeading = new Rotation2d();
+    private double[] swerveSteerPositions = new double[modulePositions.length];
+    private double[] swerveSteerVelocities = new double[modulePositions.length];
+    private double[] swerveWheelPositions = new double[modulePositions.length];
+    private double[] swerveWheelVelocities = new double[modulePositions.length];
 
 
     public Pose2d getPose() {
@@ -79,5 +85,45 @@ public class SwerveDriveState {
 
     public void setRawHeading(Rotation2d rawHeading) {
         this.rawHeading = rawHeading;
+    }
+
+    public double[] getSwerveSteerPositions() {
+        return swerveSteerPositions;
+    }
+
+    public void setSwerveSteerPositions(List<Double> swerveSteerPositions) {
+        for (int i = 0; i < swerveSteerPositions.size(); i++) {
+            this.swerveSteerPositions[i] = swerveSteerPositions.get(i);
+        }
+    }
+
+    public double[] getSwerveSteerVelocities() {
+        return swerveSteerVelocities;
+    }
+
+    public void setSwerveSteerVelocities(List<Double> swerveSteerVelocities) {
+        for (int i = 0; i < swerveSteerVelocities.size(); i++) {
+            this.swerveSteerVelocities[i] = swerveSteerVelocities.get(i);
+        }
+    }
+
+    public double[] getSwerveWheelPositions() {
+        return swerveWheelPositions;
+    }
+
+    public void setSwerveWheelPositions(List<Double> swerveWheelPositions) {
+        for (int i = 0; i < swerveWheelPositions.size(); i++) {
+            this.swerveWheelPositions[i] = swerveWheelPositions.get(i);
+        }
+    }
+
+    public double[] getSwerveWheelVelocities() {
+        return swerveWheelVelocities;
+    }
+
+    public void setSwerveWheelVelocities(List<Double> swerveWheelVelocities){
+        for (int i = 0; i < swerveWheelVelocities.size(); i++) {
+            this.swerveWheelVelocities[i] = swerveWheelVelocities.get(i);
+        }
     }
 }

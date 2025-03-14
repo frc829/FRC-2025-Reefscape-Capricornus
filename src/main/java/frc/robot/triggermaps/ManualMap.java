@@ -26,7 +26,8 @@ public class ManualMap {
         this.deadband = deadband;
         this.manual = manual;
         bindManualArm();
-        bindArmTest();
+        bindArm60Test();
+        bindArm0Test();
 
         bindManualAlgaeClawToggle();
         bindManualCoralClawToggle();
@@ -65,9 +66,14 @@ public class ManualMap {
         return maxManualArmSetpointScalar * MathUtil.applyDeadband(-controller.getRightY(), deadband);
     }
 
-    private void bindArmTest() {
-        controller.b().whileTrue(manual.manualArmTest());
+    private void bindArm60Test() {
+        controller.b().whileTrue(manual.manualArm60Test());
     }
+
+    private void bindArm0Test() {
+        controller.back().whileTrue(manual.manualArm0Test());
+    }
+
 
     private void bindManualAlgaeClawToggle() {
         controller.leftBumper()

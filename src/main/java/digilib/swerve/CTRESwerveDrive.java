@@ -13,6 +13,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import static com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.OpenLoopVoltage;
 import static com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue.OperatorPerspective;
 import static java.lang.Math.*;
@@ -176,7 +179,7 @@ public class CTRESwerveDrive implements SwerveDrive {
 
     @Override
     public void resetPose(Pose2d pose2d) {
-        if(pose2d != null){
+        if (pose2d != null) {
             swerveDriveTrain.resetPose(pose2d);
         }
     }
@@ -206,6 +209,22 @@ public class CTRESwerveDrive implements SwerveDrive {
         state.setModuleTargets(swerveDriveTrain.getState().ModuleTargets);
         state.setModulePositions(swerveDriveTrain.getState().ModulePositions);
         state.setRawHeading(swerveDriveTrain.getState().RawHeading);
+        state.setSwerveSteerPositions(
+                Arrays.stream(swerveDriveTrain.getModules())
+                        .map(module -> module.getSteerMotor().getPosition().getValueAsDouble())
+                        .toList());
+        state.setSwerveSteerVelocities(
+                Arrays.stream(swerveDriveTrain.getModules())
+                        .map(module -> module.getSteerMotor().getVelocity().getValueAsDouble())
+                        .toList());
+        state.setSwerveWheelPositions(
+                Arrays.stream(swerveDriveTrain.getModules())
+                        .map(module -> module.getDriveMotor().getPosition().getValueAsDouble())
+                        .toList());
+        state.setSwerveWheelVelocities(
+                Arrays.stream(swerveDriveTrain.getModules())
+                        .map(module -> module.getDriveMotor().getVelocity().getValueAsDouble())
+                        .toList());
     }
 
     @Override

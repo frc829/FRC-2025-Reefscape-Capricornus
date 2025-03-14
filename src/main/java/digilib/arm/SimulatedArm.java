@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 
 
 public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
+    private final double ks;
     private final DCMotor gearbox;
     private final double gearing;
     private final double minAngle;
@@ -31,6 +32,7 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
             double maxAngleRads,
             double... measurementStdDevs) {
         super(plant, measurementStdDevs);
+        this.ks = ks;
         this.gearbox = gearbox;
         this.gearing = gearing;
         minAngle = minAngleRads;
@@ -77,6 +79,7 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
     }
 
     public void setInputVoltage(double volts) {
+        volts = addFriction(volts);
         setInput(volts);
         clampInput(RobotController.getBatteryVoltage());
     }
@@ -103,6 +106,23 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
             return VecBuilder.fill(maxAngle, 0);
         }
         return updatedXhat;
+    }
+
+    /**
+     * Applies the effects of friction to dampen the motor voltage.
+     *
+     * @param motorVoltage Voltage output by the motor
+     * @return Friction-dampened motor voltage
+     */
+    protected double addFriction(double motorVoltage) {
+        if (Math.abs(motorVoltage) < ks) {
+            motorVoltage = 0.0;
+        } else if (motorVoltage > 0.0) {
+            motorVoltage -= ks;
+        } else {
+            motorVoltage += ks;
+        }
+        return motorVoltage;
     }
 
     public static SimulatedArm createFromSysId(

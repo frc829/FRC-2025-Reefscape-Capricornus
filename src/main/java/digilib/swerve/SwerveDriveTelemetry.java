@@ -12,6 +12,10 @@ import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 
 public class SwerveDriveTelemetry {
 
+    private final DoubleArrayPublisher swerveSteerPositions;
+    private final DoubleArrayPublisher swerveSteerVelocities;
+    private final DoubleArrayPublisher swerveWheelPositions;
+    private final DoubleArrayPublisher swerveWheelVelocities;
     private final StructPublisher<Pose2d> robotPose;
     private final DoubleArrayPublisher pose;
     private final StructPublisher<ChassisSpeeds> robotSpeeds;
@@ -31,6 +35,18 @@ public class SwerveDriveTelemetry {
         NetworkTable field = getDefault().getTable("Field");
         field.getStringTopic(".type").publish().set("Field2d");
 
+        swerveSteerPositions = field
+                .getDoubleArrayTopic("Swerve Steer Positions")
+                .publish();
+        swerveSteerVelocities = field
+                .getDoubleArrayTopic("Swerve Steer Velocities")
+                .publish();
+        swerveWheelPositions = field
+                .getDoubleArrayTopic("Swerve Wheel Positions")
+                .publish();
+        swerveWheelVelocities = field
+                .getDoubleArrayTopic("Swerve Wheel Velocities")
+                .publish();
         robotPose = field
                 .getStructTopic("Robot", Pose2d.struct)
                 .publish();
@@ -65,6 +81,10 @@ public class SwerveDriveTelemetry {
     }
 
     public void telemeterize(SwerveDriveState state) {
+        swerveSteerPositions.set(state.getSwerveSteerPositions());
+        swerveSteerVelocities.set(state.getSwerveSteerVelocities());
+        swerveWheelPositions.set(state.getSwerveWheelPositions());
+        swerveWheelVelocities.set(state.getSwerveWheelVelocities());
         robotPose.set(state.getPose());
         robotSpeeds.set(state.getSpeeds());
         moduleStates.set(state.getModuleStates());

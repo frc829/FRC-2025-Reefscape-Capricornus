@@ -36,6 +36,7 @@ public class VortexClimber implements Climber {
             sparkFlexSim.setPosition(constants.startingLengthMeters());
             simClimber = SimulatedElevator.createFromSysId(
                     0.0,
+                    0.0,
                     constants.kvVoltsPerMPS(),
                     constants.kaVoltsPerMPSSquared(),
                     dcMotor,
