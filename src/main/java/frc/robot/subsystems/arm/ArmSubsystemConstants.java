@@ -29,7 +29,7 @@ public class ArmSubsystemConstants {
 
     static final class Control {
         static final double ksVolts = 0.36397;
-        static final double kgVolts = 0.30;
+        static final double kgVolts = 0.082338;
         static final double kvVoltsPerRPS = 37.34;
         static final double kaVoltsPerRPSSquared = 1.5197;
         static final GravityTypeValue gravityTypeValue = Arm_Cosine;
