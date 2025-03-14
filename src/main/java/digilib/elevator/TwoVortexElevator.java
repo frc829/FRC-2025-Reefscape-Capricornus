@@ -74,8 +74,8 @@ public class TwoVortexElevator implements Elevator {
         positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
                         constants.maxControlVoltage(),
-                        constants.kvVoltsPerMPS(),
-                        constants.kaVoltsPerMPSSquared()));
+                        constants.kvVoltsPerMPS() / 0.90,
+                        constants.kaVoltsPerMPSSquared() / 0.25));
         this.velocityProfile = new SlewRateLimiter(constants.maxAccelerationMPSSquared());
         this.controlPeriodSeconds = controlPeriodSeconds;
 
@@ -130,15 +130,8 @@ public class TwoVortexElevator implements Elevator {
             setpoint.velocity = motor.getEncoder().getVelocity();
             controlState = POSITION;
         }
-        double currentHeightMeters = motor.getEncoder().getPosition();
         goal.velocity = 0.0;
-        if (currentHeightMeters >= maxHeightMeters && setpointMeters > maxHeightMeters) {
-            goal.position = maxHeightMeters;
-        } else if (currentHeightMeters <= minHeightMeters && setpointMeters < minHeightMeters) {
-            goal.position = minHeightMeters;
-        } else {
-            goal.position = setpointMeters;
-        }
+        goal.position = setpointMeters;
         ExponentialProfile.State next = positionProfile
                 .calculate(controlPeriodSeconds, setpoint, goal);
         double arbFeedfoward = feedforward
@@ -162,16 +155,16 @@ public class TwoVortexElevator implements Elevator {
         }
         double currentHeightMeters = motor.getEncoder().getPosition();
         if (currentHeightMeters >= maxHeightMeters && setpointScalar > 0.0){
-            setPosition(maxHeightMeters);
+            goal.velocity = 0.0;
         }else if(currentHeightMeters <= minHeightMeters && setpointScalar < 0.0){
-            setPosition(minHeightMeters);
+            goal.velocity = 0.0;
         }else{
             goal.velocity = setpointScalar * maxVelocityMPS;
-            double nextVelocitySetpoint = velocityProfile.calculate(goal.velocity);
-            double arbFeedfoward = feedforward.calculateWithVelocities(setpoint.velocity, nextVelocitySetpoint);
-            motor.getClosedLoopController().setReference(nextVelocitySetpoint, kVelocity, kSlot1, arbFeedfoward, kVoltage);
-            setpoint.velocity = nextVelocitySetpoint;
         }
+        double nextVelocitySetpoint = velocityProfile.calculate(goal.velocity);
+        double arbFeedfoward = feedforward.calculateWithVelocities(setpoint.velocity, nextVelocitySetpoint);
+        motor.getClosedLoopController().setReference(nextVelocitySetpoint, kVelocity, kSlot1, arbFeedfoward, kVoltage);
+        setpoint.velocity = nextVelocitySetpoint;
 
     }
 

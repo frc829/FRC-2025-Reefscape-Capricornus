@@ -16,7 +16,7 @@ public class AlgaeScore {
 
     private static final double elevatorBargeTravelCM = 45.0;
     private static final double elevatorBargeCM = 65.0;
-    private static final double elevatorResetCM = 0.0;
+    private static final double elevatorResetCM = 10.0;
 
     private static final double wristSafeDegrees = 0.0;
 

@@ -12,17 +12,17 @@ import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class CoralScore {
     private static final double armL1Degrees = 40.0;
-    private static final double armL2Degrees = 42.6;
-    private static final double armL3Degrees = 42.6;
+    private static final double armL2Degrees = 38;
+    private static final double armL3Degrees = 38;
     private static final double armL4Degrees = 46.0;
     private static final double armSafeDegrees = 40.0;
     private static final double armResetDegrees = 90.0;
 
     private static final double elevatorL1CM = 5.0;
-    private static final double elevatorL2CM = 24.0;
-    private static final double elevatorL3CM = 44.0;
-    private static final double elevatorL4CM = 65.0;
-    private static final double elevatorResetCM = 0.0;
+    private static final double elevatorL2CM = 16.0;
+    private static final double elevatorL3CM = 36.0;
+    private static final double elevatorL4CM = 64.0;
+    private static final double elevatorResetCM = 10.0;
 
     private static final double wristL1Degrees = 90.0;
     private static final double wristSafeDegrees = 0.0;

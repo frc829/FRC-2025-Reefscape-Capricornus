@@ -91,7 +91,7 @@ public class CoralIntakeSubsystemConstants {
         motor.configure(config, kResetSafeParameters, kPersistParameters);
         IntakeWheel intakeWheel = new NEO550IntakeWheel(constants, motor, controlPeriodSeconds);
         IntakeWheelSubsystem intakeWheelSubsystem = new IntakeWheelSubsystem(intakeWheel, simLoopPeriod);
-        intakeWheelSubsystem.setDefaultCommand(intakeWheelSubsystem.toVoltage(0.75));
+        intakeWheelSubsystem.setDefaultCommand(intakeWheelSubsystem.toVoltage(0.0));
         return intakeWheelSubsystem;
     }
 }

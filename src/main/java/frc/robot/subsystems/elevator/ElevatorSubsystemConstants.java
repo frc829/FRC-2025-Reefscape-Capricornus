@@ -26,13 +26,13 @@ import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Simulatio
 public class ElevatorSubsystemConstants {
 
     static final class Control {
-        static final double ksVolts = 0.13639;
-        static final double kgVolts = 0.19231;
-        static final double kvVoltsPerMPS = 15.154;
-        static final double kaVoltsPerMPSSquared = 0.44182;
-        static final double positionKpVoltsPerMeter = 8.2482;
-        static final double positionKdVoltsPerMPS = 0.0;
-        static final double velocityKpVoltsPerMPS = 6.3919E-15;
+        static final double ksVolts = 0.13384;
+        static final double kgVolts = 0.16143;
+        static final double kvVoltsPerMPS = 17.619;
+        static final double kaVoltsPerMPSSquared = 0.61528;
+        static final double positionKpVoltsPerMeter = 5.4841;
+        static final double positionKdVoltsPerMPS = 0.0030847;
+        static final double velocityKpVoltsPerMPS = 3.9704E-14;
         static final double maxControlVoltage = 12.0 - ksVolts - kgVolts;
         static final double maxVelocityMPS = maxControlVoltage / kvVoltsPerMPS;
         static final double maxAccelerationMPSS = maxControlVoltage / kaVoltsPerMPSSquared;
@@ -47,12 +47,12 @@ public class ElevatorSubsystemConstants {
     static final class Mechanism {
         static final String name = "Elevator";
         static final double reduction = 5 * 4;
-        static final double sprocketPitchDiameterInches = 1.757;
+        static final double sprocketPitchDiameterInches = 1.504;
         static final double sprocketPitchRadiusInches = sprocketPitchDiameterInches / 2;
         static final double drumRadiusMeters = Units.inchesToMeters(sprocketPitchRadiusInches);
-        static final double minHeightCentimeters = 0.0;
+        static final double minHeightCentimeters = 5.0;
         static final double minHeightMeters = minHeightCentimeters / 100.0;
-        static final double maxHeightCentimeters = 65;
+        static final double maxHeightCentimeters = 65.0;
         static final double maxHeightMeters = maxHeightCentimeters / 100.0;
         static final ElevatorConstants constants = new ElevatorConstants(
                 name,
