@@ -148,7 +148,7 @@ public class DriveMap {
     }
 
     private void bindGoToNearestRightReef() {
-        Trigger trigger = driver.povRight().and(swerveDriveSubsystem.isNearestTag(17).or(swerveDriveSubsystem.isNearestTag(8)))
+        driver.povRight().and(swerveDriveSubsystem.isNearestTag(17).or(swerveDriveSubsystem.isNearestTag(8)))
                 .whileTrue(goToTag(17, RIGHT));
         driver.povRight().and(swerveDriveSubsystem.isNearestTag(18).or(swerveDriveSubsystem.isNearestTag(7)))
                 .whileTrue(goToTag(18, RIGHT));

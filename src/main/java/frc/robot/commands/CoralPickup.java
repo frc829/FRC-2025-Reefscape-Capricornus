@@ -24,8 +24,8 @@ public class CoralPickup {
     private static final double armSafeUpDegreesBack = 180.0;
     private static final double armSafeElevatorDegrees = -20.0;
 
-    private static final double elevatorFloorCM = 17.0;
-    private static final double elevatorStationCM = 14.0;
+    private static final double elevatorFloorCM = 16.75;
+    private static final double elevatorStationCM = 13.0;
     private static final double elevatorHoldCM = 10.0;
 
     private static final double wristPickupDegrees = 90.0;
