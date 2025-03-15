@@ -34,7 +34,7 @@ public class ArmSubsystemConstants {
         static final double kaVoltsPerRPSSquared = 1.5197;
         static final GravityTypeValue gravityTypeValue = Arm_Cosine;
         static final double positionKpVoltsPerRotation = 197.69;
-        static final double positionKdVoltsPerRPS = 0.12045;
+        static final double positionKdVoltsPerRPS = 12.045;
         static final double velocityKpVoltsPerRPS = 1.699E-15;
         static final double maxControlVoltage = 12.0;
         static final double maxVelocityRPS = maxControlVoltage / kvVoltsPerRPS;

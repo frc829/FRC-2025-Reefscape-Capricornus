@@ -31,6 +31,10 @@ public class Manual {
         return manipulator.elevator().toVelocity(setpointScalar);
     }
 
+    public Command manualElevatorDangerous(DoubleSupplier setpointScalar){
+        return manipulator.elevator().toVoltage(setpointScalar);
+    }
+
     public Command manualWristToggle() {
         return either(
                 manipulator.wrist().toAngle(90.0),

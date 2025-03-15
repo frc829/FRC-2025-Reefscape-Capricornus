@@ -59,6 +59,11 @@ public class ElevatorSubsystem implements Subsystem {
                 .withName(String.format("%s: VOLTAGE", getName()));
     }
 
+    public Command toVoltage(DoubleSupplier volts) {
+        return run(() -> elevator.setVoltage(volts.getAsDouble()))
+                .withName(String.format("%s: VOLTAGE Dangerous", getName()));
+    }
+
     public Command hold() {
         MutDistance holdPosition = Meters.mutable(0.0);
         return sequence(

@@ -4,12 +4,15 @@ import com.ctre.phoenix6.Utils;
 import digilib.cameras.Camera;
 import digilib.swerve.SwerveDrive;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -129,16 +132,19 @@ public class SwerveDriveSubsystem implements Subsystem {
         swerveDrive.update();
         for (var camera : cameras) {
             camera.update();
-            if (camera.getState().getRobotPose().isPresent() && camera.getState().getRobotPoseStdDev().isPresent()) {
-                var cameraPose = camera.getState().getRobotPose().get().estimatedPose.toPose2d();
-                var timeStampSeconds = camera.getState().getRobotPose().get().timestampSeconds;
-                var robotPose = swerveDrive.getState().getPose();
-                timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
-                if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.25) {
-                    swerveDrive.addVisionMeasurement(
-                            cameraPose,
-                            timeStampSeconds,
-                            camera.getState().getRobotPoseStdDev().get());
+            if(RobotBase.isReal()){
+                if (camera.getState().getRobotPose().isPresent() && camera.getState().getRobotPoseStdDev().isPresent()) {
+                    var cameraPose = camera.getState().getRobotPose().get().estimatedPose.toPose2d();
+                    var timeStampSeconds = camera.getState().getRobotPose().get().timestampSeconds;
+                    var robotPose = swerveDrive.getState().getPose();
+                    timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
+                    if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.25) {
+                        swerveDrive.addVisionMeasurement(
+                                cameraPose,
+                                timeStampSeconds,
+                                MatBuilder.fill(Nat.N3(), Nat.N1(), 0.1, 0.05, 0.0));
+                        // camera.getState().getRobotPoseStdDev().get());
+                    }
                 }
             }
         }

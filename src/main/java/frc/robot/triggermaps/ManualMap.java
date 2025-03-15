@@ -48,6 +48,8 @@ public class ManualMap {
         bindSteer90Test();
         bindSteer0Test();
 
+        bindManualElevatorDangerous();
+
     }
 
     private void bindManualArm() {
@@ -91,6 +93,11 @@ public class ManualMap {
 
         new Trigger(() -> getMaxElevatorVelocityPercentValueManual() != 0.0)
                 .whileTrue(manual.manualElevator(this::getMaxElevatorVelocityPercentValueManual));
+    }
+
+    private void bindManualElevatorDangerous(){
+        new Trigger(() -> getMaxElevatorVelocityPercentValueManual() != 0.0).and(controller.start())
+                .whileTrue(manual.manualElevatorDangerous(() -> 0.1 * 12.0 * getMaxElevatorVelocityPercentValueManual()));
     }
 
     private double getMaxElevatorVelocityPercentValue() {

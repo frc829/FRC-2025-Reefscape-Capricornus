@@ -39,6 +39,7 @@ public class AutoRoutines {
         this.factory = factory;
         autoChooser.addRoutine("Noob S2", this::theNoobSpot);
         autoChooser.addRoutine("Noob S1", this::noobS1);
+        autoChooser.addRoutine("Noob S1L4", this::noobS1L4);
         autoChooser.addRoutine("Noob S3", this::noobS3);
         autoChooser.addRoutine("S2 L4 Left", this::S2L4Left);
         autoChooser.addRoutine("TwoCoralS3", this::TwoCoralS3);
@@ -67,6 +68,16 @@ public class AutoRoutines {
         return routine;
     }
 
+    private AutoRoutine noobS1L4() {
+        AutoRoutine routine = factory.newRoutine("Noob S1 L4");
+        AutoTrajectory S2toEFL4 = routine.trajectory("S1-to-EF-L4");
+        Command routineCommand = sequence(S2toEFL4.resetOdometry(), S2toEFL4.cmd());
+        routine.active().onTrue(routineCommand);
+        S2toEFL4.atTime("Align").onTrue(coralScore.l4Align());
+        S2toEFL4.done().onTrue(scoreL4());
+        return routine;
+    }
+
     private AutoRoutine noobS3() {
         AutoRoutine routine = factory.newRoutine("Noob S3");
         AutoTrajectory S3toIJ = routine.trajectory("S3-to-IJ");
@@ -89,19 +100,15 @@ public class AutoRoutines {
 
     private AutoRoutine TwoCoralS3() {
         AutoRoutine routine = factory.newRoutine("Two-Coral-S3");
-        AutoTrajectory traj0 = routine.trajectory("S3-to-IJ-Fast");
-        AutoTrajectory traj1 = routine.trajectory("IJ-to-NorthRight");
-        AutoTrajectory traj2 = routine.trajectory("NorthRight-to-KL");
+        AutoTrajectory traj0 = routine.trajectory("S1-to-EF-L4");
+        AutoTrajectory traj1 = routine.trajectory("EF-to-SouthRight");
+        AutoTrajectory traj2 = routine.trajectory("SouthRight-to-CD");
         Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
         routine.active().onTrue(cmd);
 
         // First Trajectory Score
         traj0.atTime("Align").onTrue(coralScore.l4Align());
-        traj0.done().onTrue(
-                sequence(
-                        race(scoreL4(), waitSeconds(0.25)),
-                        race(coralPickup.hold(), waitSeconds(1))));
-        traj0.doneFor(1.25).onTrue(traj1.cmd());
+        traj0.done().onTrue(scoreL4().withDeadline(waitSeconds(2.0)).andThen(traj1.spawnCmd()));
 
 
         // Second Trajectory Pickup
@@ -109,19 +116,18 @@ public class AutoRoutines {
         traj1.atTime("Pickup").onTrue(coralPickup.stationBack());
         traj1.done().onTrue(
                 sequence(
-                        waitSeconds(1),
-                        race(coralPickup.holdFromBack(), waitSeconds(0.25))));
+                        waitSeconds(2),
+                        coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj2.spawnCmd())));
 
-        traj1.doneFor(1.0).onTrue(traj2.cmd());
 
         // Third Trajectory Score
-        traj2.atTime("Reset").onTrue(coralPickup.hold());
+        traj2.atTime("Reset").onTrue(coralPickup.holdFromBack());
         traj2.atTime("Align").onTrue(coralScore.l4Align());
         traj2.done().onTrue(
                 sequence(
-                        waitSeconds(0.25),
-                        race(scoreL4(), waitSeconds(0.25)),
-                        race(coralPickup.hardReset(), waitSeconds(1.0))));
+                        coralScore.l4Align().withDeadline(waitSeconds(1.0)),
+                        scoreL4().withDeadline(waitSeconds(2.0)))
+        );
 
         return routine;
 
@@ -301,7 +307,7 @@ public class AutoRoutines {
 
     private Command scoreL1() {
         return sequence(
-                coralScore.l1Score().raceWith(waitSeconds(1)),
+                coralScore.l1Score().withDeadline(waitSeconds(3)),
                 coralPickup.hold())
                 .withName("ScoreL1");
 
@@ -309,8 +315,9 @@ public class AutoRoutines {
 
     private Command scoreL4() {
         return sequence(
+                waitSeconds(0.5),
                 coralScore.l234Score(),
-                waitSeconds(3),
+                waitSeconds(0.5),
                 coralPickup.hold())
                 .withName("ScoreL4");
     }
