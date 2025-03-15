@@ -46,13 +46,18 @@ public class LaserCanLidarSensor implements LidarSensor {
     @Override
     public void updateState() {
         if (RobotBase.isReal()) {
-            try {
-                double meters = laserCan.getMeasurement().distance_mm / 1000.0;
+            Measurement measurement = laserCan.getMeasurement();
+            if (measurement != null && measurement.status == LaserCanInterface.LASERCAN_STATUS_VALID_MEASUREMENT) {
+                double meters = measurement.distance_mm / 1000.0;
                 state.setDistanceMeters(meters);
                 alert.set(false);
-            } catch (Exception e) {
+            } else if (measurement == null) {
                 state.setDistanceMeters(Double.NaN);
-                alert.setText("Error: " + e.getMessage());
+                alert.setText("LaserCan measurement is null");
+                alert.set(true);
+            } else if (measurement.status != LaserCanInterface.LASERCAN_STATUS_VALID_MEASUREMENT) {
+                state.setDistanceMeters(Double.NaN);
+                alert.setText("LaserCan measurement is not valid");
                 alert.set(true);
             }
         } else {

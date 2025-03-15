@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import digilib.intakeWheel.IntakeWheel;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoublePredicate;
 import java.util.function.DoubleSupplier;
 
 public class IntakeWheelSubsystem implements Subsystem {
@@ -45,6 +47,16 @@ public class IntakeWheelSubsystem implements Subsystem {
     public Command toVelocity(DoubleSupplier scalarSetpoint) {
         return run(() -> intakeWheel.setVelocity(scalarSetpoint.getAsDouble()))
                 .withName(String.format("%s: VELOCITY", getName()));
+    }
+
+    public Command toVelocityWithCondition(DoubleSupplier scalarSetpoint, BooleanSupplier condition) {
+        return run(() -> {
+            if (condition.getAsBoolean()) {
+                intakeWheel.setVelocity(0.0);
+            }else{
+                intakeWheel.setVelocity(scalarSetpoint.getAsDouble());
+        }
+        }).withName(String.format("%s: VELOCITY WITH CONDITION", getName()));
     }
 
     public Command toVoltage(double volts) {

@@ -2,13 +2,13 @@ package frc.robot.commands;
 
 import digilib.claws.ClawState.ClawValue;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Manipulator;
 
 import static digilib.claws.ClawState.ClawValue.CLOSED;
 import static digilib.claws.ClawState.ClawValue.OPEN;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class CoralPickup {
 
@@ -111,7 +111,7 @@ public class CoralPickup {
                 .withName("Coral Hold");
     }
 
-    public Command hardReset(){
+    public Command hardReset() {
         return sequence(
                 parallel(armHold(),
                         intakeHold())
@@ -129,8 +129,12 @@ public class CoralPickup {
     }
 
     private Command intake() {
-        return manipulator.coralIntakeWheel().toVelocity(() -> coralSpeed)
-                .until(hasCoral);
+        return manipulator
+                        .coralIntakeWheel()
+                        .toVelocity(() -> coralSpeed).until(hasCoral);
+        // return repeatingSequence(manipulator
+        //         .coralIntakeWheel()
+        //         .toVelocity(() -> coralSpeed));
     }
 
     private Command intakeHold() {

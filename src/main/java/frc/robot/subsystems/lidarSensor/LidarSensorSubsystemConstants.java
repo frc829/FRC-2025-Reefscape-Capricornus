@@ -1,10 +1,7 @@
 package frc.robot.subsystems.lidarSensor;
 
-import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface;
-import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
-import au.grapplerobotics.interfaces.LaserCanInterface.RegionOfInterest;
 import digilib.lidarSensor.LaserCanLidarSensor;
 import digilib.lidarSensor.LidarSensor;
 import digilib.lidarSensor.LidarSensorConstants;
@@ -40,9 +37,9 @@ public class LidarSensorSubsystemConstants {
 
     static final class Sensor {
         static final int laserCanId = 36;
-        static final RangingMode rangingMode = RangingMode.LONG;
-        static final RegionOfInterest regionOfInterest = new RegionOfInterest(0, 0, 16, 16);
-        static final LaserCanInterface.TimingBudget timingBudget = LaserCanInterface.TimingBudget.TIMING_BUDGET_100MS;
+        static final LaserCanInterface.RangingMode rangingMode = LaserCanInterface.RangingMode.SHORT;
+        // static final LaserCanInterface.RegionOfInterest regionOfInterest = new LaserCanInterface.RegionOfInterest(0, 0, 16, 16);
+        static final LaserCanInterface.TimingBudget timingBudget = LaserCanInterface.TimingBudget.TIMING_BUDGET_20MS;
     }
 
 
@@ -51,9 +48,9 @@ public class LidarSensorSubsystemConstants {
         try {
             laserCan = new LaserCan(laserCanId);
             laserCan.setRangingMode(rangingMode);
-            laserCan.setRegionOfInterest(regionOfInterest);
+            // laserCan.setRegionOfInterest(regionOfInterest);
             laserCan.setTimingBudget(timingBudget);
-        } catch (ConfigurationFailedException e) {
+        } catch (Exception e) {
             laserCan = null;
             Alert alert = new Alert(e.getMessage(), kError);
             alert.set(true);
@@ -61,6 +58,8 @@ public class LidarSensorSubsystemConstants {
         LidarSensor lidarSensor = new LaserCanLidarSensor(
                 Device.constants,
                 laserCan);
-        return new LidarSensorSubsystem(lidarSensor, simLoopPeriod);
+        LidarSensorSubsystem subsystem = new LidarSensorSubsystem(lidarSensor, simLoopPeriod);
+        subsystem.register();
+        return subsystem;
     }
 }

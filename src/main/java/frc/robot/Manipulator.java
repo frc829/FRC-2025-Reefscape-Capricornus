@@ -23,7 +23,7 @@ public record Manipulator(
     }
 
     public Trigger hasCoral() {
-        return lidarSensor().inRange(-10, 20);
+        return lidarSensor().inRange(1, 5);
     }
 
 }
