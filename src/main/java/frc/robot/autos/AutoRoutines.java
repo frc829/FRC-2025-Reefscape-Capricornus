@@ -125,7 +125,7 @@ public class AutoRoutines {
         traj2.atTime("Align").onTrue(coralScore.l4Align());
         traj2.done().onTrue(
                 sequence(
-                        coralScore.l4Align().withDeadline(waitSeconds(1.0)),
+                        // coralScore.l4Align().withDeadline(waitSeconds(1.0)),
                         scoreL4().withDeadline(waitSeconds(2.0)))
         );
 
