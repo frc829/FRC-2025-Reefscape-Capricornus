@@ -21,6 +21,7 @@ public class CoralPickup {
     private static final double armSafeDownDegreesBack = 120.0;
 
     private static final double armSafeUpDegrees = 0.0;
+    private static final double armSafeUpDegreesBack = 180.0;
     private static final double armSafeElevatorDegrees = -20.0;
 
     private static final double elevatorFloorCM = 17.0;
@@ -44,6 +45,7 @@ public class CoralPickup {
     private final Trigger isArmSafeForWristDown;
     private final Trigger isArmSafeForWristUp;
     private final Trigger isArmSafeForWristDownBack;
+    private final Trigger isArmSafeForWristUpBack;
 
     public CoralPickup(Manipulator manipulator) {
         this.manipulator = manipulator;
@@ -52,6 +54,7 @@ public class CoralPickup {
         this.isArmSafeForWristDown = manipulator.arm().lte(armSafeDownDegrees);
         this.isArmSafeForWristUp = manipulator.arm().gte(armSafeUpDegrees);
         this.isArmSafeForWristDownBack = manipulator.arm().gte(armSafeDownDegreesBack);
+        this.isArmSafeForWristUpBack = manipulator.arm().lte(armSafeUpDegreesBack);
 
         // Trigger hasCoral = manipulator.lidarSensor().inRange(-10, 20);
         // hasCoral.whileTrue()
@@ -96,7 +99,7 @@ public class CoralPickup {
                         claws(),
                         manipulator.wrist().toAngle(wristPickupDegrees),
                         intake()))
-                .withName("Coral Pickup: Station ");
+                .withName("Coral Pickup: Station Back");
     }
 
     public Command hold() {
@@ -104,6 +107,18 @@ public class CoralPickup {
                 parallel(armHold(),
                         intakeHold())
                         .until(isArmSafeForWristUp),
+                parallel(armHold(),
+                        algaeClawHold(),
+                        intakeHold(),
+                        manipulator.wrist().toAngle(wristSafeDegrees)))
+                .withName("Coral Hold");
+    }
+
+    public Command holdFromBack() {
+        return sequence(
+                parallel(armHold(),
+                        intakeHold())
+                        .until(isArmSafeForWristUpBack),
                 parallel(armHold(),
                         algaeClawHold(),
                         intakeHold(),

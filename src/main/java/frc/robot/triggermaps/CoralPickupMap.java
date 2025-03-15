@@ -16,6 +16,7 @@ public class CoralPickupMap {
         bindCoralFloorPickup();
         bindCoralStationPickup();
         bindCoralHold();
+        bindCoralStationBackPickup();
     }
 
     private void bindCoralFloorPickup() {
@@ -33,5 +34,11 @@ public class CoralPickupMap {
     private void bindCoralHold() {
         controller.back()
                 .onTrue(coral.hardReset());
+    }
+
+    private void bindCoralStationBackPickup() {
+        controller.leftBumper().and(controller.povUp())
+                .whileTrue(coral.stationBack())
+                .onFalse(coral.holdFromBack());
     }
 }

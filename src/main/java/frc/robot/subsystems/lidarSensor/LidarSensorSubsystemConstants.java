@@ -38,7 +38,7 @@ public class LidarSensorSubsystemConstants {
     static final class Sensor {
         static final int laserCanId = 36;
         static final LaserCanInterface.RangingMode rangingMode = LaserCanInterface.RangingMode.SHORT;
-        // static final LaserCanInterface.RegionOfInterest regionOfInterest = new LaserCanInterface.RegionOfInterest(0, 0, 16, 16);
+        static final LaserCanInterface.RegionOfInterest regionOfInterest = new LaserCanInterface.RegionOfInterest(8, 8, 16, 16);
         static final LaserCanInterface.TimingBudget timingBudget = LaserCanInterface.TimingBudget.TIMING_BUDGET_20MS;
     }
 
@@ -48,7 +48,7 @@ public class LidarSensorSubsystemConstants {
         try {
             laserCan = new LaserCan(laserCanId);
             laserCan.setRangingMode(rangingMode);
-            // laserCan.setRegionOfInterest(regionOfInterest);
+            laserCan.setRegionOfInterest(regionOfInterest);
             laserCan.setTimingBudget(timingBudget);
         } catch (Exception e) {
             laserCan = null;

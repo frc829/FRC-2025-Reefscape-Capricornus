@@ -55,15 +55,15 @@ public class LaserCanLidarSensor implements LidarSensor {
                 state.setDistanceMeters(Double.NaN);
                 alert.setText("LaserCan measurement is null");
                 alert.set(true);
-            } else if (measurement.status != LaserCanInterface.LASERCAN_STATUS_VALID_MEASUREMENT) {
+            } else if (measurement != null && measurement.status != LaserCanInterface.LASERCAN_STATUS_VALID_MEASUREMENT) {
                 state.setDistanceMeters(Double.NaN);
                 alert.setText("LaserCan measurement is not valid");
                 alert.set(true);
             }
         } else {
-            double meters = laserCan.getMeasurement().distance_mm / 1000.0;
-            state.setDistanceMeters(meters);
-            alert.set(false);
+            // double meters = laserCan.getMeasurement().distance_mm / 1000.0;
+            // state.setDistanceMeters(meters);
+            // alert.set(false);
         }
     }
 
