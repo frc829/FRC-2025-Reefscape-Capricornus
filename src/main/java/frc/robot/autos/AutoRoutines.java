@@ -283,28 +283,6 @@ public class AutoRoutines {
 
     }
 
-    // private AutoRoutine plopAndShop() {
-    //     AutoRoutine routine = factory.newRoutine("Plop and Shop");
-    //     AutoTrajectory S3toIJ = routine.trajectory("S3-to-IJ");
-    //     AutoTrajectory IJtoStationTop = routine.trajectory("IJ-to-Station_Top");
-    //     AutoTrajectory StationToptoLM = routine.trajectory("Station_Top-to-LM");
-    //
-    //     Command routineCommand = sequence(
-    //             S3toIJ.resetOdometry(),
-    //             S3toIJ.cmd());
-    //
-    //     routine.active().onTrue(routineCommand);
-    //     S3toIJ.atTime("Align").onTrue(coralScore.l1Align());
-    //     S3toIJ.done().onTrue(scoreL1().andThen(IJtoStationTop.cmd()));
-    //
-    //     IJtoStationTop.atTime("Pickup").onTrue(coralPickup.station());
-    //     IJtoStationTop.done().onTrue(waitUntil(coralPickup.hasCoral).andThen(StationToptoLM.cmd()));
-    //
-    //     StationToptoLM.atTime("Align").onTrue(coralScore.l1Align());
-    //     StationToptoLM.done().onTrue(scoreL1());
-    //     return routine;
-    // }
-
     private Command scoreL1() {
         return sequence(
                 coralScore.l1Score().withDeadline(waitSeconds(3)),
