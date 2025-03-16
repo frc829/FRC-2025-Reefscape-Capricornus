@@ -142,7 +142,7 @@ public class SwerveDriveSubsystem implements Subsystem {
                         swerveDrive.addVisionMeasurement(
                                 cameraPose,
                                 timeStampSeconds,
-                                MatBuilder.fill(Nat.N3(), Nat.N1(), 0.1, 0.05, 0.0));
+                                MatBuilder.fill(Nat.N3(), Nat.N1(), 0.01, 0.01, 0.0));
                         // camera.getState().getRobotPoseStdDev().get());
                     }
                 }
