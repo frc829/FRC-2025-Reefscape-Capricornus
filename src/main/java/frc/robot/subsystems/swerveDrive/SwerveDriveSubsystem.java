@@ -84,7 +84,7 @@ public class SwerveDriveSubsystem implements Subsystem {
                 .withName(String.format("%s: Clock Centric", getName()));
     }
 
-    public Command pointSteer(DoubleSupplier angleDegrees){
+    public Command pointSteer(DoubleSupplier angleDegrees) {
         return run(() -> swerveDrive.setSteerAngle(angleDegrees.getAsDouble()));
     }
 
@@ -130,24 +130,23 @@ public class SwerveDriveSubsystem implements Subsystem {
             });
         }
         swerveDrive.update();
-        for (var camera : cameras) {
-            camera.update();
-            if(RobotBase.isReal()){
-                if (camera.getState().getRobotPose().isPresent() && camera.getState().getRobotPoseStdDev().isPresent()) {
-                    var cameraPose = camera.getState().getRobotPose().get().estimatedPose.toPose2d();
-                    var timeStampSeconds = camera.getState().getRobotPose().get().timestampSeconds;
-                    var robotPose = swerveDrive.getState().getPose();
-                    timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
-                    if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.25) {
-                        swerveDrive.addVisionMeasurement(
-                                cameraPose,
-                                timeStampSeconds,
-                                MatBuilder.fill(Nat.N3(), Nat.N1(), 0.01, 0.01, 0.0));
-                        // camera.getState().getRobotPoseStdDev().get());
-                    }
+        cameras[0].update();
+        if (RobotBase.isReal()) {
+            if (cameras[0].getState().getRobotPose().isPresent() && cameras[0].getState().getRobotPoseStdDev().isPresent()) {
+                var cameraPose = cameras[0].getState().getRobotPose().get().estimatedPose.toPose2d();
+                var timeStampSeconds = cameras[0].getState().getRobotPose().get().timestampSeconds;
+                var robotPose = swerveDrive.getState().getPose();
+                timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
+                if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.05) {
+                    swerveDrive.addVisionMeasurement(
+                            cameraPose,
+                            timeStampSeconds,
+                            MatBuilder.fill(Nat.N3(), Nat.N1(), 0.01, 0.01, Double.MAX_VALUE));
+                    // camera.getState().getRobotPoseStdDev().get());
                 }
             }
         }
+
     }
 
     private int getNearestTagId(int startingTag, int endingTag, Pose2d robotLocation) {
@@ -188,10 +187,6 @@ public class SwerveDriveSubsystem implements Subsystem {
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
-
-
-
-
 
 
 }

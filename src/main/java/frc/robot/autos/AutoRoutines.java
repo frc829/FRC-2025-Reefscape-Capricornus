@@ -42,9 +42,9 @@ public class AutoRoutines {
         autoChooser.addRoutine("Noob S1L4", this::noobS1L4);
         autoChooser.addRoutine("Noob S3", this::noobS3);
         autoChooser.addRoutine("S2 L4 Left", this::S2L4Left);
-        autoChooser.addRoutine("TwoCoralS3", this::TwoCoralS3);
-        autoChooser.addRoutine("ThreeCoralS3", this::ThreeCoralS3);
-        autoChooser.addRoutine("FourCoralS3", this::FourCoralS3);
+        autoChooser.addRoutine("TwoCoralS1", this::TwoCoralS1);
+        autoChooser.addRoutine("ThreeCoralS1", this::ThreeCoralS1);
+        autoChooser.addRoutine("FourCoralS1", this::FourCoralS1);
         // autoChooser.addRoutine("Plop and Shop", this::plopAndShop);
     }
 
@@ -98,7 +98,7 @@ public class AutoRoutines {
         return routine;
     }
 
-    private AutoRoutine TwoCoralS3() {
+    private AutoRoutine TwoCoralS1() {
         AutoRoutine routine = factory.newRoutine("Two-Coral-S3");
         AutoTrajectory traj0 = routine.trajectory("S1-to-EF-L4");
         AutoTrajectory traj1 = routine.trajectory("EF-to-SouthRight");
@@ -133,7 +133,7 @@ public class AutoRoutines {
 
     }
 
-    private AutoRoutine ThreeCoralS3() {
+    private AutoRoutine ThreeCoralS1() {
         AutoRoutine routine = factory.newRoutine("Two-Coral-S3");
         AutoTrajectory traj0 = routine.trajectory("S3-to-IJ-Fast");
         AutoTrajectory traj1 = routine.trajectory("IJ-to-NorthRight");
@@ -197,7 +197,7 @@ public class AutoRoutines {
 
     }
 
-    private AutoRoutine FourCoralS3() {
+    private AutoRoutine FourCoralS1() {
         AutoRoutine routine = factory.newRoutine("Two-Coral-S3");
         AutoTrajectory traj0 = routine.trajectory("S3-to-IJ-Fast");
         AutoTrajectory traj1 = routine.trajectory("IJ-to-NorthRight");
