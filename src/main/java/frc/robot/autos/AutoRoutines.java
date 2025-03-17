@@ -99,7 +99,7 @@ public class AutoRoutines {
     }
 
     private AutoRoutine TwoCoralS1() {
-        AutoRoutine routine = factory.newRoutine("Two-Coral-S3");
+        AutoRoutine routine = factory.newRoutine("Two-Coral-S1");
         AutoTrajectory traj0 = routine.trajectory("S1-to-EF-L4");
         AutoTrajectory traj1 = routine.trajectory("EF-to-SouthRight");
         AutoTrajectory traj2 = routine.trajectory("SouthRight-to-CD");
@@ -134,7 +134,7 @@ public class AutoRoutines {
     }
 
     private AutoRoutine ThreeCoralS1() {
-        AutoRoutine routine = factory.newRoutine("Two-Coral-S3");
+        AutoRoutine routine = factory.newRoutine("Two-Coral-S1");
         AutoTrajectory traj0 = routine.trajectory("S3-to-IJ-Fast");
         AutoTrajectory traj1 = routine.trajectory("IJ-to-NorthRight");
         AutoTrajectory traj2 = routine.trajectory("NorthRight-to-KL");
