@@ -34,14 +34,12 @@ public class AlgaeScoreMap {
 
     private void bindBargeScore() {
         operator.axisMagnitudeGreaterThan(kLeftTrigger.value, deadband)
-                .whileTrue(algae.score())
-                .onFalse(algae.reset());
+                .whileTrue(algae.score());
     }
 
     private void bindProcessorScore() {
         driver.rightBumper()
-                .whileTrue(algae.score())
-                .onFalse(algae.reset());
+                .whileTrue(algae.score());
     }
 
 }
