@@ -84,6 +84,7 @@ public class AlgaePickup {
 
     public Command hold() {
         return parallel(
+                elevatorFloor(),
                 armHold(),
                 intakeHold())
                 .withName("Algae Hold");
