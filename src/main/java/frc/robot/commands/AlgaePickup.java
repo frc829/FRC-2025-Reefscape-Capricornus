@@ -15,11 +15,12 @@ public class AlgaePickup {
     private static final double armL3Degrees = -7.0;
     private static final double armHoldDegrees = 0.0;
     private static final double armSafeDownDegrees = 60.0;
+    private static final double armForHoldAfterPickupDegrees = -9.4;
 
     private static final double elevatorFloorCM = 18.0;
     private static final double elevatorL2CM = 32.0;
     private static final double elevatorL3CM = 56.0;
-    private static final double elevatorHoldCM = 10.0;
+    private static final double elevatorHoldCM = 5.0;
 
     private static final double wristPickupDegrees = 90.0;
 
@@ -84,7 +85,7 @@ public class AlgaePickup {
 
     public Command hold() {
         return parallel(
-                elevatorFloor(),
+                elevatorHold(),
                 armHold(),
                 intakeHold())
                 .withName("Algae Hold");
@@ -138,7 +139,7 @@ public class AlgaePickup {
     }
 
     private Command armHold() {
-        return manipulator.arm().toAngle(armHoldDegrees);
+        return manipulator.arm().toAngle(armForHoldAfterPickupDegrees);
     }
 
     private Command armFloor() {
