@@ -131,21 +131,21 @@ public class SwerveDriveSubsystem implements Subsystem {
         }
         swerveDrive.update();
         cameras[0].update();
-        if (RobotBase.isReal()) {
-            if (cameras[0].getState().getRobotPose().isPresent() && cameras[0].getState().getRobotPoseStdDev().isPresent()) {
-                var cameraPose = cameras[0].getState().getRobotPose().get().estimatedPose.toPose2d();
-                var timeStampSeconds = cameras[0].getState().getRobotPose().get().timestampSeconds;
-                var robotPose = swerveDrive.getState().getPose();
-                timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
-                if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.05) {
-                    swerveDrive.addVisionMeasurement(
-                            cameraPose,
-                            timeStampSeconds,
-                            MatBuilder.fill(Nat.N3(), Nat.N1(), 0.01, 0.01, Double.MAX_VALUE));
-                    // camera.getState().getRobotPoseStdDev().get());
-                }
-            }
-        }
+        // if (RobotBase.isReal()) {
+        //     if (cameras[0].getState().getRobotPose().isPresent() && cameras[0].getState().getRobotPoseStdDev().isPresent()) {
+        //         var cameraPose = cameras[0].getState().getRobotPose().get().estimatedPose.toPose2d();
+        //         var timeStampSeconds = cameras[0].getState().getRobotPose().get().timestampSeconds;
+        //         var robotPose = swerveDrive.getState().getPose();
+        //         timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
+        //         if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.05) {
+        //             swerveDrive.addVisionMeasurement(
+        //                     cameraPose,
+        //                     timeStampSeconds,
+        //                     MatBuilder.fill(Nat.N3(), Nat.N1(), 0.01, 0.01, Double.MAX_VALUE));
+        //             // camera.getState().getRobotPoseStdDev().get());
+        //         }
+        //     }
+        // }
 
     }
 
