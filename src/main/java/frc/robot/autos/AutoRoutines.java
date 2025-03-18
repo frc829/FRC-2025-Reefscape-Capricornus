@@ -4,12 +4,16 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.CoralPickup;
 import frc.robot.commands.CoralScore;
 
+import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class AutoRoutines {
@@ -99,12 +103,26 @@ public class AutoRoutines {
     }
 
     private AutoRoutine TwoCoralS1() {
+        NetworkTable field = getDefault().getTable("Field");
         AutoRoutine routine = factory.newRoutine("Two-Coral-S1");
         AutoTrajectory traj0 = routine.trajectory("S1-to-EF-L4");
         AutoTrajectory traj1 = routine.trajectory("EF-to-SouthRight");
         AutoTrajectory traj2 = routine.trajectory("SouthRight-to-CD");
         Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
         routine.active().onTrue(cmd);
+
+        field.getStructArrayTopic("Traj0", Pose2d.struct)
+                .publish()
+                .set(traj0.getRawTrajectory().getPoses());
+
+        field.getStructArrayTopic("Traj1", Pose2d.struct)
+                .publish()
+                .set(traj1.getRawTrajectory().getPoses());
+
+        field.getStructArrayTopic("Traj2", Pose2d.struct)
+                .publish()
+                .set(traj2.getRawTrajectory().getPoses());
+
 
         // First Trajectory Score
         traj0.atTime("Align").onTrue(coralScore.l4Align());
