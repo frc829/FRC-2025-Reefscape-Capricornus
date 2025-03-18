@@ -59,8 +59,8 @@ public class SwerveDriveSubsystemConstants {
 
         static final class Camera0 {
             static final String name = "Front-Camera";
-            static final Distance cameraX = Inches.of(10.35);
-            static final Distance cameraY = Inches.of(2.6);
+            static final Distance cameraX = Centimeters.of(24.25);
+            static final Distance cameraY = Centimeters.of(6.5);
             static final Distance cameraZ = Inches.of(20.7);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
