@@ -6,12 +6,14 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.CoralPickup;
 import frc.robot.commands.CoralScore;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -69,6 +71,12 @@ public class AutoRoutines {
         routine.active().onTrue(routineCommand);
         S2toEF.atTime("Align").onTrue(coralScore.l1Align());
         S2toEF.done().onTrue(scoreL1());
+
+        NetworkTable field = getDefault().getTable("Field");
+        field.getStructArrayTopic("Traj0", Pose2d.struct)
+                .publish()
+                .set(S2toEF.getRawTrajectory().getPoses());
+
         return routine;
     }
 
@@ -97,8 +105,17 @@ public class AutoRoutines {
         AutoTrajectory traj = routine.trajectory("S2G-to-G");
         Command routineCommand = sequence(traj.resetOdometry(), traj.cmd());
         routine.active().onTrue(routineCommand);
+
+        NetworkTable field = getDefault().getTable("Field");
+        field.getStructArrayTopic("TrajS2L4", Pose2d.struct)
+                .publish()
+                .set(traj.getRawTrajectory().getPoses());
+
         traj.atTime("Align").onTrue(coralScore.l4Align());
         traj.done().onTrue(waitSeconds(3.0).andThen(scoreL4()));
+
+
+
         return routine;
     }
 
@@ -111,17 +128,22 @@ public class AutoRoutines {
         Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
         routine.active().onTrue(cmd);
 
-        field.getStructArrayTopic("Traj0", Pose2d.struct)
+        Pose2d[] traj0Poses = traj0.getRawTrajectory().getPoses();
+        Pose2d[] traj1Poses = traj1.getRawTrajectory().getPoses();
+        Pose2d[] traj2Poses = traj2.getRawTrajectory().getPoses();
+        List<Pose2d> trajPoses = new ArrayList<>();
+        for (int i = 0; i < traj0Poses.length; i++) {
+            trajPoses.add(traj0Poses[i]);
+        }
+        for (int i = 0; i < traj1Poses.length; i++) {
+            trajPoses.add(traj1Poses[i]);
+        }
+        for (int i = 0; i < traj2Poses.length; i++) {
+            trajPoses.add(traj2Poses[i]);
+        }
+        field.getStructArrayTopic("Traj", Pose2d.struct)
                 .publish()
-                .set(traj0.getRawTrajectory().getPoses());
-
-        field.getStructArrayTopic("Traj1", Pose2d.struct)
-                .publish()
-                .set(traj1.getRawTrajectory().getPoses());
-
-        field.getStructArrayTopic("Traj2", Pose2d.struct)
-                .publish()
-                .set(traj2.getRawTrajectory().getPoses());
+                .set(trajPoses.toArray(new Pose2d[0]));
 
 
         // First Trajectory Score
