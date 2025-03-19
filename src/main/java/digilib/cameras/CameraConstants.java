@@ -14,16 +14,5 @@ public record CameraConstants(
         Transform3d robotToCamera,
         AprilTagFieldLayout aprilTagFieldLayout,
         PoseStrategy primaryStrategy,
-        PoseStrategy fallBackPoseStrategy,
-        int xResolution,
-        int yResolution,
-        Rotation2d fieldOfView,
-        double averageErrorPixels,
-        double errorStdDevPixels,
-        double fps,
-        double averageLatencyMs,
-        double latencyStdDevMs,
-        Matrix<N3, N1> multiTagStdDevTeleop,
-        Matrix<N3, N1> multiTagStdDevAuto,
-        Matrix<N3, N1> singleTagStdDev) {
+        PoseStrategy fallBackPoseStrategy) {
 }

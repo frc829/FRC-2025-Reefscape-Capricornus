@@ -71,7 +71,7 @@ public class SwerveDriveSubsystemConstants {
         static final class Camera0 {
             static final String name = "Front-Camera";
             static final Distance cameraX = Centimeters.of(24.25);
-            static final Distance cameraY = Centimeters.of(6.5);
+            static final Distance cameraY = Centimeters.of(6.0); // Centimeters.of(6.5);
             static final Distance cameraZ = Inches.of(20.7);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
@@ -87,64 +87,17 @@ public class SwerveDriveSubsystemConstants {
                     robotToCamera,
                     layout,
                     primaryStrategy,
-                    fallbackPoseStrategy,
-                    640,
-                    480,
-                    Rotation2d.fromDegrees(70),
-                    0.35,
-                    0.10,
-                    15,
-                    50,
-                    15,
-                    MULTI_TAG_STD_DEVS_TELEOP,
-                    MULTI_TAG_STD_DEVS_AUTO,
-                    SINGLE_TAG_STD_DEVS);
+                    fallbackPoseStrategy);
             static final PhotonCamera photonCamera = new PhotonCamera(name);
             static final PhotonVisionCamera camera = new PhotonVisionCamera(constants, photonCamera);
         }
-
-        static final class Camera1 {
-            static final String name = "Back-Camera";
-            static final Distance cameraX = Inches.of(-9.2);
-            static final Distance cameraY = Inches.of(1.5);
-            static final Distance cameraZ = Inches.of(8.5);
-            static final Angle roll = Degrees.of(0.0);
-            static final Angle pitch = Degrees.of(0.0);
-            static final Angle yaw = Degrees.of(180.0);
-            static final Rotation3d cameraAngle = new Rotation3d(roll, pitch, yaw);
-            static final Transform3d robotToCamera = new Transform3d(
-                    cameraX,
-                    cameraY,
-                    cameraZ,
-                    cameraAngle);
-            static final CameraConstants constants = new CameraConstants(
-                    name,
-                    robotToCamera,
-                    layout,
-                    primaryStrategy,
-                    fallbackPoseStrategy,
-                    640,
-                    480,
-                    Rotation2d.fromDegrees(70),
-                    0.35,
-                    0.10,
-                    15,
-                    50,
-                    15,
-                    MULTI_TAG_STD_DEVS_TELEOP,
-                    MULTI_TAG_STD_DEVS_AUTO,
-                    SINGLE_TAG_STD_DEVS);
-            static final PhotonCamera photonCamera = new PhotonCamera(name);
-            static final PhotonVisionCamera camera = new PhotonVisionCamera(constants, photonCamera);
-        }
-
     }
 
     static final class Drive {
 
         static final double maxVelocityMPS = 4.73;
         static final double maxAngularVelocityRPS = 0.75;
-        static final double pathTranslationKp = 10.0;
+        static final double pathTranslationKp = 2.0;
         static final double deadband = 0.1;
         static final double rotationalDeadband = 0.1;
         static final double pathRotationKp = 8.0984; // 5.9918340044856690519902612191937;
@@ -652,8 +605,7 @@ public class SwerveDriveSubsystemConstants {
                 CTRE_SWERVE_DRIVE,
                 simLoopPeriod,
                 layout,
-                Camera0.camera,
-                Camera1.camera);
+                Camera0.camera);
         List<Trajectory<SwerveSample>> trajectories = new ArrayList<>();
         TrajectoryLogger<SwerveSample> logger = (trajectory, starting) -> DriverStation.getAlliance().ifPresent(color -> {
             NetworkTable field = getDefault().getTable("Field");

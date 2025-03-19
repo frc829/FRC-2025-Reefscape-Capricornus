@@ -38,9 +38,6 @@ public class PhotonVisionCamera implements Camera {
     private final CameraTelemetry telemetry;
     private final PhotonCamera photonCamera;
     private final PhotonPoseEstimator photonPoseEstimator;
-    private final Matrix<N3, N1> singleTagStdDevs;
-    private final Matrix<N3, N1> multiTagStdDevsTeleop;
-    private final Matrix<N3, N1> multiTagStdDevsAuto;
     private PhotonCameraSim cameraSim = null;
     private Optional<Pose2d> estimatedPose = Optional.empty();
     private Optional<Matrix<N3, N1>> estimatedPoseStdDev = Optional.empty();
@@ -49,32 +46,6 @@ public class PhotonVisionCamera implements Camera {
     public PhotonVisionCamera(CameraConstants constants, PhotonCamera photonCamera) {
         this.photonCamera = photonCamera;
         this.robotToCamera = constants.robotToCamera();
-        this.singleTagStdDevs = constants.singleTagStdDev();
-        this.multiTagStdDevsTeleop = constants.multiTagStdDevTeleop();
-        this.multiTagStdDevsAuto = constants.multiTagStdDevAuto();
-
-
-        if (RobotBase.isSimulation()) {
-            if (!aprilTagsAdded) {
-                visionSim = new VisionSystemSim("main");
-                visionSim.addAprilTags(constants.aprilTagFieldLayout());
-                aprilTagsAdded = true;
-            }
-            SimCameraProperties simCameraProperties = new SimCameraProperties();
-            simCameraProperties.setCalibration(
-                    constants.xResolution(),
-                    constants.yResolution(),
-                    constants.fieldOfView());
-            simCameraProperties.setCalibError(
-                    constants.averageErrorPixels(),
-                    constants.errorStdDevPixels());
-            simCameraProperties.setFPS(constants.fps());
-            simCameraProperties.setAvgLatencyMs(constants.averageLatencyMs());
-            simCameraProperties.setLatencyStdDevMs(constants.latencyStdDevMs());
-            cameraSim = new PhotonCameraSim(photonCamera, simCameraProperties);
-            visionSim.addCamera(cameraSim, robotToCamera);
-            cameraSim.enableDrawWireframe(true);
-        }
 
         photonPoseEstimator = new PhotonPoseEstimator(
                 fieldTags,
@@ -128,9 +99,9 @@ public class PhotonVisionCamera implements Camera {
         if (avgDist > 6) {
             return Optional.empty();
         } else if (numTags > 1 && RobotModeTriggers.teleop().getAsBoolean()) {
-            return Optional.of(multiTagStdDevsTeleop.times(1 + pow(avgDist, 2) / 5));
+            return Optional.empty();
         } else {
-            return Optional.of(multiTagStdDevsAuto.times(1 + pow(avgDist, 2) / 5));
+            return Optional.empty();
         }
     }
 

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -129,23 +130,23 @@ public class SwerveDriveSubsystem implements Subsystem {
                 hasAppliedOperatorPerspective = true;
             });
         }
+
+
         swerveDrive.update();
         cameras[0].update();
-        // if (RobotBase.isReal()) {
-        //     if (cameras[0].getState().getRobotPose().isPresent() && cameras[0].getState().getRobotPoseStdDev().isPresent()) {
-        //         var cameraPose = cameras[0].getState().getRobotPose().get().estimatedPose.toPose2d();
-        //         var timeStampSeconds = cameras[0].getState().getRobotPose().get().timestampSeconds;
-        //         var robotPose = swerveDrive.getState().getPose();
-        //         timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
-        //         if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.05) {
-        //             swerveDrive.addVisionMeasurement(
-        //                     cameraPose,
-        //                     timeStampSeconds,
-        //                     MatBuilder.fill(Nat.N3(), Nat.N1(), 0.01, 0.01, Double.MAX_VALUE));
-        //             // camera.getState().getRobotPoseStdDev().get());
-        //         }
-        //     }
-        // }
+        if (cameras[0].getState().getRobotPose().isPresent()) {
+            var cameraPose = cameras[0].getState().getRobotPose().get().estimatedPose.toPose2d();
+            var timeStampSeconds = cameras[0].getState().getRobotPose().get().timestampSeconds;
+            var robotPose = swerveDrive.getState().getPose();
+            timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
+            if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.20) {
+                swerveDrive.addVisionMeasurement(
+                        cameraPose,
+                        timeStampSeconds,
+                        MatBuilder.fill(Nat.N3(), Nat.N1(), 0.01, 0.01, Double.MAX_VALUE));
+                // camera.getState().getRobotPoseStdDev().get());
+            }
+        }
 
     }
 

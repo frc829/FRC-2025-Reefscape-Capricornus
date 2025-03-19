@@ -63,19 +63,13 @@ public class CameraTelemetry {
     }
 
     public void telemeterize(CameraState state) {
-        if(state.getRobotPose().isPresent() && state.getRobotPoseStdDev().isPresent()) {
+        if(state.getRobotPose().isPresent()) {
             robotPosePublisher.set(state.getRobotPose().get().estimatedPose.toPose2d());
-            robotPoseStdDevPublisher.set(state.getRobotPoseStdDev().get());
 
             poseArray[0] = roundToDecimal(state.getRobotPose().get().estimatedPose.getX(), 2);
             poseArray[1] = roundToDecimal(state.getRobotPose().get().estimatedPose.getY(), 2);
             poseArray[2] = roundToDecimal(state.getRobotPose().get().estimatedPose.getRotation().getZ() * 180 / Math.PI, 2);
             robotPose.set(poseArray);
-
-            poseStdDevArray[0] = roundToDecimal(state.getRobotPoseStdDev().get().get(0, 0), 2);
-            poseStdDevArray[1] = roundToDecimal(state.getRobotPoseStdDev().get().get(1, 0), 2);
-            poseStdDevArray[2] = roundToDecimal(state.getRobotPoseStdDev().get().get(2, 0), 2);
-            robotPoseStdDev.set(poseStdDevArray);
         }
         cameraModePublisher.set(state.getCameraMode());
     }
