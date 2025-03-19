@@ -1,6 +1,10 @@
 package frc.robot.subsystems.swerveDrive;
 
+import choreo.Choreo;
+import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -26,16 +30,23 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import org.photonvision.PhotonCamera;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Cameras.*;
 import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.*;
@@ -158,7 +169,7 @@ public class SwerveDriveSubsystemConstants {
             static final boolean steerStatorCurrentLimitEnabled = true;
             static final double COUPLE_RATIO = 3.0; // 36 tooth first stage / 12 tooth pinion
             static final double DRIVE_GEAR_RATIO = 5.54;  // 16 tooth second stage, 13 tooth pinion
-            static final double STEER_GEAR_RATIO = 25;   //12T
+            static final double STEER_GEAR_RATIO = 25;   // 12T
             static final Distance WHEEL_RADIUS = Inches.of(2);
 
             static final class Module0 {
@@ -643,14 +654,30 @@ public class SwerveDriveSubsystemConstants {
                 layout,
                 Camera0.camera,
                 Camera1.camera);
+        List<Trajectory<SwerveSample>> trajectories = new ArrayList<>();
+        TrajectoryLogger<SwerveSample> logger = (trajectory, starting) -> DriverStation.getAlliance().ifPresent(color -> {
+            NetworkTable field = getDefault().getTable("Field");
+            if(!trajectories.contains(trajectory)) {
+                trajectories.add(trajectory);
+            }
+            if (color == DriverStation.Alliance.Red) {
+                field.getStructArrayTopic("Trajectory" + trajectories.size(), Pose2d.struct)
+                        .publish()
+                        .set(trajectory.flipped().getPoses());
+            } else {
+                field.getStructArrayTopic("Trajectory" + trajectories.size(), Pose2d.struct)
+                        .publish()
+                        .set(trajectory.getPoses());
+            }
+        });
+
         autoFactory = new AutoFactory(
                 CTRE_SWERVE_DRIVE.getState()::getPose,
                 CTRE_SWERVE_DRIVE::resetPose,
                 CTRE_SWERVE_DRIVE::followPath,
                 true,
                 swerveDriveSubsystem,
-                (swerveSample, staring) -> {
-                });
+                logger);
         swerveDriveSubsystem.setDefaultCommand(swerveDriveSubsystem.idle());
         return swerveDriveSubsystem;
     }

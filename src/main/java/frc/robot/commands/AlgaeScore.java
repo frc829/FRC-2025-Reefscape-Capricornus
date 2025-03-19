@@ -48,17 +48,4 @@ public class AlgaeScore {
                 manipulator.coralIntakeWheel().toVelocity(() -> coralSpeed))
                 .withName("Algae Score");
     }
-
-    public Command reset() {
-        return sequence(
-                parallel(
-                        manipulator.elevator().toHeight(elevatorResetCM / 100.0),
-                        manipulator.arm().toAngle(armResetDegrees))
-                        .until(isArmSafe),
-                parallel(
-                        manipulator.elevator().toHeight(elevatorResetCM / 100.0),
-                        manipulator.arm().toAngle(armResetDegrees),
-                        manipulator.wrist().toAngle(wristSafeDegrees)))
-                .withName("Algae Score: Reset");
-    }
 }

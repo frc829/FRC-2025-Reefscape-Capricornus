@@ -4,18 +4,12 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.CoralPickup;
 import frc.robot.commands.CoralScore;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class AutoRoutines {
@@ -51,12 +45,12 @@ public class AutoRoutines {
         autoChooser.addRoutine("TwoCoralS1", this::TwoCoralS1);
         autoChooser.addRoutine("ThreeCoralS1", this::ThreeCoralS1);
         autoChooser.addRoutine("FourCoralS1", this::FourCoralS1);
-        // autoChooser.addRoutine("Plop and Shop", this::plopAndShop);
+        autoChooser.addRoutine("S2Barge", this::S2Barge);
     }
 
     private AutoRoutine theNoobSpot() {
         AutoRoutine routine = factory.newRoutine("Noob S2");
-        AutoTrajectory S2toG = routine.trajectory("S2-to-GH");
+        AutoTrajectory S2toG = routine.trajectory("S2-to-GH-L1");
         Command routineCommand = sequence(S2toG.resetOdometry(), S2toG.cmd());
         routine.active().onTrue(routineCommand);
         S2toG.atTime("Align").onTrue(coralScore.l1Align());
@@ -66,17 +60,11 @@ public class AutoRoutines {
 
     private AutoRoutine noobS1() {
         AutoRoutine routine = factory.newRoutine("Noob S1");
-        AutoTrajectory S2toEF = routine.trajectory("S1-to-EF");
-        Command routineCommand = sequence(S2toEF.resetOdometry(), S2toEF.cmd());
+        AutoTrajectory trajectory = routine.trajectory("S1-to-EF-L1");
+        Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
         routine.active().onTrue(routineCommand);
-        S2toEF.atTime("Align").onTrue(coralScore.l1Align());
-        S2toEF.done().onTrue(scoreL1());
-
-        NetworkTable field = getDefault().getTable("Field");
-        field.getStructArrayTopic("Traj0", Pose2d.struct)
-                .publish()
-                .set(S2toEF.getRawTrajectory().getPoses());
-
+        trajectory.atTime("Align").onTrue(coralScore.l1Align());
+        trajectory.done().onTrue(scoreL1());
         return routine;
     }
 
@@ -92,7 +80,7 @@ public class AutoRoutines {
 
     private AutoRoutine noobS3() {
         AutoRoutine routine = factory.newRoutine("Noob S3");
-        AutoTrajectory S3toIJ = routine.trajectory("S3-to-IJ");
+        AutoTrajectory S3toIJ = routine.trajectory("S3-to-IJ-L1");
         Command routineCommand = sequence(S3toIJ.resetOdometry(), S3toIJ.cmd());
         routine.active().onTrue(routineCommand);
         S3toIJ.atTime("Align").onTrue(coralScore.l1Align());
@@ -100,51 +88,39 @@ public class AutoRoutines {
         return routine;
     }
 
+    private AutoRoutine S2Barge(){
+        AutoRoutine routine = factory.newRoutine("S2-Barge");
+        AutoTrajectory trajectory0 = routine.trajectory("S2-to-GH-L4");
+        AutoTrajectory trajectory1 = routine.trajectory("GH-to-S3-Barge");
+        Command routineCommand = sequence(trajectory0.resetOdometry(), trajectory0.cmd());
+        routine.active().onTrue(routineCommand);
+
+        trajectory0.atTime("Align").onTrue(coralScore.l4Align());
+        trajectory0.done().onTrue(scoreL4().withDeadline(waitSeconds(2.0)).andThen(trajectory1.spawnCmd()));
+
+        return routine;
+
+    }
+
     private AutoRoutine S2L4Left() {
         AutoRoutine routine = factory.newRoutine("S2-L4-Left");
-        AutoTrajectory traj = routine.trajectory("S2G-to-G");
+        AutoTrajectory traj = routine.trajectory("S2-to-GH-L4");
         Command routineCommand = sequence(traj.resetOdometry(), traj.cmd());
         routine.active().onTrue(routineCommand);
 
-        NetworkTable field = getDefault().getTable("Field");
-        field.getStructArrayTopic("TrajS2L4", Pose2d.struct)
-                .publish()
-                .set(traj.getRawTrajectory().getPoses());
-
         traj.atTime("Align").onTrue(coralScore.l4Align());
         traj.done().onTrue(waitSeconds(3.0).andThen(scoreL4()));
-
-
 
         return routine;
     }
 
     private AutoRoutine TwoCoralS1() {
-        NetworkTable field = getDefault().getTable("Field");
         AutoRoutine routine = factory.newRoutine("Two-Coral-S1");
         AutoTrajectory traj0 = routine.trajectory("S1-to-EF-L4");
         AutoTrajectory traj1 = routine.trajectory("EF-to-SouthRight");
         AutoTrajectory traj2 = routine.trajectory("SouthRight-to-CD");
         Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
         routine.active().onTrue(cmd);
-
-        Pose2d[] traj0Poses = traj0.getRawTrajectory().getPoses();
-        Pose2d[] traj1Poses = traj1.getRawTrajectory().getPoses();
-        Pose2d[] traj2Poses = traj2.getRawTrajectory().getPoses();
-        List<Pose2d> trajPoses = new ArrayList<>();
-        for (int i = 0; i < traj0Poses.length; i++) {
-            trajPoses.add(traj0Poses[i]);
-        }
-        for (int i = 0; i < traj1Poses.length; i++) {
-            trajPoses.add(traj1Poses[i]);
-        }
-        for (int i = 0; i < traj2Poses.length; i++) {
-            trajPoses.add(traj2Poses[i]);
-        }
-        field.getStructArrayTopic("Traj", Pose2d.struct)
-                .publish()
-                .set(trajPoses.toArray(new Pose2d[0]));
-
 
         // First Trajectory Score
         traj0.atTime("Align").onTrue(coralScore.l4Align());
@@ -322,6 +298,8 @@ public class AutoRoutines {
         return routine;
 
     }
+
+
 
     private Command scoreL1() {
         return sequence(
