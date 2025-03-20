@@ -132,7 +132,6 @@ public class AutoRoutines {
         traj1.atTime("Pickup").onTrue(coralPickup.stationBack());
         traj1.done().onTrue(
                 sequence(
-                        coralPickup.stationBack().until(coralPickup.hasCoral),
                         waitSeconds(1.0),
                         coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj2.spawnCmd())));
 
