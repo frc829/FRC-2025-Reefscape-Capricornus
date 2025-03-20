@@ -123,29 +123,28 @@ public class AutoRoutines {
         routine.active().onTrue(cmd);
 
         // First Trajectory Score
-        // traj0.atTime("Align").onTrue(coralScore.l4Align());
-        traj0.done().onTrue(traj1.spawnCmd());
-        // traj0.done().onTrue(scoreL4().withDeadline(waitSeconds(2.0)).andThen(traj1.spawnCmd()));
+        traj0.atTime("Align").onTrue(coralScore.l4Align());
+        traj0.done().onTrue(scoreL4().withDeadline(waitSeconds(2.0)).andThen(traj1.spawnCmd()));
 
 
         // Second Trajectory Pickup
-        // traj1.atTime("Reset").onTrue(coralPickup.hardReset());
-        // traj1.atTime("Pickup").onTrue(coralPickup.stationBack());
-        // traj1.done().onTrue(
-        //         sequence(
-        //                 waitSeconds(2),
-        //                 coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj2.spawnCmd())));
-        traj1.done().onTrue(traj2.spawnCmd());
+        traj1.atTime("Reset").onTrue(coralPickup.hardReset());
+        traj1.atTime("Pickup").onTrue(coralPickup.stationBack());
+        traj1.done().onTrue(
+                sequence(
+                        coralPickup.stationBack().until(coralPickup.hasCoral),
+                        waitSeconds(1.0),
+                        coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj2.spawnCmd())));
 
 
 
         // Third Trajectory Score
-        // traj2.atTime("Reset").onTrue(coralPickup.holdFromBack());
-        // traj2.atTime("Align").onTrue(coralScore.l4Align());
-        // traj2.done().onTrue(
-        //         sequence(
-        //                 // coralScore.l4Align().withDeadline(waitSeconds(1.0)),
-        //                 scoreL4().withDeadline(waitSeconds(2.0))));
+        traj2.atTime("Reset").onTrue(coralPickup.holdFromBack());
+        traj2.atTime("Align").onTrue(coralScore.l4Align());
+        traj2.done().onTrue(
+                sequence(
+                        coralScore.l4Align().withDeadline(waitSeconds(1.0)),
+                        scoreL4().withDeadline(waitSeconds(2.0))));
 
         return routine;
 
