@@ -1,11 +1,7 @@
 package digilib.cameras;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
 
 import static digilib.DigiMath.roundToDecimal;
@@ -14,11 +10,11 @@ import static org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class CameraTelemetry {
     private final StructPublisher<Pose2d> robotPosePublisher;
-    private final StructPublisher<Matrix<N3, N1>> robotPoseStdDevPublisher;
-
-    private final StringPublisher cameraModePublisher;
     private final DoubleArrayPublisher robotPose;
     private final DoubleArrayPublisher robotPoseStdDev;
+    private final DoublePublisher singleTagPoseAmbiguity;
+    private final IntegerPublisher numberOfTagsUsedInEstimate;
+    private final DoublePublisher averageTagDistance;
     private final double[] poseArray = new double[3];
     private final double[] poseStdDevArray = new double[3];
 
@@ -32,10 +28,6 @@ public class CameraTelemetry {
         robotPosePublisher = field
                 .getStructTopic(name + "-RobotPose", Pose2d.struct)
                 .publish();
-        robotPoseStdDevPublisher = table
-                .getStructTopic(name + "-Robot Pose Std Dev", Matrix.getStruct(Nat.N3(), Nat.N1()))
-                .publish();
-
         table.getDoubleArrayTopic("Robot to Camera")
                 .publish()
                 .set(new double[]{
@@ -51,26 +43,39 @@ public class CameraTelemetry {
         table.getStringTopic("Fall Back Pose Strategy")
                 .publish()
                 .set(fallBackPoseStrategy.toString());
-        cameraModePublisher = table
-                .getStringTopic("Camera mode")
-                .publish();
         robotPose = table
                 .getDoubleArrayTopic(name + "Robot Pose Array")
                 .publish();
         robotPoseStdDev = table
                 .getDoubleArrayTopic("Robot Pose Std Dev Array")
                 .publish();
+        singleTagPoseAmbiguity = table
+                .getDoubleTopic("Single Tag Pose Ambiguity")
+                .publish();
+        numberOfTagsUsedInEstimate = table
+                .getIntegerTopic("Number of Tags Used")
+                .publish();
+        averageTagDistance = table
+                .getDoubleTopic("Average Tag Distance [m]")
+                .publish();
+
     }
 
     public void telemeterize(CameraState state) {
-        if(state.getRobotPose().isPresent()) {
-            robotPosePublisher.set(state.getRobotPose().get().estimatedPose.toPose2d());
+        if(state.getEstimatedRobotPose().isPresent()) {
+            robotPosePublisher.set(state.getEstimatedRobotPose().get().estimatedPose.toPose2d());
 
-            poseArray[0] = roundToDecimal(state.getRobotPose().get().estimatedPose.getX(), 2);
-            poseArray[1] = roundToDecimal(state.getRobotPose().get().estimatedPose.getY(), 2);
-            poseArray[2] = roundToDecimal(state.getRobotPose().get().estimatedPose.getRotation().getZ() * 180 / Math.PI, 2);
+            poseArray[0] = roundToDecimal(state.getEstimatedRobotPose().get().estimatedPose.getX(), 2);
+            poseArray[1] = roundToDecimal(state.getEstimatedRobotPose().get().estimatedPose.getY(), 2);
+            poseArray[2] = roundToDecimal(state.getEstimatedRobotPose().get().estimatedPose.getRotation().getZ() * 180 / Math.PI, 2);
             robotPose.set(poseArray);
         }
-        cameraModePublisher.set(state.getCameraMode());
+        poseStdDevArray[0] = roundToDecimal(state.getEstimatedRobotPoseStdDev().get(0, 0), 2);
+        poseStdDevArray[1] = roundToDecimal(state.getEstimatedRobotPoseStdDev().get(1, 0), 2);
+        poseStdDevArray[2] = roundToDecimal(state.getEstimatedRobotPoseStdDev().get(2, 0), 2);
+        robotPoseStdDev.set(poseStdDevArray);
+        singleTagPoseAmbiguity.set(state.getSingleTagPoseAmbiguity());
+        numberOfTagsUsedInEstimate.set(state.getNumberOfTagsUsedInEstimate());
+        averageTagDistance.set(state.getAverageTagDistanceMeters());
     }
 }

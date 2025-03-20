@@ -1,6 +1,5 @@
 package frc.robot.subsystems.swerveDrive;
 
-import choreo.Choreo;
 import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
@@ -31,7 +30,6 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -61,12 +59,8 @@ public class SwerveDriveSubsystemConstants {
         static final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
         static final PoseStrategy primaryStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
         static final PoseStrategy fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-        static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(
-                Double.MAX_VALUE,
-                Double.MAX_VALUE,
-                Double.MAX_VALUE);
-        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS_AUTO = VecBuilder.fill(0.1, 0.1, 0.1);
-        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS_TELEOP = VecBuilder.fill(0.01, 0.01, 0.1);
+        static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.01, 0.01, Double.MAX_VALUE);
+        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.01, 0.01, Double.MAX_VALUE);
 
         static final class Camera0 {
             static final String name = "Front-Camera";
@@ -87,7 +81,9 @@ public class SwerveDriveSubsystemConstants {
                     robotToCamera,
                     layout,
                     primaryStrategy,
-                    fallbackPoseStrategy);
+                    fallbackPoseStrategy,
+                    SINGLE_TAG_STD_DEVS,
+                    MULTI_TAG_STD_DEVS);
             static final PhotonCamera photonCamera = new PhotonCamera(name);
             static final PhotonVisionCamera camera = new PhotonVisionCamera(constants, photonCamera);
         }

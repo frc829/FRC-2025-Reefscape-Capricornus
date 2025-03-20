@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.stream.IntStream;
@@ -111,8 +112,8 @@ public class SwerveDriveSubsystem implements Subsystem {
 
     public Command setFieldFromCamera() {
         return run(() -> {
-            if (cameras[0].getState().getRobotPose().isPresent()) {
-                swerveDrive.resetPose(cameras[0].getState().getRobotPose().get().estimatedPose.toPose2d());
+            if (cameras[0].getState().getEstimatedRobotPose().isPresent()) {
+                swerveDrive.resetPose(cameras[0].getState().getEstimatedRobotPose().get().estimatedPose.toPose2d());
             }
         });
     }
@@ -133,10 +134,10 @@ public class SwerveDriveSubsystem implements Subsystem {
 
 
         swerveDrive.update();
-        cameras[0].update();
-        if (cameras[0].getState().getRobotPose().isPresent()) {
-            var cameraPose = cameras[0].getState().getRobotPose().get().estimatedPose.toPose2d();
-            var timeStampSeconds = cameras[0].getState().getRobotPose().get().timestampSeconds;
+        Arrays.stream(cameras).forEach(Camera::update);
+        if (cameras[0].getState().getEstimatedRobotPose().isPresent()) {
+            var cameraPose = cameras[0].getState().getEstimatedRobotPose().get().estimatedPose.toPose2d();
+            var timeStampSeconds = cameras[0].getState().getEstimatedRobotPose().get().timestampSeconds;
             var robotPose = swerveDrive.getState().getPose();
             timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
             if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.20) {
@@ -183,7 +184,6 @@ public class SwerveDriveSubsystem implements Subsystem {
             /* use the measured time delta, get battery voltage from WPILib */
             swerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
             for (var camera : cameras) {
-                camera.updateSimState(swerveDrive.getState().getPose());
             }
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());

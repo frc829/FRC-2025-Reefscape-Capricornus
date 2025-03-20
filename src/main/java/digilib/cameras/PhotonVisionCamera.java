@@ -1,22 +1,17 @@
 package digilib.cameras;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.simulation.PhotonCameraSim;
-import org.photonvision.simulation.SimCameraProperties;
-import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -28,30 +23,22 @@ import static java.lang.Math.pow;
 
 public class PhotonVisionCamera implements Camera {
 
-    private static VisionSystemSim visionSim = null;
-    private static boolean aprilTagsAdded = false;
-    private static AprilTagFieldLayout fieldTags = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
-
-
     private final CameraState state = new CameraState();
-    private final Transform3d robotToCamera;
     private final CameraTelemetry telemetry;
     private final PhotonCamera photonCamera;
     private final PhotonPoseEstimator photonPoseEstimator;
-    private PhotonCameraSim cameraSim = null;
-    private Optional<Pose2d> estimatedPose = Optional.empty();
-    private Optional<Matrix<N3, N1>> estimatedPoseStdDev = Optional.empty();
-
+    private final Matrix<N3, N1> singleTagStdDevs;
+    private final Matrix<N3, N1> multiTagStdDevs;
 
     public PhotonVisionCamera(CameraConstants constants, PhotonCamera photonCamera) {
         this.photonCamera = photonCamera;
-        this.robotToCamera = constants.robotToCamera();
-
         photonPoseEstimator = new PhotonPoseEstimator(
-                fieldTags,
+                constants.aprilTagFieldLayout(),
                 constants.primaryStrategy(),
                 constants.robotToCamera());
         photonPoseEstimator.setMultiTagFallbackStrategy(constants.fallBackPoseStrategy());
+        singleTagStdDevs = constants.singleTagStdDevs();
+        multiTagStdDevs = constants.multiTagStdDevs();
         telemetry = new CameraTelemetry(
                 constants.name(),
                 constants.robotToCamera(),
@@ -66,69 +53,83 @@ public class PhotonVisionCamera implements Camera {
 
     @Override
     public void update() {
+        updateState();
+        updateTelemetry();
+    }
+
+    public void updateState() {
+        // Get the unread camera results
         List<PhotonPipelineResult> photonPipelineResults = photonCamera.getAllUnreadResults();
+
+        // update the photonPoseEstimator with the results
         Optional<EstimatedRobotPose> estimatedRobotPose = Optional.empty();
         for (PhotonPipelineResult photonPipelineResult : photonPipelineResults) {
             estimatedRobotPose = photonPoseEstimator.update(photonPipelineResult);
         }
+
+        // Get the photonTrackedTargets from the last result.
         List<PhotonTrackedTarget> photonTrackedTargets = photonPipelineResults.isEmpty()
                 ? new ArrayList<>()
                 : photonPipelineResults.get(photonPipelineResults.size() - 1).getTargets();
-        Optional<Matrix<N3, N1>> estimatedRobotPoseStdDev = updateEstimatedGlobalPoseStdDev(estimatedRobotPose, photonTrackedTargets);
-        updateState(estimatedRobotPose, estimatedRobotPoseStdDev);
-        updateTelemetry();
-    }
 
+        // Set the estimatedRobotPose
+        state.setEstimatedRobotPose(estimatedRobotPose.orElse(null));
 
-    private Optional<Matrix<N3, N1>> updateEstimatedGlobalPoseStdDev(Optional<EstimatedRobotPose> estimatedRobotPose, List<PhotonTrackedTarget> photonTrackedTargets) {
+        // Set estimatedRobotPoseStdDev
         if (estimatedRobotPose.isEmpty()) {
-            return Optional.empty();
-        }
-        int numTags = 0;
-        double avgDist = 0.0;
-        for (PhotonTrackedTarget target : photonTrackedTargets) {
-            Optional<Pose3d> tagPose = photonPoseEstimator.getFieldTags().getTagPose(target.getFiducialId());
-            if (tagPose.isPresent()) {
-                numTags++;
-                avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedRobotPose.get().estimatedPose.toPose2d().getTranslation());
+            state.setEstimatedRobotPoseStdDev(
+                    MatBuilder.fill(
+                            Nat.N3(),
+                            Nat.N1(),
+                            Double.MAX_VALUE,
+                            Double.MAX_VALUE,
+                            Double.MAX_VALUE));
+            state.setNumberOfTagsUsedInPoseEstimate(0);
+            state.setAverageTagDistanceMeters(Double.NaN);
+        } else {
+            int numTags = 0;
+            double averageDistanceMeters = 0.0;
+            for (PhotonTrackedTarget target : photonTrackedTargets) {
+                Optional<Pose3d> tagPose = photonPoseEstimator.getFieldTags().getTagPose(target.getFiducialId());
+                if (tagPose.isPresent()) {
+                    numTags++;
+                    Translation2d tagTranslation2d = tagPose.get().toPose2d().getTranslation();
+                    Translation2d estimatedRobotTranslation2d = estimatedRobotPose.get().estimatedPose.toPose2d().getTranslation();
+                    double tagToRobotDistance = tagTranslation2d.getDistance(estimatedRobotTranslation2d);
+                    averageDistanceMeters += tagToRobotDistance;
+                }
+            }
+            state.setNumberOfTagsUsedInPoseEstimate(numTags);
+            averageDistanceMeters /= numTags;
+            state.setAverageTagDistanceMeters(averageDistanceMeters);
+
+            if (averageDistanceMeters > 6.0) {
+                state.setEstimatedRobotPoseStdDev(
+                        MatBuilder.fill(
+                                Nat.N3(),
+                                Nat.N1(),
+                                Double.MAX_VALUE,
+                                Double.MAX_VALUE,
+                                Double.MAX_VALUE));
+                state.setSingleTagPoseAmbiguity(Double.MAX_VALUE);
+            } else {
+                if (numTags > 1) {
+                    // multiplies the standard deviations by 1 + avgDist^2/5. this was found by
+                    // others in the community to be an effective way to scale standard deviations
+                    // by distance.
+                    state.setEstimatedRobotPoseStdDev(multiTagStdDevs.times(1 + (pow(averageDistanceMeters, 2) / 5)));
+                    state.setSingleTagPoseAmbiguity(0.0);
+                } else {
+                    state.setEstimatedRobotPoseStdDev(singleTagStdDevs.times(1 + (pow(averageDistanceMeters, 2) / 5)));
+                    state.setSingleTagPoseAmbiguity(photonTrackedTargets.get(0).poseAmbiguity);
+                }
             }
         }
-
-        avgDist /= numTags;
-
-        if (avgDist > 6) {
-            return Optional.empty();
-        } else if (numTags > 1 && RobotModeTriggers.teleop().getAsBoolean()) {
-            return Optional.empty();
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    public void updateState(Optional<EstimatedRobotPose> estimatedRobotPose, Optional<Matrix<N3, N1>> estimatedRobotPoseStdDev) {
-        state.setCameraMode(CameraState.CameraMode.ROBOT_POSE);
-        state.setRobotPose(estimatedRobotPose);
-        state.setRobotPoseStdDev(estimatedRobotPoseStdDev);
     }
 
 
     @Override
     public void updateTelemetry() {
         telemetry.telemeterize(state);
-    }
-
-    @Override
-    public void updateSimState(Pose2d robotSimPose) {
-        visionSim.update(robotSimPose);
-    }
-
-    /**
-     * A Field2d for visualizing our robot and objects on the field.
-     */
-    private Field2d getSimDebugField() {
-        if (!RobotBase.isSimulation()) {
-            return null;
-        }
-        return visionSim.getDebugField();
     }
 }
