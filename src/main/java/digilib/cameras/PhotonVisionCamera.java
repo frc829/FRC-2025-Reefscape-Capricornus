@@ -118,8 +118,18 @@ public class PhotonVisionCamera implements Camera {
                     state.setEstimatedRobotPoseStdDev(multiTagStdDevs.times(1 + (pow(averageDistanceMeters, 2) / 5)));
                     state.setSingleTagPoseAmbiguity(0.0);
                 } else {
-                    state.setEstimatedRobotPoseStdDev(singleTagStdDevs.times(1 + (pow(averageDistanceMeters, 2) / 5)));
                     state.setSingleTagPoseAmbiguity(photonTrackedTargets.get(0).poseAmbiguity);
+                    if(photonTrackedTargets.get(0).poseAmbiguity <= 0.2){
+                        state.setEstimatedRobotPoseStdDev(singleTagStdDevs.times(1 + (pow(averageDistanceMeters, 2) / 5)));
+                    }else{
+                        state.setEstimatedRobotPoseStdDev(
+                                MatBuilder.fill(
+                                        Nat.N3(),
+                                        Nat.N1(),
+                                        Double.MAX_VALUE,
+                                        Double.MAX_VALUE,
+                                        Double.MAX_VALUE));
+                    }
                 }
             }
         }

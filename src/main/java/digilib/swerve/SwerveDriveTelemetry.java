@@ -1,5 +1,6 @@
 package digilib.swerve;
 
+import choreo.trajectory.SwerveSample;
 import digilib.DigiMath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,6 +27,7 @@ public class SwerveDriveTelemetry {
     private final DoublePublisher rawHeading;
     private final double[] poseArray = new double[3];
     private final double[] speedsArray = new double[3];
+    private final StructPublisher<SwerveSample> swerveSample;
 
     public SwerveDriveTelemetry(
             String name,
@@ -78,6 +80,9 @@ public class SwerveDriveTelemetry {
         speeds = table
                 .getDoubleArrayTopic("SpeedsArray")
                 .publish();
+        swerveSample = table
+                .getStructTopic("Trajectory Samples", SwerveSample.struct)
+                .publish();
     }
 
     public void telemeterize(SwerveDriveState state) {
@@ -102,5 +107,8 @@ public class SwerveDriveTelemetry {
         speeds.set(speedsArray);
 
         rawHeading.set(MathUtil.inputModulus(state.getRawHeading().getDegrees(), -180, 180));
+        if(state.getSwerveSample() != null){
+            swerveSample.set(state.getSwerveSample());
+        }
     }
 }

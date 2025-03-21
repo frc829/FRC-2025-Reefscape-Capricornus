@@ -2,6 +2,7 @@ package frc.robot.subsystems.swerveDrive;
 
 import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
+import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;

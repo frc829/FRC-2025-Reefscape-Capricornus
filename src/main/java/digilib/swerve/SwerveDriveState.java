@@ -1,5 +1,6 @@
 package digilib.swerve;
 
+import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -26,6 +27,7 @@ public class SwerveDriveState {
     private double[] swerveSteerVelocities = new double[modulePositions.length];
     private double[] swerveWheelPositions = new double[modulePositions.length];
     private double[] swerveWheelVelocities = new double[modulePositions.length];
+    private SwerveSample swerveSample = null;
 
 
     public Pose2d getPose() {
@@ -125,5 +127,13 @@ public class SwerveDriveState {
         for (int i = 0; i < swerveWheelVelocities.size(); i++) {
             this.swerveWheelVelocities[i] = swerveWheelVelocities.get(i);
         }
+    }
+
+    public SwerveSample getSwerveSample() {
+        return swerveSample;
+    }
+
+    public void setSwerveSample(SwerveSample swerveSample) {
+        this.swerveSample = swerveSample;
     }
 }

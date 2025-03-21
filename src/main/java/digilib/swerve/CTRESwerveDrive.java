@@ -151,6 +151,7 @@ public class CTRESwerveDrive implements SwerveDrive {
 
     @Override
     public void followPath(SwerveSample sample) {
+        state.setSwerveSample(sample);
         var pose = swerveDriveTrain.getState().Pose;
         var currentTimestamp = swerveDriveTrain.getState().Timestamp;
         var targetSpeeds = sample.getChassisSpeeds();

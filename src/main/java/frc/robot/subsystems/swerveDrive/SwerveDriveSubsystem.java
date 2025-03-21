@@ -137,22 +137,21 @@ public class SwerveDriveSubsystem implements Subsystem {
         Arrays.stream(cameras).forEach(Camera::update);
         if (cameras[0].getState().getEstimatedRobotPose().isPresent()) {
             var cameraPose = cameras[0].getState().getEstimatedRobotPose().get().estimatedPose.toPose2d();
+            var cameraPoseStdDev = cameras[0].getState().getEstimatedRobotPoseStdDev();
             var timeStampSeconds = cameras[0].getState().getEstimatedRobotPose().get().timestampSeconds;
             var robotPose = swerveDrive.getState().getPose();
             timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
-            if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 0.20) {
+            if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 1.0) {
                 swerveDrive.addVisionMeasurement(
                         cameraPose,
                         timeStampSeconds,
-                        MatBuilder.fill(Nat.N3(), Nat.N1(), 0.01, 0.01, Double.MAX_VALUE));
-                // camera.getState().getRobotPoseStdDev().get());
+                        cameraPoseStdDev);
             }
         }
-
     }
 
     private int getNearestTagId(int startingTag, int endingTag, Pose2d robotLocation) {
-        List<Pose2d> filteredPoses = IntStream.rangeClosed(startingTag - 1, endingTag - 1).mapToObj(tagId -> aprilTagPoses.get(tagId)).toList();
+        List<Pose2d> filteredPoses = IntStream.rangeClosed(startingTag - 1, endingTag - 1).mapToObj(aprilTagPoses::get).toList();
         Pose2d nearestPose = robotLocation.nearest(filteredPoses);
         return aprilTagPoses.indexOf(nearestPose) + 1;
     }
