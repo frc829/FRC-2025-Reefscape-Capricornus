@@ -94,7 +94,7 @@ public class SwerveDriveSubsystemConstants {
 
         static final double maxVelocityMPS = 4.73;
         static final double maxAngularVelocityRPS = 0.75;
-        static final double pathTranslationKp = 2.0;
+        static final double pathTranslationKp = 1.0;
         static final double deadband = 0.1;
         static final double rotationalDeadband = 0.1;
         static final double pathRotationKp = 8.0984; // 5.9918340044856690519902612191937;
