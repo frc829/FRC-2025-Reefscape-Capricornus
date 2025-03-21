@@ -113,7 +113,7 @@ public class Robit extends TimedRobot {
         new CoralScoreMap(driverController, operatorController, coralScore);
         new ClimberMap(climberController, deadband, climberSubsystem);
         new ManualMap(manualController, operatorController, deadband, manual);
-        new AutoRoutines(autoFactory, coralPickup, coralScore);
+        new AutoRoutines(autoFactory, algaePickup, algaeScore, coralPickup, coralScore);
         SmartDashboard.putData(CommandScheduler.getInstance());
         DataLogManager.start();
         DriverStation.startDataLog(DataLogManager.getLog(), true);

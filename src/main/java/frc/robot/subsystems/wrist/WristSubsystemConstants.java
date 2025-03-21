@@ -21,7 +21,7 @@ import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrim
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.rio;
-import static frc.robot.subsystems.wrist.WristSubsystemConstants.AbsoluteEncoder.cancoder;
+// import static frc.robot.subsystems.wrist.WristSubsystemConstants.AbsoluteEncoder.cancoder;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Control.*;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.constants;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.reduction;
@@ -85,7 +85,7 @@ public class WristSubsystemConstants {
                 .withMagnetOffset(magnetOffset);
         static final CANcoderConfiguration config = new CANcoderConfiguration()
                 .withMagnetSensor(magnetSensorConfigs);
-        static final CANcoder cancoder = new CANcoder(cancoderDeviceNumber, rio);
+        // static final CANcoder cancoder = new CANcoder(cancoderDeviceNumber, rio);
     }
 
     static final class Motor {
@@ -130,7 +130,7 @@ public class WristSubsystemConstants {
     }
 
     public static WristSubsystem create(MechanismLigament2d top, MechanismLigament2d bottom) {
-        cancoder.getConfigurator().apply(AbsoluteEncoder.config);
+        // cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
         Wrist wrist = new NEO550Wrist(
                 constants,

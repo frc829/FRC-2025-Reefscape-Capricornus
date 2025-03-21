@@ -7,6 +7,8 @@ import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.commands.AlgaePickup;
+import frc.robot.commands.AlgaeScore;
 import frc.robot.commands.CoralPickup;
 import frc.robot.commands.CoralScore;
 
@@ -23,13 +25,19 @@ public class AutoRoutines {
     }
 
     private final AutoFactory factory;
+    private final AlgaePickup algaePickup;
+    private final AlgaeScore algaeScore;
     private final CoralPickup coralPickup;
     private final CoralScore coralScore;
 
     public AutoRoutines(
             AutoFactory factory,
+            AlgaePickup algaePickup,
+            AlgaeScore algaeScore,
             CoralPickup coralPickup,
             CoralScore coralScore) {
+        this.algaePickup = algaePickup;
+        this.algaeScore = algaeScore;
         this.coralPickup = coralPickup;
         this.coralScore = coralScore;
 
@@ -44,6 +52,7 @@ public class AutoRoutines {
         autoChooser.addRoutine("Inteleon", this::inteleon);
         autoChooser.addRoutine("Squirtle", this::squirtle);
         autoChooser.addRoutine("Wartortle", this::wartortle);
+        autoChooser.addRoutine("Grapploct", this::grapploct);
     }
 
     private AutoRoutine theNoobSpot() {
@@ -100,6 +109,43 @@ public class AutoRoutines {
 
     }
 
+    private AutoRoutine grapploct() {
+        AutoRoutine routine = factory.newRoutine("S2-L4-Left");
+        AutoTrajectory traj0 = routine.trajectory("S2-to-GH-L4");
+        AutoTrajectory traj1 = routine.trajectory("S2-Algae-Backup");
+        AutoTrajectory traj2 = routine.trajectory("GetAlgae");
+        AutoTrajectory traj3 = routine.trajectory("AlgaeBackup");
+        AutoTrajectory traj4 = routine.trajectory("PROC");
+        Command routineCommand = sequence(traj0.resetOdometry(), traj0.cmd());
+        routine.active().onTrue(routineCommand);
+
+        traj0.atTime("Align").onTrue(coralScore.l4Align());
+        traj1.atTime("Align").onTrue(algaePickup.L2());
+        traj2.atTime("Align").onTrue(algaePickup.L2());
+        traj4.atTime("Proc").onTrue(algaePickup.hold());
+
+        traj0.done().onTrue(waitSeconds(1.0)
+                .andThen(scoreL4().withDeadline(waitSeconds(1.0)))
+                .andThen(traj1.spawnCmd()));
+        traj1.done().onTrue(
+                sequence(
+                        waitSeconds(1.5),
+                        traj2.spawnCmd()
+                ));
+        traj2.done().onTrue(
+                sequence(
+                        traj3.spawnCmd()
+                ));
+        traj3.done().onTrue(
+                sequence(
+                        traj4.spawnCmd()
+                ));
+        traj4.done().onTrue(algaeScore.score());
+
+
+        return routine;
+    }
+
     private AutoRoutine theFlyingDutchman() {
         AutoRoutine routine = factory.newRoutine("S2-L4-Left");
         AutoTrajectory traj = routine.trajectory("S2-to-GH-L4");
@@ -107,7 +153,7 @@ public class AutoRoutines {
         routine.active().onTrue(routineCommand);
 
         traj.atTime("Align").onTrue(coralScore.l4Align());
-        traj.done().onTrue(waitSeconds(3.0).andThen(scoreL4()));
+        traj.done().onTrue(waitSeconds(1.0).andThen(scoreL4()));
 
         return routine;
     }

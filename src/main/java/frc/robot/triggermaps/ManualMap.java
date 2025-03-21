@@ -26,15 +26,15 @@ public class ManualMap {
         this.deadband = deadband;
         this.manual = manual;
         bindManualArm();
-        bindArm60Test();
-        bindArm0Test();
+        // bindArm60Test();
+        // bindArm0Test();
 
         bindManualAlgaeClawToggle();
         bindManualCoralClawToggle();
 
         bindManualElevator();
-        bindManualElevatorTest();
-        bindManualElevatorDownTest();
+        // bindManualElevatorTest();
+        // bindManualElevatorDownTest();
 
         bindManualWristToggle();
         bindManualWrist();
@@ -45,8 +45,8 @@ public class ManualMap {
         bindManualAlgaeIn();
         bindManualAlgaeOut();
 
-        bindSteer90Test();
-        bindSteer0Test();
+        // bindSteer90Test();
+        // bindSteer0Test();
 
         bindManualElevatorDangerous();
 
