@@ -39,14 +39,11 @@ public class AutoRoutines {
         this.factory = factory;
         autoChooser.addRoutine("Noob S2", this::theNoobSpot);
         autoChooser.addRoutine("Noob S1", this::noobS1);
-        autoChooser.addRoutine("The Flying Dutchman", this::noobS1L4);
         autoChooser.addRoutine("Noob S3", this::noobS3);
-        autoChooser.addRoutine("S2 L4 Left", this::S2L4Left);
+        autoChooser.addRoutine("The Flying Dutchman", this::theFlyingDutchman);
         autoChooser.addRoutine("Inteleon", this::inteleon);
         autoChooser.addRoutine("Squirtle", this::squirtle);
         autoChooser.addRoutine("Wartortle", this::wartortle);
-        autoChooser.addRoutine("FourCoralS1", this::FourCoralS1);
-        autoChooser.addRoutine("S2Barge", this::S2Barge);
     }
 
     private AutoRoutine theNoobSpot() {
@@ -103,7 +100,7 @@ public class AutoRoutines {
 
     }
 
-    private AutoRoutine S2L4Left() {
+    private AutoRoutine theFlyingDutchman() {
         AutoRoutine routine = factory.newRoutine("S2-L4-Left");
         AutoTrajectory traj = routine.trajectory("S2-to-GH-L4");
         Command routineCommand = sequence(traj.resetOdometry(), traj.cmd());
