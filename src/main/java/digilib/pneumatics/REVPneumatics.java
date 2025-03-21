@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class REVPneumatics implements Pneumatics {
     private final PneumaticsState state = new PneumaticsState();
+    private final PneumaticsTelemetry telemetry;
     private PneumaticsRequest request;
     // private final PneumaticsTelemetry telemetry;
     private final PneumaticHub pneumaticHub;
@@ -13,7 +14,7 @@ public class REVPneumatics implements Pneumatics {
             PneumaticsConstants constants,
             PneumaticHub pneumaticHub) {
         this.pneumaticHub = pneumaticHub;
-        // this.telemetry = new PneumaticsTelemetry(constants.name(), pneumaticHub);
+        this.telemetry = new PneumaticsTelemetry(constants.name(), pneumaticHub);
     }
 
     @Override
@@ -58,6 +59,6 @@ public class REVPneumatics implements Pneumatics {
 
     @Override
     public void updateTelemetry() {
-        // telemetry.telemeterize(state);
+        telemetry.telemeterize(state);
     }
 }

@@ -28,6 +28,8 @@ import frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants;
 import frc.robot.subsystems.intakeWheel.CoralIntakeSubsystemConstants;
 import frc.robot.subsystems.lidarSensor.LidarSensorSubsystemConstants;
 import frc.robot.subsystems.pneumatics.PneumaticsSubsystemConstants;
+import frc.robot.subsystems.power.PowerSubsystem;
+import frc.robot.subsystems.power.PowerSubsystemConstants;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants;
 import frc.robot.subsystems.wrist.WristSubsystemConstants;
@@ -65,6 +67,9 @@ public class Robit extends TimedRobot {
         armLigament.append(wristBottomLigament);
 
         SmartDashboard.putData("Manipulator", manipulatorMechanism);
+
+        PowerSubsystemConstants.create();
+        PneumaticsSubsystemConstants.create();
 
         Manipulator manipulator = new Manipulator(
                 ArmSubsystemConstants.create(armLigament, -90),

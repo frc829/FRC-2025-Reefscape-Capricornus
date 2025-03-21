@@ -2,7 +2,6 @@ package frc.robot.subsystems.swerveDrive;
 
 import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
-import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -60,8 +59,8 @@ public class SwerveDriveSubsystemConstants {
         static final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
         static final PoseStrategy primaryStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
         static final PoseStrategy fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-        static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.01, 0.01, Double.MAX_VALUE);
-        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.01, 0.01, Double.MAX_VALUE);
+        static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.001, 0.001, Double.MAX_VALUE);
+        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.001, 0.001, Double.MAX_VALUE);
 
         static final class Camera0 {
             static final String name = "Front-Camera";
@@ -94,7 +93,8 @@ public class SwerveDriveSubsystemConstants {
 
         static final double maxVelocityMPS = 4.73;
         static final double maxAngularVelocityRPS = 0.75;
-        static final double pathTranslationKp = 1.0;
+        static final double pathTranslationXKp = 1.75;
+        static final double pathTranslationYkP = 1.0;
         static final double deadband = 0.1;
         static final double rotationalDeadband = 0.1;
         static final double pathRotationKp = 8.0984; // 5.9918340044856690519902612191937;
@@ -104,8 +104,8 @@ public class SwerveDriveSubsystemConstants {
                 maxAngularVelocityRPS,
                 deadband,
                 rotationalDeadband,
-                new PhoenixPIDController(pathTranslationKp, 0, 0),
-                new PhoenixPIDController(pathTranslationKp, 0, 0),
+                new PhoenixPIDController(pathTranslationXKp, 0, 0),
+                new PhoenixPIDController(pathTranslationYkP, 0, 0),
                 new PhoenixPIDController(pathRotationKp, 0, 0));
 
         static final class Modules {

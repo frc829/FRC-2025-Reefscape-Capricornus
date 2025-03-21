@@ -101,7 +101,7 @@ public class PhotonVisionCamera implements Camera {
             averageDistanceMeters /= numTags;
             state.setAverageTagDistanceMeters(averageDistanceMeters);
 
-            if (averageDistanceMeters > 6.0) {
+            if (averageDistanceMeters > 3.0) {
                 state.setEstimatedRobotPoseStdDev(
                         MatBuilder.fill(
                                 Nat.N3(),

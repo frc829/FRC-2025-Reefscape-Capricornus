@@ -39,10 +39,11 @@ public class AutoRoutines {
         this.factory = factory;
         autoChooser.addRoutine("Noob S2", this::theNoobSpot);
         autoChooser.addRoutine("Noob S1", this::noobS1);
-        autoChooser.addRoutine("Noob S1L4", this::noobS1L4);
+        autoChooser.addRoutine("The Flying Dutchman", this::noobS1L4);
         autoChooser.addRoutine("Noob S3", this::noobS3);
         autoChooser.addRoutine("S2 L4 Left", this::S2L4Left);
-        autoChooser.addRoutine("TwoCoralS1", this::TwoCoralS1);
+        autoChooser.addRoutine("Inteleon", this::inteleon);
+        autoChooser.addRoutine("Squirtle", this::squirtle);
         autoChooser.addRoutine("ThreeCoralS1", this::ThreeCoralS1);
         autoChooser.addRoutine("FourCoralS1", this::FourCoralS1);
         autoChooser.addRoutine("S2Barge", this::S2Barge);
@@ -114,11 +115,46 @@ public class AutoRoutines {
         return routine;
     }
 
-    private AutoRoutine TwoCoralS1() {
-        AutoRoutine routine = factory.newRoutine("Two-Coral-S1");
+    private AutoRoutine inteleon() {
+        AutoRoutine routine = factory.newRoutine("Inteleon");
         AutoTrajectory traj0 = routine.trajectory("S1-to-EF-L4");
         AutoTrajectory traj1 = routine.trajectory("EF-to-SouthRight");
         AutoTrajectory traj2 = routine.trajectory("SouthRight-to-CD");
+        Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
+        routine.active().onTrue(cmd);
+
+        // First Trajectory Score
+        traj0.atTime("Align").onTrue(coralScore.l4Align());
+        traj0.done().onTrue(scoreL4().withDeadline(waitSeconds(2.0)).andThen(traj1.spawnCmd()));
+
+
+        // Second Trajectory Pickup
+        traj1.atTime("Reset").onTrue(coralPickup.hardReset());
+        traj1.atTime("Pickup").onTrue(coralPickup.stationBack());
+        traj1.done().onTrue(
+                sequence(
+                        waitSeconds(1.0),
+                        coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj2.spawnCmd())));
+
+
+
+        // Third Trajectory Score
+        traj2.atTime("Reset").onTrue(coralPickup.holdFromBack());
+        traj2.atTime("Align").onTrue(coralScore.l4Align());
+        traj2.done().onTrue(
+                sequence(
+                        coralScore.l4Align().withDeadline(waitSeconds(1.0)),
+                        scoreL4().withDeadline(waitSeconds(2.0))));
+
+        return routine;
+
+    }
+
+    private AutoRoutine squirtle() {
+        AutoRoutine routine = factory.newRoutine("Squirtle");
+        AutoTrajectory traj0 = routine.trajectory("S3-to-IJ-L4");
+        AutoTrajectory traj1 = routine.trajectory("IJ-to-NorthRight");
+        AutoTrajectory traj2 = routine.trajectory("NorthRight-to-KL");
         Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
         routine.active().onTrue(cmd);
 
