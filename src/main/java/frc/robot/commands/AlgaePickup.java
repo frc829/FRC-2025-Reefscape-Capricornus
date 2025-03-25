@@ -12,7 +12,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 public class AlgaePickup {
     private static final double armFloorDegrees = -39;
     private static final double armL2Degrees = -7.0;
-    private static final double armL3Degrees = -7.0;
+    private static final double armL3Degrees = -10.0;
     private static final double armHoldDegrees = 0.0;
     private static final double armSafeDownDegrees = 60.0;
     private static final double armForHoldAfterPickupDegrees = -9.4;

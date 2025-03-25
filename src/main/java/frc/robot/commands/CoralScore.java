@@ -18,7 +18,7 @@ public class CoralScore {
     private static final double armSafeDegrees = 40.0;
     private static final double armResetDegrees = 90.0;
 
-    private static final double elevatorL1CM = 20.0;
+    private static final double elevatorL1CM = 13.0;
     private static final double elevatorL2CM = 16.0;
     private static final double elevatorL3CM = 36.0;
     private static final double elevatorL4CM = 64.0;
@@ -81,8 +81,8 @@ public class CoralScore {
     }
 
     public Command l1Score() {
-        return manipulator.coralClaw().toClawValue(OPEN);
-        // return manipulator.coralIntakeWheel().toVelocity(() -> 0.0);
+//        return manipulator.coralClaw().toClawValue(OPEN);
+         return manipulator.coralIntakeWheel().toVelocity(() -> -0.2);
     }
 
     public Command l234Score() {
