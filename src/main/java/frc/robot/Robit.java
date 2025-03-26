@@ -41,7 +41,6 @@ public class Robit extends TimedRobot {
 
     public Robit() {
         SmartDashboard.putString("Robot Comments", Constants.robotComments);
-        PortForwarder.add(5800, "orangepi50.local", 5800);
         CanBridge.runTCP();
 
         double deadband = 0.10;

@@ -21,8 +21,8 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
-import digilib.cameras.CameraConstants;
-import digilib.cameras.PhotonVisionCamera;
+import digilib.cameras.Camera;
+import digilib.cameras.Limelight3G;
 import digilib.swerve.CTRESwerveDrive;
 import digilib.swerve.SwerveDriveConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -56,11 +56,7 @@ public class SwerveDriveSubsystemConstants {
 
     static final class Cameras {
 
-        static final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-        static final PoseStrategy primaryStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
-        static final PoseStrategy fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-        static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.001, 0.001, Double.MAX_VALUE);
-        static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.001, 0.001, Double.MAX_VALUE);
+        static final Matrix<N3, N1> robotPoseStdDev = VecBuilder.fill(0.6, 0.6, 999999);
 
         static final class Camera0 {
             static final String name = "Front-Camera";
@@ -76,16 +72,11 @@ public class SwerveDriveSubsystemConstants {
                     cameraY,
                     cameraZ,
                     cameraAngle);
-            static final CameraConstants constants = new CameraConstants(
+            static final Camera.Config config = new Camera.Config(
                     name,
                     robotToCamera,
-                    layout,
-                    primaryStrategy,
-                    fallbackPoseStrategy,
-                    SINGLE_TAG_STD_DEVS,
-                    MULTI_TAG_STD_DEVS);
-            static final PhotonCamera photonCamera = new PhotonCamera(name);
-            static final PhotonVisionCamera camera = new PhotonVisionCamera(constants, photonCamera);
+                    robotPoseStdDev);
+            static final Limelight3G camera = new Limelight3G(config);
         }
     }
 
@@ -117,7 +108,7 @@ public class SwerveDriveSubsystemConstants {
             static final Current SLIP_CURRENT = Amps.of(120.0);
             static final Current steerStatorCurrentLimit = Amps.of(60.0);
             static final boolean steerStatorCurrentLimitEnabled = true;
-            static final double COUPLE_RATIO = 3.0; // 36 tooth first stage / 12 tooth pinion
+            static final double COUPLE_RATIO = 36.0 / 13.0; // 36 tooth first stage / 13 tooth pinion
             static final double DRIVE_GEAR_RATIO = 5.54;  // 16 tooth second stage, 13 tooth pinion
             static final double STEER_GEAR_RATIO = 25;   // 12T
             static final Distance WHEEL_RADIUS = Inches.of(2);
@@ -601,12 +592,11 @@ public class SwerveDriveSubsystemConstants {
         SwerveDriveSubsystem swerveDriveSubsystem = new SwerveDriveSubsystem(
                 CTRE_SWERVE_DRIVE,
                 simLoopPeriod,
-                layout,
                 Camera0.camera);
         List<Trajectory<SwerveSample>> trajectories = new ArrayList<>();
         TrajectoryLogger<SwerveSample> logger = (trajectory, starting) -> DriverStation.getAlliance().ifPresent(color -> {
             NetworkTable field = getDefault().getTable("Field");
-            if(!trajectories.contains(trajectory)) {
+            if (!trajectories.contains(trajectory)) {
                 trajectories.add(trajectory);
             }
             if (color == DriverStation.Alliance.Red) {

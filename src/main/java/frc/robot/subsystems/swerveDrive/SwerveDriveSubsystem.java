@@ -5,9 +5,13 @@ import digilib.cameras.Camera;
 import digilib.swerve.SwerveDrive;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -29,9 +33,8 @@ public class SwerveDriveSubsystem implements Subsystem {
     private static final Rotation2d RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.k180deg;
 
     private final SwerveDrive swerveDrive;
-    private final Camera[] cameras;
+    private final List<Camera> cameras;
 
-    private final List<Pose2d> aprilTagPoses;
     private double lastSimTime;
     private final Time simLoopPeriod;
     private boolean hasAppliedOperatorPerspective = false;
@@ -40,13 +43,11 @@ public class SwerveDriveSubsystem implements Subsystem {
     public SwerveDriveSubsystem(
             SwerveDrive swerveDrive,
             Time simLoopPeriod,
-            AprilTagFieldLayout aprilTagFieldLayout,
             Camera... cameras) {
         this.swerveDrive = swerveDrive;
         this.simLoopPeriod = simLoopPeriod;
-        this.cameras = cameras;
+        this.cameras = Arrays.stream(cameras).toList();
 
-        aprilTagPoses = aprilTagFieldLayout.getTags().stream().map(tag -> tag.pose.toPose2d()).toList();
 
         if (Utils.isSimulation()) {
             startSimThread();
@@ -112,8 +113,9 @@ public class SwerveDriveSubsystem implements Subsystem {
 
     public Command setFieldFromCamera() {
         return run(() -> {
-            if (cameras[0].getState().getEstimatedRobotPose().isPresent()) {
-                swerveDrive.resetPose(cameras[0].getState().getEstimatedRobotPose().get().estimatedPose.toPose2d());
+            Pose2d pose2d = cameras.get(0).getRobotPose();
+            if (pose2d != null) {
+                swerveDrive.resetPose(pose2d);
             }
         });
     }
@@ -132,42 +134,29 @@ public class SwerveDriveSubsystem implements Subsystem {
             });
         }
 
-
         swerveDrive.update();
-        Arrays.stream(cameras).forEach(Camera::update);
-        if (cameras[0].getState().getEstimatedRobotPose().isPresent()) {
-            var cameraPose = cameras[0].getState().getEstimatedRobotPose().get().estimatedPose.toPose2d();
-            var cameraPoseStdDev = cameras[0].getState().getEstimatedRobotPoseStdDev();
-            var timeStampSeconds = cameras[0].getState().getEstimatedRobotPose().get().timestampSeconds;
-            var robotPose = swerveDrive.getState().getPose();
-            timeStampSeconds = Utils.fpgaToCurrentTime(timeStampSeconds);
-            if (cameraPose.getTranslation().getDistance(robotPose.getTranslation()) < 1.0) {
-                swerveDrive.addVisionMeasurement(
-                        cameraPose,
-                        timeStampSeconds,
-                        cameraPoseStdDev);
+        cameras.forEach(camera -> {
+            camera.setRobotOrientation(swerveDrive.getState().getPose());
+            camera.update();
+            Pose2d pose2d = camera.getRobotPose();
+            double timeStampSeconds = camera.getTimeStampSeconds();
+            int tagCount = camera.getTagCount();
+            double poseAmbiguity = camera.getRobotPoseAmbiguity();
+            Matrix<N3, N1> robotPoseStdDev = camera.getRobotPoseStdDev();
+            if (Math.abs(swerveDrive.getState().getSpeeds().omegaRadiansPerSecond) > Units.degreesToRadians(360)) {
+                return;
             }
-        }
-    }
-
-    private int getNearestTagId(int startingTag, int endingTag, Pose2d robotLocation) {
-        List<Pose2d> filteredPoses = IntStream.rangeClosed(startingTag - 1, endingTag - 1).mapToObj(aprilTagPoses::get).toList();
-        Pose2d nearestPose = robotLocation.nearest(filteredPoses);
-        return aprilTagPoses.indexOf(nearestPose) + 1;
-    }
-
-    private int getNearestTagId() {
-        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-            return getNearestTagId(17, 22, swerveDrive.getState().getPose());
-        } else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-            return getNearestTagId(6, 11, swerveDrive.getState().getPose());
-        } else {
-            return -1;
-        }
-    }
-
-    public Trigger isNearestTag(int tagId) {
-        return new Trigger(() -> getNearestTagId() == tagId);
+            if (pose2d == null) {
+                return;
+            }
+            if (tagCount == 0) {
+                return;
+            }
+            if (Double.isFinite(poseAmbiguity) && poseAmbiguity >= 0.7) {
+                return;
+            }
+            swerveDrive.addVisionMeasurement(pose2d, Utils.fpgaToCurrentTime(timeStampSeconds), robotPoseStdDev);
+        });
     }
 
     private void startSimThread() {
@@ -182,11 +171,7 @@ public class SwerveDriveSubsystem implements Subsystem {
 
             /* use the measured time delta, get battery voltage from WPILib */
             swerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
-            for (var camera : cameras) {
-            }
         });
         m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
-
-
 }

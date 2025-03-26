@@ -13,7 +13,7 @@ import static java.lang.Math.toDegrees;
 
 public class DriveMap {
 
-    public enum ReefPosition{
+    public enum ReefPosition {
         LEFT,
         CENTER,
         RIGHT
@@ -43,10 +43,6 @@ public class DriveMap {
         bindSeedFieldCentric();
 
         bindSetFieldFromCamera();
-
-        bindGoToNearestLeftReef();
-        bindGoToNearestRightReef();
-        bindGoToNearestAlgae();
     }
 
     private double getMaxVelocitySetpointScalar() {
@@ -131,53 +127,6 @@ public class DriveMap {
     private void bindSetFieldFromCamera() {
         driver.b().whileTrue(swerveDriveSubsystem.setFieldFromCamera());
     }
-
-    private void bindGoToNearestLeftReef() {
-        driver.povLeft().and(swerveDriveSubsystem.isNearestTag(17).or(swerveDriveSubsystem.isNearestTag(8)))
-                .whileTrue(goToTag(17, LEFT));
-        driver.povLeft().and(swerveDriveSubsystem.isNearestTag(18).or(swerveDriveSubsystem.isNearestTag(7)))
-                .whileTrue(goToTag(18, LEFT));
-        driver.povLeft().and(swerveDriveSubsystem.isNearestTag(19).or(swerveDriveSubsystem.isNearestTag(6)))
-                .whileTrue(goToTag(19, LEFT));
-        driver.povLeft().and(swerveDriveSubsystem.isNearestTag(20).or(swerveDriveSubsystem.isNearestTag(11)))
-                .whileTrue(goToTag(20, LEFT));
-        driver.povLeft().and(swerveDriveSubsystem.isNearestTag(21).or(swerveDriveSubsystem.isNearestTag(10)))
-                .whileTrue(goToTag(21, LEFT));
-        driver.povLeft().and(swerveDriveSubsystem.isNearestTag(22).or(swerveDriveSubsystem.isNearestTag(9)))
-                .whileTrue(goToTag(22, LEFT));
-    }
-
-    private void bindGoToNearestRightReef() {
-        driver.povRight().and(swerveDriveSubsystem.isNearestTag(17).or(swerveDriveSubsystem.isNearestTag(8)))
-                .whileTrue(goToTag(17, RIGHT));
-        driver.povRight().and(swerveDriveSubsystem.isNearestTag(18).or(swerveDriveSubsystem.isNearestTag(7)))
-                .whileTrue(goToTag(18, RIGHT));
-        driver.povRight().and(swerveDriveSubsystem.isNearestTag(19).or(swerveDriveSubsystem.isNearestTag(6)))
-                .whileTrue(goToTag(19, RIGHT));
-        driver.povRight().and(swerveDriveSubsystem.isNearestTag(20).or(swerveDriveSubsystem.isNearestTag(11)))
-                .whileTrue(goToTag(20, RIGHT));
-        driver.povRight().and(swerveDriveSubsystem.isNearestTag(21).or(swerveDriveSubsystem.isNearestTag(10)))
-                .whileTrue(goToTag(21, RIGHT));
-        driver.povRight().and(swerveDriveSubsystem.isNearestTag(22).or(swerveDriveSubsystem.isNearestTag(9)))
-                .whileTrue(goToTag(22, RIGHT));
-    }
-
-    private void bindGoToNearestAlgae() {
-        driver.povUp().and(swerveDriveSubsystem.isNearestTag(17).or(swerveDriveSubsystem.isNearestTag(8)))
-                .whileTrue(goToTag(17, CENTER));
-        driver.povUp().and(swerveDriveSubsystem.isNearestTag(18).or(swerveDriveSubsystem.isNearestTag(7)))
-                .whileTrue(goToTag(18, CENTER));
-        driver.povUp().and(swerveDriveSubsystem.isNearestTag(19).or(swerveDriveSubsystem.isNearestTag(6)))
-                .whileTrue(goToTag(19, CENTER));
-        driver.povUp().and(swerveDriveSubsystem.isNearestTag(20).or(swerveDriveSubsystem.isNearestTag(11)))
-                .whileTrue(goToTag(20, CENTER));
-        driver.povUp().and(swerveDriveSubsystem.isNearestTag(21).or(swerveDriveSubsystem.isNearestTag(10)))
-                .whileTrue(goToTag(21, CENTER));
-        driver.povUp().and(swerveDriveSubsystem.isNearestTag(22).or(swerveDriveSubsystem.isNearestTag(9)))
-                .whileTrue(goToTag(22, CENTER));
-    }
-
-
 
     public Command goToTag(int tagId, ReefPosition reefPosition) {
         if (reefPosition == ReefPosition.LEFT) {
