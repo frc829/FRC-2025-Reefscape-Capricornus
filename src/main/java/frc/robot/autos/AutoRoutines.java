@@ -53,6 +53,24 @@ public class AutoRoutines {
         autoChooser.addRoutine("Squirtle", this::squirtle);
         autoChooser.addRoutine("Wartortle", this::wartortle);
         autoChooser.addRoutine("Grapploct", this::grapploct);
+        autoChooser.addRoutine("1MTest", this::test1M);
+        autoChooser.addRoutine("0MTest", this::test0M);
+    }
+
+    private AutoRoutine test1M(){
+        AutoRoutine routine = factory.newRoutine("1MTest");
+        AutoTrajectory trajectory = routine.trajectory("1MTest");
+        Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
+        routine.active().onTrue(routineCommand);
+        return routine;
+    }
+
+    private AutoRoutine test0M(){
+        AutoRoutine routine = factory.newRoutine("0MTest");
+        AutoTrajectory trajectory = routine.trajectory("0MTest");
+        Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
+        routine.active().onTrue(routineCommand);
+        return routine;
     }
 
     private AutoRoutine theNoobSpot() {

@@ -143,7 +143,7 @@ public class DriveMap {
     }
 
     private void bindGoTo0(){
-        driver.a().whileTrue(swerveDriveSubsystem.goToPose(-1, 0, 0));
+        driver.a().whileTrue(swerveDriveSubsystem.goToPose(0, 0, 0));
     }
 
 

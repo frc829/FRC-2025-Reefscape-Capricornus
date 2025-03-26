@@ -84,10 +84,10 @@ public class SwerveDriveSubsystemConstants {
 
         static final double maxVelocityMPS = 4.73;
         static final double maxAngularVelocityRPS = 0.75;
-        static final double pathTranslationXKp = 3;
-        static final double pathTranslationYkP = 3;
-        static final double deadband = 0.1;
-        static final double rotationalDeadband = 0.1;
+        static final double pathTranslationXKp = 3.25;
+        static final double pathTranslationYkP = 3.25;
+        static final double deadband = 0.0;
+        static final double rotationalDeadband = 0.0;
         static final double pathRotationKp = 1.6 * Math.PI; //8.0984; // 5.9918340044856690519902612191937;
         static final SwerveDriveConstants constants = new SwerveDriveConstants(
                 "Swerve Drive",
@@ -108,10 +108,10 @@ public class SwerveDriveSubsystemConstants {
             static final Current SLIP_CURRENT = Amps.of(50.0);
             static final Current steerStatorCurrentLimit = Amps.of(60.0);
             static final boolean steerStatorCurrentLimitEnabled = true;
-            static final double COUPLE_RATIO = 36.0 / 12.0; // 36 tooth first stage / 12 tooth pinion
-            static final double DRIVE_GEAR_RATIO = 6.75;  // 16 tooth second stage, 12 tooth pinion
+            static final double COUPLE_RATIO = 36.0 / 13.0; // 36 tooth first stage / 13 tooth pinion
+            static final double DRIVE_GEAR_RATIO = 5.54;  // 16 tooth second stage, 13 tooth pinion
             static final double STEER_GEAR_RATIO = 25;   // 12T
-            static final Distance WHEEL_RADIUS = Inches.of(2);
+            static final Distance WHEEL_RADIUS = Inches.of(1.675);
 
             static final class Module0 {
                 static final Distance xPos = Inches.of(10.75);
@@ -508,7 +508,7 @@ public class SwerveDriveSubsystemConstants {
 
         final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule3 =
                 new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
-                        .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
+                        .withDriveMotorGearRatio(6.00)
                         .withSteerMotorGearRatio(STEER_GEAR_RATIO)
                         .withCouplingGearRatio(COUPLE_RATIO)
                         .withWheelRadius(WHEEL_RADIUS)
