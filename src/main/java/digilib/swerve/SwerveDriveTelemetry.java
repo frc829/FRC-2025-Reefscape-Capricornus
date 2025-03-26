@@ -21,6 +21,7 @@ public class SwerveDriveTelemetry {
     private final DoubleArrayPublisher pose;
     private final StructPublisher<ChassisSpeeds> robotSpeeds;
     private final DoubleArrayPublisher speeds;
+    private final DoublePublisher angleDegrees;
     private final StructArrayPublisher<SwerveModuleState> moduleStates;
     private final StructArrayPublisher<SwerveModuleState> moduleTargets;
     private final StructArrayPublisher<SwerveModulePosition> modulePositions;
@@ -64,6 +65,9 @@ public class SwerveDriveTelemetry {
         modulePositions = field
                 .getStructArrayTopic("ModulePositions", SwerveModulePosition.struct)
                 .publish();
+        angleDegrees = field
+                .getDoubleTopic("Angle Degrees")
+                .publish();
 
         table.getDoubleTopic("Max Velocity [mps]")
                 .publish()
@@ -101,13 +105,15 @@ public class SwerveDriveTelemetry {
         poseArray[2] = DigiMath.roundToDecimal(state.getPose().getRotation().getDegrees(), 2);
         pose.set(poseArray);
 
+        angleDegrees.set(poseArray[2]);
+
         speedsArray[0] = DigiMath.roundToDecimal(state.getSpeeds().vxMetersPerSecond, 2);
         speedsArray[1] = DigiMath.roundToDecimal(state.getSpeeds().vyMetersPerSecond, 2);
         speedsArray[2] = DigiMath.roundToDecimal(state.getSpeeds().omegaRadiansPerSecond * 180 / Math.PI, 2);
         speeds.set(speedsArray);
 
         rawHeading.set(MathUtil.inputModulus(state.getRawHeading().getDegrees(), -180, 180));
-        if(state.getSwerveSample() != null){
+        if (state.getSwerveSample() != null) {
             swerveSample.set(state.getSwerveSample());
         }
     }

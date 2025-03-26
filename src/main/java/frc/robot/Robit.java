@@ -43,7 +43,7 @@ public class Robit extends TimedRobot {
         SmartDashboard.putString("Robot Comments", Constants.robotComments);
         CanBridge.runTCP();
 
-        double deadband = 0.10;
+        double deadband = 0.07;
         CommandXboxController driverController = new CommandXboxController(0);
         CommandXboxController operatorController = new CommandXboxController(1);
         CommandJoystick climberController = new CommandJoystick(2);

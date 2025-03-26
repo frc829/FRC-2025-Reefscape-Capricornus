@@ -9,6 +9,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -117,6 +118,24 @@ public class SwerveDriveSubsystem implements Subsystem {
             if (pose2d != null) {
                 swerveDrive.resetPose(pose2d);
             }
+        });
+    }
+
+    public Command goToAngle(double angleDegrees) {
+        return run(() -> {
+            swerveDrive.rotateInPlace(Rotation2d.fromDegrees(angleDegrees));
+        });
+    }
+
+    public Command goToPose(double x, double y, double angleDegrees) {
+        return run(() -> {
+            swerveDrive.goToPose(new Pose2d(x, y, Rotation2d.fromDegrees(angleDegrees)));
+        });
+    }
+
+    public Command setPose(Pose2d pose2d) {
+        return run(() -> {
+            swerveDrive.resetPose(pose2d);
         });
     }
 

@@ -10,6 +10,8 @@ import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
@@ -165,6 +167,32 @@ public class CTRESwerveDrive implements SwerveDrive {
                 .withSpeeds(targetSpeeds)
                 .withWheelForceFeedforwardsX(sample.moduleForcesX())
                 .withWheelForceFeedforwardsY(sample.moduleForcesY());
+        swerveDriveTrain.setControl(pathApplyFieldSpeeds);
+    }
+
+    public void rotateInPlace(Rotation2d angle) {
+        var pose = swerveDriveTrain.getState().Pose;
+        var currentTimeStamp = swerveDriveTrain.getState().Timestamp;
+        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, 0);
+        speeds.omegaRadiansPerSecond += pathThetaController.calculate(
+                pose.getRotation().getRadians(), angle.getRadians(), currentTimeStamp);
+        pathApplyFieldSpeeds
+                .withSpeeds(speeds);
+        swerveDriveTrain.setControl(pathApplyFieldSpeeds);
+    }
+
+    public void goToPose(Pose2d pose2d) {
+        var pose = swerveDriveTrain.getState().Pose;
+        var currentTimestamp = swerveDriveTrain.getState().Timestamp;
+        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, 0);
+        speeds.vxMetersPerSecond += pathXController.calculate(
+                pose.getX(), pose2d.getX(), currentTimestamp);
+        speeds.vyMetersPerSecond += pathYController.calculate(
+                pose.getY(), pose2d.getY(), currentTimestamp);
+        speeds.omegaRadiansPerSecond += pathThetaController.calculate(
+                pose.getRotation().getRadians(), pose2d.getRotation().getRadians(), currentTimestamp);
+        pathApplyFieldSpeeds
+                .withSpeeds(speeds);
         swerveDriveTrain.setControl(pathApplyFieldSpeeds);
     }
 

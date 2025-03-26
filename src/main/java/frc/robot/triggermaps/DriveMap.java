@@ -2,12 +2,11 @@ package frc.robot.triggermaps;
 
 import choreo.auto.AutoFactory;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 
-import static frc.robot.triggermaps.DriveMap.ReefPosition.*;
 import static java.lang.Math.pow;
 import static java.lang.Math.toDegrees;
 
@@ -43,6 +42,10 @@ public class DriveMap {
         bindSeedFieldCentric();
 
         bindSetFieldFromCamera();
+        bindGoTo90();
+        bindGotTo270();
+        bindGoTo1();
+        bindGoTo0();
     }
 
     private double getMaxVelocitySetpointScalar() {
@@ -125,17 +128,22 @@ public class DriveMap {
     }
 
     private void bindSetFieldFromCamera() {
-        driver.b().whileTrue(swerveDriveSubsystem.setFieldFromCamera());
+        driver.b().whileTrue(swerveDriveSubsystem.setPose(new Pose2d()));
     }
 
-    public Command goToTag(int tagId, ReefPosition reefPosition) {
-        if (reefPosition == ReefPosition.LEFT) {
-            return autoFactory.trajectoryCmd(String.format("%sL", tagId));
-        } else if (reefPosition == ReefPosition.RIGHT) {
-            return autoFactory.trajectoryCmd(String.format("%sR", tagId));
-        } else {
-            return autoFactory.trajectoryCmd(String.format("%s", tagId));
-        }
+    private void bindGoTo90() {
+        driver.povLeft().whileTrue(swerveDriveSubsystem.goToAngle(90));
+    }
+    private void bindGotTo270() {
+        driver.povRight().whileTrue(swerveDriveSubsystem.goToAngle(-90));
+    }
+
+    private void bindGoTo1() {
+        driver.povUp().whileTrue(swerveDriveSubsystem.goToPose(1, 0, 0));
+    }
+
+    private void bindGoTo0(){
+        driver.a().whileTrue(swerveDriveSubsystem.goToPose(-1, 0, 0));
     }
 
 
