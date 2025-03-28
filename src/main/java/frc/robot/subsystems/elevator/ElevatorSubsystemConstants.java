@@ -5,7 +5,6 @@ import com.revrobotics.spark.config.*;
 import digilib.elevator.Elevator;
 import digilib.elevator.ElevatorConstants;
 import digilib.elevator.TwoVortexElevator;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;

@@ -19,14 +19,14 @@ public class SwerveDriveState {
     private final SwerveModuleState[] moduleTargets = new SwerveModuleState[]{
             new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState()
     };
-    public SwerveModulePosition[] modulePositions = new SwerveModulePosition[]{
+    public final SwerveModulePosition[] modulePositions = new SwerveModulePosition[]{
             new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()
     };
     private Rotation2d rawHeading = new Rotation2d();
-    private double[] swerveSteerPositions = new double[modulePositions.length];
-    private double[] swerveSteerVelocities = new double[modulePositions.length];
-    private double[] swerveWheelPositions = new double[modulePositions.length];
-    private double[] swerveWheelVelocities = new double[modulePositions.length];
+    private final double[] swerveSteerPositions = new double[modulePositions.length];
+    private final double[] swerveSteerVelocities = new double[modulePositions.length];
+    private final double[] swerveWheelPositions = new double[modulePositions.length];
+    private final double[] swerveWheelVelocities = new double[modulePositions.length];
     private SwerveSample swerveSample = null;
 
 

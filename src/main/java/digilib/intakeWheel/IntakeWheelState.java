@@ -6,10 +6,6 @@ public class IntakeWheelState {
     private double volts = 0.0;
     private double amps = 0.0;
 
-    public double getMotorEncoderVelocityRPS() {
-        return motorEncoderVelocityRPS;
-    }
-
     public double getMotorEncoderVelocityDPS() {
         return motorEncoderVelocityRPS * 360.0;
     }

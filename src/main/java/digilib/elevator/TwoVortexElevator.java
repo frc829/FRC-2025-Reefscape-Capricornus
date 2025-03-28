@@ -2,7 +2,6 @@ package digilib.elevator;
 
 import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.spark.SparkFlex;
-import digilib.MotorControllerType;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -33,7 +32,6 @@ public class TwoVortexElevator implements Elevator {
     private final MechanismLigament2d ligament;
     private final double minimumHeight;
     private final SparkFlex motor;
-    private final SparkFlex follower;
     private ControlState controlState = null;
     private final ExponentialProfile positionProfile;
     private final SlewRateLimiter velocityProfile;
@@ -56,7 +54,6 @@ public class TwoVortexElevator implements Elevator {
         maxHeightMeters = constants.maxHeightMeters();
         maxVelocityMPS = constants.maxVelocityMPS();
         this.motor = motor;
-        this.follower = follower;
         telemetry = new ElevatorTelemetry(
                 constants.name(),
                 constants.minHeightMeters(),
@@ -89,33 +86,12 @@ public class TwoVortexElevator implements Elevator {
                     constants.kvVoltsPerMPS(),
                     constants.kaVoltsPerMPSSquared(),
                     dcMotor,
-                    constants.reduction(),
                     constants.startingHeightMeters(),
                     minHeightMeters,
                     maxHeightMeters);
             sparkFlexSim.setPosition(constants.startingHeightMeters());
             followerSparkFlexSim.setPosition(constants.startingHeightMeters());
         }
-    }
-
-    @Override
-    public MotorControllerType getMotorControllerType() {
-        return MotorControllerType.REV_SPARK_FLEX;
-    }
-
-    @Override
-    public double getMinHeightMeters() {
-        return minHeightMeters;
-    }
-
-    @Override
-    public double getMaxHeightMeters() {
-        return maxHeightMeters;
-    }
-
-    @Override
-    public double getMaxVelocityMPS() {
-        return maxVelocityMPS;
     }
 
     @Override
@@ -177,41 +153,23 @@ public class TwoVortexElevator implements Elevator {
     }
 
     @Override
-    public void resetPosition() {
-        motor.getEncoder().setPosition(0.0);
-        follower.getEncoder().setPosition(0.0);
-        updateState();
-    }
-
-    @Override
     public void update() {
-        updateState();
-        updateTelemetry();
-    }
-
-    @Override
-    public void updateState() {
         state.setMotorEncoderPositionMeters(motor.getEncoder().getPosition());
         state.setMotorEncoderVelocityMPS(motor.getEncoder().getVelocity());
         state.setVolts(motor.getAppliedOutput() * motor.getBusVoltage());
         state.setAmps(motor.getOutputCurrent());
         state.setPositionSetpointMeters(setpoint.position);
         state.setVelocitySetpointMPS(setpoint.velocity);
-    }
-
-    @Override
-    public void updateTelemetry() {
         telemetry.telemeterize(state);
     }
 
     @Override
     public void updateSimState(double dt, double supplyVoltage) {
-        var inputVoltage = motor.getAppliedOutput() * 12.0;
+        var inputVoltage = motor.getAppliedOutput() * supplyVoltage;
         simElevator.setInputVoltage(inputVoltage);
         simElevator.update(dt);
-        sparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);
-        followerSparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), 12.0, dt);
-
+        sparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), supplyVoltage, dt);
+        followerSparkFlexSim.iterate(simElevator.getVelocityMetersPerSecond(), supplyVoltage, dt);
         ligament.setLength(minimumHeight + state.getMotorEncoderPositionMeters());
     }
 }

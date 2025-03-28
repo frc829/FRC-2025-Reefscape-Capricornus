@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import digilib.climber.Climber;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.DoubleSupplier;
 
@@ -25,24 +24,8 @@ public class ClimberSubsystem implements Subsystem {
         }
     }
 
-    public Trigger gte(double lengthMeters) {
-        return new Trigger(() -> climber
-                .getState()
-                .getMotorEncoderPositionMeters() >= lengthMeters);
-    }
-
-    public Trigger lte(double lengthMeters) {
-        return new Trigger(() -> climber
-                .getState()
-                .getMotorEncoderPositionMeters() <= lengthMeters);
-    }
-
-    public Trigger inRange(double minLengthMeters, double maxLengthMeters) {
-        return gte(minLengthMeters).and(lte(maxLengthMeters));
-    }
-
     public Command toVoltage(DoubleSupplier volts) {
-        return run(() -> climber.setVoltage(volts.getAsDouble()))
+        return run(() -> climber.applyVoltage(volts.getAsDouble()))
                 .withName(String.format("%s: VOLTAGE", getName()));
     }
 
@@ -51,19 +34,16 @@ public class ClimberSubsystem implements Subsystem {
         climber.update();
     }
 
+    @SuppressWarnings("resource")
     private void startSimThread() {
         lastSimTime = Utils.getCurrentTimeSeconds();
 
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        /* use the measured time delta, get battery voltage from WPILib */
-        Notifier m_simNotifier = new Notifier(() -> {
+        new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
 
-            /* use the measured time delta, get battery voltage from WPILib */
             climber.updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
+        }).startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
 }

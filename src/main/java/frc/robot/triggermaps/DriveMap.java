@@ -1,6 +1,5 @@
 package frc.robot.triggermaps;
 
-import choreo.auto.AutoFactory;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -12,27 +11,18 @@ import static java.lang.Math.toDegrees;
 
 public class DriveMap {
 
-    public enum ReefPosition {
-        LEFT,
-        CENTER,
-        RIGHT
-    }
-
 
     private final CommandXboxController driver;
     private final double deadband;
     private final SwerveDriveSubsystem swerveDriveSubsystem;
-    private final AutoFactory autoFactory;
 
     public DriveMap(
             CommandXboxController driver,
             double deadband,
-            SwerveDriveSubsystem swerveDriveSubsystem,
-            AutoFactory autoFactory) {
+            SwerveDriveSubsystem swerveDriveSubsystem) {
         this.driver = driver;
         this.deadband = deadband;
         this.swerveDriveSubsystem = swerveDriveSubsystem;
-        this.autoFactory = autoFactory;
 
         bindFieldCentricDrive();
         bindRobotCentricDrive();

@@ -10,13 +10,11 @@ import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.OpenLoopVoltage;
 import static com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue.OperatorPerspective;
@@ -37,7 +35,6 @@ public class CTRESwerveDrive implements SwerveDrive {
             .withDriveRequestType(OpenLoopVoltage);
     private final FieldCentricFacingAngle clockDrive = new FieldCentricFacingAngle()
             .withForwardPerspective(OperatorPerspective);
-    private final SwerveDriveBrake brake = new SwerveDriveBrake();
     private final Idle idle = new Idle();
     private final PointWheelsAt point = new PointWheelsAt();
     private final ApplyFieldSpeeds pathApplyFieldSpeeds = new ApplyFieldSpeeds();
@@ -62,16 +59,6 @@ public class CTRESwerveDrive implements SwerveDrive {
         this.pathThetaController = constants.pathThetaController();
         pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
         clockDrive.HeadingController = pathThetaController;
-    }
-
-    @Override
-    public double getMaxVelocityMPS() {
-        return maxVelocityMPS;
-    }
-
-    @Override
-    public double getMaxAngularVelocityRPS() {
-        return maxAngularVelocityRPS;
     }
 
     @Override
@@ -127,17 +114,6 @@ public class CTRESwerveDrive implements SwerveDrive {
                 .withDeadband(maxVelocityDeadband * maxVelocityMPS)
                 .withRotationalDeadband(maxAngularVelocityDeadband * maxAngularVelocityRPS);
         swerveDriveTrain.setControl(clockDrive);
-    }
-
-    @Override
-    public void setSteerAngle(double angleDegrees) {
-        point.withModuleDirection(Rotation2d.fromDegrees(angleDegrees));
-        swerveDriveTrain.setControl(point);
-    }
-
-    @Override
-    public void setBrake() {
-        swerveDriveTrain.setControl(brake);
     }
 
     @Override
@@ -226,12 +202,6 @@ public class CTRESwerveDrive implements SwerveDrive {
 
     @Override
     public void update() {
-        updateState();
-        updateTelemetry();
-    }
-
-    @Override
-    public void updateState() {
         state.setPose(swerveDriveTrain.getState().Pose);
         state.setSpeeds(swerveDriveTrain.getState().Speeds);
         state.setModuleStates(swerveDriveTrain.getState().ModuleStates);
@@ -254,10 +224,6 @@ public class CTRESwerveDrive implements SwerveDrive {
                 Arrays.stream(swerveDriveTrain.getModules())
                         .map(module -> module.getDriveMotor().getVelocity().getValueAsDouble())
                         .toList());
-    }
-
-    @Override
-    public void updateTelemetry() {
         swerveDriveTelemetry.telemeterize(state);
     }
 

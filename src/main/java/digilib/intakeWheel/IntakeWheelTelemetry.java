@@ -4,8 +4,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-import static digilib.DigiMath.roundToDecimal;
-
 public class IntakeWheelTelemetry {
     private final DoublePublisher motorEncoderVelocity;
     private final DoublePublisher voltage;
@@ -32,9 +30,6 @@ public class IntakeWheelTelemetry {
     public void telemeterize(IntakeWheelState state) {
         double motorEncoderVelocityDPS = state.getMotorEncoderVelocityDPS();
         double volts = state.getVolts();
-
-        motorEncoderVelocityDPS = roundToDecimal(motorEncoderVelocityDPS, 2);
-        volts = roundToDecimal(volts, 2);
 
         motorEncoderVelocity.set(motorEncoderVelocityDPS);
         voltage.set(volts);

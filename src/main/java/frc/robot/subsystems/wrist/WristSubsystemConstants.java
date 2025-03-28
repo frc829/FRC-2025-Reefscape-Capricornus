@@ -1,16 +1,11 @@
 package frc.robot.subsystems.wrist;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.*;
 import digilib.wrist.NEO550Wrist;
 import digilib.wrist.Wrist;
 import digilib.wrist.WristConstants;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 
 import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
@@ -20,7 +15,6 @@ import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
 import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
 import static edu.wpi.first.units.Units.Seconds;
-import static frc.robot.Constants.rio;
 // import static frc.robot.subsystems.wrist.WristSubsystemConstants.AbsoluteEncoder.cancoder;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Control.*;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.constants;
@@ -35,12 +29,9 @@ public class WristSubsystemConstants {
         static final double ksVolts = 0.17044;
         static final double kvVoltsPerRPS = 4.9058;
         static final double kaVoltsPerRPSSquared = 0.14377;
-        static final double positionKpVoltsPerRotation = RobotBase.isReal()
-                ? 6.5235
-                : 6.5235;
-        static final double positionKdVoltsPerRPS = RobotBase.isReal()
-                ? 0.0
-                : 1.0;
+        static final double positionKpVoltsPerRotation = 6.5235;
+        static final double positionKdVoltsPerRPS = 0.0;
+
         static final double velocityKpVoltsPerRPS = 5.4797E-07;
         static final double maxControlVoltage = 12.0 - ksVolts;
         static final double maxVelocityRPS = maxControlVoltage / kvVoltsPerRPS;
@@ -70,22 +61,6 @@ public class WristSubsystemConstants {
                 kaVoltsPerRPSSquared,
                 maxVelocityRPS,
                 maxAccelerationRPSS);
-    }
-
-    static final class AbsoluteEncoder {
-        static final int cancoderDeviceNumber = 37;
-        static final SensorDirectionValue sensorDirectionValue = RobotBase.isReal()
-                ? SensorDirectionValue.Clockwise_Positive
-                : SensorDirectionValue.CounterClockwise_Positive;
-        static final double magnetOffset = RobotBase.isReal()
-                ? -0.228271
-                : 0.0;
-        static final MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs()
-                .withSensorDirection(sensorDirectionValue)
-                .withMagnetOffset(magnetOffset);
-        static final CANcoderConfiguration config = new CANcoderConfiguration()
-                .withMagnetSensor(magnetSensorConfigs);
-        // static final CANcoder cancoder = new CANcoder(cancoderDeviceNumber, rio);
     }
 
     static final class Motor {

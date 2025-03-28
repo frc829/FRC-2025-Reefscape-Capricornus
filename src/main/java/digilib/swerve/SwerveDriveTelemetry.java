@@ -1,7 +1,6 @@
 package digilib.swerve;
 
 import choreo.trajectory.SwerveSample;
-import digilib.DigiMath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -100,16 +99,16 @@ public class SwerveDriveTelemetry {
         moduleTargets.set(state.getModuleTargets());
         modulePositions.set(state.getModulePositions());
 
-        poseArray[0] = DigiMath.roundToDecimal(state.getPose().getX(), 2);
-        poseArray[1] = DigiMath.roundToDecimal(state.getPose().getY(), 2);
-        poseArray[2] = DigiMath.roundToDecimal(state.getPose().getRotation().getDegrees(), 2);
+        poseArray[0] = state.getPose().getX();
+        poseArray[1] = state.getPose().getY();
+        poseArray[2] = state.getPose().getRotation().getDegrees();
         pose.set(poseArray);
 
         angleDegrees.set(poseArray[2]);
 
-        speedsArray[0] = DigiMath.roundToDecimal(state.getSpeeds().vxMetersPerSecond, 2);
-        speedsArray[1] = DigiMath.roundToDecimal(state.getSpeeds().vyMetersPerSecond, 2);
-        speedsArray[2] = DigiMath.roundToDecimal(state.getSpeeds().omegaRadiansPerSecond * 180 / Math.PI, 2);
+        speedsArray[0] = state.getSpeeds().vxMetersPerSecond;
+        speedsArray[1] = state.getSpeeds().vyMetersPerSecond;
+        speedsArray[2] = state.getSpeeds().omegaRadiansPerSecond * 180 / Math.PI;
         speeds.set(speedsArray);
 
         rawHeading.set(MathUtil.inputModulus(state.getRawHeading().getDegrees(), -180, 180));

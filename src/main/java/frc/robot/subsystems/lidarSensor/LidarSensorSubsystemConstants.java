@@ -52,6 +52,7 @@ public class LidarSensorSubsystemConstants {
             laserCan.setTimingBudget(timingBudget);
         } catch (Exception e) {
             laserCan = null;
+            //noinspection resource
             Alert alert = new Alert(e.getMessage(), kError);
             alert.set(true);
         }

@@ -1,20 +1,30 @@
 package digilib.pneumatics;
 
-public interface Pneumatics {
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
-    PneumaticsState getState();
+public abstract class Pneumatics {
 
-    void setControl(PneumaticsRequest request);
+    public record Config(String name) {
+    }
 
-    void clearStickyFaults();
+    private final BooleanPublisher compressorOnPublisher;
 
-    void turnOnCompressor();
+    Pneumatics(String name) {
+        NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
+        this.compressorOnPublisher = table.getBooleanTopic("Compressor On").publish();
+    }
 
-    void turnOffCompressor();
+    public abstract boolean isCompressorOn();
 
-    void update();
+    public abstract void clearStickyFaults();
 
-    void updateState();
+    public abstract void turnOnCompressor();
 
-    void updateTelemetry();
+    public abstract void turnOffCompressor();
+
+    public void update(){
+        compressorOnPublisher.set(isCompressorOn());
+    }
 }

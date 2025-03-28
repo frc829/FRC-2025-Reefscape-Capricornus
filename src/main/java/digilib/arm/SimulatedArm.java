@@ -55,14 +55,6 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
         return currentAngleRads >= this.maxAngle;
     }
 
-    public boolean hasHitLowerLimit() {
-        return wouldHitLowerLimit(getAngleRads());
-    }
-
-    public boolean hasHitUpperLimit() {
-        return wouldHitUpperLimit(getAngleRads());
-    }
-
     public double getAngleRads() {
         return getOutput(0);
     }
@@ -71,6 +63,7 @@ public class SimulatedArm extends LinearSystemSim<N2, N1, N2> {
         return getOutput(1);
     }
 
+    @SuppressWarnings("unused")
     public double getCurrentDrawAmps() {
         // Reductions are greater than 1, so a reduction of 10:1 would mean the motor is
         // spinning 10x faster than the output

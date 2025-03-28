@@ -16,8 +16,6 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
     private final double ks;
     private final DCMotor gearbox;
 
-    private final double gearing;
-
     private final double minHeight;
 
     private final double maxHeight;
@@ -28,7 +26,6 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
             LinearSystem<N2, N1, N2> plant,
             double ks,
             DCMotor gearbox,
-            double gearing,
             double unmodeledAcceleration,
             double startingHeightMeters,
             double minHeightMeters,
@@ -37,7 +34,6 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
         super(plant, measurementStdDevs);
         this.ks = ks;
         this.gearbox = gearbox;
-        this.gearing = gearing;
         minHeight = minHeightMeters;
         maxHeight = maxHeightMeters;
         this.unmodeledAcceleration = unmodeledAcceleration;
@@ -59,22 +55,11 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
         return elevatorHeightMeters >= this.maxHeight;
     }
 
-    public boolean hasHitLowerLimit() {
-        return wouldHitLowerLimit(getPositionMeters());
-    }
-
-    public boolean hasHitUpperLimit() {
-        return wouldHitUpperLimit(getPositionMeters());
-    }
-
-    public double getPositionMeters() {
-        return getOutput(0);
-    }
-
     public double getVelocityMetersPerSecond() {
         return getOutput(1);
     }
 
+    @SuppressWarnings("unused")
     public double getCurrentDrawAmps() {
         // I = V / R - omega / (Kv * R)
         // Reductions are greater than 1, so a reduction of 10:1 would mean the motor is
@@ -141,7 +126,6 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
             double kv,
             double ka,
             DCMotor gearbox,
-            double gearing,
             double startingHeightMeters,
             double minHeightMeters,
             double maxHeightMeters) {
@@ -151,7 +135,6 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
                 kv,
                 ka,
                 gearbox,
-                gearing,
                 startingHeightMeters,
                 minHeightMeters,
                 maxHeightMeters,
@@ -165,7 +148,6 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
             double kv,
             double ka,
             DCMotor gearbox,
-            double gearing,
             double startingHeightMeters,
             double minHeightMeters,
             double maxHeightMeters,
@@ -175,7 +157,6 @@ public class SimulatedElevator extends LinearSystemSim<N2, N1, N2> {
                 LinearSystemId.identifyPositionSystem(kv, ka),
                 ks,
                 gearbox,
-                gearing,
                 -kg / ka,
                 startingHeightMeters,
                 minHeightMeters,

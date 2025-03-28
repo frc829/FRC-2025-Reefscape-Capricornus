@@ -8,7 +8,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import digilib.climber.VortexClimber;
 import digilib.climber.Climber;
-import digilib.climber.ClimberConstants;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
@@ -17,6 +16,7 @@ import static com.revrobotics.spark.SparkBase.PersistMode.*;
 import static com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters;
 import static com.revrobotics.spark.SparkLowLevel.MotorType.*;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
+import static digilib.climber.Climber.*;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.climber.ClimberSubsystemConstants.Control.*;
 import static frc.robot.subsystems.climber.ClimberSubsystemConstants.Mechanism.*;
@@ -55,7 +55,7 @@ public class ClimberSubsystemConstants {
         static final double minLengthMeters = minLengthCentimeters / 100.0;
         static final double maxLengthCentimeters = 20;
         static final double maxLengthMeters = maxLengthCentimeters / 100.0;
-        static final ClimberConstants constants = new ClimberConstants(
+        static final Config config = new Config(
                 name,
                 reduction,
                 drumRadiusMeters,
@@ -106,8 +106,8 @@ public class ClimberSubsystemConstants {
     }
 
     public static ClimberSubsystem create() {
-        motor.configure(config, kResetSafeParameters, kPersistParameters);
-        Climber climber = new VortexClimber(constants, motor);
+        motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
+        Climber climber = new VortexClimber(Mechanism.config, motor);
         ClimberSubsystem climberSubsystem = new ClimberSubsystem(climber, simLoopPeriod);
         climberSubsystem.setDefaultCommand(climberSubsystem.toVoltage(() -> 0.0));
         return climberSubsystem;

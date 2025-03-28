@@ -3,7 +3,6 @@ package frc.robot.subsystems.swerveDrive;
 import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
-import choreo.trajectory.Trajectory;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -25,8 +24,6 @@ import digilib.cameras.Camera;
 import digilib.cameras.Limelight3G;
 import digilib.swerve.CTRESwerveDrive;
 import digilib.swerve.SwerveDriveConstants;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -39,10 +36,6 @@ import edu.wpi.first.units.*;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
-import org.photonvision.PhotonCamera;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 import static edu.wpi.first.units.Units.*;
@@ -50,7 +43,6 @@ import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Cam
 import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.*;
 import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.Modules.*;
 import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.Drive.Simulation.simLoopPeriod;
-import static org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class SwerveDriveSubsystemConstants {
 
@@ -593,21 +585,16 @@ public class SwerveDriveSubsystemConstants {
                 CTRE_SWERVE_DRIVE,
                 simLoopPeriod,
                 Camera0.camera);
-        List<Trajectory<SwerveSample>> trajectories = new ArrayList<>();
+
         TrajectoryLogger<SwerveSample> logger = (trajectory, starting) -> DriverStation.getAlliance().ifPresent(color -> {
             NetworkTable field = getDefault().getTable("Field");
-            if (!trajectories.contains(trajectory)) {
-                trajectories.add(trajectory);
-            }
-            if (color == DriverStation.Alliance.Red) {
-                field.getStructArrayTopic("Trajectory" + trajectories.size(), Pose2d.struct)
-                        .publish()
-                        .set(trajectory.flipped().getPoses());
-            } else {
-                field.getStructArrayTopic("Trajectory" + trajectories.size(), Pose2d.struct)
-                        .publish()
-                        .set(trajectory.getPoses());
-            }
+            Pose2d[] poses = color == DriverStation.Alliance.Red
+                    ? trajectory.flipped().getPoses()
+                    : trajectory.getPoses();
+            //noinspection resource
+            field.getStructArrayTopic("Trajectory-" + trajectory.name(), Pose2d.struct)
+                    .publish()
+                    .set(poses);
         });
 
         autoFactory = new AutoFactory(

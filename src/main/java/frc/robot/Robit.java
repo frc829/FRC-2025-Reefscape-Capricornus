@@ -6,7 +6,6 @@ package frc.robot;
 
 import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoFactory;
-import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -28,14 +27,11 @@ import frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants;
 import frc.robot.subsystems.intakeWheel.CoralIntakeSubsystemConstants;
 import frc.robot.subsystems.lidarSensor.LidarSensorSubsystemConstants;
 import frc.robot.subsystems.pneumatics.PneumaticsSubsystemConstants;
-import frc.robot.subsystems.power.PowerSubsystem;
 import frc.robot.subsystems.power.PowerSubsystemConstants;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants;
 import frc.robot.subsystems.wrist.WristSubsystemConstants;
 import frc.robot.triggermaps.*;
-
-import static digilib.DigiMath.roundToDecimal;
 
 public class Robit extends TimedRobot {
 
@@ -55,6 +51,7 @@ public class Robit extends TimedRobot {
         Mechanism2d manipulatorMechanism = new Mechanism2d(3, 5, new Color8Bit(Color.kMediumPurple));
         MechanismRoot2d manipulatorRoot = manipulatorMechanism.getRoot("Manipulator", 1.5, 2);
         MechanismLigament2d elevatorLigament = new MechanismLigament2d("Elevator", 0.20, 90, 2, new Color8Bit(Color.kYellow));
+        //noinspection resource
         MechanismLigament2d bar = new MechanismLigament2d("ElevatorBackBar", 1, 90, 2, new Color8Bit(Color.kYellow));
         MechanismLigament2d armLigament = new MechanismLigament2d("Arm", 0.60, -90, 2, new Color8Bit(Color.kAntiqueWhite));
         MechanismLigament2d wristTopLigament = new MechanismLigament2d("WristTop", 0.3, 90, 2, new Color8Bit(Color.kDarkOrange));
@@ -85,7 +82,7 @@ public class Robit extends TimedRobot {
         AlgaeScore algaeScore = new AlgaeScore(manipulator);
         CoralPickup coralPickup = new CoralPickup(manipulator);
         CoralScore coralScore = new CoralScore(manipulator);
-        Manual manual = new Manual(swerveDriveSubsystem, manipulator);
+        Manual manual = new Manual(manipulator);
 
         if (RobotBase.isSimulation()) {
             Timer timer = new Timer();
@@ -94,7 +91,7 @@ public class Robit extends TimedRobot {
                     timer.start();
                 }
                 if (RobotModeTriggers.autonomous().getAsBoolean()) {
-                    SmartDashboard.putNumber("Auto Timer", roundToDecimal(15 - timer.get(), 2));
+                    SmartDashboard.putNumber("Auto Timer", 15 - timer.get());
                 } else if (RobotModeTriggers.teleop().getAsBoolean() || timer.get() > 15.0) {
                     timer.stop();
                     timer.reset();
@@ -105,7 +102,7 @@ public class Robit extends TimedRobot {
             }, 0.020);
         }
 
-        new DriveMap(driverController, deadband, swerveDriveSubsystem, autoFactory);
+        new DriveMap(driverController, deadband, swerveDriveSubsystem);
         new AlgaePickupMap(operatorController, deadband, algaePickup);
         new AlgaeScoreMap(driverController, operatorController, deadband, algaeScore);
         new CoralPickupMap(operatorController, coralPickup);

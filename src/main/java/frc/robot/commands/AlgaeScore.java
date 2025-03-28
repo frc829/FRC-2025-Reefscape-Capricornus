@@ -11,14 +11,9 @@ public class AlgaeScore {
     private static final double armSafeDegrees = 40.0;
     private static final double armBargeTravelDegrees = 30.0;
     private static final double armBargeDegrees = 48.0;
-    private static final double armResetDegrees = 90.0;
-
 
     private static final double elevatorBargeTravelCM = 45.0;
     private static final double elevatorBargeCM = 65.0;
-    private static final double elevatorResetCM = 10.0;
-
-    private static final double wristSafeDegrees = 0.0;
 
     private static final double algaeSpeed = 1;
     private static final double coralSpeed = 1;

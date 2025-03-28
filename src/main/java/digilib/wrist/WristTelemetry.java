@@ -2,9 +2,7 @@ package digilib.wrist;
 
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
-
-import static digilib.DigiMath.roundToDecimal;
-import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class WristTelemetry {
     private final DoublePublisher motorEncoderPosition;
@@ -18,19 +16,19 @@ public class WristTelemetry {
             double maxAngleDegrees,
             double maxVelocityRPS,
             double maxAccelerationRPSSquared) {
-        NetworkTable table = getDefault().getTable(name);
+        NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
         table.getDoubleTopic("Min Angle [deg]")
                 .publish()
-                .set(roundToDecimal(minAngleDegrees, 2));
+                .set(minAngleDegrees);
         table.getDoubleTopic("Max Angle [deg]")
                 .publish()
-                .set(roundToDecimal(maxAngleDegrees, 2));
+                .set(maxAngleDegrees);
         table.getDoubleTopic("Max Velocity [dps]")
                 .publish()
-                .set(roundToDecimal(maxVelocityRPS * 360, 2));
+                .set(maxVelocityRPS * 360);
         table.getDoubleTopic("Max Acceleration [dpss]")
                 .publish()
-                .set(roundToDecimal(maxAccelerationRPSSquared * 360, 2));
+                .set(maxAccelerationRPSSquared * 360);
         motorEncoderPosition = table
                 .getDoubleTopic("Motor Encoder Angle [deg]")
                 .publish();
@@ -50,11 +48,6 @@ public class WristTelemetry {
         double motorEncoderVelocityDPS = state.getMotorEncoderVelocityDPS();
         double volts = state.getVolts();
         double amps = state.getAmps();
-
-        motorEncoderPositionDegrees = roundToDecimal(motorEncoderPositionDegrees, 2);
-        motorEncoderVelocityDPS = roundToDecimal(motorEncoderVelocityDPS, 2);
-        volts = roundToDecimal(volts, 2);
-        amps = roundToDecimal(amps, 2);
 
         motorEncoderPosition.set(motorEncoderPositionDegrees);
         motorEncoderVelocity.set(motorEncoderVelocityDPS);

@@ -54,11 +54,6 @@ public class WristSubsystem implements Subsystem {
                 .withName(String.format("%s: VELOCITY", getName()));
     }
 
-    public Command toVoltage(double volts) {
-        return run(() -> wrist.setVoltage(volts))
-                .withName(String.format("%s: VOLTAGE", getName()));
-    }
-
     public Command hold() {
         MutAngle holdPosition = Rotations.mutable(0.0);
         return sequence(
@@ -72,16 +67,16 @@ public class WristSubsystem implements Subsystem {
         wrist.update();
     }
 
+    @SuppressWarnings("resource")
     private void startSimThread() {
         lastSimTime = Utils.getCurrentTimeSeconds();
 
-        Notifier m_simNotifier = new Notifier(() -> {
+        new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
 
             wrist.updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
+        }).startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
 }

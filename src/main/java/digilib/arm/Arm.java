@@ -1,16 +1,6 @@
 package digilib.arm;
 
-import digilib.MotorControllerType;
-
 public interface Arm {
-
-    MotorControllerType getMotorControllerType();
-
-    double getMinAngleRotations();
-
-    double getMaxAngleRotations();
-
-    double getMaxVelocityRPS();
 
     ArmState getState();
 
@@ -18,15 +8,7 @@ public interface Arm {
 
     void setVelocity(double setpointScalar);
 
-    void setVoltage(double volts);
-
-    void resetPosition();
-
     void update();
-
-    void updateState();
-
-    void updateTelemetry();
 
     void updateSimState(double dt, double supplyVoltage);
 }

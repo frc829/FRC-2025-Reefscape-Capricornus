@@ -4,16 +4,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Manipulator;
 
-import static digilib.claws.ClawState.*;
-import static digilib.claws.ClawState.ClawValue.CLOSED;
-import static digilib.claws.ClawState.ClawValue.OPEN;
+import static digilib.claws.Claw.*;
+import static digilib.claws.Claw.Value.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class AlgaePickup {
     private static final double armFloorDegrees = -39;
     private static final double armL2Degrees = -7.0;
     private static final double armL3Degrees = -10.0;
-    private static final double armHoldDegrees = 0.0;
     private static final double armSafeDownDegrees = 60.0;
     private static final double armForHoldAfterPickupDegrees = -9.4;
 
@@ -29,8 +27,8 @@ public class AlgaePickup {
 
     private static final double algaeHoldSpeed = -0.08;
 
-    private static final ClawValue algaeClawValue = CLOSED;
-    private static final ClawValue coralClawValue = OPEN;
+    private static final Value algaeClawValue = CLOSED;
+    private static final Value coralClawValue = OPEN;
 
     private final Manipulator manipulator;
     private final Trigger hasAlgae;
@@ -110,8 +108,8 @@ public class AlgaePickup {
 
     private Command claws() {
         return parallel(
-                manipulator.algaeClaw().toClawValue(algaeClawValue),
-                manipulator.coralClaw().toClawValue(coralClawValue));
+                manipulator.algaeClaw().toValue(algaeClawValue),
+                manipulator.coralClaw().toValue(coralClawValue));
     }
 
     private Command elevatorL2() {

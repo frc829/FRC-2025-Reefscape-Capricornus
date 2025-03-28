@@ -19,10 +19,6 @@ public class WristState {
         this.motorEncoderPositionRotations = motorEncoderPositionRotations;
     }
 
-    public double getMotorEncoderVelocityRPS() {
-        return motorEncoderVelocityRPS;
-    }
-
     public double getMotorEncoderVelocityDPS(){
         return motorEncoderVelocityRPS * 360.0;
     }

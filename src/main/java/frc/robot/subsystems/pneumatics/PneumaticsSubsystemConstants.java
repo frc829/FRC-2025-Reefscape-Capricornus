@@ -1,17 +1,16 @@
 package frc.robot.subsystems.pneumatics;
 
 import digilib.claws.Claw;
-import digilib.claws.ClawConstants;
 import digilib.claws.SolenoidClaw;
 import digilib.pneumatics.Pneumatics;
-import digilib.pneumatics.PneumaticsConstants;
 import digilib.pneumatics.REVPneumatics;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import static digilib.claws.ClawState.*;
-import static digilib.claws.ClawState.ClawValue.OPEN;
+import static digilib.claws.Claw.*;
+import static digilib.claws.Claw.Value.OPEN;
 import static edu.wpi.first.wpilibj.PneumaticsModuleType.REVPH;
 
 public class PneumaticsSubsystemConstants {
@@ -25,8 +24,7 @@ public class PneumaticsSubsystemConstants {
         static final class PneumaticsModule {
             static final int module = 2;
             static final PneumaticHub pneumaticHub = new PneumaticHub(module);
-            static final PneumaticsConstants constants = new PneumaticsConstants(Mechanism.name);
-            static final boolean isPressureSwitchDigital = true;
+            static final Pneumatics.Config constants = new Pneumatics.Config(Mechanism.name);
         }
 
     }
@@ -34,13 +32,13 @@ public class PneumaticsSubsystemConstants {
     static final class AlgaeClaw {
 
         static final class Control {
-            static final ClawValue solenoidOnClawValue = OPEN;
+            static final Value solenoidOnClawValue = OPEN;
         }
 
         static final class Mechanism {
             static final String name = "Claw: Algae";
             static final PneumaticsModuleType moduleType = REVPH;
-            static final ClawConstants constants = new ClawConstants(
+            static final Claw.Config constants = new Claw.Config(
                     name,
                     moduleType,
                     AlgaeClaw.Control.solenoidOnClawValue);
@@ -55,13 +53,13 @@ public class PneumaticsSubsystemConstants {
     static class CoralClaw {
 
         static final class Control {
-            static final ClawValue solenoidOnClawValue = OPEN;
+            static final Value solenoidOnClawValue = OPEN;
         }
 
         static final class Mechanism {
             static final String name = "Claw: Coral";
             static final PneumaticsModuleType moduleType = REVPH;
-            static final ClawConstants constants = new ClawConstants(
+            static final Claw.Config constants = new Claw.Config(
                     name,
                     moduleType,
                     CoralClaw.Control.solenoidOnClawValue);
@@ -73,14 +71,13 @@ public class PneumaticsSubsystemConstants {
 
     }
 
-    public static PneumaticSubsystem create() {
-        if(Module.PneumaticsModule.isPressureSwitchDigital){
-            // Module.PneumaticsModule.pneumaticHub.enableCompressorDigital();
-        }
+    public static void create() {
         Pneumatics pneumatics = new REVPneumatics(Module.PneumaticsModule.constants, Module.PneumaticsModule.pneumaticHub);
         PneumaticSubsystem pneumaticSubsystem = new PneumaticSubsystem(pneumatics);
         pneumaticSubsystem.register();
-        return pneumaticSubsystem;
+        SmartDashboard.putData("Turn Compressor On", pneumaticSubsystem.turnCompressorOn());
+        SmartDashboard.putData("Turn Compressor Off", pneumaticSubsystem.turnCompressorOff());
+        SmartDashboard.putData("Clear Sticky Faults", pneumaticSubsystem.clearFaults());
     }
 
     public static ClawSubsystem createAlgaeClaw() {

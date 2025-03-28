@@ -1,12 +1,11 @@
 package frc.robot.commands;
 
-import digilib.claws.ClawState.ClawValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Manipulator;
 
-import static digilib.claws.ClawState.ClawValue.CLOSED;
-import static digilib.claws.ClawState.ClawValue.OPEN;
+import static digilib.claws.Claw.*;
+import static digilib.claws.Claw.Value.*;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
@@ -27,10 +26,8 @@ public class CoralScore {
     private static final double wristL1Degrees = 90.0;
     private static final double wristSafeDegrees = 0.0;
 
-    private static final double coralSpeed = -0.20;
-
-    private static final ClawValue coralClawScore = OPEN;
-    private static final ClawValue coralClawReset = CLOSED;
+    private static final Value coralClawScore = OPEN;
+    private static final Value coralClawReset = CLOSED;
 
     private final Manipulator manipulator;
     private final Trigger isArmSafeForWristL1;
@@ -86,12 +83,12 @@ public class CoralScore {
     }
 
     public Command l234Score() {
-        return manipulator.coralClaw().toClawValue(coralClawScore);
+        return manipulator.coralClaw().toValue(coralClawScore);
     }
 
     public Command reset() {
         return sequence(
-                manipulator.coralClaw().toClawValue(coralClawReset),
+                manipulator.coralClaw().toValue(coralClawReset),
                 parallel(
                         manipulator.elevator().toHeight(elevatorResetCM / 100.0),
                         manipulator.arm().toAngle(armResetDegrees))

@@ -2,7 +2,6 @@ package digilib.intakeWheel;
 
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkMax;
-import digilib.MotorControllerType;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import static com.revrobotics.spark.ClosedLoopSlot.*;
 import static com.revrobotics.spark.SparkBase.ControlType.*;
 import static com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits.kVoltage;
-import static digilib.MotorControllerType.*;
 import static digilib.intakeWheel.NEO550IntakeWheel.ControlState.VELOCITY;
 import static digilib.intakeWheel.NEO550IntakeWheel.ControlState.VOLTAGE;
 import static edu.wpi.first.units.Units.*;
@@ -69,16 +67,6 @@ public class NEO550IntakeWheel implements IntakeWheel {
     }
 
     @Override
-    public MotorControllerType getMotorControllerType() {
-        return REV_SPARK_MAX;
-    }
-
-    @Override
-    public double getMaxVelocityRPS() {
-        return maxVelocityRPS;
-    }
-
-    @Override
     public IntakeWheelState getState() {
         return state;
     }
@@ -113,27 +101,17 @@ public class NEO550IntakeWheel implements IntakeWheel {
 
     @Override
     public void update() {
-        updateState();
-        updateTelemetry();
-    }
-
-    @Override
-    public void updateState() {
         state.setMotorEncoderVelocityRPS(motor.getEncoder().getVelocity());
         state.setVolts(motor.getAppliedOutput() * motor.getBusVoltage());
         state.setAmps(motor.getOutputCurrent());
-    }
-
-    @Override
-    public void updateTelemetry() {
         telemetry.telemeterize(state);
     }
 
     @Override
     public void updateSimState(double dtSeconds, double supplyVoltage) {
-        double inputVoltage = motor.getAppliedOutput() * 12.0;
+        double inputVoltage = motor.getAppliedOutput() * supplyVoltage;
         flywheelSim.setInputVoltage(inputVoltage);
         flywheelSim.update(dtSeconds);
-        sparkMaxSim.iterate(flywheelSim.getOutput(0), 12.0, dtSeconds);
+        sparkMaxSim.iterate(flywheelSim.getOutput(0), supplyVoltage, dtSeconds);
     }
 }

@@ -2,18 +2,14 @@ package digilib.arm;
 
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import digilib.MotorControllerType;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-
-import static digilib.MotorControllerType.TALONFX;
 
 public class TalonFXArm implements Arm {
     private final ArmState state = new ArmState();
@@ -26,7 +22,6 @@ public class TalonFXArm implements Arm {
     private final CANcoder cancoder;
     private final MotionMagicExpoVoltage positionControl = new MotionMagicExpoVoltage(0.0).withSlot(0).withEnableFOC(true);
     private final MotionMagicVelocityVoltage velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(1).withEnableFOC(true);
-    private final VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true);
     private SimulatedArm simArm = null;
     private TalonFXSimState talonFXSimState = null;
     private CANcoderSimState canCoderSimState = null;
@@ -75,26 +70,6 @@ public class TalonFXArm implements Arm {
     }
 
     @Override
-    public MotorControllerType getMotorControllerType() {
-        return TALONFX;
-    }
-
-    @Override
-    public double getMinAngleRotations() {
-        return minAngleRotations;
-    }
-
-    @Override
-    public double getMaxAngleRotations() {
-        return maxAngleRotations;
-    }
-
-    @Override
-    public double getMaxVelocityRPS() {
-        return maxVelocityRPS;
-    }
-
-    @Override
     public ArmState getState() {
         return state;
     }
@@ -125,25 +100,7 @@ public class TalonFXArm implements Arm {
     }
 
     @Override
-    public void setVoltage(double volts) {
-        talonFX.setControl(voltageOut.withOutput(volts));
-    }
-
-    @Override
-    public void resetPosition() {
-        talonFX.setPosition(0);
-    }
-
-    @Override
     public void update() {
-        updateState();
-        updateTelemetry();
-        if(ligament!=null){
-            ligament.setAngle(offsetDegrees + state.getAbsoluteEncoderPositionDegrees());
-        }
-    }
-
-    public void updateState() {
         state.setMotorEncoderPositionRotations(talonFX.getPosition().getValueAsDouble());
         state.setAbsoluteEncoderPositionRotations(cancoder.getPosition().getValueAsDouble());
         state.setMotorEncoderVelocityRPS(talonFX.getVelocity().getValueAsDouble());
@@ -151,11 +108,11 @@ public class TalonFXArm implements Arm {
         state.setVolts(talonFX.getMotorVoltage().getValueAsDouble());
         state.setAmps(talonFX.getTorqueCurrent().getValueAsDouble());
         state.setAbsoluteEncoderStatus(cancoder.getMagnetHealth().getValue());
-    }
-
-    @Override
-    public void updateTelemetry() {
         telemetry.telemeterize(state);
+
+        if(ligament!=null){
+            ligament.setAngle(offsetDegrees + state.getAbsoluteEncoderPositionDegrees());
+        }
     }
 
     @Override

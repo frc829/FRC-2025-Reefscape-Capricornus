@@ -1,13 +1,12 @@
 package frc.robot.commands;
 
-import digilib.claws.ClawState.ClawValue;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Manipulator;
 
-import static digilib.claws.ClawState.ClawValue.CLOSED;
-import static digilib.claws.ClawState.ClawValue.OPEN;
+import static digilib.claws.Claw.*;
+import static digilib.claws.Claw.Value.CLOSED;
+import static digilib.claws.Claw.Value.OPEN;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class CoralPickup {
@@ -35,9 +34,9 @@ public class CoralPickup {
 
     private static final double coralHoldSpeed = 0.05;
 
-    private static final ClawValue algaeClawIntakeValue = OPEN;
-    private static final ClawValue algaeClawHoldValue = OPEN;
-    private static final ClawValue coralClawValue = CLOSED;
+    private static final Value algaeClawIntakeValue = OPEN;
+    private static final Value algaeClawHoldValue = OPEN;
+    private static final Value coralClawValue = CLOSED;
 
     private final Manipulator manipulator;
     public final Trigger hasCoral;
@@ -55,12 +54,6 @@ public class CoralPickup {
         this.isArmSafeForWristUp = manipulator.arm().gte(armSafeUpDegrees);
         this.isArmSafeForWristDownBack = manipulator.arm().gte(armSafeDownDegreesBack);
         this.isArmSafeForWristUpBack = manipulator.arm().lte(armSafeUpDegreesBack);
-
-        // Trigger hasCoral = manipulator.lidarSensor().inRange(-10, 20);
-        // hasCoral.whileTrue()
-        //
-        // manipulator.lidarSensor().inRange(-10, 20).whileTrue(
-        //         Commands.run(() -> SmartDashboard.putBoolean("Has Coral", true)));
     }
 
     public Command floor() {
@@ -147,9 +140,6 @@ public class CoralPickup {
         return manipulator
                         .coralIntakeWheel()
                         .toVelocity(() -> coralSpeed).until(hasCoral);
-        // return repeatingSequence(manipulator
-        //         .coralIntakeWheel()
-        //         .toVelocity(() -> coralSpeed));
     }
 
     private Command intakeHold() {
@@ -158,12 +148,12 @@ public class CoralPickup {
 
     private Command claws() {
         return parallel(
-                manipulator.algaeClaw().toClawValue(algaeClawIntakeValue),
-                manipulator.coralClaw().toClawValue(coralClawValue));
+                manipulator.algaeClaw().toValue(algaeClawIntakeValue),
+                manipulator.coralClaw().toValue(coralClawValue));
     }
 
     private Command algaeClawHold() {
-        return manipulator.algaeClaw().toClawValue(algaeClawHoldValue);
+        return manipulator.algaeClaw().toValue(algaeClawHoldValue);
     }
 
     private Command elevatorStation() {

@@ -1,25 +1,49 @@
 package digilib.claws;
 
-import digilib.SolenoidType;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
-import static digilib.claws.ClawState.*;
+public abstract class Claw {
 
-public interface Claw {
 
-    SolenoidType getSolenoidType();
+    public enum Value {
+        OPEN,
+        CLOSED
 
-    PneumaticsModuleType getPneumaticsModuleType();
+    }
 
-    ClawState getState();
+    public record Config(String name, PneumaticsModuleType moduleType, Value solenoidOnValue) {
+    }
 
-    void setValue(ClawValue state);
+    protected final Value valueWhenSolenoidOn;
+    private final StringPublisher clawValuePublisher;
+    protected Value value = Value.CLOSED;
 
-    void toggle();
+    public Claw(String name,
+                Value valueWhenSolenoidOn) {
+        this.valueWhenSolenoidOn = valueWhenSolenoidOn;
+        NetworkTable table = NetworkTableInstance
+                .getDefault()
+                .getTable(name);
+        table.getStringTopic("Solenoid On, Claw Value")
+                .publish()
+                .set(valueWhenSolenoidOn.name());
+        clawValuePublisher = table
+                .getStringTopic("State")
+                .publish();
+    }
 
-    void update();
+    public Value getValue(){
+        return value;
+    }
 
-    void updateState();
+    public abstract void setValue(Value state);
 
-    void updateTelemetry();
+    public abstract void toggle();
+
+    public void update() {
+        clawValuePublisher.set(value.name());
+    }
 }

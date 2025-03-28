@@ -4,8 +4,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-import static digilib.DigiMath.roundToDecimal;
-
 public class ElevatorTelemetry {
     private final DoublePublisher position;
     private final DoublePublisher velocity;
@@ -23,16 +21,16 @@ public class ElevatorTelemetry {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
         table.getDoubleTopic("Min Height [meters]")
                 .publish()
-                .set(roundToDecimal(minHeightMeters, 2));
+                .set(minHeightMeters);
         table.getDoubleTopic("Max Height [meters]")
                 .publish()
-                .set(roundToDecimal(maxHeightMeters, 2));
+                .set(maxHeightMeters);
         table.getDoubleTopic("Max Velocity [mps]")
                 .publish()
-                .set(roundToDecimal(maxVelocityMPS, 2));
+                .set(maxVelocityMPS);
         table.getDoubleTopic("Max Acceleration[mpss] ")
                 .publish()
-                .set(roundToDecimal(maxAccelerationMPSSquared, 2));
+                .set(maxAccelerationMPSSquared);
         this.position = table
                 .getDoubleTopic("Height [meters]")
                 .publish();
@@ -60,13 +58,6 @@ public class ElevatorTelemetry {
         double amps = state.getAmps();
         double setpointPositionMeters = state.getPositionSetpointMeters();
         double setpointVelocityMPS = state.getVelocitySetpointMPS();
-
-        motorEncoderPositionMeters = roundToDecimal(motorEncoderPositionMeters, 2);
-        motorEncoderVelocityMPS = roundToDecimal(motorEncoderVelocityMPS, 2);
-        volts = roundToDecimal(volts, 2);
-        amps = roundToDecimal(amps, 2);
-        setpointPositionMeters = roundToDecimal(setpointPositionMeters, 2);
-        setpointVelocityMPS = roundToDecimal(setpointVelocityMPS, 2);
 
         position.set(motorEncoderPositionMeters);
         velocity.set(motorEncoderVelocityMPS);

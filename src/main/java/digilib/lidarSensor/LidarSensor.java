@@ -6,9 +6,5 @@ public interface LidarSensor {
 
     void update();
 
-    void updateState();
-
-    void updateTelemetry();
-
     void updateSimState();
 }

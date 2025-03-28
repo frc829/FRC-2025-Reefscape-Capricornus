@@ -40,10 +40,6 @@ public class ArmSubsystem implements Subsystem {
                 .getMotorEncoderPositionDegrees() <= angleDegrees);
     }
 
-    public Trigger inRange(double minAngleDegrees, double maxAngleDegrees) {
-        return gte(minAngleDegrees).and(lte(maxAngleDegrees));
-    }
-
     public Command toAngle(double degrees) {
         return run(() -> arm.setPosition(degrees / 360.0))
                 .withName(String.format("%s: %.2f deg", getName(), degrees));
@@ -52,11 +48,6 @@ public class ArmSubsystem implements Subsystem {
     public Command toVelocity(DoubleSupplier scalarSetpoint) {
         return run(() -> arm.setVelocity(scalarSetpoint.getAsDouble()))
                 .withName(String.format("%s: VELOCITY", getName()));
-    }
-
-    public Command toVoltage(double volts) {
-        return run(() -> arm.setVoltage(volts))
-                .withName(String.format("%s: VOLTAGE", getName()));
     }
 
     public Command hold() {
@@ -72,15 +63,15 @@ public class ArmSubsystem implements Subsystem {
         arm.update();
     }
 
+    @SuppressWarnings("resource")
     private void startSimThread() {
         lastSimTime = Utils.getCurrentTimeSeconds();
 
-        Notifier m_simNotifier = new Notifier(() -> {
+        new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
             arm.updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
+        }).startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
 }

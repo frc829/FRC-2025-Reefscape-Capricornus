@@ -42,8 +42,9 @@ public class LidarSensorSubsystem implements Subsystem {
         lidarSensor.update();
     }
 
+    @SuppressWarnings("resource")
     private void startSimThread() {
-        Notifier m_simNotifier = new Notifier(lidarSensor::updateSimState);
-        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
+        new Notifier(lidarSensor::updateSimState)
+                .startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
 }

@@ -1,33 +1,23 @@
 package digilib.pneumatics;
 
 import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class REVPneumatics implements Pneumatics {
-    private final PneumaticsState state = new PneumaticsState();
-    private final PneumaticsTelemetry telemetry;
-    private PneumaticsRequest request;
-    // private final PneumaticsTelemetry telemetry;
+public class REVPneumatics extends Pneumatics {
+
     private final PneumaticHub pneumaticHub;
 
-    public REVPneumatics(
-            PneumaticsConstants constants,
-            PneumaticHub pneumaticHub) {
+    public REVPneumatics(Config config,
+                         PneumaticHub pneumaticHub) {
+        super(config.name());
         this.pneumaticHub = pneumaticHub;
-        this.telemetry = new PneumaticsTelemetry(constants.name(), pneumaticHub);
+        SmartDashboard.putData("Compressor", pneumaticHub.makeCompressor());
+
     }
 
     @Override
-    public PneumaticsState getState() {
-        return state;
-    }
-
-    @Override
-    public void setControl(PneumaticsRequest request) {
-        if (this.request != request) {
-            this.request = request;
-        }
-        request.apply(this);
+    public boolean isCompressorOn() {
+        return pneumaticHub.getCompressor();
     }
 
     @Override
@@ -43,22 +33,5 @@ public class REVPneumatics implements Pneumatics {
     @Override
     public void turnOffCompressor() {
         pneumaticHub.disableCompressor();
-    }
-
-    @Override
-    public void update() {
-        updateState();
-        updateTelemetry();
-    }
-
-    @Override
-    public void updateState() {
-        state.withCompressorOn(pneumaticHub.getCompressor())
-                .withTimestamp(Timer.getFPGATimestamp());
-    }
-
-    @Override
-    public void updateTelemetry() {
-        telemetry.telemeterize(state);
     }
 }

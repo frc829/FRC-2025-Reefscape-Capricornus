@@ -2,7 +2,6 @@ package digilib.wrist;
 
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkMax;
-import digilib.MotorControllerType;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
@@ -27,8 +26,7 @@ public class NEO550Wrist implements Wrist {
 
     public enum ControlState {
         POSITION,
-        VELOCITY,
-        VOLTAGE
+        VELOCITY
     }
 
     private final WristState state = new WristState();
@@ -97,26 +95,6 @@ public class NEO550Wrist implements Wrist {
     }
 
     @Override
-    public MotorControllerType getMotorControllerType() {
-        return MotorControllerType.REV_SPARK_MAX;
-    }
-
-    @Override
-    public double getMinAngleRotations() {
-        return minAngleRotations;
-    }
-
-    @Override
-    public double getMaxAngleRotations() {
-        return maxAngleRotations;
-    }
-
-    @Override
-    public double getMaxVelocityRPS() {
-        return maxVelocityRPS;
-    }
-
-    @Override
     public WristState getState() {
         return state;
     }
@@ -178,43 +156,20 @@ public class NEO550Wrist implements Wrist {
     }
 
     @Override
-    public void setVoltage(double volts) {
-        if (controlState != ControlState.VOLTAGE) {
-            controlState = ControlState.VOLTAGE;
-        }
-        motor.setVoltage(volts);
-    }
-
-    @Override
-    public void resetPosition() {
-    }
-
-    @Override
     public void update() {
-        // resetPosition();
-        updateState();
-        updateTelemetry();
-    }
-
-    @Override
-    public void updateState() {
         state.setMotorEncoderPositionRotations(motor.getEncoder().getPosition());
         state.setMotorEncoderVelocityRPS(motor.getEncoder().getVelocity());
         state.setVolts(motor.getAppliedOutput() * motor.getBusVoltage());
         state.setAmps(motor.getOutputCurrent());
-    }
-
-    @Override
-    public void updateTelemetry() {
         telemetry.telemeterize(state);
     }
 
     @Override
     public void updateSimState(double dt, double supplyVoltage) {
-        var inputVoltage = motor.getAppliedOutput() * 12.0;
+        var inputVoltage = motor.getAppliedOutput() * supplyVoltage;
         simWrist.setInputVoltage(inputVoltage);
         simWrist.update(dt);
-        sparkMaxSim.iterate(simWrist.getAngularVelocityRadPerSec(), 12.0, dt);
+        sparkMaxSim.iterate(simWrist.getAngularVelocityRadPerSec(), supplyVoltage, dt);
         top.setLength(0.3 * Math.cos(Math.toRadians(state.getMotorEncoderPositionDegrees())));
         bottom.setLength(0.3 * Math.cos(Math.toRadians(state.getMotorEncoderPositionDegrees())));
     }

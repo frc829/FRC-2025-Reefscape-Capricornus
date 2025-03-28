@@ -26,15 +26,11 @@ public class ManualMap {
         this.deadband = deadband;
         this.manual = manual;
         bindManualArm();
-        // bindArm60Test();
-        // bindArm0Test();
 
         bindManualAlgaeClawToggle();
         bindManualCoralClawToggle();
 
         bindManualElevator();
-        // bindManualElevatorTest();
-        // bindManualElevatorDownTest();
 
         bindManualWristToggle();
         bindManualWrist();
@@ -45,8 +41,6 @@ public class ManualMap {
         bindManualAlgaeIn();
         bindManualAlgaeOut();
 
-        // bindSteer90Test();
-        // bindSteer0Test();
 
         bindManualElevatorDangerous();
 
@@ -67,15 +61,6 @@ public class ManualMap {
     private double getArmVelocitySetpointScalarManual() {
         return maxManualArmSetpointScalar * MathUtil.applyDeadband(-controller.getRightY(), deadband);
     }
-
-    private void bindArm60Test() {
-        controller.b().whileTrue(manual.manualArm60Test());
-    }
-
-    private void bindArm0Test() {
-        controller.back().whileTrue(manual.manualArm0Test());
-    }
-
 
     private void bindManualAlgaeClawToggle() {
         controller.leftBumper()
@@ -106,14 +91,6 @@ public class ManualMap {
 
     private double getMaxElevatorVelocityPercentValueManual() {
         return maxManualElevatorSetpointScalar * MathUtil.applyDeadband(-controller.getLeftY(), deadband);
-    }
-
-    private void bindManualElevatorTest() {
-        controller.a().whileTrue(manual.manualElevatorTest());
-    }
-
-    private void bindManualElevatorDownTest() {
-        controller.x().whileTrue(manual.manualElevatorTestDown());
     }
 
     private void bindManualAlgaeIn() {
@@ -159,14 +136,6 @@ public class ManualMap {
     private void bindManualWrist() {
         new Trigger(() -> getWristVelocitySetpointScalar() != 0.0)
                 .whileTrue(manual.manualWrist(this::getWristVelocitySetpointScalar));
-    }
-
-    private void bindSteer90Test(){
-        controller.a().and(controller.b()).whileTrue(manual.manualSteer90Test());
-    }
-
-    private void bindSteer0Test(){
-        controller.x().and(controller.y()).whileTrue(manual.manualSteer0Test());
     }
 
     private double getWristVelocitySetpointScalar() {

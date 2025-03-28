@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.DoubleSupplier;
 
@@ -28,22 +27,6 @@ public class ElevatorSubsystem implements Subsystem {
         }
     }
 
-    public Trigger gte(double heightMeters) {
-        return new Trigger(() -> elevator
-                .getState()
-                .getMotorEncoderPositionMeters() >= heightMeters);
-    }
-
-    public Trigger lte(double heightMeters) {
-        return new Trigger(() -> elevator
-                .getState()
-                .getMotorEncoderPositionMeters() <= heightMeters);
-    }
-
-    public Trigger inRange(double minHeightMeters, double maxHeightMeters) {
-        return gte(minHeightMeters).and(lte(maxHeightMeters));
-    }
-
     public Command toHeight(double meters) {
         return run(() -> elevator.setPosition(meters))
                 .withName(String.format("%s: %.2f meters", getName(), meters));
@@ -52,11 +35,6 @@ public class ElevatorSubsystem implements Subsystem {
     public Command toVelocity(DoubleSupplier scalarSetpoint) {
         return run(() -> elevator.setVelocity(scalarSetpoint.getAsDouble()))
                 .withName(String.format("%s: VELOCITY", getName()));
-    }
-
-    public Command toVoltage(double volts) {
-        return run(() -> elevator.setVoltage(volts))
-                .withName(String.format("%s: VOLTAGE", getName()));
     }
 
     public Command toVoltage(DoubleSupplier volts) {
@@ -72,21 +50,20 @@ public class ElevatorSubsystem implements Subsystem {
                 .withName(String.format("%s: HOLD", getName()));
     }
 
-
     @Override
     public void periodic() {
         elevator.update();
     }
 
+    @SuppressWarnings("resource")
     private void startSimThread() {
         lastSimTime = Utils.getCurrentTimeSeconds();
 
-        Notifier m_simNotifier = new Notifier(() -> {
+        new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
             elevator.updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
+        }).startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
 }

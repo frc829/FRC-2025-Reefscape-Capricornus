@@ -4,7 +4,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.StringPublisher;
 
-import static digilib.DigiMath.roundToDecimal;
 import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 
 public class ArmTelemetry {
@@ -25,16 +24,16 @@ public class ArmTelemetry {
         NetworkTable table = getDefault().getTable(name);
         table.getDoubleTopic("Min Angle [deg]")
                 .publish()
-                .set(roundToDecimal(minAngleDegrees, 2));
+                .set(minAngleDegrees);
         table.getDoubleTopic("Max Angle [deg]")
                 .publish()
-                .set(roundToDecimal(maxAngleDegrees, 2));
+                .set(maxAngleDegrees);
         table.getDoubleTopic("Max Velocity [dps]")
                 .publish()
-                .set(roundToDecimal(maxVelocityRPS * 360.0, 2));
+                .set(maxVelocityRPS * 360.0);
         table.getDoubleTopic("Max Acceleration [dpss]")
                 .publish()
-                .set(roundToDecimal(maxAccelerationRPSSquared * 360, 2));
+                .set(maxAccelerationRPSSquared * 360);
         motorEncoderPosition = table
                 .getDoubleTopic("Motor Encoder Angle [deg]")
                 .publish();
@@ -65,13 +64,6 @@ public class ArmTelemetry {
         double absoluteEncoderVelocityDPS = state.getAbsoluteEncoderVelocityDPS();
         double volts = state.getVolts();
         double amps = state.getAmps();
-
-        motorEncoderPositionDegrees = roundToDecimal(motorEncoderPositionDegrees, 2);
-        absoluteEncoderPositionDegrees = roundToDecimal(absoluteEncoderPositionDegrees, 2);
-        motorEncoderVelocityDPS = roundToDecimal(motorEncoderVelocityDPS, 2);
-        absoluteEncoderVelocityDPS = roundToDecimal(absoluteEncoderVelocityDPS, 2);
-        volts = roundToDecimal(volts, 2);
-        amps = roundToDecimal(amps, 2);
 
         motorEncoderPosition.set(motorEncoderPositionDegrees);
         absoluteEncoderPosition.set(absoluteEncoderPositionDegrees);

@@ -8,7 +8,7 @@
 1. Programming Mentor: Nicholas Armstrong
 2. Robbie S.
 3. Braden H.
-4. Allens S.
+4. Allen S.
 5. Malaika P.
 6. Keith O.
 7. Angel H-S.

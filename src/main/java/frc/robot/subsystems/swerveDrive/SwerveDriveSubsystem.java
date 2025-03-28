@@ -3,13 +3,9 @@ package frc.robot.subsystems.swerveDrive;
 import com.ctre.phoenix6.Utils;
 import digilib.cameras.Camera;
 import digilib.swerve.SwerveDrive;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -17,17 +13,13 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleSupplier;
-import java.util.stream.IntStream;
 
 public class SwerveDriveSubsystem implements Subsystem {
     private static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
@@ -88,17 +80,8 @@ public class SwerveDriveSubsystem implements Subsystem {
                 .withName(String.format("%s: Clock Centric", getName()));
     }
 
-    public Command pointSteer(DoubleSupplier angleDegrees) {
-        return run(() -> swerveDrive.setSteerAngle(angleDegrees.getAsDouble()));
-    }
-
-    public Command brake() {
-        return run(() -> swerveDrive.setBrake())
-                .withName(String.format("%s: Brake", getName()));
-    }
-
     public Command idle() {
-        return run(() -> swerveDrive.setIdle())
+        return run(swerveDrive::setIdle)
                 .withName(String.format("%s: Idle", getName()));
     }
 
@@ -108,35 +91,20 @@ public class SwerveDriveSubsystem implements Subsystem {
     }
 
     public Command seedFieldCentric() {
-        return run(() -> swerveDrive.seedFieldCentric())
+        return run(swerveDrive::seedFieldCentric)
                 .withName(String.format("%s: Seed Field Centric", getName()));
     }
 
-    public Command setFieldFromCamera() {
-        return run(() -> {
-            Pose2d pose2d = cameras.get(0).getRobotPose();
-            if (pose2d != null) {
-                swerveDrive.resetPose(pose2d);
-            }
-        });
-    }
-
     public Command goToAngle(double angleDegrees) {
-        return run(() -> {
-            swerveDrive.rotateInPlace(Rotation2d.fromDegrees(angleDegrees));
-        });
+        return run(() -> swerveDrive.rotateInPlace(Rotation2d.fromDegrees(angleDegrees)));
     }
 
     public Command goToPose(double x, double y, double angleDegrees) {
-        return run(() -> {
-            swerveDrive.goToPose(new Pose2d(x, y, Rotation2d.fromDegrees(angleDegrees)));
-        });
+        return run(() -> swerveDrive.goToPose(new Pose2d(x, y, Rotation2d.fromDegrees(angleDegrees))));
     }
 
     public Command setPose(Pose2d pose2d) {
-        return run(() -> {
-            swerveDrive.resetPose(pose2d);
-        });
+        return run(() -> swerveDrive.resetPose(pose2d));
     }
 
 
@@ -178,19 +146,19 @@ public class SwerveDriveSubsystem implements Subsystem {
         });
     }
 
+    @SuppressWarnings("resource")
     private void startSimThread() {
         lastSimTime = Utils.getCurrentTimeSeconds();
 
         /* Run simulation at a faster rate so PID gains behave more reasonably */
         /* use the measured time delta, get battery voltage from WPILib */
-        Notifier m_simNotifier = new Notifier(() -> {
+        new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - lastSimTime;
             lastSimTime = currentTime;
 
             /* use the measured time delta, get battery voltage from WPILib */
             swerveDrive.updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(simLoopPeriod.baseUnitMagnitude());
+        }).startPeriodic(simLoopPeriod.baseUnitMagnitude());
     }
 }

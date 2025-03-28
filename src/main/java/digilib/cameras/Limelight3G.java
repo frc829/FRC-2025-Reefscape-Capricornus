@@ -66,7 +66,7 @@ public class Limelight3G extends Camera {
             pose2d = poseEstimate.pose;
             timestampSeconds = poseEstimate.timestampSeconds;
             poseAmbiguity = poseEstimate.rawFiducials.length == 1
-                    ? poseEstimate.rawFiducials[0].ambiguity
+                    ? poseEstimate.rawFiducials[0].ambiguity()
                     : Double.NaN;
             currentRobotPoseStdDev = robotPoseStdDev;
             tagCount = poseEstimate.tagCount;

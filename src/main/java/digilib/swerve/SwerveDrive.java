@@ -4,15 +4,10 @@ import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
 public interface SwerveDrive {
-
-    double getMaxVelocityMPS();
-
-    double getMaxAngularVelocityRPS();
 
     SwerveDriveState getState();
 
@@ -30,10 +25,6 @@ public interface SwerveDrive {
             double translationVelocitySetpointScalar,
             double headingAngleDegrees,
             double rotationAngleDegrees);
-
-    void setSteerAngle(double angleDegrees);
-
-    void setBrake();
 
     void setIdle();
 
@@ -57,10 +48,6 @@ public interface SwerveDrive {
             Matrix<N3, N1> visionMeasurementStdDevs);
 
     void update();
-
-    void updateState();
-
-    void updateTelemetry();
 
     void updateSimState(double dt, double supplyVoltage);
 
