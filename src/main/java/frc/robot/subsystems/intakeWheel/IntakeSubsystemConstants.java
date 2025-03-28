@@ -1,34 +1,31 @@
 package frc.robot.subsystems.intakeWheel;
 
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.*;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import edu.wpi.first.units.measure.*;
 import digilib.intakeWheel.IntakeWheel;
-import digilib.intakeWheel.IntakeWheelConstants;
 import digilib.intakeWheel.NEO550IntakeWheel;
-import edu.wpi.first.units.measure.Time;
 
-import static com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters;
-import static com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters;
+import static com.revrobotics.spark.SparkBase.PersistMode.*;
+import static com.revrobotics.spark.SparkBase.ResetMode.*;
 import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
 import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder;
-import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
-import static edu.wpi.first.units.Units.Seconds;
-import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Control.*;
-import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Mechanism.constants;
-import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Mechanism.reduction;
-import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Motor.config;
-import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Motor.motor;
-import static frc.robot.subsystems.intakeWheel.AlgaeIntakeSubsystemConstants.Simulation.simLoopPeriod;
+import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.*;
+import static digilib.intakeWheel.IntakeWheel.*;
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.intakeWheel.IntakeSubsystemConstants.Control.*;
+import static frc.robot.subsystems.intakeWheel.IntakeSubsystemConstants.Mechanism.*;
+import static frc.robot.subsystems.intakeWheel.IntakeSubsystemConstants.Motor.*;
+import static frc.robot.subsystems.intakeWheel.IntakeSubsystemConstants.Simulation.*;
 
-public class AlgaeIntakeSubsystemConstants {
+public class IntakeSubsystemConstants {
 
     static final class Control {
-        static final double ksVolts = 0.15545;
-        static final double kvVoltsPerRPS = 0.12164 * 2 * Math.PI;
-        static final double kaVoltsPerRPSSquared = 0.0023348 * 2 * Math.PI;
-        static final double kpVoltsPerRPS = 0.00022568 * 2 * Math.PI;
+        static final double ksVolts = 0.12198;
+        static final double kvVoltsPerRPS = 0.12267 * 2 * Math.PI;
+        static final double kaVoltsPerRPSSquared = 0.0045787 * 2 * Math.PI;
+        static final double kpVoltsPerRPS = 0.00011686 * 2 * Math.PI;
         static final double maxControlVoltage = 12.0 - ksVolts;
         static final double maxVelocityRPS = maxControlVoltage / kvVoltsPerRPS;
         static final double maxAccelerationRPSS = maxControlVoltage / kaVoltsPerRPSSquared;
@@ -36,9 +33,9 @@ public class AlgaeIntakeSubsystemConstants {
     }
 
     static final class Mechanism {
-        static final String name = "Intake: Algae";
+        static final String name = "Intake: Coral";
         static final double reduction = 12.0;
-        static final IntakeWheelConstants constants = new IntakeWheelConstants(
+        static final Config constants = new Config(
                 name,
                 maxControlVoltage,
                 reduction,
@@ -54,14 +51,14 @@ public class AlgaeIntakeSubsystemConstants {
     }
 
     static final class Motor {
-        static final int deviceId = 16;
+        static final int deviceId = 26;
         static final IdleMode idleMode = kBrake;
         static final boolean inverted = false;
         static final int smartCurrentLimit = 20;
         static final int depth = 2;
         static final int periodMs = 16;
-        static final double positionFactor = 1.0 / reduction;
-        static final double velocityFactor = 1.0 / reduction / 60.0;
+        static final double positionFactor = 1.0 / IntakeSubsystemConstants.Mechanism.reduction;
+        static final double velocityFactor = 1.0 / IntakeSubsystemConstants.Mechanism.reduction / 60.0;
         static final SignalsConfig signalsConfig = new SignalsConfig()
                 .absoluteEncoderPositionAlwaysOn(false)
                 .absoluteEncoderVelocityAlwaysOn(false)
@@ -94,7 +91,7 @@ public class AlgaeIntakeSubsystemConstants {
         motor.configure(config, kResetSafeParameters, kPersistParameters);
         IntakeWheel intakeWheel = new NEO550IntakeWheel(constants, motor, controlPeriodSeconds);
         IntakeWheelSubsystem intakeWheelSubsystem = new IntakeWheelSubsystem(intakeWheel, simLoopPeriod);
-        intakeWheelSubsystem.setDefaultCommand(intakeWheelSubsystem.toVoltage(-1.0));
+        intakeWheelSubsystem.setDefaultCommand(intakeWheelSubsystem.toVoltage(0.0));
         return intakeWheelSubsystem;
     }
 }

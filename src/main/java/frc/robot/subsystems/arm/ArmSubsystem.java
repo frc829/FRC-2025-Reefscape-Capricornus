@@ -30,31 +30,29 @@ public class ArmSubsystem implements Subsystem {
 
     public Trigger gte(double angleDegrees) {
         return new Trigger(() -> arm
-                .getState()
                 .getMotorEncoderPositionDegrees() >= angleDegrees);
     }
 
     public Trigger lte(double angleDegrees) {
         return new Trigger(() -> arm
-                .getState()
                 .getMotorEncoderPositionDegrees() <= angleDegrees);
     }
 
     public Command toAngle(double degrees) {
-        return run(() -> arm.setPosition(degrees / 360.0))
+        return run(() -> arm.applyPosition(degrees / 360.0))
                 .withName(String.format("%s: %.2f deg", getName(), degrees));
     }
 
     public Command toVelocity(DoubleSupplier scalarSetpoint) {
-        return run(() -> arm.setVelocity(scalarSetpoint.getAsDouble()))
+        return run(() -> arm.applyVelocity(scalarSetpoint.getAsDouble()))
                 .withName(String.format("%s: VELOCITY", getName()));
     }
 
     public Command hold() {
         MutAngle holdPosition = Rotations.mutable(0.0);
         return sequence(
-                runOnce(() -> holdPosition.mut_setMagnitude(arm.getState().getAbsoluteEncoderPositionRotations())),
-                run(() -> arm.setPosition(holdPosition.in(Rotations))))
+                runOnce(() -> holdPosition.mut_setMagnitude(arm.getAbsoluteEncoderPositionRotations())),
+                run(() -> arm.applyPosition(holdPosition.in(Rotations))))
                 .withName(String.format("%s: HOLD", getName()));
     }
 

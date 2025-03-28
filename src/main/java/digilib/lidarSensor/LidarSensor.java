@@ -1,10 +1,26 @@
 package digilib.lidarSensor;
 
-public interface LidarSensor {
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
-    LidarSensorState getState();
+public abstract class LidarSensor {
 
-    void update();
+    public record Config(String name) {
+    }
 
-    void updateSimState();
+    private final DoublePublisher distancePublisher;
+
+    public LidarSensor(String name) {
+        NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
+        distancePublisher = table
+                .getDoubleTopic("Distance [mm]")
+                .publish();
+    }
+
+    public abstract double getDistanceMillimeters();
+
+    public void update() {
+        distancePublisher.set(getDistanceMillimeters());
+    }
 }

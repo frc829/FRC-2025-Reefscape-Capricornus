@@ -5,7 +5,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
 import digilib.arm.Arm;
-import digilib.arm.ArmConstants;
 import digilib.arm.TalonFXArm;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -15,11 +14,11 @@ import static com.ctre.phoenix6.signals.FeedbackSensorSourceValue.FusedCANcoder;
 import static com.ctre.phoenix6.signals.GravityTypeValue.Arm_Cosine;
 import static com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
+import static digilib.arm.Arm.*;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.rio;
 import static frc.robot.subsystems.arm.ArmSubsystemConstants.AbsoluteEncoder.*;
 import static frc.robot.subsystems.arm.ArmSubsystemConstants.Control.*;
-import static frc.robot.subsystems.arm.ArmSubsystemConstants.Mechanism.constants;
 import static frc.robot.subsystems.arm.ArmSubsystemConstants.Mechanism.reduction;
 import static frc.robot.subsystems.arm.ArmSubsystemConstants.Motor.talonFX;
 import static frc.robot.subsystems.arm.ArmSubsystemConstants.Simulation.simLoopPeriod;
@@ -51,7 +50,7 @@ public class ArmSubsystemConstants {
         static final double reduction = 5.0 * 5.0 * 4.0 * 72.0 / 22.0;
         static final double minAngleDegrees = -50.0;
         static final double maxAngleDegrees = 180.0;
-        static final ArmConstants constants = new ArmConstants(
+        static final Config config = new Config(
                 name,
                 reduction,
                 startingAngleDegrees,
@@ -137,7 +136,7 @@ public class ArmSubsystemConstants {
         cancoder.getConfigurator().apply(AbsoluteEncoder.config);
         talonFX.getConfigurator().apply(Motor.config);
         Arm arm = new TalonFXArm(
-                constants,
+                Mechanism.config,
                 talonFX,
                 cancoder,
                 ligament,

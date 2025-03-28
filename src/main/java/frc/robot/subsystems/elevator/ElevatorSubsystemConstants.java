@@ -3,7 +3,6 @@ package frc.robot.subsystems.elevator;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.*;
 import digilib.elevator.Elevator;
-import digilib.elevator.ElevatorConstants;
 import digilib.elevator.TwoVortexElevator;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Time;
@@ -16,6 +15,7 @@ import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
 import static com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
+import static digilib.elevator.Elevator.*;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Control.*;
 import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Mechanism.*;
@@ -53,7 +53,7 @@ public class ElevatorSubsystemConstants {
         static final double minHeightMeters = minHeightCentimeters / 100.0;
         static final double maxHeightCentimeters = 65.0;
         static final double maxHeightMeters = maxHeightCentimeters / 100.0;
-        static final ElevatorConstants constants = new ElevatorConstants(
+        static final Config config = new Config(
                 name,
                 reduction,
                 drumRadiusMeters,
@@ -127,7 +127,7 @@ public class ElevatorSubsystemConstants {
         Motor.motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
         Follower.motor.configure(Follower.config, kResetSafeParameters, kPersistParameters);
         Elevator elevator = new TwoVortexElevator(
-                constants,
+                config,
                 Motor.motor,
                 Follower.motor,
                 controlPeriodSeconds,

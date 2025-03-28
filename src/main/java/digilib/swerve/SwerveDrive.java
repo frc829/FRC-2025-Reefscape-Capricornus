@@ -32,10 +32,6 @@ public interface SwerveDrive {
 
     void followPath(SwerveSample sample);
 
-    void rotateInPlace(Rotation2d angle);
-
-    void goToPose(Pose2d pose2d);
-
     void seedFieldCentric();
 
     void setOperatorPerspectiveForward(Rotation2d rotation2d);

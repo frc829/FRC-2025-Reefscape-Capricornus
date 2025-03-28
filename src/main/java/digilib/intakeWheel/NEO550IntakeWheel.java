@@ -19,16 +19,14 @@ import static digilib.intakeWheel.NEO550IntakeWheel.ControlState.VELOCITY;
 import static digilib.intakeWheel.NEO550IntakeWheel.ControlState.VOLTAGE;
 import static edu.wpi.first.units.Units.*;
 
-public class NEO550IntakeWheel implements IntakeWheel {
+public class NEO550IntakeWheel extends IntakeWheel {
 
     public enum ControlState {
         VELOCITY,
         VOLTAGE
     }
 
-    private final IntakeWheelState state = new IntakeWheelState();
     private final double maxVelocityRPS;
-    private final IntakeWheelTelemetry telemetry;
     private final SparkMax motor;
     private ControlState controlState = null;
     private final SlewRateLimiter profile;
@@ -38,28 +36,27 @@ public class NEO550IntakeWheel implements IntakeWheel {
     private SparkMaxSim sparkMaxSim = null;
 
     public NEO550IntakeWheel(
-            IntakeWheelConstants constants,
+            Config config,
             SparkMax motor,
             double controlPeriodSeconds) {
-        maxVelocityRPS = constants.maxVelocityRPS();
+        super(config.name(),
+                config.maxVelocityRPS(),
+                config.maxAccelerationRPSSquared());
+        maxVelocityRPS = config.maxVelocityRPS();
         this.motor = motor;
-        this.telemetry = new IntakeWheelTelemetry(
-                constants.name(),
-                constants.maxVelocityRPS(),
-                constants.maxAccelerationRPSSquared());
         this.feedforward = new SimpleMotorFeedforward(
-                constants.ksVolts(),
-                constants.kvVoltsPerRPS(),
-                constants.kaVoltsPerRPSSquared(),
+                config.ksVolts(),
+                config.kvVoltsPerRPS(),
+                config.kaVoltsPerRPSSquared(),
                 controlPeriodSeconds);
-        this.profile = new SlewRateLimiter(constants.maxAccelerationRPSSquared());
+        this.profile = new SlewRateLimiter(config.maxAccelerationRPSSquared());
 
         if (RobotBase.isSimulation()) {
             DCMotor dcMotor = DCMotor.getNeo550(1);
             sparkMaxSim = new SparkMaxSim(motor, dcMotor);
             LinearSystem<N1, N1, N1> plant = LinearSystemId.identifyVelocitySystem(
-                    constants.kvVoltsPerRPS(),
-                    constants.kaVoltsPerRPSSquared());
+                    config.kvVoltsPerRPS(),
+                    config.kaVoltsPerRPSSquared());
             flywheelSim = new FlywheelSim(
                     plant,
                     dcMotor);
@@ -67,12 +64,12 @@ public class NEO550IntakeWheel implements IntakeWheel {
     }
 
     @Override
-    public IntakeWheelState getState() {
-        return state;
+    public double getMotorEncoderVelocityDPS() {
+        return motor.getEncoder().getVelocity() * 360.0;
     }
 
     @Override
-    public void setVelocity(double setpointScalar) {
+    public void applyMotorEncoderVelocity(double setpointScalar) {
         if (controlState != VELOCITY) {
             profile.reset(motor.getEncoder().getVelocity());
             setpoint.mut_setMagnitude(motor.getEncoder().getVelocity());
@@ -92,19 +89,21 @@ public class NEO550IntakeWheel implements IntakeWheel {
     }
 
     @Override
-    public void setVoltage(double volts) {
+    public double getVolts() {
+        return motor.getAppliedOutput() * motor.getBusVoltage();
+    }
+
+    @Override
+    public void applyVolts(double volts) {
         if (controlState != VOLTAGE) {
             controlState = VOLTAGE;
         }
         motor.setVoltage(volts);
-        }
+    }
 
     @Override
-    public void update() {
-        state.setMotorEncoderVelocityRPS(motor.getEncoder().getVelocity());
-        state.setVolts(motor.getAppliedOutput() * motor.getBusVoltage());
-        state.setAmps(motor.getOutputCurrent());
-        telemetry.telemeterize(state);
+    public double getAmps() {
+        return motor.getOutputCurrent();
     }
 
     @Override

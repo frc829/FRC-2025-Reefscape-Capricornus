@@ -22,21 +22,16 @@ public class AlgaePickup {
 
     private static final double wristPickupDegrees = 90.0;
 
-    private static final double algaeSpeed = -1;
     private static final double coralSpeed = -1;
-
-    private static final double algaeHoldSpeed = -0.08;
 
     private static final Value algaeClawValue = CLOSED;
     private static final Value coralClawValue = OPEN;
 
     private final Manipulator manipulator;
-    private final Trigger hasAlgae;
     private final Trigger isArmSafeForWristDown;
 
     public AlgaePickup(Manipulator manipulator) {
         this.manipulator = manipulator;
-        this.hasAlgae = manipulator.hasAlgae();
         this.isArmSafeForWristDown = manipulator.arm().lte(armSafeDownDegrees);
     }
 
@@ -84,8 +79,7 @@ public class AlgaePickup {
     public Command hold() {
         return parallel(
                 elevatorHold(),
-                armHold(),
-                intakeHold())
+                armHold())
                 .withName("Algae Hold");
     }
 
@@ -93,17 +87,10 @@ public class AlgaePickup {
         return sequence(
                 race(
                         parallel(
-                                manipulator.algaeIntakeWheel().toVelocity(() -> algaeSpeed),
                                 manipulator.coralIntakeWheel().toVelocity(() -> coralSpeed)),
                         waitSeconds(0.5)),
                 parallel(
-                        manipulator.algaeIntakeWheel().toVelocity(() -> algaeSpeed),
-                        manipulator.coralIntakeWheel().toVelocity(() -> coralSpeed))
-                        .until(hasAlgae));
-    }
-
-    private Command intakeHold() {
-        return manipulator.algaeIntakeWheel().toVelocity(() -> algaeHoldSpeed);
+                        manipulator.coralIntakeWheel().toVelocity(() -> coralSpeed)));
     }
 
     private Command claws() {

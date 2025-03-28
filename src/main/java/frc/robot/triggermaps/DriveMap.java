@@ -32,10 +32,6 @@ public class DriveMap {
         bindSeedFieldCentric();
 
         bindSetFieldFromCamera();
-        bindGoTo90();
-        bindGotTo270();
-        bindGoTo1();
-        bindGoTo0();
     }
 
     private double getMaxVelocitySetpointScalar() {
@@ -120,21 +116,4 @@ public class DriveMap {
     private void bindSetFieldFromCamera() {
         driver.b().whileTrue(swerveDriveSubsystem.setPose(new Pose2d()));
     }
-
-    private void bindGoTo90() {
-        driver.povLeft().whileTrue(swerveDriveSubsystem.goToAngle(90));
-    }
-    private void bindGotTo270() {
-        driver.povRight().whileTrue(swerveDriveSubsystem.goToAngle(-90));
-    }
-
-    private void bindGoTo1() {
-        driver.povUp().whileTrue(swerveDriveSubsystem.goToPose(1, 0, 0));
-    }
-
-    private void bindGoTo0(){
-        driver.a().whileTrue(swerveDriveSubsystem.goToPose(0, 0, 0));
-    }
-
-
 }

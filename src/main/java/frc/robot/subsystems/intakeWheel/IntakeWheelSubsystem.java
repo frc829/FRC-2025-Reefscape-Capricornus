@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import digilib.intakeWheel.IntakeWheel;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.function.DoubleSupplier;
 
@@ -26,19 +25,13 @@ public class IntakeWheelSubsystem implements Subsystem {
         }
     }
 
-    public Trigger gte(double currentAmps) {
-        return new Trigger(() -> intakeWheel
-                .getState()
-                .getAmps() >= currentAmps);
-    }
-
     public Command toVelocity(DoubleSupplier scalarSetpoint) {
-        return run(() -> intakeWheel.setVelocity(scalarSetpoint.getAsDouble()))
+        return run(() -> intakeWheel.applyMotorEncoderVelocity(scalarSetpoint.getAsDouble()))
                 .withName(String.format("%s: VELOCITY", getName()));
     }
 
     public Command toVoltage(double volts) {
-        return run(() -> intakeWheel.setVoltage(volts))
+        return run(() -> intakeWheel.applyVolts(volts))
                 .withName(String.format("%s: VOLTAGE", getName()));
     }
 

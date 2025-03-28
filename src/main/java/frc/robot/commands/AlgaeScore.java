@@ -15,7 +15,6 @@ public class AlgaeScore {
     private static final double elevatorBargeTravelCM = 45.0;
     private static final double elevatorBargeCM = 65.0;
 
-    private static final double algaeSpeed = 1;
     private static final double coralSpeed = 1;
 
     private final Manipulator manipulator;
@@ -39,7 +38,6 @@ public class AlgaeScore {
 
     public Command score() {
         return parallel(
-                manipulator.algaeIntakeWheel().toVelocity(() -> algaeSpeed),
                 manipulator.coralIntakeWheel().toVelocity(() -> coralSpeed))
                 .withName("Algae Score");
     }

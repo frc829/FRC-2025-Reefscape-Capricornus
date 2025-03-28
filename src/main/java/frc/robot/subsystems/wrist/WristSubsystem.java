@@ -30,13 +30,11 @@ public class WristSubsystem implements Subsystem {
 
     public Trigger gte(double angleDegrees) {
         return new Trigger(() -> wrist
-                .getState()
                 .getMotorEncoderPositionDegrees() >= angleDegrees);
     }
 
     public Trigger lte(double angleDegrees) {
         return new Trigger(() -> wrist
-                .getState()
                 .getMotorEncoderPositionDegrees() <= angleDegrees);
     }
 
@@ -45,20 +43,20 @@ public class WristSubsystem implements Subsystem {
     }
 
     public Command toAngle(double degrees) {
-        return run(() -> wrist.setPosition(degrees / 360.0))
+        return run(() -> wrist.applyPositionRotations(degrees / 360.0))
                 .withName(String.format("%s: %.2f deg", getName(), degrees));
     }
 
     public Command toVelocity(DoubleSupplier scalarSetpoint) {
-        return run(() -> wrist.setVelocity(scalarSetpoint.getAsDouble()))
+        return run(() -> wrist.applyVelocity(scalarSetpoint.getAsDouble()))
                 .withName(String.format("%s: VELOCITY", getName()));
     }
 
     public Command hold() {
         MutAngle holdPosition = Rotations.mutable(0.0);
         return sequence(
-                runOnce(() -> holdPosition.mut_setMagnitude(wrist.getState().getMotorEncoderPositionRotations())),
-                run(() -> wrist.setPosition(holdPosition.in(Rotations))))
+                runOnce(() -> holdPosition.mut_setMagnitude(wrist.getMotorEncoderPositionRotations())),
+                run(() -> wrist.applyPositionRotations(holdPosition.in(Rotations))))
                 .withName(String.format("%s: HOLD", getName()));
     }
 

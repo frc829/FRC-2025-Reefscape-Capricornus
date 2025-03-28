@@ -95,18 +95,9 @@ public class SwerveDriveSubsystem implements Subsystem {
                 .withName(String.format("%s: Seed Field Centric", getName()));
     }
 
-    public Command goToAngle(double angleDegrees) {
-        return run(() -> swerveDrive.rotateInPlace(Rotation2d.fromDegrees(angleDegrees)));
-    }
-
-    public Command goToPose(double x, double y, double angleDegrees) {
-        return run(() -> swerveDrive.goToPose(new Pose2d(x, y, Rotation2d.fromDegrees(angleDegrees))));
-    }
-
     public Command setPose(Pose2d pose2d) {
         return run(() -> swerveDrive.resetPose(pose2d));
     }
-
 
     @Override
     public void periodic() {

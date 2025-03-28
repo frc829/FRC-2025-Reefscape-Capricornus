@@ -80,7 +80,7 @@ public class ManualMap {
                 .whileTrue(manual.manualElevator(this::getMaxElevatorVelocityPercentValueManual));
     }
 
-    private void bindManualElevatorDangerous(){
+    private void bindManualElevatorDangerous() {
         new Trigger(() -> getMaxElevatorVelocityPercentValueManual() != 0.0).and(controller.start())
                 .whileTrue(manual.manualElevatorDangerous(() -> 0.1 * 12.0 * getMaxElevatorVelocityPercentValueManual()));
     }
@@ -98,21 +98,16 @@ public class ManualMap {
                 .whileTrue(
                         sequence(
                                 race(
-                                        parallel(
-                                                manual.manualAlgaeIntake(() -> -1),
-                                                manual.manualCoralIntake(() -> -1)),
+                                        manual.manualCoralIntake(() -> -1),
                                         waitSeconds(0.5)),
                                 parallel(
-                                        manual.manualAlgaeIntake(() -> -1),
-                                        manual.manualCoralIntake(() -> -1))
-                                        .until(manual.hasAlgae)));
+                                        manual.manualCoralIntake(() -> -1))));
     }
 
     private void bindManualAlgaeOut() {
         controller.povRight()
                 .whileTrue(
                         parallel(
-                                manual.manualAlgaeIntake(() -> 1),
                                 manual.manualCoralIntake(() -> 1)));
     }
 

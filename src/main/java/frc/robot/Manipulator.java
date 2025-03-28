@@ -13,14 +13,9 @@ public record Manipulator(
         ClawSubsystem algaeClaw,
         ClawSubsystem coralClaw,
         ElevatorSubsystem elevator,
-        IntakeWheelSubsystem algaeIntakeWheel,
         IntakeWheelSubsystem coralIntakeWheel,
         LidarSensorSubsystem lidarSensor,
         WristSubsystem wrist) {
-
-    public Trigger hasAlgae() {
-        return algaeIntakeWheel.gte(40);
-    }
 
     public Trigger hasCoral() {
         return lidarSensor().inRange(1, 5);

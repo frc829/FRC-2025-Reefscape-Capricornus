@@ -11,12 +11,10 @@ import static edu.wpi.first.wpilibj2.command.Commands.either;
 public class Manual {
 
     private final Manipulator manipulator;
-    public final Trigger hasAlgae;
     public final Trigger hasCoral;
 
     public Manual(Manipulator manipulator) {
         this.manipulator = manipulator;
-        hasAlgae = manipulator.hasAlgae();
         hasCoral = manipulator.hasCoral();
     }
 
@@ -42,10 +40,6 @@ public class Manual {
 
     public Command manualWrist(DoubleSupplier setpointScalar) {
         return manipulator.wrist().toVelocity(setpointScalar);
-    }
-
-    public Command manualAlgaeIntake(DoubleSupplier setpointScalar) {
-        return manipulator.algaeIntakeWheel().toVelocity(setpointScalar);
     }
 
     public Command manualCoralIntake(DoubleSupplier setpointScalar) {

@@ -28,25 +28,25 @@ public class ElevatorSubsystem implements Subsystem {
     }
 
     public Command toHeight(double meters) {
-        return run(() -> elevator.setPosition(meters))
+        return run(() -> elevator.applyPosition(meters))
                 .withName(String.format("%s: %.2f meters", getName(), meters));
     }
 
     public Command toVelocity(DoubleSupplier scalarSetpoint) {
-        return run(() -> elevator.setVelocity(scalarSetpoint.getAsDouble()))
+        return run(() -> elevator.applyVelocity(scalarSetpoint.getAsDouble()))
                 .withName(String.format("%s: VELOCITY", getName()));
     }
 
     public Command toVoltage(DoubleSupplier volts) {
-        return run(() -> elevator.setVoltage(volts.getAsDouble()))
+        return run(() -> elevator.applyVoltage(volts.getAsDouble()))
                 .withName(String.format("%s: VOLTAGE Dangerous", getName()));
     }
 
     public Command hold() {
         MutDistance holdPosition = Meters.mutable(0.0);
         return sequence(
-                runOnce(() -> holdPosition.mut_setMagnitude(elevator.getState().getMotorEncoderPositionMeters())),
-                run(() -> elevator.setPosition(holdPosition.in(Meters))))
+                runOnce(() -> holdPosition.mut_setMagnitude(elevator.getMotorEncoderPositionMeters())),
+                run(() -> elevator.applyPosition(holdPosition.in(Meters))))
                 .withName(String.format("%s: HOLD", getName()));
     }
 
