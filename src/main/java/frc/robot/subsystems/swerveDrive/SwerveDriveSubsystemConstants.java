@@ -97,13 +97,13 @@ public class SwerveDriveSubsystemConstants {
             static final SteerMotorArrangement STEER_MOTOR_TYPE = SteerMotorArrangement.TalonFX_Integrated;
             static final DriveMotorArrangement DRIVE_MOTOR_TYPE = DriveMotorArrangement.TalonFX_Integrated;
             static final SteerFeedbackType STEER_FEEDBACK_TYPE = SteerFeedbackType.FusedCANcoder;
-            static final Current SLIP_CURRENT = Amps.of(50.0);
+            static final Current SLIP_CURRENT = Amps.of(80.0);
             static final Current steerStatorCurrentLimit = Amps.of(60.0);
             static final boolean steerStatorCurrentLimitEnabled = true;
             static final double COUPLE_RATIO = 36.0 / 13.0; // 36 tooth first stage / 13 tooth pinion
             static final double DRIVE_GEAR_RATIO = 5.54;  // 16 tooth second stage, 13 tooth pinion
             static final double STEER_GEAR_RATIO = 25;   // 12T
-            static final Distance WHEEL_RADIUS = Inches.of(1.675);
+            static final Distance WHEEL_RADIUS = Inches.of(2.0);
 
             static final class Module0 {
                 static final Distance xPos = Inches.of(10.75);
@@ -500,7 +500,7 @@ public class SwerveDriveSubsystemConstants {
 
         final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule3 =
                 new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
-                        .withDriveMotorGearRatio(6.00)
+                        .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
                         .withSteerMotorGearRatio(STEER_GEAR_RATIO)
                         .withCouplingGearRatio(COUPLE_RATIO)
                         .withWheelRadius(WHEEL_RADIUS)

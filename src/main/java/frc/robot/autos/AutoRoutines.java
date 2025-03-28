@@ -46,11 +46,20 @@ public class AutoRoutines {
         autoChooser.addRoutine("Grapploct", this::grapploct);
         autoChooser.addRoutine("1MTest", this::test1M);
         autoChooser.addRoutine("0MTest", this::test0M);
+        autoChooser.addRoutine("2MTest", this::test2M);
     }
 
     private AutoRoutine test1M(){
         AutoRoutine routine = factory.newRoutine("1MTest");
         AutoTrajectory trajectory = routine.trajectory("1MTest");
+        Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
+        routine.active().onTrue(routineCommand);
+        return routine;
+    }
+
+    private AutoRoutine test2M(){
+        AutoRoutine routine = factory.newRoutine("2MTest");
+        AutoTrajectory trajectory = routine.trajectory("2MTest");
         Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
         routine.active().onTrue(routineCommand);
         return routine;
