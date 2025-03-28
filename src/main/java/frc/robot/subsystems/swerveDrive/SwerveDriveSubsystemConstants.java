@@ -48,13 +48,13 @@ public class SwerveDriveSubsystemConstants {
 
     static final class Cameras {
 
-        static final Matrix<N3, N1> robotPoseStdDev = VecBuilder.fill(0.6, 0.6, 999999);
+        static final Matrix<N3, N1> robotPoseStdDev = VecBuilder.fill(0.1, 0.1, 999999);
 
         static final class Camera0 {
-            static final String name = "Front-Camera";
-            static final Distance cameraX = Centimeters.of(24.25);
-            static final Distance cameraY = Centimeters.of(6.0); // Centimeters.of(6.5);
-            static final Distance cameraZ = Inches.of(20.7);
+            static final String name = "limelight-front";
+            static final Distance cameraX = Centimeters.of(24.6);
+            static final Distance cameraY = Centimeters.of(-7); // Centimeters.of(6.5);
+            static final Distance cameraZ = Centimeters.of(28.5);
             static final Angle roll = Degrees.of(0.0);
             static final Angle pitch = Degrees.of(0.0);
             static final Angle yaw = Degrees.of(0.0);
@@ -97,13 +97,13 @@ public class SwerveDriveSubsystemConstants {
             static final SteerMotorArrangement STEER_MOTOR_TYPE = SteerMotorArrangement.TalonFX_Integrated;
             static final DriveMotorArrangement DRIVE_MOTOR_TYPE = DriveMotorArrangement.TalonFX_Integrated;
             static final SteerFeedbackType STEER_FEEDBACK_TYPE = SteerFeedbackType.FusedCANcoder;
-            static final Current SLIP_CURRENT = Amps.of(50.0);
+            static final Current SLIP_CURRENT = Amps.of(80.0);
             static final Current steerStatorCurrentLimit = Amps.of(60.0);
             static final boolean steerStatorCurrentLimitEnabled = true;
             static final double COUPLE_RATIO = 36.0 / 13.0; // 36 tooth first stage / 13 tooth pinion
             static final double DRIVE_GEAR_RATIO = 5.54;  // 16 tooth second stage, 13 tooth pinion
             static final double STEER_GEAR_RATIO = 25;   // 12T
-            static final Distance WHEEL_RADIUS = Inches.of(1.675);
+            static final Distance WHEEL_RADIUS = Inches.of(2.0);
 
             static final class Module0 {
                 static final Distance xPos = Inches.of(10.75);
@@ -500,7 +500,7 @@ public class SwerveDriveSubsystemConstants {
 
         final SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> ConstantCreatorModule3 =
                 new SwerveModuleConstantsFactory<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
-                        .withDriveMotorGearRatio(6.00)
+                        .withDriveMotorGearRatio(DRIVE_GEAR_RATIO)
                         .withSteerMotorGearRatio(STEER_GEAR_RATIO)
                         .withCouplingGearRatio(COUPLE_RATIO)
                         .withWheelRadius(WHEEL_RADIUS)

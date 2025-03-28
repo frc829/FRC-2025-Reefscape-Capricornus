@@ -60,7 +60,7 @@ public class LimelightHelpers {
     }
 
     static PoseEstimate getBotPoseEstimate(String limelightName) {
-        DoubleArrayEntry poseEntry = LimelightHelpers.getLimelightDoubleArrayEntry(limelightName, "botpose_orb_wpiblue");
+        DoubleArrayEntry poseEntry = LimelightHelpers.getLimelightDoubleArrayEntry(limelightName, "botpose_wpiblue");
 
         TimestampedDoubleArray tsValue = poseEntry.getAtomic();
         double[] poseArray = tsValue.value;
@@ -157,25 +157,4 @@ public class LimelightHelpers {
     }
 
 
-    /**
-     * Sets the camera pose relative to the robot.
-     *
-     * @param limelightName Name of the Limelight camera
-     * @param forward       Forward offset in meters
-     * @param side          Side offset in meters
-     * @param up            Up offset in meters
-     * @param roll          Roll angle in degrees
-     * @param pitch         Pitch angle in degrees
-     * @param yaw           Yaw angle in degrees
-     */
-    public static void setCameraPose_RobotSpace(String limelightName, double forward, double side, double up, double roll, double pitch, double yaw) {
-        double[] entries = new double[6];
-        entries[0] = forward;
-        entries[1] = side;
-        entries[2] = up;
-        entries[3] = roll;
-        entries[4] = pitch;
-        entries[5] = yaw;
-        setLimelightNTDoubleArray(limelightName, "camerapose_robotspace_set", entries);
-    }
 }

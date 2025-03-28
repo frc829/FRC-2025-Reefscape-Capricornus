@@ -95,8 +95,8 @@ public class SwerveDriveSubsystem implements Subsystem {
                 .withName(String.format("%s: Seed Field Centric", getName()));
     }
 
-    public Command setPose(Pose2d pose2d) {
-        return run(() -> swerveDrive.resetPose(pose2d));
+    public Command setPoseFromFront(){
+        return run (() -> swerveDrive.resetPose(cameras.get(0).getRobotPose()));
     }
 
     @Override
