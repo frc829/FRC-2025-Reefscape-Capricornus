@@ -1,6 +1,5 @@
 package digilib.cameras;
 
-import digilib.cameras.LimelightHelpers.PoseEstimate;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
@@ -61,15 +60,15 @@ public class Limelight3G extends Camera {
 
     @Override
     public void update() {
-        PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+        PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate(limelightName);
         if (poseEstimate != null) {
-            pose2d = poseEstimate.pose;
-            timestampSeconds = poseEstimate.timestampSeconds;
-            poseAmbiguity = poseEstimate.rawFiducials.length == 1
-                    ? poseEstimate.rawFiducials[0].ambiguity()
+            pose2d = poseEstimate.pose();
+            timestampSeconds = poseEstimate.timestampSeconds();
+            poseAmbiguity = poseEstimate.rawFiducials().length == 1
+                    ? poseEstimate.rawFiducials()[0].ambiguity()
                     : Double.NaN;
             currentRobotPoseStdDev = robotPoseStdDev;
-            tagCount = poseEstimate.tagCount;
+            tagCount = poseEstimate.tagCount();
         } else {
             pose2d = null;
             timestampSeconds = Double.NaN;
