@@ -42,6 +42,7 @@ public class AutoRoutines {
         autoChooser.addRoutine("Noob S3", this::noobS3);
         autoChooser.addRoutine("The Flying Dutchman", this::theFlyingDutchman);
         autoChooser.addRoutine("Inteleon", this::inteleon);
+        autoChooser.addRoutine("IntelliJ", this::intelliJ);
         autoChooser.addRoutine("Squirtle", this::squirtle);
         autoChooser.addRoutine("Grapploct", this::grapploct);
         autoChooser.addRoutine("1MTest", this::test1M);
@@ -49,7 +50,7 @@ public class AutoRoutines {
         autoChooser.addRoutine("2MTest", this::test2M);
     }
 
-    private AutoRoutine test1M(){
+    private AutoRoutine test1M() {
         AutoRoutine routine = factory.newRoutine("1MTest");
         AutoTrajectory trajectory = routine.trajectory("1MTest");
         Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
@@ -57,7 +58,7 @@ public class AutoRoutines {
         return routine;
     }
 
-    private AutoRoutine test2M(){
+    private AutoRoutine test2M() {
         AutoRoutine routine = factory.newRoutine("2MTest");
         AutoTrajectory trajectory = routine.trajectory("2MTest");
         Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
@@ -65,7 +66,7 @@ public class AutoRoutines {
         return routine;
     }
 
-    private AutoRoutine test0M(){
+    private AutoRoutine test0M() {
         AutoRoutine routine = factory.newRoutine("0MTest");
         AutoTrajectory trajectory = routine.trajectory("0MTest");
         Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
@@ -171,7 +172,7 @@ public class AutoRoutines {
         traj1.done().onTrue(
                 sequence(
                         coralPickup.stationBack().until(coralPickup.hasCoral),
-                        //waitSeconds(1.0),
+                        // waitSeconds(1.0),
                         coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj2.spawnCmd())));
 
 
@@ -188,11 +189,11 @@ public class AutoRoutines {
 
     private AutoRoutine intelliJ() {
         AutoRoutine routine = factory.newRoutine("IntelliJ");
-        AutoTrajectory traj0 = routine.trajectory("Bottom01-03");
-        AutoTrajectory traj1 = routine.trajectory("Bottom02-03");
-        AutoTrajectory traj2 = routine.trajectory("Bottom03-03");
-        AutoTrajectory traj3 = routine.trajectory("Bottom04-03");
-        AutoTrajectory traj4 = routine.trajectory("Bottom05-03");
+        AutoTrajectory traj0 = routine.trajectory("Bottom01-3");
+        AutoTrajectory traj1 = routine.trajectory("Bottom02-3");
+        AutoTrajectory traj2 = routine.trajectory("Bottom03-3");
+        AutoTrajectory traj3 = routine.trajectory("Bottom04-3");
+        AutoTrajectory traj4 = routine.trajectory("Bottom05-3");
 
         Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
         routine.active().onTrue(cmd);
@@ -208,7 +209,6 @@ public class AutoRoutines {
         traj1.done().onTrue(
                 sequence(
                         coralPickup.stationBack().until(coralPickup.hasCoral),
-                        //waitSeconds(1.0),
                         coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj2.spawnCmd())));
 
 
@@ -226,7 +226,6 @@ public class AutoRoutines {
         traj3.done().onTrue(
                 sequence(
                         coralPickup.stationBack().until(coralPickup.hasCoral),
-                        //waitSeconds(1.0),
                         coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj4.spawnCmd())));
 
         // Fifth Trajectory Score
