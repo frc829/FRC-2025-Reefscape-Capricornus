@@ -15,7 +15,6 @@ public class Limelight3G extends Camera {
     private double poseAmbiguity = Double.MAX_VALUE;
     private Matrix<N3, N1> currentRobotPoseStdDev = null;
     private int tagCount = 0;
-    private double averageTagDistance = Double.NaN;
 
     public Limelight3G(Config config) {
         super(config);
@@ -54,11 +53,6 @@ public class Limelight3G extends Camera {
     }
 
     @Override
-    public double getAverageTagDistance() {
-        return averageTagDistance;
-    }
-
-    @Override
     public void setRobotOrientation(Pose2d robotOrientation) {
         LimelightHelpers.SetRobotOrientation(
                 limelightName,
@@ -82,14 +76,12 @@ public class Limelight3G extends Camera {
                     : Double.NaN;
             currentRobotPoseStdDev = robotPoseStdDev;
             tagCount = poseEstimate.tagCount();
-            averageTagDistance = poseEstimate.avgTagDist();
         } else {
             pose2d = null;
             timestampSeconds = Double.NaN;
             poseAmbiguity = Double.MAX_VALUE;
             currentRobotPoseStdDev = null;
             tagCount = 0;
-            averageTagDistance = Double.NaN;
         }
 
         if (poseEstimateMT1 != null) {

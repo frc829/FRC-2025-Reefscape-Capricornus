@@ -26,6 +26,7 @@ public abstract class Elevator {
     private final DoublePublisher voltage;
     private final DoublePublisher current;
 
+    @SuppressWarnings("resource")
     public Elevator(
             String name,
             double minHeightMeters,

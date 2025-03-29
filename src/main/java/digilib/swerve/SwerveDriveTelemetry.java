@@ -29,6 +29,7 @@ public class SwerveDriveTelemetry {
     private final double[] speedsArray = new double[3];
     private final StructPublisher<SwerveSample> swerveSample;
 
+    @SuppressWarnings("resource")
     public SwerveDriveTelemetry(
             String name,
             double maxVelocityMPS,

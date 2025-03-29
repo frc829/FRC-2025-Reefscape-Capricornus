@@ -83,6 +83,7 @@ public abstract class Camera {
     private final DoublePublisher timeStampSeconds;
     private final IntegerPublisher tagCount;
 
+    @SuppressWarnings("resource")
     public Camera(Config config) {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(config.name());
         NetworkTable field = getDefault().getTable("Field");
@@ -124,8 +125,6 @@ public abstract class Camera {
     public abstract Matrix<N3, N1> getRobotPoseStdDev();
 
     public abstract int getTagCount();
-
-    public abstract double getAverageTagDistance();
 
     public abstract void setRobotOrientation(Pose2d robotOrientation);
 

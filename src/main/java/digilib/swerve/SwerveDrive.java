@@ -30,6 +30,7 @@ public interface SwerveDrive {
 
     void setWheelAngle(double wheelAngleDegrees);
 
+    @SuppressWarnings("unused")
     void followPath(SwerveSample sample);
 
     void seedFieldCentric();

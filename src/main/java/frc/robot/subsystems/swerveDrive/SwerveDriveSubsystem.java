@@ -120,7 +120,6 @@ public class SwerveDriveSubsystem implements Subsystem {
             double timeStampSeconds = camera.getTimeStampSeconds();
             int tagCount = camera.getTagCount();
             double poseAmbiguity = camera.getRobotPoseAmbiguity();
-            double averageTagDistance = camera.getAverageTagDistance();
             Matrix<N3, N1> robotPoseStdDev = camera.getRobotPoseStdDev();
             if (Math.abs(swerveDrive.getState().getSpeeds().omegaRadiansPerSecond) > Units.degreesToRadians(360)) {
                 return;
@@ -134,9 +133,6 @@ public class SwerveDriveSubsystem implements Subsystem {
             if (Double.isFinite(poseAmbiguity) && poseAmbiguity >= 0.7) {
                 return;
             }
-            // if (Double.isFinite(averageTagDistance) && averageTagDistance > 2.1) {
-            //     return;
-            // }
             swerveDrive.addVisionMeasurement(pose2d, Utils.fpgaToCurrentTime(timeStampSeconds), robotPoseStdDev);
         });
     }
