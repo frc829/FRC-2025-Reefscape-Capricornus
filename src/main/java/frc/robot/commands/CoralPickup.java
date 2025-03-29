@@ -13,7 +13,7 @@ public class CoralPickup {
 
     private static final double armFloorDegrees = -39;
     private static final double armStationDegrees = 50.0;
-    private static final double armStationDegreesBack = 134.4;
+    private static final double armStationDegreesBack = 134.9;
 
     private static final double armHoldDegrees = 88.0;
     private static final double armSafeDownDegrees = 60.0;

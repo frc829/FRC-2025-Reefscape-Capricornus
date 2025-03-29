@@ -200,7 +200,7 @@ public class AutoRoutines {
 
         // First Trajectory Score
         traj0.atTime("Align").onTrue(coralScore.l4Align());
-        traj0.done().onTrue(scoreL4().withDeadline(waitSeconds(2.0)).andThen(traj1.spawnCmd()));
+        traj0.done().onTrue(scoreL4().withDeadline(waitSeconds(0.7)).andThen(traj1.spawnCmd()));
 
 
         // Second Trajectory Pickup
@@ -209,7 +209,7 @@ public class AutoRoutines {
         traj1.done().onTrue(
                 sequence(
                         coralPickup.stationBack().until(coralPickup.hasCoral),
-                        coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj2.spawnCmd())));
+                        traj2.spawnCmd()));
 
 
         // Third Trajectory Score
@@ -217,8 +217,7 @@ public class AutoRoutines {
         traj2.atTime("Align").onTrue(coralScore.l4Align());
         traj2.done().onTrue(
                 sequence(
-                        coralScore.l4Align().withDeadline(waitSeconds(1.0)),
-                        scoreL4().withDeadline(waitSeconds(2.0))));
+                        scoreL4().withDeadline(waitSeconds(0.5).andThen(traj3.spawnCmd()))));
 
         // Fourth Trajectory Score
         traj3.atTime("Reset").onTrue(coralPickup.hardReset());
@@ -226,15 +225,14 @@ public class AutoRoutines {
         traj3.done().onTrue(
                 sequence(
                         coralPickup.stationBack().until(coralPickup.hasCoral),
-                        coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj4.spawnCmd())));
+                        traj4.spawnCmd()));
 
         // Fifth Trajectory Score
         traj4.atTime("Reset").onTrue(coralPickup.holdFromBack());
         traj4.atTime("Align").onTrue(coralScore.l4Align());
         traj4.done().onTrue(
                 sequence(
-                        coralScore.l4Align().withDeadline(waitSeconds(1.0)),
-                        scoreL4().withDeadline(waitSeconds(2.0))));
+                        scoreL4().withDeadline(waitSeconds(0.5))));
 
         return routine;
     }
