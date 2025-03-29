@@ -188,11 +188,11 @@ public class AutoRoutines {
 
     private AutoRoutine intelliJ() {
         AutoRoutine routine = factory.newRoutine("IntelliJ");
-        AutoTrajectory traj0 = routine.trajectory("Bottom01");
-        AutoTrajectory traj1 = routine.trajectory("Bottom02");
-        AutoTrajectory traj2 = routine.trajectory("Bottom03");
-        AutoTrajectory traj3 = routine.trajectory("Bottom04");
-        AutoTrajectory traj4 = routine.trajectory("Bottom05");
+        AutoTrajectory traj0 = routine.trajectory("Bottom01-03");
+        AutoTrajectory traj1 = routine.trajectory("Bottom02-03");
+        AutoTrajectory traj2 = routine.trajectory("Bottom03-03");
+        AutoTrajectory traj3 = routine.trajectory("Bottom04-03");
+        AutoTrajectory traj4 = routine.trajectory("Bottom05-03");
 
         Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
         routine.active().onTrue(cmd);
