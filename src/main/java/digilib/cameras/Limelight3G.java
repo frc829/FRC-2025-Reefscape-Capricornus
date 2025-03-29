@@ -10,10 +10,12 @@ public class Limelight3G extends Camera {
     private final String limelightName;
     private final Matrix<N3, N1> robotPoseStdDev;
     private Pose2d pose2d = null;
+    private Pose2d pose2dMT1 = null;
     private double timestampSeconds = Double.NaN;
     private double poseAmbiguity = Double.MAX_VALUE;
     private Matrix<N3, N1> currentRobotPoseStdDev = null;
     private int tagCount = 0;
+    private double averageTagDistance = Double.NaN;
 
     public Limelight3G(Config config) {
         super(config);
@@ -24,6 +26,11 @@ public class Limelight3G extends Camera {
     @Override
     public Pose2d getRobotPose() {
         return pose2d;
+    }
+
+    @Override
+    public Pose2d getRobotPoseMT1() {
+        return pose2dMT1;
     }
 
     @Override
@@ -47,6 +54,11 @@ public class Limelight3G extends Camera {
     }
 
     @Override
+    public double getAverageTagDistance() {
+        return averageTagDistance;
+    }
+
+    @Override
     public void setRobotOrientation(Pose2d robotOrientation) {
         LimelightHelpers.SetRobotOrientation(
                 limelightName,
@@ -60,7 +72,8 @@ public class Limelight3G extends Camera {
 
     @Override
     public void update() {
-        PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate(limelightName);
+        PoseEstimate poseEstimateMT1 = LimelightHelpers.getBotPoseEstimateMT1(limelightName);
+        PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimateMT2(limelightName);
         if (poseEstimate != null) {
             pose2d = poseEstimate.pose();
             timestampSeconds = poseEstimate.timestampSeconds();
@@ -69,12 +82,20 @@ public class Limelight3G extends Camera {
                     : Double.NaN;
             currentRobotPoseStdDev = robotPoseStdDev;
             tagCount = poseEstimate.tagCount();
+            averageTagDistance = poseEstimate.avgTagDist();
         } else {
             pose2d = null;
             timestampSeconds = Double.NaN;
             poseAmbiguity = Double.MAX_VALUE;
             currentRobotPoseStdDev = null;
             tagCount = 0;
+            averageTagDistance = Double.NaN;
+        }
+
+        if (poseEstimateMT1 != null) {
+            pose2dMT1 = poseEstimateMT1.pose();
+        } else {
+            pose2dMT1 = null;
         }
         super.update();
     }

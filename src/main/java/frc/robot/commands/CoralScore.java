@@ -13,7 +13,7 @@ public class CoralScore {
     private static final double armL1Degrees = 9.0;
     private static final double armL2Degrees = 39;
     private static final double armL3Degrees = 39;
-    private static final double armL4Degrees = 46.0;
+    private static final double armL4Degrees = 43.0;
     private static final double armSafeDegrees = 40.0;
     private static final double armResetDegrees = 90.0;
 

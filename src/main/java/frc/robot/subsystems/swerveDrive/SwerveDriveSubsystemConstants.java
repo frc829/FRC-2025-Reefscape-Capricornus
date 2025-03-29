@@ -48,7 +48,7 @@ public class SwerveDriveSubsystemConstants {
 
     static final class Cameras {
 
-        static final Matrix<N3, N1> robotPoseStdDev = VecBuilder.fill(0.1, 0.1, 999999);
+        static final Matrix<N3, N1> robotPoseStdDev = VecBuilder.fill(0.0, 0.0, 999999);
 
         static final class Camera0 {
             static final String name = "limelight-front";
@@ -409,7 +409,7 @@ public class SwerveDriveSubsystemConstants {
     private static final Voltage STEER_FRICTION_VOLTAGE = Volts.of(0.55496);
     private static final Voltage DRIVE_FRICTION_VOLTAGE = Volts.of(0.20082);
 
-    private static AutoFactory autoFactory = null;
+    public static AutoFactory autoFactory = null;
 
 
     public static SwerveDriveSubsystem createCTRESwerveDrive() {

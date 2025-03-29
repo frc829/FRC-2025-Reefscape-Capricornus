@@ -115,6 +115,8 @@ public abstract class Camera {
 
     public abstract Pose2d getRobotPose();
 
+    public abstract Pose2d getRobotPoseMT1();
+
     public abstract double getTimeStampSeconds();
 
     public abstract double getRobotPoseAmbiguity();
@@ -122,6 +124,8 @@ public abstract class Camera {
     public abstract Matrix<N3, N1> getRobotPoseStdDev();
 
     public abstract int getTagCount();
+
+    public abstract double getAverageTagDistance();
 
     public abstract void setRobotOrientation(Pose2d robotOrientation);
 

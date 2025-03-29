@@ -46,7 +46,7 @@ public class WristSubsystemConstants {
     static final class Mechanism {
         static final String name = "Wrist";
         static final double reduction = 4.0 * 3.0 * 5.0 * 32.0 / 24.0;   // 10 7 32.0 / 18
-        static final double minAngleDegrees = -10.0;
+        static final double minAngleDegrees = -95.0;
         static final double maxAngleDegrees = 100.0;
         static final Config constants = new Config(
                 name,

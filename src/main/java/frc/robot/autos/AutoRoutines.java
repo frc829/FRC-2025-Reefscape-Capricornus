@@ -170,7 +170,8 @@ public class AutoRoutines {
         traj1.atTime("Pickup").onTrue(coralPickup.stationBack());
         traj1.done().onTrue(
                 sequence(
-                        waitSeconds(1.0),
+                        coralPickup.stationBack().until(coralPickup.hasCoral),
+                        //waitSeconds(1.0),
                         coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj2.spawnCmd())));
 
 
@@ -183,7 +184,60 @@ public class AutoRoutines {
                         scoreL4().withDeadline(waitSeconds(2.0))));
 
         return routine;
+    }
 
+    private AutoRoutine intelliJ() {
+        AutoRoutine routine = factory.newRoutine("IntelliJ");
+        AutoTrajectory traj0 = routine.trajectory("Bottom01");
+        AutoTrajectory traj1 = routine.trajectory("Bottom02");
+        AutoTrajectory traj2 = routine.trajectory("Bottom03");
+        AutoTrajectory traj3 = routine.trajectory("Bottom04");
+        AutoTrajectory traj4 = routine.trajectory("Bottom05");
+
+        Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
+        routine.active().onTrue(cmd);
+
+        // First Trajectory Score
+        traj0.atTime("Align").onTrue(coralScore.l4Align());
+        traj0.done().onTrue(scoreL4().withDeadline(waitSeconds(2.0)).andThen(traj1.spawnCmd()));
+
+
+        // Second Trajectory Pickup
+        traj1.atTime("Reset").onTrue(coralPickup.hardReset());
+        traj1.atTime("Pickup").onTrue(coralPickup.stationBack());
+        traj1.done().onTrue(
+                sequence(
+                        coralPickup.stationBack().until(coralPickup.hasCoral),
+                        //waitSeconds(1.0),
+                        coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj2.spawnCmd())));
+
+
+        // Third Trajectory Score
+        traj2.atTime("Reset").onTrue(coralPickup.holdFromBack());
+        traj2.atTime("Align").onTrue(coralScore.l4Align());
+        traj2.done().onTrue(
+                sequence(
+                        coralScore.l4Align().withDeadline(waitSeconds(1.0)),
+                        scoreL4().withDeadline(waitSeconds(2.0))));
+
+        // Fourth Trajectory Score
+        traj3.atTime("Reset").onTrue(coralPickup.hardReset());
+        traj3.atTime("Pickup").onTrue(coralPickup.stationBack());
+        traj3.done().onTrue(
+                sequence(
+                        coralPickup.stationBack().until(coralPickup.hasCoral),
+                        //waitSeconds(1.0),
+                        coralPickup.holdFromBack().withDeadline(waitSeconds(0.25)).andThen(traj4.spawnCmd())));
+
+        // Fifth Trajectory Score
+        traj4.atTime("Reset").onTrue(coralPickup.holdFromBack());
+        traj4.atTime("Align").onTrue(coralScore.l4Align());
+        traj4.done().onTrue(
+                sequence(
+                        coralScore.l4Align().withDeadline(waitSeconds(1.0)),
+                        scoreL4().withDeadline(waitSeconds(2.0))));
+
+        return routine;
     }
 
     private AutoRoutine squirtle() {

@@ -13,9 +13,9 @@ public class CoralPickup {
 
     private static final double armFloorDegrees = -39;
     private static final double armStationDegrees = 50.0;
-    private static final double armStationDegreesBack = 153.0;
+    private static final double armStationDegreesBack = 134.4;
 
-    private static final double armHoldDegrees = 90.0;
+    private static final double armHoldDegrees = 88.0;
     private static final double armSafeDownDegrees = 60.0;
     private static final double armSafeDownDegreesBack = 120.0;
 
@@ -25,9 +25,11 @@ public class CoralPickup {
 
     private static final double elevatorFloorCM = 16.5;
     private static final double elevatorStationCM = 13.0;
+    private static final double elevatorStationBackCM = 17.2;
     private static final double elevatorHoldCM = 10.0;
 
     private static final double wristPickupDegrees = 90.0;
+    private static final double wristPickupDegreesBack = -90.0;
     private static final double wristSafeDegrees = 0.0;
 
     private static final double coralSpeed = 1;
@@ -84,13 +86,13 @@ public class CoralPickup {
 
     public Command stationBack() {
         return sequence(
-                parallel(elevatorStation(),
+                parallel(elevatorStationBack(),
                         armStationBack())
                         .until(isArmSafeForWristDownBack),
-                parallel(elevatorStation(),
+                parallel(elevatorStationBack(),
                         armStationBack(),
                         claws(),
-                        manipulator.wrist().toAngle(wristPickupDegrees),
+                        manipulator.wrist().toAngle(wristPickupDegreesBack),
                         intake()))
                 .withName("Coral Pickup: Station Back");
     }
@@ -158,6 +160,10 @@ public class CoralPickup {
 
     private Command elevatorStation() {
         return manipulator.elevator().toHeight(elevatorStationCM / 100.0);
+    }
+
+    private Command elevatorStationBack(){
+        return manipulator.elevator().toHeight(elevatorStationBackCM / 100.0);
     }
 
     private Command elevatorFloor() {

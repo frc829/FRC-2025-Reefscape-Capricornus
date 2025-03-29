@@ -1,10 +1,12 @@
 package frc.robot.triggermaps;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 
+import static frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants.autoFactory;
 import static java.lang.Math.pow;
 import static java.lang.Math.toDegrees;
 
@@ -34,6 +36,8 @@ public class DriveMap {
         bindSeedFieldCentric();
 
         bindSetFieldFromCamera();
+
+        bindToE();
     }
 
     private double getMaxVelocitySetpointScalar() {
@@ -155,5 +159,14 @@ public class DriveMap {
 
     private void bindSetFieldFromCamera() {
         driver.b().whileTrue(swerveDriveSubsystem.setPoseFromFront());
+    }
+
+    private void bindToE(){
+        driver.povLeft().whileTrue(goToE());
+    }
+
+    public Command goToE() {
+            return autoFactory.trajectoryCmd(String.format("E"));
+
     }
 }

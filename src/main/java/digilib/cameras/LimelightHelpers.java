@@ -59,7 +59,50 @@ public class LimelightHelpers {
         return inData[position];
     }
 
-    static PoseEstimate getBotPoseEstimate(String limelightName) {
+    static PoseEstimate getBotPoseEstimateMT2(String limelightName) {
+        DoubleArrayEntry poseEntry = LimelightHelpers.getLimelightDoubleArrayEntry(limelightName, "botpose_orb_wpiblue");
+
+        TimestampedDoubleArray tsValue = poseEntry.getAtomic();
+        double[] poseArray = tsValue.value;
+        long timestamp = tsValue.timestamp;
+
+        if (poseArray.length == 0) {
+            // Handle the case where no data is available
+            return null; // or some default PoseEstimate
+        }
+
+        var pose = toPose2D(poseArray);
+        double latency = extractArrayEntry(poseArray, 6);
+        int tagCount = (int) extractArrayEntry(poseArray, 7);
+        double tagSpan = extractArrayEntry(poseArray, 8);
+        double tagDist = extractArrayEntry(poseArray, 9);
+        double tagArea = extractArrayEntry(poseArray, 10);
+
+        // Convert server timestamp from microseconds to seconds and adjust for latency
+        double adjustedTimestamp = (timestamp / 1000000.0) - (latency / 1000.0);
+
+        RawFiducial[] rawFiducials = new RawFiducial[tagCount];
+        int valsPerFiducial = 7;
+        int expectedTotalVals = 11 + valsPerFiducial * tagCount;
+
+        if (poseArray.length == expectedTotalVals) {
+            for (int i = 0; i < tagCount; i++) {
+                int baseIndex = 11 + (i * valsPerFiducial);
+                int id = (int) poseArray[baseIndex];
+                double txnc = poseArray[baseIndex + 1];
+                double tync = poseArray[baseIndex + 2];
+                double ta = poseArray[baseIndex + 3];
+                double distToCamera = poseArray[baseIndex + 4];
+                double distToRobot = poseArray[baseIndex + 5];
+                double ambiguity = poseArray[baseIndex + 6];
+                rawFiducials[i] = new RawFiducial(id, txnc, tync, ta, distToCamera, distToRobot, ambiguity);
+            }
+        }
+
+        return new PoseEstimate(pose, adjustedTimestamp, latency, tagCount, tagSpan, tagDist, tagArea, rawFiducials);
+    }
+
+    static PoseEstimate getBotPoseEstimateMT1(String limelightName) {
         DoubleArrayEntry poseEntry = LimelightHelpers.getLimelightDoubleArrayEntry(limelightName, "botpose_wpiblue");
 
         TimestampedDoubleArray tsValue = poseEntry.getAtomic();
