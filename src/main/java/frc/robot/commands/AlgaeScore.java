@@ -8,21 +8,21 @@ import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 public class AlgaeScore {
-    private static final double armSafeDegrees = 40.0;
-    private static final double armBargeTravelDegrees = 30.0;
-    private static final double armBargeDegrees = 48.0;
+    private static final double armBargeTravelDegrees = 0.0;
+    private static final double armBargeDegrees = 57.0;
 
-    private static final double elevatorBargeTravelCM = 45.0;
-    private static final double elevatorBargeCM = 65.0;
+    private static final double elevatorBargeTravelCM = 49.0;
+    private static final double elevatorBargeSafeCM = 47.0;
+    private static final double elevatorBargeCM = 67.0;
 
     private static final double coralSpeed = 1;
 
     private final Manipulator manipulator;
-    private final Trigger isArmSafe;
+    private final Trigger isSafe;
 
     public AlgaeScore(Manipulator manipulator) {
         this.manipulator = manipulator;
-        this.isArmSafe = manipulator.arm().gte(armSafeDegrees);
+        this.isSafe = manipulator.elevator().gte(elevatorBargeSafeCM / 100.0);
     }
 
     public Command bargeAlign() {
@@ -30,7 +30,7 @@ public class AlgaeScore {
                 parallel(
                         manipulator.elevator().toHeight(elevatorBargeTravelCM / 100.0),
                         manipulator.arm().toAngle(armBargeTravelDegrees))
-                        .until(isArmSafe),
+                        .until(isSafe),
                 parallel(manipulator.elevator().toHeight(elevatorBargeCM / 100.0),
                         manipulator.arm().toAngle(armBargeDegrees)))
                 .withName("Algae Score: Barge: Align");

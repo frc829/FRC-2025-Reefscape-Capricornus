@@ -99,6 +99,10 @@ public class SwerveDriveSubsystem implements Subsystem {
         return run (() -> swerveDrive.resetPose(cameras.get(0).getRobotPoseMT1()));
     }
 
+    public Command setPID(double p){
+        return runOnce(() -> swerveDrive.setPID(p));
+    }
+
     @Override
     public void periodic() {
         if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {

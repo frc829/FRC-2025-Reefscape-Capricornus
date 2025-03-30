@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import static edu.wpi.first.networktables.NetworkTableInstance.getDefault;
 
@@ -30,11 +31,21 @@ public abstract class SwerveDrive {
 
     private final StructPublisher<Pose2d> robotPose;
     private final StructPublisher<ChassisSpeeds> robotSpeeds;
+    private final StructPublisher<ChassisSpeeds> fieldSpeeds;
     private final StructArrayPublisher<SwerveModuleState> moduleStates;
     private final StructArrayPublisher<SwerveModuleState> moduleTargets;
     private final StructArrayPublisher<SwerveModulePosition> modulePositions;
     private final DoublePublisher rawHeading;
     private final StructPublisher<SwerveSample> swerveSample;
+    private final DoublePublisher pathXPositionError;
+    private final DoublePublisher pathYPositionError;
+    private final DoublePublisher pathThetaPositionError;
+    private final DoublePublisher pathXVelocityError;
+    private final DoublePublisher pathYVelocityError;
+    private final DoublePublisher pathThetaVelocityError;
+    private final DoublePublisher xVelocityCorection;
+    private final DoublePublisher yVelocityCorection;
+    private final DoublePublisher thetaCorection;
 
     public SwerveDrive(
             String name,
@@ -52,6 +63,9 @@ public abstract class SwerveDrive {
                 .set(maxAngularVelocityRPS * 360.0);
         robotPose = field
                 .getStructTopic("Robot", Pose2d.struct)
+                .publish();
+        fieldSpeeds = table
+                .getStructTopic("Field Speeds", ChassisSpeeds.struct)
                 .publish();
         robotSpeeds = table
                 .getStructTopic("Robot Speeds", ChassisSpeeds.struct)
@@ -71,9 +85,38 @@ public abstract class SwerveDrive {
         swerveSample = table
                 .getStructTopic("Trajectory Samples", SwerveSample.struct)
                 .publish();
+        pathXPositionError = table
+                .getDoubleTopic("Path X Position Error [m]")
+                .publish();
+        pathYPositionError = table
+                .getDoubleTopic("Path Y Position Error [m]")
+                .publish();
+        pathThetaPositionError = table
+                .getDoubleTopic("Path Theta Position Error [deg]")
+                .publish();
+        pathXVelocityError = table
+                .getDoubleTopic("Path X Velocity Error [mps]")
+                .publish();
+        pathYVelocityError = table
+                .getDoubleTopic("Path Y Velocity Error [mps]")
+                .publish();
+        pathThetaVelocityError = table
+                .getDoubleTopic("Path Theta Velocity Error [dps]")
+                .publish();
+        xVelocityCorection = table
+                .getDoubleTopic("X Velocity Correction [mps")
+                .publish();
+        yVelocityCorection = table
+                .getDoubleTopic("Y Velocity Correction [mps")
+                .publish();
+        thetaCorection = table
+                .getDoubleTopic("Theta Velocity Correction [dps]")
+                .publish();
     }
 
     public abstract Pose2d getPose();
+
+    public abstract ChassisSpeeds getFieldSpeeds();
 
     public abstract ChassisSpeeds getSpeeds();
 
@@ -86,6 +129,24 @@ public abstract class SwerveDrive {
     public abstract Rotation2d getRawHeading();
 
     public abstract SwerveSample getSwerveSample();
+
+    public abstract double getPathXPositionError();
+
+    public abstract double getPathYPositionError();
+
+    public abstract double getPathThetaPositionError();
+
+    public abstract double getPathXVelocityError();
+
+    public abstract double getPathYVelocityError();
+
+    public abstract double getPathThetaVelocityError();
+
+    public abstract double getXVelocityCorrection();
+
+    public abstract double getYVelocityCorrection();
+
+    public abstract double getThetaCorrection();
 
     public abstract void setFieldCentric(
             double translationVelocitySetpointScalar,
@@ -106,6 +167,8 @@ public abstract class SwerveDrive {
 
     public abstract void setWheelAngle(double wheelAngleDegrees);
 
+    public abstract void setPID(double p);
+
     @SuppressWarnings("unused")
     public abstract void followPath(SwerveSample sample);
 
@@ -123,12 +186,34 @@ public abstract class SwerveDrive {
     public void update(){
         robotPose.set(getPose());
         robotSpeeds.set(getSpeeds());
+        fieldSpeeds.set(getFieldSpeeds());
         moduleStates.set(getModuleStates());
         moduleTargets.set(getModuleTargets());
         modulePositions.set(getModulePositions());
         rawHeading.set(MathUtil.inputModulus(getRawHeading().getDegrees(), -180, 180));
         if (getSwerveSample() != null) {
             swerveSample.set(getSwerveSample());
+        }
+        if(RobotModeTriggers.autonomous().getAsBoolean()){
+            pathXPositionError.set(getPathXPositionError());
+            pathYPositionError.set(getPathYPositionError());
+            pathThetaPositionError.set(getPathThetaPositionError() * 180 / Math.PI);
+            pathXVelocityError.set(getPathXVelocityError());
+            pathYVelocityError.set(getPathYVelocityError());
+            pathThetaVelocityError.set(getPathThetaVelocityError() * 180 / Math.PI);
+            xVelocityCorection.set(getXVelocityCorrection());
+            yVelocityCorection.set(getYVelocityCorrection());
+            thetaCorection.set(getThetaCorrection());
+        }else{
+            pathXPositionError.set(0.0);
+            pathYPositionError.set(0.0);
+            pathThetaPositionError.set(0.0);
+            pathXVelocityError.set(0.0);
+            pathYVelocityError.set(0.0);
+            pathThetaVelocityError.set(0.0);
+            xVelocityCorection.set(0.0);
+            yVelocityCorection.set(0.0);
+            thetaCorection.set(0.0);
         }
     }
 

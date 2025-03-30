@@ -51,7 +51,7 @@ public class ElevatorSubsystemConstants {
         static final double drumRadiusMeters = Units.inchesToMeters(sprocketPitchRadiusInches);
         static final double minHeightCentimeters = 5.0;
         static final double minHeightMeters = minHeightCentimeters / 100.0;
-        static final double maxHeightCentimeters = 65.0;
+        static final double maxHeightCentimeters = 67.0;
         static final double maxHeightMeters = maxHeightCentimeters / 100.0;
         static final Config config = new Config(
                 name,

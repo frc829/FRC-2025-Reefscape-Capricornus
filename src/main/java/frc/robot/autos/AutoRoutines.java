@@ -11,23 +11,33 @@ import frc.robot.commands.AlgaePickup;
 import frc.robot.commands.AlgaeScore;
 import frc.robot.commands.CoralPickup;
 import frc.robot.commands.CoralScore;
+import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class AutoRoutines {
 
     private final AutoFactory factory;
+    private final SwerveDriveSubsystem swerveDrive;
     private final AlgaePickup algaePickup;
     private final AlgaeScore algaeScore;
     private final CoralPickup coralPickup;
     private final CoralScore coralScore;
 
+    private final String topTraj0Name = "Top01";
+    private final String topTraj1Name = "Top02";
+    private final String topTraj2Name = "Top03";
+    private final String topTraj3Name = "Top04";
+    private final String topTraj4Name = "Top05";
+
     public AutoRoutines(
+            SwerveDriveSubsystem swerveDrive,
             AutoFactory factory,
             AlgaePickup algaePickup,
             AlgaeScore algaeScore,
             CoralPickup coralPickup,
             CoralScore coralScore) {
+        this.swerveDrive = swerveDrive;
         this.algaePickup = algaePickup;
         this.algaeScore = algaeScore;
         this.coralPickup = coralPickup;
@@ -45,30 +55,23 @@ public class AutoRoutines {
         autoChooser.addRoutine("IntelliJ", this::intelliJ);
         autoChooser.addRoutine("Squirtle", this::squirtle);
         autoChooser.addRoutine("Grapploct", this::grapploct);
-        autoChooser.addRoutine("1MTest", this::test1M);
-        autoChooser.addRoutine("0MTest", this::test0M);
-        autoChooser.addRoutine("2MTest", this::test2M);
+        autoChooser.addRoutine("Test1", this::test1);
+        autoChooser.addRoutine("Test2", this::test2);
+        autoChooser.addRoutine("WarTortle", this::wartortle);
+
     }
 
-    private AutoRoutine test1M() {
-        AutoRoutine routine = factory.newRoutine("1MTest");
-        AutoTrajectory trajectory = routine.trajectory("1MTest");
+    private AutoRoutine test1() {
+        AutoRoutine routine = factory.newRoutine("Test1");
+        AutoTrajectory trajectory = routine.trajectory("Test1");
         Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
         routine.active().onTrue(routineCommand);
         return routine;
     }
 
-    private AutoRoutine test2M() {
-        AutoRoutine routine = factory.newRoutine("2MTest");
-        AutoTrajectory trajectory = routine.trajectory("2MTest");
-        Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
-        routine.active().onTrue(routineCommand);
-        return routine;
-    }
-
-    private AutoRoutine test0M() {
-        AutoRoutine routine = factory.newRoutine("0MTest");
-        AutoTrajectory trajectory = routine.trajectory("0MTest");
+    private AutoRoutine test2() {
+        AutoRoutine routine = factory.newRoutine("Test2");
+        AutoTrajectory trajectory = routine.trajectory("Test2");
         Command routineCommand = sequence(trajectory.resetOdometry(), trajectory.cmd());
         routine.active().onTrue(routineCommand);
         return routine;
@@ -183,6 +186,56 @@ public class AutoRoutines {
                 sequence(
                         coralScore.l4Align().withDeadline(waitSeconds(1.0)),
                         scoreL4().withDeadline(waitSeconds(2.0))));
+
+        return routine;
+    }
+
+    private AutoRoutine auto(String name, String... args) {
+        return null;
+    }
+
+    private AutoRoutine wartortle() {
+        AutoRoutine routine = factory.newRoutine("WarTortle");
+        AutoTrajectory traj0 = routine.trajectory(topTraj0Name);
+        AutoTrajectory traj1 = routine.trajectory(topTraj1Name);
+        AutoTrajectory traj2 = routine.trajectory(topTraj2Name);
+        AutoTrajectory traj3 = routine.trajectory(topTraj3Name);
+        AutoTrajectory traj4 = routine.trajectory(topTraj4Name);
+
+        Command cmd = sequence(traj0.resetOdometry(), traj0.cmd());
+        routine.active().onTrue(cmd);
+
+        // First Trajectory Score
+        traj0.atTime("Align").onTrue(coralScore.l4Align());
+        traj0.done().onTrue(scoreL4().withDeadline(waitSeconds(0.75)).andThen(traj1.spawnCmd()));
+
+
+        // Second Trajectory Pickup
+        traj1.atTime("Pickup").onTrue(coralPickup.stationBack());
+        traj1.done().onTrue(
+                sequence(
+                        coralPickup.stationBack().until(coralPickup.hasCoral),
+                        traj2.spawnCmd()));
+
+
+        // Third Trajectory Score
+        traj2.atTime("Align").onTrue(coralScore.l4Align());
+        traj2.done().onTrue(
+                sequence(
+                        scoreL4().withDeadline(waitSeconds(0.75).andThen(traj3.spawnCmd()))));
+
+        // Fourth Trajectory Score
+        traj3.atTime("Pickup").onTrue(coralPickup.stationBack());
+        traj3.done().onTrue(
+                sequence(
+                        coralPickup.stationBack().until(coralPickup.hasCoral),
+                        traj4.spawnCmd()));
+
+        // Fifth Trajectory Score
+        traj4.atTime("Align").onTrue(coralScore.l4Align());
+        traj4.done().onTrue(
+                sequence(
+                        scoreL4().withDeadline(waitSeconds(0.75))));
 
         return routine;
     }

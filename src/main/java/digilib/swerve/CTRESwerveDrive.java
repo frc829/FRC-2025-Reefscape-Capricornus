@@ -40,6 +40,15 @@ public class CTRESwerveDrive extends SwerveDrive {
     private final PhoenixPIDController pathYController;
     private final PhoenixPIDController pathThetaController;
     private SwerveSample swerveSample = null;
+    private double pathXPositionError;
+    private double pathYPositionError;
+    private double pathThetaPositionError;
+    private double pathXVelocityError;
+    private double pathYVelocityError;
+    private double pathThetaVelocityError;
+    private double xVelocityCorrection;
+    private double yVelocityCorrection;
+    private double thetaCorrection;
 
     public CTRESwerveDrive(
             Config config,
@@ -55,6 +64,8 @@ public class CTRESwerveDrive extends SwerveDrive {
         this.pathThetaController = config.pathThetaController();
         pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
         clockDrive.HeadingController = pathThetaController;
+        pathXController.setTolerance(0.01);
+        pathYController.setTolerance(0.01);
     }
 
     @Override
@@ -65,6 +76,11 @@ public class CTRESwerveDrive extends SwerveDrive {
     @Override
     public ChassisSpeeds getSpeeds() {
         return swerveDriveTrain.getState().Speeds;
+    }
+
+    @Override
+    public ChassisSpeeds getFieldSpeeds() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getSpeeds(), swerveDriveTrain.getRotation3d().toRotation2d());
     }
 
     @Override
@@ -90,6 +106,46 @@ public class CTRESwerveDrive extends SwerveDrive {
     @Override
     public SwerveSample getSwerveSample() {
         return swerveSample;
+    }
+
+    @Override
+    public double getPathXPositionError() {
+        return pathXPositionError;
+    }
+
+    public double getPathYPositionError() {
+        return pathYPositionError;
+    }
+
+    public double getPathThetaPositionError() {
+        return pathThetaPositionError;
+    }
+
+    public double getPathXVelocityError() {
+        return pathXVelocityError;
+    }
+
+    public double getPathYVelocityError() {
+        return pathYVelocityError;
+    }
+
+    public double getPathThetaVelocityError() {
+        return pathThetaVelocityError;
+    }
+
+    @Override
+    public double getXVelocityCorrection() {
+        return xVelocityCorrection;
+    }
+
+    @Override
+    public double getYVelocityCorrection() {
+        return yVelocityCorrection;
+    }
+
+    @Override
+    public double getThetaCorrection() {
+        return thetaCorrection;
     }
 
     @Override
@@ -154,17 +210,34 @@ public class CTRESwerveDrive extends SwerveDrive {
     }
 
     @Override
+    public void setPID(double p) {
+        pathXController.setP(p);
+        pathYController.setP(p);
+    }
+
+    @Override
     public void followPath(SwerveSample sample) {
         swerveSample = sample;
         var pose = swerveDriveTrain.getState().Pose;
         var currentTimestamp = swerveDriveTrain.getState().Timestamp;
         var targetSpeeds = sample.getChassisSpeeds();
-        targetSpeeds.vxMetersPerSecond += pathXController.calculate(
+        xVelocityCorrection = pathXController.calculate(
                 pose.getX(), sample.x, currentTimestamp);
-        targetSpeeds.vyMetersPerSecond += pathYController.calculate(
+        yVelocityCorrection = pathYController.calculate(
                 pose.getY(), sample.y, currentTimestamp);
-        targetSpeeds.omegaRadiansPerSecond += pathThetaController.calculate(
+        thetaCorrection = pathThetaController.calculate(
                 pose.getRotation().getRadians(), sample.heading, currentTimestamp);
+        targetSpeeds.vxMetersPerSecond += xVelocityCorrection;
+        targetSpeeds.vyMetersPerSecond += yVelocityCorrection;
+        targetSpeeds.omegaRadiansPerSecond += thetaCorrection;
+
+        pathXPositionError = pathXController.getPositionError();
+        pathXVelocityError = pathXController.getVelocityError();
+        pathYPositionError = pathYController.getPositionError();
+        pathYVelocityError = pathYController.getVelocityError();
+        pathThetaPositionError = pathThetaController.getPositionError();
+        pathThetaVelocityError = pathThetaController.getVelocityError();
+
         pathApplyFieldSpeeds
                 .withSpeeds(targetSpeeds)
                 .withWheelForceFeedforwardsX(sample.moduleForcesX())

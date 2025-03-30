@@ -48,7 +48,7 @@ public class DriveMap {
     }
 
     private double getSlowMaxVelocitySetpointSquaredScalar() {
-        return 0.1 * getMaxVelocitySetpointSquaredScalar();
+        return 0.2 * getMaxVelocitySetpointSquaredScalar();
     }
 
     private double getMaxAngularVelocitySetpointScalar() {
@@ -118,7 +118,7 @@ public class DriveMap {
         Trigger rotationalVelocity = new Trigger(() -> getMaxAngularVelocitySetpointScalar() != 0.0);
         driver.a().and((notClockDrive.or(rotationalVelocity)).and(driver.y()).and(driver.a().negate())
                 .whileTrue(swerveDriveSubsystem.robotCentricDrive(
-                        this::getMaxVelocitySetpointSquaredScalar,
+                        this::getSlowMaxVelocitySetpointSquaredScalar,
                         this::getHeadingDegrees,
                         this::getMaxAngularVelocitySetpointScalar).withName("Slow Robot Centric")));
     }

@@ -76,20 +76,23 @@ public class SwerveDriveSubsystemConstants {
 
         static final double maxVelocityMPS = 4.73;
         static final double maxAngularVelocityRPS = 0.75;
-        static final double pathTranslationXKp = 3.25;
-        static final double pathTranslationYkP = 3.25;
+        static final double pathTranslationXKp = 3.25; //0.5; //3.25;
+        static final double pathTranslationYkP = 3.25; //0.5; //3.25;
         static final double deadband = 0.0;
         static final double rotationalDeadband = 0.0;
         static final double pathRotationKp = 1.6 * Math.PI; //8.0984; // 5.9918340044856690519902612191937;
+        static final PhoenixPIDController pathXController = new PhoenixPIDController(pathTranslationXKp, 0, 0);
+        static final PhoenixPIDController pathYController = new PhoenixPIDController(pathTranslationYkP, 0, 0);
+        static final PhoenixPIDController pathThetaController = new PhoenixPIDController(pathRotationKp, 0, 0);
         static final SwerveDrive.Config constants = new SwerveDrive.Config(
                 "Swerve Drive",
                 maxVelocityMPS,
                 maxAngularVelocityRPS,
                 deadband,
                 rotationalDeadband,
-                new PhoenixPIDController(pathTranslationXKp, 0, 0),
-                new PhoenixPIDController(pathTranslationYkP, 0, 0),
-                new PhoenixPIDController(pathRotationKp, 0, 0));
+                pathXController,
+                pathYController,
+                pathThetaController);
 
         static final class Modules {
             static final ClosedLoopOutputType STEER_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.Voltage;

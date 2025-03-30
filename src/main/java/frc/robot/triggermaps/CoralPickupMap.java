@@ -37,7 +37,7 @@ public class CoralPickupMap {
     }
 
     private void bindCoralStationBackPickup() {
-        controller.leftBumper().and(controller.povUp())
+        controller.leftBumper()
                 .whileTrue(coral.stationBack())
                 .onFalse(coral.holdFromBack());
     }
