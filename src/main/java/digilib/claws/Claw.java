@@ -21,7 +21,6 @@ public abstract class Claw {
     private final StringPublisher clawValuePublisher;
     protected Value value = Value.CLOSED;
 
-    @SuppressWarnings("resource")
     public Claw(String name,
                 Value valueWhenSolenoidOn) {
         this.valueWhenSolenoidOn = valueWhenSolenoidOn;

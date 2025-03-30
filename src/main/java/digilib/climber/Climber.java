@@ -25,7 +25,6 @@ public abstract class Climber {
     private final DoublePublisher voltage;
     private final DoublePublisher current;
 
-    @SuppressWarnings("resource")
     public Climber(String name,
                    double minLengthMeters,
                    double maxLengthMeters,

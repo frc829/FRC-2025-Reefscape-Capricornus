@@ -46,7 +46,6 @@ public abstract class Arm {
     private final DoublePublisher current;
     private final StringPublisher absoluteEncoderStatus;
 
-    @SuppressWarnings("resource")
     public Arm(
             String name,
             double minAngleDegrees,

@@ -23,7 +23,7 @@ import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import digilib.cameras.Camera;
 import digilib.cameras.Limelight3G;
 import digilib.swerve.CTRESwerveDrive;
-import digilib.swerve.SwerveDriveConstants;
+import digilib.swerve.SwerveDrive;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -81,7 +81,7 @@ public class SwerveDriveSubsystemConstants {
         static final double deadband = 0.0;
         static final double rotationalDeadband = 0.0;
         static final double pathRotationKp = 1.6 * Math.PI; //8.0984; // 5.9918340044856690519902612191937;
-        static final SwerveDriveConstants constants = new SwerveDriveConstants(
+        static final SwerveDrive.Config constants = new SwerveDrive.Config(
                 "Swerve Drive",
                 maxVelocityMPS,
                 maxAngularVelocityRPS,
@@ -598,7 +598,7 @@ public class SwerveDriveSubsystemConstants {
         });
 
         autoFactory = new AutoFactory(
-                CTRE_SWERVE_DRIVE.getState()::getPose,
+                CTRE_SWERVE_DRIVE::getPose,
                 CTRE_SWERVE_DRIVE::resetPose,
                 CTRE_SWERVE_DRIVE::followPath,
                 true,

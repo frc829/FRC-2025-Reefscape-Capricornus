@@ -20,7 +20,6 @@ public abstract class IntakeWheel {
     private final DoublePublisher voltage;
     private final DoublePublisher current;
 
-    @SuppressWarnings("resource")
     IntakeWheel(String name,
                 double maxVelocityRPS,
                 double maxAccelerationRPSSquared) {

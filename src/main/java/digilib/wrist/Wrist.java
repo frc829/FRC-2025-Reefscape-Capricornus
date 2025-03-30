@@ -24,7 +24,6 @@ public abstract class Wrist {
     private final DoublePublisher voltage;
     private final DoublePublisher current;
 
-    @SuppressWarnings("resource")
     public Wrist(String name,
                  double minAngleDegrees,
                  double maxAngleDegrees,

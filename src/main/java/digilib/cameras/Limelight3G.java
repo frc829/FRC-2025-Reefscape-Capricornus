@@ -56,12 +56,8 @@ public class Limelight3G extends Camera {
     public void setRobotOrientation(Pose2d robotOrientation) {
         LimelightHelpers.SetRobotOrientation(
                 limelightName,
-                robotOrientation.getRotation().getDegrees(),
-                0,
-                0,
-                0,
-                0,
-                0);
+                robotOrientation.getRotation().getDegrees()
+        );
     }
 
     @Override

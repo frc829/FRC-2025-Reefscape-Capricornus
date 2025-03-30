@@ -83,7 +83,6 @@ public abstract class Camera {
     private final DoublePublisher timeStampSeconds;
     private final IntegerPublisher tagCount;
 
-    @SuppressWarnings("resource")
     public Camera(Config config) {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(config.name());
         NetworkTable field = getDefault().getTable("Field");

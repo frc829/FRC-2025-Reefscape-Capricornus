@@ -114,14 +114,14 @@ public class SwerveDriveSubsystem implements Subsystem {
 
         swerveDrive.update();
         cameras.forEach(camera -> {
-            camera.setRobotOrientation(swerveDrive.getState().getPose());
+            camera.setRobotOrientation(swerveDrive.getPose());
             camera.update();
             Pose2d pose2d = camera.getRobotPose();
             double timeStampSeconds = camera.getTimeStampSeconds();
             int tagCount = camera.getTagCount();
             double poseAmbiguity = camera.getRobotPoseAmbiguity();
             Matrix<N3, N1> robotPoseStdDev = camera.getRobotPoseStdDev();
-            if (Math.abs(swerveDrive.getState().getSpeeds().omegaRadiansPerSecond) > Units.degreesToRadians(360)) {
+            if (Math.abs(swerveDrive.getSpeeds().omegaRadiansPerSecond) > Units.degreesToRadians(360)) {
                 return;
             }
             if (pose2d == null) {

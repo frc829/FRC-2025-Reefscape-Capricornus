@@ -10,22 +10,21 @@ import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-
-import java.util.Arrays;
 
 import static com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType.OpenLoopVoltage;
 import static com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue.OperatorPerspective;
 import static java.lang.Math.*;
 
-public class CTRESwerveDrive implements SwerveDrive {
-    private final SwerveDriveState state = new SwerveDriveState();
+public class CTRESwerveDrive extends SwerveDrive {
     private final double maxVelocityMPS;
     private final double maxVelocityDeadband;
     private final double maxAngularVelocityRPS;
     private final double maxAngularVelocityDeadband;
-    private final SwerveDriveTelemetry swerveDriveTelemetry;
     private final SwerveDrivetrain<TalonFX, TalonFX, CANcoder> swerveDriveTrain;
 
     private final FieldCentric fieldCentric = new FieldCentric()
@@ -40,29 +39,57 @@ public class CTRESwerveDrive implements SwerveDrive {
     private final PhoenixPIDController pathXController;
     private final PhoenixPIDController pathYController;
     private final PhoenixPIDController pathThetaController;
+    private SwerveSample swerveSample = null;
 
     public CTRESwerveDrive(
-            SwerveDriveConstants constants,
+            Config config,
             SwerveDrivetrain<TalonFX, TalonFX, CANcoder> swerveDriveTrain) {
-        this.maxVelocityMPS = constants.maxVelocityMPS();
-        this.maxAngularVelocityRPS = constants.maxAngularVelocityRPS();
-        this.maxVelocityDeadband = constants.maxVelocityDeadbandScalar();
-        this.maxAngularVelocityDeadband = constants.maxAngularVelocityDeadbandScalar();
+        super(config.name(), config.maxVelocityMPS(), config.maxAngularVelocityRPS());
+        this.maxVelocityMPS = config.maxVelocityMPS();
+        this.maxAngularVelocityRPS = config.maxAngularVelocityRPS();
+        this.maxVelocityDeadband = config.maxVelocityDeadbandScalar();
+        this.maxAngularVelocityDeadband = config.maxAngularVelocityDeadbandScalar();
         this.swerveDriveTrain = swerveDriveTrain;
-        this.swerveDriveTelemetry = new SwerveDriveTelemetry(
-                constants.name(),
-                constants.maxVelocityMPS(),
-                constants.maxAngularVelocityRPS());
-        this.pathXController = constants.pathXController();
-        this.pathYController = constants.pathYController();
-        this.pathThetaController = constants.pathThetaController();
+        this.pathXController = config.pathXController();
+        this.pathYController = config.pathYController();
+        this.pathThetaController = config.pathThetaController();
         pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
         clockDrive.HeadingController = pathThetaController;
     }
 
     @Override
-    public SwerveDriveState getState() {
-        return state;
+    public Pose2d getPose() {
+        return swerveDriveTrain.getState().Pose;
+    }
+
+    @Override
+    public ChassisSpeeds getSpeeds() {
+        return swerveDriveTrain.getState().Speeds;
+    }
+
+    @Override
+    public SwerveModuleState[] getModuleStates() {
+        return swerveDriveTrain.getState().ModuleStates;
+    }
+
+    @Override
+    public SwerveModuleState[] getModuleTargets() {
+        return swerveDriveTrain.getState().ModuleStates;
+    }
+
+    @Override
+    public SwerveModulePosition[] getModulePositions() {
+        return swerveDriveTrain.getState().ModulePositions;
+    }
+
+    @Override
+    public Rotation2d getRawHeading() {
+        return swerveDriveTrain.getState().RawHeading;
+    }
+
+    @Override
+    public SwerveSample getSwerveSample() {
+        return swerveSample;
     }
 
     @Override
@@ -128,7 +155,7 @@ public class CTRESwerveDrive implements SwerveDrive {
 
     @Override
     public void followPath(SwerveSample sample) {
-        state.setSwerveSample(sample);
+        swerveSample = sample;
         var pose = swerveDriveTrain.getState().Pose;
         var currentTimestamp = swerveDriveTrain.getState().Timestamp;
         var targetSpeeds = sample.getChassisSpeeds();
@@ -171,33 +198,6 @@ public class CTRESwerveDrive implements SwerveDrive {
                 visionRobotPoseMeters,
                 Utils.fpgaToCurrentTime(timestampSeconds),
                 visionMeasurementStdDevs);
-    }
-
-    @Override
-    public void update() {
-        state.setPose(swerveDriveTrain.getState().Pose);
-        state.setSpeeds(swerveDriveTrain.getState().Speeds);
-        state.setModuleStates(swerveDriveTrain.getState().ModuleStates);
-        state.setModuleTargets(swerveDriveTrain.getState().ModuleTargets);
-        state.setModulePositions(swerveDriveTrain.getState().ModulePositions);
-        state.setRawHeading(swerveDriveTrain.getState().RawHeading);
-        state.setSwerveSteerPositions(
-                Arrays.stream(swerveDriveTrain.getModules())
-                        .map(module -> module.getSteerMotor().getPosition().getValueAsDouble())
-                        .toList());
-        state.setSwerveSteerVelocities(
-                Arrays.stream(swerveDriveTrain.getModules())
-                        .map(module -> module.getSteerMotor().getVelocity().getValueAsDouble())
-                        .toList());
-        state.setSwerveWheelPositions(
-                Arrays.stream(swerveDriveTrain.getModules())
-                        .map(module -> module.getDriveMotor().getPosition().getValueAsDouble())
-                        .toList());
-        state.setSwerveWheelVelocities(
-                Arrays.stream(swerveDriveTrain.getModules())
-                        .map(module -> module.getDriveMotor().getVelocity().getValueAsDouble())
-                        .toList());
-        swerveDriveTelemetry.telemeterize(state);
     }
 
     @Override
