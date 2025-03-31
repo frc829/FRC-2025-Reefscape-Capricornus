@@ -80,7 +80,7 @@ public class CTRESwerveDrive extends SwerveDrive {
 
     @Override
     public ChassisSpeeds getFieldSpeeds() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(getSpeeds(), swerveDriveTrain.getRotation3d().toRotation2d());
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getSpeeds(), swerveDriveTrain.getState().Pose.getRotation());
     }
 
     @Override
@@ -153,13 +153,10 @@ public class CTRESwerveDrive extends SwerveDrive {
             double translationVelocitySetpointScalar,
             double headingAngleDegrees,
             double rotationalVelocitySetpointScalar) {
-        double vx = cos(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
-        double vy = sin(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
-        double omega = rotationalVelocitySetpointScalar * maxAngularVelocityRPS * 2 * Math.PI;
         fieldCentric
-                .withVelocityX(vx)
-                .withVelocityY(vy)
-                .withRotationalRate(omega)
+                .withVelocityX(cos(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS)
+                .withVelocityY(sin(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS)
+                .withRotationalRate(rotationalVelocitySetpointScalar * maxAngularVelocityRPS * 2 * Math.PI)
                 .withDeadband(maxVelocityDeadband * maxVelocityMPS)
                 .withRotationalDeadband(maxAngularVelocityDeadband * maxAngularVelocityRPS);
         swerveDriveTrain.setControl(fieldCentric);
@@ -170,13 +167,10 @@ public class CTRESwerveDrive extends SwerveDrive {
             double translationVelocitySetpointScalar,
             double headingAngleDegrees,
             double rotationalVelocitySetpointScalar) {
-        double vx = cos(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
-        double vy = sin(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
-        double omega = rotationalVelocitySetpointScalar * maxAngularVelocityRPS * 2 * Math.PI;
         robotCentric
-                .withVelocityX(vx)
-                .withVelocityY(vy)
-                .withRotationalRate(omega)
+                .withVelocityX(cos(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS)
+                .withVelocityY(sin(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS)
+                .withRotationalRate(rotationalVelocitySetpointScalar * maxAngularVelocityRPS * 2 * Math.PI)
                 .withDeadband(maxVelocityDeadband * maxVelocityMPS)
                 .withRotationalDeadband(maxAngularVelocityDeadband * maxAngularVelocityRPS);
         swerveDriveTrain.setControl(robotCentric);
@@ -187,11 +181,9 @@ public class CTRESwerveDrive extends SwerveDrive {
             double translationVelocitySetpointScalar,
             double headingAngleDegrees,
             double rotationAngleDegrees) {
-        double vx = cos(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
-        double vy = sin(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS;
         clockDrive
-                .withVelocityX(vx)
-                .withVelocityY(vy)
+                .withVelocityX(cos(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS)
+                .withVelocityY(sin(toRadians(headingAngleDegrees)) * translationVelocitySetpointScalar * maxVelocityMPS)
                 .withTargetDirection(Rotation2d.fromDegrees(rotationAngleDegrees))
                 .withDeadband(maxVelocityDeadband * maxVelocityMPS)
                 .withRotationalDeadband(maxAngularVelocityDeadband * maxAngularVelocityRPS);
@@ -207,12 +199,6 @@ public class CTRESwerveDrive extends SwerveDrive {
     public void setWheelAngle(double wheelAngleDegrees) {
         point.withModuleDirection(Rotation2d.fromDegrees(wheelAngleDegrees));
         swerveDriveTrain.setControl(point);
-    }
-
-    @Override
-    public void setPID(double p) {
-        pathXController.setP(p);
-        pathYController.setP(p);
     }
 
     @Override

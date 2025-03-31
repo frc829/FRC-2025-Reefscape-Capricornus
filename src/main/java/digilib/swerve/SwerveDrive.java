@@ -43,9 +43,9 @@ public abstract class SwerveDrive {
     private final DoublePublisher pathXVelocityError;
     private final DoublePublisher pathYVelocityError;
     private final DoublePublisher pathThetaVelocityError;
-    private final DoublePublisher xVelocityCorection;
-    private final DoublePublisher yVelocityCorection;
-    private final DoublePublisher thetaCorection;
+    private final DoublePublisher xVelocityCorrection;
+    private final DoublePublisher yVelocityCorrection;
+    private final DoublePublisher thetaCorrection;
 
     public SwerveDrive(
             String name,
@@ -103,13 +103,13 @@ public abstract class SwerveDrive {
         pathThetaVelocityError = table
                 .getDoubleTopic("Path Theta Velocity Error [dps]")
                 .publish();
-        xVelocityCorection = table
+        xVelocityCorrection = table
                 .getDoubleTopic("X Velocity Correction [mps")
                 .publish();
-        yVelocityCorection = table
+        yVelocityCorrection = table
                 .getDoubleTopic("Y Velocity Correction [mps")
                 .publish();
-        thetaCorection = table
+        thetaCorrection = table
                 .getDoubleTopic("Theta Velocity Correction [dps]")
                 .publish();
     }
@@ -167,8 +167,6 @@ public abstract class SwerveDrive {
 
     public abstract void setWheelAngle(double wheelAngleDegrees);
 
-    public abstract void setPID(double p);
-
     @SuppressWarnings("unused")
     public abstract void followPath(SwerveSample sample);
 
@@ -201,9 +199,9 @@ public abstract class SwerveDrive {
             pathXVelocityError.set(getPathXVelocityError());
             pathYVelocityError.set(getPathYVelocityError());
             pathThetaVelocityError.set(getPathThetaVelocityError() * 180 / Math.PI);
-            xVelocityCorection.set(getXVelocityCorrection());
-            yVelocityCorection.set(getYVelocityCorrection());
-            thetaCorection.set(getThetaCorrection());
+            xVelocityCorrection.set(getXVelocityCorrection());
+            yVelocityCorrection.set(getYVelocityCorrection());
+            thetaCorrection.set(getThetaCorrection());
         }else{
             pathXPositionError.set(0.0);
             pathYPositionError.set(0.0);
@@ -211,9 +209,9 @@ public abstract class SwerveDrive {
             pathXVelocityError.set(0.0);
             pathYVelocityError.set(0.0);
             pathThetaVelocityError.set(0.0);
-            xVelocityCorection.set(0.0);
-            yVelocityCorection.set(0.0);
-            thetaCorection.set(0.0);
+            xVelocityCorrection.set(0.0);
+            yVelocityCorrection.set(0.0);
+            thetaCorrection.set(0.0);
         }
     }
 
