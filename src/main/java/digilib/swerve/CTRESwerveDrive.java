@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest.*;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -105,7 +106,22 @@ public class CTRESwerveDrive extends SwerveDrive {
 
     @Override
     public SwerveSample getSwerveSample() {
-        return swerveSample;
+        if(swerveSample == null){
+            return null;
+        }
+        return new SwerveSample(
+                this.swerveSample.t,
+                this.swerveSample.x,
+                this.swerveSample.y,
+                MathUtil.angleModulus(this.swerveSample.heading),
+                this.swerveSample.vx,
+                this.swerveSample.vy,
+                this.swerveSample.omega,
+                this.swerveSample.ax,
+                this.swerveSample.ay,
+                this.swerveSample.alpha,
+                this.swerveSample.moduleForcesX(),
+                this.swerveSample.moduleForcesY());
     }
 
     @Override

@@ -4,6 +4,7 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -32,7 +33,6 @@ public class AutoRoutines {
     private final CoralPickup coralPickup;
     private final CoralScore coralScore;
     private final AutoChooser autoChooser;
-
 
 
     public AutoRoutines(AutoFactory factory, AlgaePickup algaePickup, AlgaeScore algaeScore, CoralPickup coralPickup, CoralScore coralScore) {
@@ -75,7 +75,7 @@ public class AutoRoutines {
                         oneCoral_L4_S1_Start));
     }
 
-    private void addTheFlyingDutchman(){
+    private void addTheFlyingDutchman() {
         Path oneCoral_L4_S2_Start = new Path(
                 "Middle01",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -87,7 +87,7 @@ public class AutoRoutines {
                         oneCoral_L4_S2_Start));
     }
 
-    private void addNoobS3(){
+    private void addNoobS3() {
         Path oneCoral_L4_S3_Start = new Path(
                 "Top01",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -99,7 +99,7 @@ public class AutoRoutines {
                         oneCoral_L4_S3_Start));
     }
 
-    private void addInteleon(){
+    private void addInteleon() {
         Path twoCoral_L4_S1_Start_0 = new Path(
                 "Bottom01",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -107,7 +107,9 @@ public class AutoRoutines {
         Path twoCoral_L4_S1_Start_1 = new Path(
                 "Bottom02",
                 List.of(() -> coralPickup.stationBack().withName("Pickup")),
-                () -> coralPickup.stationBack().until(coralPickup.hasCoral));
+                () -> RobotBase.isReal()
+                        ? coralPickup.stationBack().until(coralPickup.hasCoral)
+                        : waitSeconds(0.5));
         Path twoCoral_L4_S1_Start_2 = new Path(
                 "Bottom03",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -121,7 +123,7 @@ public class AutoRoutines {
                         twoCoral_L4_S1_Start_2));
     }
 
-    private void addSquirtle(){
+    private void addSquirtle() {
         Path twoCoral_L4_S3_Start_0 = new Path(
                 "Top01",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -129,7 +131,9 @@ public class AutoRoutines {
         Path twoCoral_L4_S3_Start_1 = new Path(
                 "Top02",
                 List.of(() -> coralPickup.stationBack().withName("Pickup")),
-                () -> coralPickup.stationBack().until(coralPickup.hasCoral));
+                () -> RobotBase.isReal()
+                        ? coralPickup.stationBack().until(coralPickup.hasCoral)
+                        : waitSeconds(0.5));
         Path twoCoral_L4_S3_Start_2 = new Path(
                 "Top03",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -143,7 +147,7 @@ public class AutoRoutines {
                         twoCoral_L4_S3_Start_2));
     }
 
-    private void addIntelliJ(){
+    private void addIntelliJ() {
         Path threeCoral_L4_S1_Start_0 = new Path(
                 "Bottom01",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -151,7 +155,9 @@ public class AutoRoutines {
         Path threeCoral_L4_S1_Start_1 = new Path(
                 "Bottom02",
                 List.of(() -> coralPickup.stationBack().withName("Pickup")),
-                () -> coralPickup.stationBack().until(coralPickup.hasCoral));
+                () -> RobotBase.isReal()
+                        ? coralPickup.stationBack().until(coralPickup.hasCoral)
+                        : waitSeconds(0.5));
         Path threeCoral_L4_S1_Start_2 = new Path(
                 "Bottom03",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -159,7 +165,9 @@ public class AutoRoutines {
         Path threeCoral_L4_S1_Start_3 = new Path(
                 "Bottom04",
                 List.of(() -> coralPickup.stationBack().withName("Pickup")),
-                () -> coralPickup.stationBack().until(coralPickup.hasCoral));
+                () -> RobotBase.isReal()
+                        ? coralPickup.stationBack().until(coralPickup.hasCoral)
+                        : waitSeconds(0.5));
         Path threeCoral_L4_S1_Start_4 = new Path(
                 "Bottom05",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -175,7 +183,7 @@ public class AutoRoutines {
                         threeCoral_L4_S1_Start_4));
     }
 
-    private void addWartortle(){
+    private void addWartortle() {
         Path threeCoral_L4_S3_Start_0 = new Path(
                 "Bottom01",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -183,7 +191,9 @@ public class AutoRoutines {
         Path threeCoral_L4_S3_Start_1 = new Path(
                 "Bottom02",
                 List.of(() -> coralPickup.stationBack().withName("Pickup")),
-                () -> coralPickup.stationBack().until(coralPickup.hasCoral));
+                () -> RobotBase.isReal()
+                        ? coralPickup.stationBack().until(coralPickup.hasCoral)
+                        : waitSeconds(0.5));
         Path threeCoral_L4_S3_Start_2 = new Path(
                 "Bottom03",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -191,7 +201,9 @@ public class AutoRoutines {
         Path threeCoral_L4_S3_Start_3 = new Path(
                 "Bottom04",
                 List.of(() -> coralPickup.stationBack().withName("Pickup")),
-                () -> coralPickup.stationBack().until(coralPickup.hasCoral));
+                () -> RobotBase.isReal()
+                        ? coralPickup.stationBack().until(coralPickup.hasCoral)
+                        : waitSeconds(0.5));
         Path threeCoral_L4_S3_Start_4 = new Path(
                 "Bottom05",
                 List.of(() -> coralScore.l4Align().withName("Align")),
@@ -222,7 +234,7 @@ public class AutoRoutines {
             });
             if (paths[i].done != null) {
                 autoTrajectories[i].done().onTrue(i < paths.length - 1
-                        ? paths[i].done().get().andThen(autoTrajectories[i+1].spawnCmd())
+                        ? paths[i].done().get().andThen(autoTrajectories[i + 1].spawnCmd())
                         : paths[i].done().get());
             }
         });
