@@ -37,6 +37,7 @@ public class CTRESwerveDrive extends SwerveDrive {
     private final Idle idle = new Idle();
     private final PointWheelsAt point = new PointWheelsAt();
     private final ApplyFieldSpeeds pathApplyFieldSpeeds = new ApplyFieldSpeeds();
+    private final PhoenixPIDController clockThetaController;
     private final PhoenixPIDController pathXController;
     private final PhoenixPIDController pathYController;
     private final PhoenixPIDController pathThetaController;
@@ -60,13 +61,15 @@ public class CTRESwerveDrive extends SwerveDrive {
         this.maxVelocityDeadband = config.maxVelocityDeadbandScalar();
         this.maxAngularVelocityDeadband = config.maxAngularVelocityDeadbandScalar();
         this.swerveDriveTrain = swerveDriveTrain;
+        this.clockThetaController = config.clockThetaController();
         this.pathXController = config.pathXController();
         this.pathYController = config.pathYController();
         this.pathThetaController = config.pathThetaController();
+        clockThetaController.enableContinuousInput(-Math.PI, Math.PI);
         pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
-        clockDrive.HeadingController = pathThetaController;
-        pathXController.setTolerance(0.01);
-        pathYController.setTolerance(0.01);
+        clockDrive.HeadingController = clockThetaController;
+        pathXController.setTolerance(0.01, 0.01);
+        pathYController.setTolerance(0.01, 0.01);
     }
 
     @Override

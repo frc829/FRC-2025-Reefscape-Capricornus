@@ -76,23 +76,24 @@ public class SwerveDriveSubsystemConstants {
 
         static final double maxVelocityMPS = 4.73;
         static final double maxAngularVelocityRPS = 0.75;
-        // static final double pathTranslationXKp = 3.25;
-        // static final double pathTranslationYkP = 3.25;
-        // static final double pathRotationKp = 1.6 * Math.PI;
+        static final double clockDriveRotationKp = 1.6 * Math.PI;
         static final double pathTranslationXKp = 10;
         static final double pathTranslationYkP = 10;
-        static final double pathRotationKp = 7.5;
+        static final double pathRotationKp =  7;
+
         static final double deadband = 0.0;
         static final double rotationalDeadband = 0.0;
         static final PhoenixPIDController pathXController = new PhoenixPIDController(pathTranslationXKp, 0, 0);
         static final PhoenixPIDController pathYController = new PhoenixPIDController(pathTranslationYkP, 0, 0);
         static final PhoenixPIDController pathThetaController = new PhoenixPIDController(pathRotationKp, 0, 0);
+        static final PhoenixPIDController clockThetaController = new PhoenixPIDController(clockDriveRotationKp, 0, 0);
         static final SwerveDrive.Config constants = new SwerveDrive.Config(
                 "Swerve Drive",
                 maxVelocityMPS,
                 maxAngularVelocityRPS,
                 deadband,
                 rotationalDeadband,
+                clockThetaController,
                 pathXController,
                 pathYController,
                 pathThetaController);

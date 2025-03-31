@@ -43,6 +43,9 @@ public class AutoRoutines {
         this.coralScore = coralScore;
         autoChooser = new AutoChooser();
 
+        // Test Autos
+        addTestS2();
+
         // One Coral Autos
         addNoobS1();
         addTheFlyingDutchman();
@@ -58,9 +61,20 @@ public class AutoRoutines {
 
         autoChooser.addRoutine("Grapploct", this::grapploct);
 
-
         SmartDashboard.putData("Auto Chooser", autoChooser);
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
+    }
+
+    private void addTestS2() {
+        Path oneCoral_L4_S2_Start = new Path(
+                "Middle01",
+                List.of(),
+                null);
+        autoChooser.addRoutine(
+                "TestS2",
+                () -> createRoutine(
+                        "The Flying Dutchman",
+                        oneCoral_L4_S2_Start));
     }
 
     private void addNoobS1() {

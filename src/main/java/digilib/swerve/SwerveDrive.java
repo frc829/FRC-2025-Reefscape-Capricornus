@@ -24,6 +24,7 @@ public abstract class SwerveDrive {
             double maxAngularVelocityRPS,
             double maxVelocityDeadbandScalar,
             double maxAngularVelocityDeadbandScalar,
+            PhoenixPIDController clockThetaController,
             PhoenixPIDController pathXController,
             PhoenixPIDController pathYController,
             PhoenixPIDController pathThetaController) {
