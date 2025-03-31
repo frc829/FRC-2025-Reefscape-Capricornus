@@ -18,7 +18,7 @@ public record Manipulator(
         WristSubsystem wrist) {
 
     public Trigger hasCoral() {
-        return lidarSensor().inRange(1, 5);
+        return lidarSensor().inRange(1, 7);
     }
 
 }
