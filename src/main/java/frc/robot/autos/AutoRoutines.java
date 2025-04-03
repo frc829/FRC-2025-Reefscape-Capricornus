@@ -11,7 +11,6 @@ import frc.robot.commands.AlgaePickup;
 import frc.robot.commands.AlgaeScore;
 import frc.robot.commands.CoralPickup;
 import frc.robot.commands.CoralScore;
-import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
@@ -52,6 +51,7 @@ public class AutoRoutines {
         autoChooser.addRoutine("IntelliJ", this::intelliJ);
         autoChooser.addRoutine("Squirtle", this::squirtle);
         autoChooser.addRoutine("Grapploct", this::grapploct);
+        autoChooser.addRoutine("Kyogre", this::kyogre);
         autoChooser.addRoutine("Test1", this::test1);
         autoChooser.addRoutine("Test2", this::test2);
         autoChooser.addRoutine("WarTortle", this::wartortle);
@@ -136,6 +136,56 @@ public class AutoRoutines {
                         traj4.spawnCmd()
                 ));
         traj4.done().onTrue(algaeScore.score());
+
+
+        return routine;
+    }
+
+    private AutoRoutine kyogre() {
+        AutoRoutine routine = factory.newRoutine("S2-L4-Left");
+        AutoTrajectory traj0 = routine.trajectory("S2-to-GH-L4");
+        AutoTrajectory traj1 = routine.trajectory("S2-Algae-Backup");
+        AutoTrajectory traj2 = routine.trajectory("GetAlgae");
+        AutoTrajectory traj3 = routine.trajectory("AlgaeBackup");
+        AutoTrajectory traj4 = routine.trajectory("PROC");
+        AutoTrajectory traj5 = routine.trajectory("NextAlgae");
+        AutoTrajectory traj6 = routine.trajectory("Algae2");
+        AutoTrajectory traj7 = routine.trajectory("PROC2");
+        Command routineCommand = sequence(traj0.resetOdometry(), traj0.cmd());
+        routine.active().onTrue(routineCommand);
+
+        traj0.atTime("Align").onTrue(coralScore.l4Align());
+        traj1.atTime("Align").onTrue(algaePickup.L2());
+        traj2.atTime("Align").onTrue(algaePickup.L2());
+        traj4.atTime("Proc").onTrue(algaePickup.hold());
+        traj5.atTime("Algae").onTrue(algaePickup.L3());
+        traj6.atTime("Grab").onTrue(algaePickup.L3());
+        traj7.atTime("Proc").onTrue(algaePickup.hold());
+
+        traj0.done().onTrue(waitSeconds(0.0)
+                .andThen(scoreL4().withDeadline(waitSeconds(1.0)))
+                .andThen(traj1.spawnCmd()));
+        traj1.done().onTrue(
+                sequence(
+                        waitSeconds(1),
+                        traj2.spawnCmd()
+                ));
+        traj2.done().onTrue(
+                sequence(
+                        traj3.spawnCmd()
+                ));
+        traj3.done().onTrue(
+                sequence(
+                        traj4.spawnCmd()
+                ));
+        traj4.done().onTrue(
+                sequence(
+                        algaeScore.score().withDeadline(waitSeconds(0.5)),
+                        traj5.spawnCmd()
+                ));
+        traj5.done().onTrue(traj6.spawnCmd());
+        traj6.done().onTrue(traj7.spawnCmd());
+        traj7.done().onTrue(algaeScore.score().withDeadline(waitSeconds(1.25)));
 
 
         return routine;
