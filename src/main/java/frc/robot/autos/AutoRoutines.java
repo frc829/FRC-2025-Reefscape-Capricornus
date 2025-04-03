@@ -163,7 +163,7 @@ public class AutoRoutines {
         traj7.atTime("Proc").onTrue(algaePickup.hold());
 
         traj0.done().onTrue(waitSeconds(0.0)
-                .andThen(scoreL4().withDeadline(waitSeconds(1.0)))
+                .andThen(scoreL4().withDeadline(waitSeconds(0.5)))
                 .andThen(traj1.spawnCmd()));
         traj1.done().onTrue(
                 sequence(
