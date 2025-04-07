@@ -270,7 +270,7 @@ public class AutoRoutines {
         traj2.atTime("Align").onTrue(coralScore.l4Align());
         traj2.done().onTrue(
                 sequence(
-                        scoreL4().withDeadline(waitSeconds(0.75).andThen(traj3.spawnCmd()))));
+                        scoreL4().withDeadline(waitSeconds(1.5).andThen(traj3.spawnCmd()))));
 
         // Fourth Trajectory Score
         traj3.atTime("Reset").onTrue(coralPickup.hardReset());
