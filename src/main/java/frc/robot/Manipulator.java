@@ -1,7 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.intakeWheel.IntakeWheelSubsystem;
+import digilib.intakeWheel.IntakeWheelSubsystem;
 import frc.robot.subsystems.lidarSensor.LidarSensorSubsystem;
 import frc.robot.subsystems.pneumatics.ClawSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
