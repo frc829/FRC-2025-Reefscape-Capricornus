@@ -100,7 +100,7 @@ public class TalonFXController implements MotorController {
                 sim.update(deltaTime);
                 talonFXSimState.setRawRotorPosition(sim.getOutput(0) * sensorToMechanismRatio );
                 talonFXSimState.setRotorVelocity(sim.getOutput(1) * sensorToMechanismRatio);
-                talonFXSimState.setRotorAcceleration();
+                // talonFXSimState.setRotorAcceleration();
             });
         }
     }

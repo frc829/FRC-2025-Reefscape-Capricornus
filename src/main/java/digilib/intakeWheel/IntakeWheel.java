@@ -1,23 +1,10 @@
 package digilib.intakeWheel;
 
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public abstract class IntakeWheel {
-
-    public record Config(
-            String name,
-            DCMotor dcMotor,
-            double reduction,
-            double maxControlVoltage,
-            double ksVolts,
-            double kvVoltsPerRPS,
-            double kaVoltsPerRPSSquared,
-            double maxVelocityRPS,
-            double maxAccelerationRPSSquared) {
-    }
 
     private final DoublePublisher motorEncoderVelocity;
     private final DoublePublisher voltage;
