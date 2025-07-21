@@ -22,14 +22,13 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.arm.ArmSubsystemConstants;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystemConstants;
-import frc.robot.subsystems.elevator.ElevatorSubsystemConstants;
-import frc.robot.subsystems.intakeWheel.IntakeSubsystemConstants2;
+import digilib.elevator.ElevatorSubsystemConstants;
+import digilib.intakeWheel.IntakeSubsystemConstants2;
 import frc.robot.subsystems.lidarSensor.LidarSensorSubsystemConstants;
 import frc.robot.subsystems.pneumatics.PneumaticsSubsystemConstants;
 import frc.robot.subsystems.power.PowerSubsystemConstants;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants;
-import frc.robot.subsystems.wrist.WristSubsystemConstants;
 import frc.robot.subsystems.wrist.WristSubsystemConstants2;
 import frc.robot.triggermaps.*;
 

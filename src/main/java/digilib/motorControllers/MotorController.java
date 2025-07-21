@@ -2,7 +2,7 @@ package digilib.motorControllers;
 
 public interface MotorController {
 
-    double getVoltage();
+    double getVoltageVolts();
 
     double getCurrentAmps();
 
@@ -12,15 +12,16 @@ public interface MotorController {
 
     double getAcceleration();
 
-    void applyVoltage(double voltage);
+    void applyVoltage(double voltageVolts);
 
-    void applyCurrentAmps(double currentAmps);
+    void applyCurrent(double currentAmps);
 
-    void applyPositionWithVoltage(double position);
+    void applyPositionUsingVoltage(double position);
 
-    void applyPositionWithCurrent(double position);
+    void applyPositionUsingCurrent(double position);
 
-    void applyVelocityWithVoltage(double velocity);
+    void applyVelocityUsingVoltage(double velocity);
 
-    void applyVelocityWithCurrent(double velocity);
+    void applyVelocityUsingCurrent(double velocity);
+
 }

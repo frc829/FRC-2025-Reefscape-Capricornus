@@ -5,7 +5,7 @@ import digilib.intakeWheel.IntakeWheelSubsystem;
 import frc.robot.subsystems.lidarSensor.LidarSensorSubsystem;
 import frc.robot.subsystems.pneumatics.ClawSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
-import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import digilib.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.wrist.WristSubsystem;
 
 public record Manipulator(
