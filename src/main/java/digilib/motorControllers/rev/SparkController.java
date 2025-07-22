@@ -1,9 +1,11 @@
 package digilib.motorControllers.rev;
 
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.*;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.*;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import digilib.motorControllers.MotorController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.ExponentialProfile;
@@ -13,8 +15,13 @@ import static com.revrobotics.spark.SparkBase.ControlType.*;
 
 public abstract class SparkController implements MotorController {
 
-    protected static final ClosedLoopSlot position_voltage_slot = ClosedLoopSlot.kSlot0;
-    protected static final ClosedLoopSlot velocity_voltage_slot = ClosedLoopSlot.kSlot1;
+    public enum SparkModel {
+        SparkFlex,
+        SparkMax
+    }
+
+    public static final ClosedLoopSlot position_voltage_slot = ClosedLoopSlot.kSlot0;
+    public static final ClosedLoopSlot velocity_voltage_slot = ClosedLoopSlot.kSlot1;
 
     private final SparkBase spark;
     private final RelativeEncoder encoder;
@@ -101,5 +108,58 @@ public abstract class SparkController implements MotorController {
         velocityStateGoal.position = goalVelocity;
         positionStateCurrent.position = getPosition();
         positionStateCurrent.velocity = getVelocity();
+    }
+
+    public static SparkBase create(
+            int deviceId,
+            MotorType motorType,
+            SparkModel sparkModel,
+            int depth,
+            int periodMs,
+            double positionConversionFactor,
+            double velocityConversionFactor,
+            IdleMode idleMode,
+            boolean inverted,
+            int smartCurrentLimit,
+            FeedbackSensor feedbackSensor,
+            double voltagePositionKp,
+            double voltagePositionKd,
+            double voltageVelocityKp) {
+
+        SparkBase spark = sparkModel == SparkModel.SparkFlex
+                ? new SparkFlex(deviceId, motorType)
+                : new SparkMax(deviceId, motorType);
+
+        EncoderConfig encoderConfig = switch (sparkModel) {
+            case SparkFlex -> new EncoderConfig()
+                    .quadratureAverageDepth(depth)
+                    .quadratureMeasurementPeriod(periodMs);
+            default -> new EncoderConfig()
+                    .uvwAverageDepth(depth)
+                    .uvwMeasurementPeriod(periodMs);
+        };
+
+        encoderConfig.positionConversionFactor(positionConversionFactor)
+                .velocityConversionFactor(velocityConversionFactor);
+
+        SparkBaseConfig sparkBaseConfig = switch (sparkModel) {
+            case SparkFlex -> new SparkFlexConfig();
+            default -> new SparkMaxConfig();
+        };
+
+        ClosedLoopConfig closedLoopConfig = new  ClosedLoopConfig()
+                .feedbackSensor(feedbackSensor)
+                .p(voltagePositionKp, position_voltage_slot)
+                .d(voltagePositionKd, position_voltage_slot)
+                .p(voltageVelocityKp, velocity_voltage_slot);
+
+        sparkBaseConfig
+                .apply(encoderConfig)
+                .apply(closedLoopConfig)
+                .inverted(inverted)
+                .idleMode(idleMode)
+                .smartCurrentLimit(smartCurrentLimit);
+
+        return spark;
     }
 }

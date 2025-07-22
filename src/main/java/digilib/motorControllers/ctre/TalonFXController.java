@@ -6,6 +6,10 @@ import digilib.motorControllers.MotorController;
 
 public class TalonFXController implements MotorController {
 
+    public static final int position_voltage_slot = 0;
+    public static final int velocity_voltage_slot = 1;
+    public static final int position_current_slot = 2;
+
     private final TalonFX talonFX;
     private final MotionMagicExpoVoltage motionMagicExpoVoltage;
     private final MotionMagicVelocityVoltage motionMagicVelocityVoltage;
