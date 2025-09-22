@@ -30,7 +30,6 @@ import frc.robot.subsystems.power.PowerSubsystemConstants;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystem;
 import frc.robot.subsystems.swerveDrive.SwerveDriveSubsystemConstants;
 import frc.robot.subsystems.wrist.WristSubsystemConstants;
-import frc.robot.subsystems.wrist.WristSubsystemConstants2;
 import frc.robot.triggermaps.*;
 
 public class Robit extends TimedRobot {
@@ -74,7 +73,7 @@ public class Robit extends TimedRobot {
                 ElevatorSubsystemConstants.create(elevatorLigament, 0.20),
                 IntakeSubsystemConstants2.create(),
                 LidarSensorSubsystemConstants.create(),
-                WristSubsystemConstants2.create(wristTopLigament, wristBottomLigament));
+                WristSubsystemConstants.create(wristTopLigament, wristBottomLigament));
         ClimberSubsystem climberSubsystem = ClimberSubsystemConstants.create();
 
         AlgaePickup algaePickup = new AlgaePickup(manipulator);
