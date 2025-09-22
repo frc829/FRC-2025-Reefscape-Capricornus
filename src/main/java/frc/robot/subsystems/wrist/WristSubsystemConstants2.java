@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import static com.ctre.phoenix6.signals.GravityTypeValue.Elevator_Static;
 import static com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
 import static com.ctre.phoenix6.signals.NeutralModeValue.Brake;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.rio;
 
@@ -30,7 +31,7 @@ public class WristSubsystemConstants2 {
     static final double kvVoltsPerRPS = 4.9058;
     static final double kaVoltsPerRPSSquared = 0.14377;
     static final GravityTypeValue gravityTypeValue = Elevator_Static;
-    static final double positionKpVoltsPerRotation = 6.5235;
+    static final double positionKpVoltsPerRotation = 24.0; //6.5235;
     static final double positionKdVoltsPerRPS = 0.0;
     static final double velocityKpVoltsPerRPS = 5.4797E-07;
     static final double maxControlVoltage = 12.0 - ksVolts;
@@ -73,6 +74,11 @@ public class WristSubsystemConstants2 {
     static final ExternalFeedbackConfigs externalFeedbackConfigs = new ExternalFeedbackConfigs()
             .withExternalFeedbackSensorSource(ExternalFeedbackSensorSourceValue.Commutation)
             .withSensorToMechanismRatio(reduction);
+    static final SoftwareLimitSwitchConfigs softwareLimitSwitchConfigs = new SoftwareLimitSwitchConfigs()
+            .withForwardSoftLimitEnable(true)
+            .withReverseSoftLimitEnable(true)
+            .withForwardSoftLimitThreshold(Degrees.of(90))
+            .withReverseSoftLimitThreshold(Degrees.of(0.0));
     static final TalonFXSConfiguration config = new TalonFXSConfiguration()
             .withCurrentLimits(currentLimitsConfigs)
             .withVoltage(voltageConfigs)
