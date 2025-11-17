@@ -1,11 +1,10 @@
-package frc.robot.subsystems.intakeWheel;
+package digilib.intakeWheel;
 
 import com.revrobotics.REVLibError;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.*;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import digilib.intakeWheel.IntakeWheelSubsystem;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
@@ -14,8 +13,6 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
-import digilib.intakeWheel.IntakeWheel;
-import digilib.intakeWheel.SparkMaxIntakeWheel;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 import static com.revrobotics.spark.SparkBase.PersistMode.*;

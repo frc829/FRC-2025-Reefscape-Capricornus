@@ -1,9 +1,7 @@
-package frc.robot.subsystems.elevator;
+package digilib.elevator;
 
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.*;
-import digilib.elevator.Elevator;
-import digilib.elevator.TwoVortexElevator;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -17,10 +15,10 @@ import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
 import static digilib.elevator.Elevator.*;
 import static edu.wpi.first.units.Units.Seconds;
-import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Control.*;
-import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Mechanism.*;
-import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Simulation.simLoopPeriod;
-import static frc.robot.subsystems.elevator.ElevatorSubsystemConstants.Simulation.startingHeightMeters;
+import static digilib.elevator.ElevatorSubsystemConstants.Control.*;
+import static digilib.elevator.ElevatorSubsystemConstants.Mechanism.*;
+import static digilib.elevator.ElevatorSubsystemConstants.Simulation.simLoopPeriod;
+import static digilib.elevator.ElevatorSubsystemConstants.Simulation.startingHeightMeters;
 
 public class ElevatorSubsystemConstants {
 

@@ -1,0 +1,119 @@
+{
+  "name": "",
+  "elevator": {
+    "mechanism": {
+      "gearbox": {
+        "reduction": {
+          "value": 20,
+          "unit": "",
+          "notes": "5:1, 4:1 gearing"
+        }
+      },
+      "shaft": {
+        "drum": {
+          "pitch-diameter": {
+            "value": 1.504,
+            "unit": "in"
+          }
+        },
+        "min-height": {
+          "value": 5.0,
+          "unit": "cm"
+        },
+        "max-height": {
+          "value": 67.0,
+          "unit": "cm"
+        }
+      }
+    },
+    "motor": {
+      "brake": true,
+      "inverted": true,
+      "primary": {
+        "model": "NeoVortex",
+        "canbus": {
+          "id": 15,
+          "bus": "rio"
+        },
+        "controller": {
+          "name": "SparkFlex",
+          "smart-current-limit": 80,
+          "brushless": true,
+          "encoder": {
+            "type": "primary",
+            "depth": 2,
+            "periodMs": 16
+          }
+        }
+      },
+      "follower1": {
+        "inverted": true,
+        "model": "NeoVortex",
+        "canbus": {
+          "id": 25,
+          "bus": "rio"
+        },
+        "controller": {
+          "name": "SparkFlex",
+          "smart-current-limit": 80,
+          "brushless": true,
+          "encoder": {
+            "type": "primary",
+            "depth": 2,
+            "periodMs": 16
+          }
+        }
+      }
+    },
+    "control": {
+      "period": {
+        "value": 0.020,
+        "unit": "s"
+      },
+      "max-velocity-scalar" : {
+        "value" : 0.90,
+        "unit" : ""
+      },
+      "max_acceleration-scalar" : {
+        "value" : 0.25,
+        "unit" : ""
+      },
+      "feedforward": {
+        "ks": {
+          "unit": "V",
+          "value": 0.13384
+        },
+        "kg": {
+          "unit": "V",
+          "value": 0.16143
+        },
+        "kv": {
+          "unit": "V*s/m",
+          "value": 17.619
+        },
+        "ka": {
+          "unit": "V*s^2/m",
+          "value": 0.61528
+        }
+      },
+      "feedback": {
+        "position": {
+          "kp": {
+            "unit": "V/m",
+            "value": 5.4841
+          },
+          "kd": {
+            "unit": "V*s/m",
+            "value": 0.0030847
+          }
+        },
+        "velocity": {
+          "kp": {
+            "unit": "V*s/m",
+            "value": 3.9704e-14
+          }
+        }
+      }
+    }
+  }
+}

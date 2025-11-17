@@ -1,7 +1,6 @@
-package frc.robot.subsystems.elevator;
+package digilib.elevator;
 
 import com.ctre.phoenix6.Utils;
-import digilib.elevator.Elevator;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Notifier;

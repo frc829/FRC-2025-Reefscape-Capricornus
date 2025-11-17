@@ -1,12 +1,9 @@
-package frc.robot.subsystems.intakeWheel;
+package digilib.intakeWheel;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.*;
-import digilib.intakeWheel.IntakeWheel;
-import digilib.intakeWheel.IntakeWheelSubsystem;
-import digilib.intakeWheel.TalonFXSIntakeWheel;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
