@@ -23,7 +23,7 @@ import frc.robot.subsystems.arm.ArmSubsystemConstants;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystemConstants;
 import frc.robot.subsystems.elevator.ElevatorSubsystemConstants;
-import frc.robot.subsystems.intakeWheel.IntakeSubsystemConstants;
+import frc.robot.subsystems.intakeWheel.IntakeSubsystemConstants2;
 import frc.robot.subsystems.lidarSensor.LidarSensorSubsystemConstants;
 import frc.robot.subsystems.pneumatics.PneumaticsSubsystemConstants;
 import frc.robot.subsystems.power.PowerSubsystemConstants;
@@ -71,7 +71,7 @@ public class Robit extends TimedRobot {
                 PneumaticsSubsystemConstants.createAlgaeClaw(),
                 PneumaticsSubsystemConstants.createCoralClaw(),
                 ElevatorSubsystemConstants.create(elevatorLigament, 0.20),
-                IntakeSubsystemConstants.create(),
+                IntakeSubsystemConstants2.create(),
                 LidarSensorSubsystemConstants.create(),
                 WristSubsystemConstants.create(wristTopLigament, wristBottomLigament));
         ClimberSubsystem climberSubsystem = ClimberSubsystemConstants.create();

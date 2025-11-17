@@ -19,10 +19,10 @@ import static com.revrobotics.spark.ClosedLoopSlot.kSlot1;
 import static com.revrobotics.spark.SparkBase.ControlType.kPosition;
 import static com.revrobotics.spark.SparkBase.ControlType.kVelocity;
 import static com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits.kVoltage;
-import static digilib.wrist.NEO550Wrist.ControlState.POSITION;
-import static digilib.wrist.NEO550Wrist.ControlState.VELOCITY;
+import static digilib.wrist.SparkMaxWrist.ControlState.POSITION;
+import static digilib.wrist.SparkMaxWrist.ControlState.VELOCITY;
 
-public class NEO550Wrist extends Wrist {
+public class SparkMaxWrist extends Wrist {
 
     public enum ControlState {
         POSITION,
@@ -45,33 +45,42 @@ public class NEO550Wrist extends Wrist {
     private MechanismLigament2d top = null;
     private MechanismLigament2d bottom = null;
 
-    public NEO550Wrist(
-            Config config,
+    public SparkMaxWrist(
+            String name,
+            double minAngleDegrees,
+            double maxAngleDegrees,
+            double maxVelocityRPS,
+            double maxAccelerationRPSSquared,
             SparkMax motor,
+            double ksVolts,
+            double kvVoltsPerRPS,
+            double kaVoltsPerRPSSquared,
             double controlPeriodSeconds,
+            double maxControlVoltage,
+            double startingAngleDegrees,
             MechanismLigament2d top,
             MechanismLigament2d bottom) {
         super(
-                config.name(),
-                config.minAngleDegrees(),
-                config.maxAngleDegrees(),
-                config.maxVelocityRPS(),
-                config.maxAccelerationRPSSquared());
-        minAngleRotations = config.minAngleDegrees() / 360.0;
-        maxAngleRotations = config.maxAngleDegrees() / 360.0;
-        maxVelocityRPS = config.maxVelocityRPS();
+                name,
+                minAngleDegrees,
+                maxAngleDegrees,
+                maxVelocityRPS,
+                maxAccelerationRPSSquared);
+        minAngleRotations = minAngleDegrees / 360.0;
+        maxAngleRotations = maxAngleDegrees / 360.0;
+        this.maxVelocityRPS = maxVelocityRPS;
         this.motor = motor;
         this.feedforward = new SimpleMotorFeedforward(
-                config.ksVolts(),
-                config.kvVoltsPerRPS(),
-                config.kaVoltsPerRPSSquared(),
+                ksVolts,
+                kvVoltsPerRPS,
+                kaVoltsPerRPSSquared,
                 controlPeriodSeconds);
         this.positionProfile = new ExponentialProfile(
                 ExponentialProfile.Constraints.fromCharacteristics(
-                        config.maxControlVoltage(),
-                        config.kvVoltsPerRPS(),
-                        config.kaVoltsPerRPSSquared()));
-        this.velocityProfile = new SlewRateLimiter(config.maxAccelerationRPSSquared());
+                        maxControlVoltage,
+                        kvVoltsPerRPS,
+                        kaVoltsPerRPSSquared));
+        this.velocityProfile = new SlewRateLimiter(maxAccelerationRPSSquared);
         this.controlPeriodSeconds = controlPeriodSeconds;
 
         motor.getEncoder().setPosition(0.0);
@@ -80,13 +89,13 @@ public class NEO550Wrist extends Wrist {
             DCMotor dcMotor = DCMotor.getNeo550(1);
             sparkMaxSim = new SparkMaxSim(motor, dcMotor);
             LinearSystem<N2, N1, N2> plant = LinearSystemId.identifyPositionSystem(
-                    config.kvVoltsPerRPS() / 2 / Math.PI,
-                    config.kaVoltsPerRPSSquared() / 2 / Math.PI);
+                    kvVoltsPerRPS / 2 / Math.PI,
+                    kaVoltsPerRPSSquared / 2 / Math.PI);
             simWrist = new DCMotorSim(
                     plant,
                     dcMotor);
-            simWrist.setAngle(config.startingAngleDegrees() / 360.0);
-            sparkMaxSim.setPosition(config.startingAngleDegrees() / 360.0);
+            simWrist.setAngle(startingAngleDegrees / 360.0);
+            sparkMaxSim.setPosition(startingAngleDegrees / 360.0);
             this.top = top;
             this.bottom = bottom;
         }

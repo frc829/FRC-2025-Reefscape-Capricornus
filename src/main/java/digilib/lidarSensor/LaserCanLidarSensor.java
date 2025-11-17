@@ -21,7 +21,7 @@ public class LaserCanLidarSensor extends LidarSensor {
 
     @Override
     public double getDistanceMillimeters() {
-        if (RobotBase.isReal()) {
+        if (RobotBase.isReal() && laserCan != null) {
             Measurement measurement = laserCan.getMeasurement();
             if (measurement != null && measurement.status == LaserCanInterface.LASERCAN_STATUS_VALID_MEASUREMENT) {
                 alert.set(false);

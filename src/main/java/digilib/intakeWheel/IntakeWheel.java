@@ -6,16 +6,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public abstract class IntakeWheel {
 
-    public record Config(String name,
-                                       double reduction,
-                                       double maxControlVoltage,
-                                       double ksVolts,
-                                       double kvVoltsPerRPS,
-                                       double kaVoltsPerRPSSquared,
-                                       double maxVelocityRPS,
-                                       double maxAccelerationRPSSquared) {
-    }
-
     private final DoublePublisher motorEncoderVelocity;
     private final DoublePublisher voltage;
     private final DoublePublisher current;
@@ -43,7 +33,7 @@ public abstract class IntakeWheel {
 
     public abstract double getMotorEncoderVelocityDPS();
 
-    public abstract void applyMotorEncoderVelocity(double setpointScalar);
+    public abstract void applyMotorEncoderVelocity(double goalScalar);
 
     public abstract double getVolts();
 

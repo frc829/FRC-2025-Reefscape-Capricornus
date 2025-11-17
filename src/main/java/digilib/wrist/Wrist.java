@@ -6,19 +6,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public abstract class Wrist {
 
-    public record Config(String name,
-                                 double reduction,
-                                 double startingAngleDegrees,
-                                 double minAngleDegrees,
-                                 double maxAngleDegrees,
-                                 double maxControlVoltage,
-                                 double ksVolts,
-                                 double kvVoltsPerRPS,
-                                 double kaVoltsPerRPSSquared,
-                                 double maxVelocityRPS,
-                                 double maxAccelerationRPSSquared) {
-    }
-
     private final DoublePublisher motorEncoderPosition;
     private final DoublePublisher motorEncoderVelocity;
     private final DoublePublisher voltage;

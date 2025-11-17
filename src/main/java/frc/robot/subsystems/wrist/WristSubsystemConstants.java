@@ -2,7 +2,7 @@ package frc.robot.subsystems.wrist;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.*;
-import digilib.wrist.NEO550Wrist;
+import digilib.wrist.SparkMaxWrist;
 import digilib.wrist.Wrist;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -16,8 +16,8 @@ import static com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake;
 import static digilib.wrist.Wrist.*;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Control.*;
-import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.constants;
-import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.reduction;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Mechanism.*;
+import static frc.robot.subsystems.wrist.WristSubsystemConstants.Motor.config;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Motor.motor;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.simLoopPeriod;
 import static frc.robot.subsystems.wrist.WristSubsystemConstants.Simulation.startingAngleDegrees;
@@ -48,18 +48,6 @@ public class WristSubsystemConstants {
         static final double reduction = 4.0 * 3.0 * 5.0 * 32.0 / 24.0;   // 10 7 32.0 / 18
         static final double minAngleDegrees = -95.0;
         static final double maxAngleDegrees = 100.0;
-        static final Config constants = new Config(
-                name,
-                reduction,
-                startingAngleDegrees,
-                minAngleDegrees,
-                maxAngleDegrees,
-                maxControlVoltage,
-                ksVolts,
-                kvVoltsPerRPS,
-                kaVoltsPerRPSSquared,
-                maxVelocityRPS,
-                maxAccelerationRPSS);
     }
 
     static final class Motor {
@@ -105,10 +93,19 @@ public class WristSubsystemConstants {
 
     public static WristSubsystem create(MechanismLigament2d top, MechanismLigament2d bottom) {
         motor.configure(Motor.config, kResetSafeParameters, kPersistParameters);
-        Wrist wrist = new NEO550Wrist(
-                constants,
+        Wrist wrist = new SparkMaxWrist(
+                name,
+                minAngleDegrees,
+                maxAngleDegrees,
+                maxVelocityRPS,
+                maxAccelerationRPSS,
                 motor,
+                ksVolts,
+                kvVoltsPerRPS,
+                kaVoltsPerRPSSquared,
                 controlPeriodSeconds,
+                maxControlVoltage,
+                startingAngleDegrees,
                 top,
                 bottom);
         WristSubsystem wristSubsystem = new WristSubsystem(wrist, simLoopPeriod);
